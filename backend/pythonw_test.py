@@ -1,0 +1,1 @@
+from pathlib import Path\nPath('backend/pythonw-marker.txt').write_text('ok', encoding='utf-8')\n
