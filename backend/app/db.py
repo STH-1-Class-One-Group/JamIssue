@@ -1,8 +1,9 @@
-"""SQLAlchemy 엔진과 세션 팩토리를 구성합니다."""
+"""Database engine and session helpers."""
 
 from __future__ import annotations
 
 from collections.abc import Generator
+from typing import cast
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
@@ -13,14 +14,16 @@ from .config import Settings, get_settings
 
 
 class Base(DeclarativeBase):
-    """모든 ORM 모델이 상속하는 기본 베이스입니다."""
+    """Base class for ORM models."""
 
 
 settings = get_settings()
+_engine: Engine | None = None
+_session_factory: sessionmaker[Session] | None = None
 
 
 def build_engine_options(app_settings: Settings) -> dict[str, object]:
-    """DB 종류와 런타임 특성에 맞는 SQLAlchemy 옵션을 구성합니다."""
+    """Build SQLAlchemy engine options for the current runtime."""
 
     engine_options: dict[str, object] = {"future": True}
     connect_args = app_settings.database_connect_args.copy()
@@ -50,22 +53,41 @@ def _enable_sqlite_foreign_keys(engine: Engine, app_settings: Settings) -> None:
         cursor.close()
 
 
-def create_sqlalchemy_engine(app_settings: Settings):
-    """정규화된 DB URL과 엔진 옵션으로 SQLAlchemy 엔진을 생성합니다."""
+def create_sqlalchemy_engine(app_settings: Settings) -> Engine:
+    """Create a SQLAlchemy engine from the configured database URL."""
 
     engine = create_engine(app_settings.normalized_database_url, **build_engine_options(app_settings))
     _enable_sqlite_foreign_keys(engine, app_settings)
-    return engine
+    return cast(Engine, engine)
 
 
-engine = create_sqlalchemy_engine(settings)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
+def get_engine(app_settings: Settings | None = None) -> Engine:
+    """Return a lazily initialized SQLAlchemy engine."""
+
+    global _engine
+    if _engine is None:
+        _engine = create_sqlalchemy_engine(app_settings or settings)
+    return _engine
+
+
+def get_session_factory(app_settings: Settings | None = None) -> sessionmaker[Session]:
+    """Return a lazily initialized SQLAlchemy session factory."""
+
+    global _session_factory
+    if _session_factory is None:
+        _session_factory = sessionmaker(
+            bind=get_engine(app_settings),
+            autoflush=False,
+            autocommit=False,
+            future=True,
+        )
+    return _session_factory
 
 
 def get_db() -> Generator[Session, None, None]:
-    """요청 단위 데이터베이스 세션을 열고 닫습니다."""
+    """Yield a request-scoped SQLAlchemy session."""
 
-    db = SessionLocal()
+    db = get_session_factory()()
     try:
         yield db
     finally:

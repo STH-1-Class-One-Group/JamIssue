@@ -33,3 +33,5 @@ backend/.wrangler/
 
 backend/.dev.vars
 
+
+backend/.venv-workers/
