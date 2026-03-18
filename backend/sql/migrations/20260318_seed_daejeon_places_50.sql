@@ -2,6 +2,7 @@
 begin;
 
 with seeded_places (slug, name, district, category, latitude, longitude, summary, description, vibe_tags, visit_time, route_hint, stamp_reward, hero_label, jam_color, accent_color, is_active) as (
+  values
   ('seongsimdang-main', '성심당 본점', '중구', 'restaurant', 36.3276, 127.4272, '성심당 본점에서 대전 로컬 한 끼를 즐기기 좋은 인기 맛집입니다.', '성심당 본점은 대전에서 꾸준히 언급되는 로컬 맛집으로, 여행 동선에 한 끼를 자연스럽게 넣기 좋습니다.', '["로컬맛집","한끼","대전"]'::jsonb, '30분 - 1시간', '근처 카페나 산책 스폿과 함께 반나절 코스로 묶기 좋습니다.', '로컬 미식 스탬프', 'Local Bite', '#ff8d63', '#ffcf69', true),
   ('seongsimdang-dcc', '성심당 DCC점', '유성구', 'restaurant', 36.3749, 127.3878, '성심당 DCC점에서 대전 로컬 한 끼를 즐기기 좋은 인기 맛집입니다.', '성심당 DCC점은 대전에서 꾸준히 언급되는 로컬 맛집으로, 여행 동선에 한 끼를 자연스럽게 넣기 좋습니다.', '["로컬맛집","한끼","대전"]'::jsonb, '30분 - 1시간', '근처 카페나 산책 스폿과 함께 반나절 코스로 묶기 좋습니다.', '로컬 미식 스탬프', 'Local Bite', '#ff8d63', '#ffcf69', true),
   ('ossi-kalguksu', '오씨칼국수', '동구', 'restaurant', 36.3326, 127.4342, '오씨칼국수에서 대전 로컬 한 끼를 즐기기 좋은 인기 맛집입니다.', '오씨칼국수은 대전에서 꾸준히 언급되는 로컬 맛집으로, 여행 동선에 한 끼를 자연스럽게 넣기 좋습니다.', '["로컬맛집","한끼","대전"]'::jsonb, '30분 - 1시간', '근처 카페나 산책 스폿과 함께 반나절 코스로 묶기 좋습니다.', '로컬 미식 스탬프', 'Local Bite', '#ff8d63', '#ffcf69', true),
@@ -74,6 +75,7 @@ on conflict (slug) do update set
   updated_at = now();
 
 with seeded_courses (slug, title, mood, duration, note, color, display_order) as (
+  values
   ('course-date', '기분 좋은 데이트 코스', '데이트', '3시간', '미술관과 디저트, 야경까지 잇는 가벼운 데이트 동선', '#ff8ab1', 1),
   ('course-photo', '사진 남기기 좋은 하루', '사진', '4시간', '수목원과 감성 카페, 엑스포 스폿을 묶은 코스', '#8db8ff', 2),
   ('course-healing', '천천히 쉬어가는 자연 코스', '힐링', '4시간 30분', '숲과 공원 위주로 걷기 좋은 힐링 동선', '#7ddccf', 3),
@@ -104,5 +106,6 @@ insert into public.course_place (course_id, position_id, stop_order) values ((se
 insert into public.course_place (course_id, position_id, stop_order) values ((select course_id from public.course where slug = 'course-night'), (select position_id from public.map where slug = 'sikjangsan-observatory'), 3) on conflict (course_id, position_id) do update set stop_order = excluded.stop_order;
 
 commit;
+
 
 
