@@ -23,6 +23,7 @@ import type {
   UserRouteLikeResponse,
 } from '../types';
 import type { PublicEventBannerResponse } from '../publicEventTypes';
+import type { FestivalItem } from '../types';
 
 class ApiError extends Error {
   status: number;
@@ -195,3 +196,8 @@ export function importPublicData() {
 export function getPublicEventBanner() {
   return fetchJson<PublicEventBannerResponse>('/api/banner/events');
 }
+
+export function getFestivals() {
+  return fetchJson<FestivalItem[]>('/api/festivals');
+}
+

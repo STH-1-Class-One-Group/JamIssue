@@ -1,4 +1,4 @@
-name = "jamissue-api"
+﻿name = "jamissue-api"
 main = "index.js"
 compatibility_date = "2026-03-16"
 workers_dev = true
@@ -14,6 +14,8 @@ APP_NAVER_LOGIN_CALLBACK_URL = "https://api.jamissue.growgardens.app/api/auth/na
 APP_STORAGE_BACKEND = "supabase"
 APP_SUPABASE_URL = "https://ifofgcaqrgtiurzqhiyy.supabase.co"
 APP_SUPABASE_STORAGE_BUCKET = "review-images"
+APP_PUBLIC_EVENT_SOURCE_URL = "https://api.data.go.kr/openapi/tn_pubr_public_cltur_fstvl_api"
+APP_PUBLIC_EVENT_CITY_KEYWORD = "대전"
 APP_STAMP_UNLOCK_RADIUS_METERS = "120"
 APP_SESSION_HTTPS = "true"
 APP_ENV = "worker-first"

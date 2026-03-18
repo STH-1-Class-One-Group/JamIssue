@@ -526,15 +526,48 @@ async function upsertNaverUser(env, profile) {
 
   return buildSessionUser(userId, fallbackNickname, profile.email, "naver", profile.profile_image, env, null);
 }
+function normalizePlaceCategory(category, slug = '') {
+  const cultureSlugHints = ['museum', 'arts-center', 'art-science', 'science-museum', 'observatory'];
+  if (category === 'restaurant' || category === 'cafe' || category === 'attraction' || category === 'culture') {
+    return category;
+  }
+  if (category === 'food') {
+    return 'restaurant';
+  }
+  if (category === 'night') {
+    return 'attraction';
+  }
+  if (category === 'landmark') {
+    return cultureSlugHints.some((hint) => slug.includes(hint)) ? 'culture' : 'attraction';
+  }
+  return 'attraction';
+}
+
+function getCategoryPalette(category, row) {
+  const fallbackJam = row.jam_color ?? '#FFB3C6';
+  const fallbackAccent = row.accent_color ?? '#FF6B9D';
+  switch (category) {
+    case 'restaurant':
+      return { jamColor: '#FF6B9D', accentColor: '#FFB3C6', heroLabel: 'Bakery Bite', summaryPrefix: '빵과 면, 국밥까지' };
+    case 'cafe':
+      return { jamColor: '#7CB9D1', accentColor: '#A8D5E2', heroLabel: 'Cafe Mood', summaryPrefix: '커피와 디저트' };
+    case 'culture':
+      return { jamColor: '#A8D5E2', accentColor: '#C9E4EA', heroLabel: 'Culture Spot', summaryPrefix: '전시와 문화 공간' };
+    case 'attraction':
+      return { jamColor: '#FFB3C6', accentColor: '#FFD4E0', heroLabel: 'City Spot', summaryPrefix: '대전 산책과 명소' };
+    default:
+      return { jamColor: fallbackJam, accentColor: fallbackAccent, heroLabel: row.hero_label, summaryPrefix: '' };
+  }
+}
 function mapPlace(row) {
   return {
     id: row.slug,
     positionId: String(row.position_id),
     name: row.name,
     district: row.district,
-    category: row.category,
-    jamColor: row.jam_color,
-    accentColor: row.accent_color,
+    category: normalizePlaceCategory(row.category, row.slug),
+    jamColor: getCategoryPalette(normalizePlaceCategory(row.category, row.slug), row).jamColor,
+    accentColor: getCategoryPalette(normalizePlaceCategory(row.category, row.slug), row).accentColor,
     latitude: row.latitude,
     longitude: row.longitude,
     summary: row.summary,
@@ -543,7 +576,7 @@ function mapPlace(row) {
     visitTime: row.visit_time,
     routeHint: row.route_hint,
     stampReward: row.stamp_reward,
-    heroLabel: row.hero_label,
+    heroLabel: getCategoryPalette(normalizePlaceCategory(row.category, row.slug), row).heroLabel,
   };
 }
 
@@ -965,6 +998,311 @@ async function handleMySummary(request, env) {
     collectedPlaces: visitedPlaces,
     routes,
   }, env, request);
+}
+function getFestivalSourceUrl(env) {
+  const baseUrl = String(env.APP_PUBLIC_EVENT_SOURCE_URL || 'https://api.data.go.kr/openapi/tn_pubr_public_cltur_fstvl_api').trim();
+  if (!baseUrl) {
+    return null;
+  }
+
+  const url = new URL(baseUrl);
+  if (!url.searchParams.get('serviceKey') && env.APP_PUBLIC_EVENT_SERVICE_KEY) {
+    url.searchParams.set('serviceKey', env.APP_PUBLIC_EVENT_SERVICE_KEY);
+  }
+  if (!url.searchParams.get('type')) {
+    url.searchParams.set('type', 'json');
+  }
+  if (!url.searchParams.get('resultType')) {
+    url.searchParams.set('resultType', 'json');
+  }
+  if (!url.searchParams.get('pageNo')) {
+    url.searchParams.set('pageNo', '1');
+  }
+  if (!url.searchParams.get('numOfRows')) {
+    url.searchParams.set('numOfRows', '40');
+  }
+  return url.toString();
+}
+
+function extractFestivalItems(payload) {
+  if (Array.isArray(payload)) {
+    return payload.filter((item) => item && typeof item === 'object');
+  }
+  if (!payload || typeof payload !== 'object') {
+    return [];
+  }
+
+  const candidates = [
+    payload.items,
+    payload.data,
+    payload.records,
+    payload.result,
+    payload.response?.body?.items,
+    payload.response?.body?.item,
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) {
+      return candidate.filter((item) => item && typeof item === 'object');
+    }
+    if (candidate && typeof candidate === 'object') {
+      if (Array.isArray(candidate.item)) {
+        return candidate.item.filter((item) => item && typeof item === 'object');
+      }
+      if (candidate.item && typeof candidate.item === 'object') {
+        return [candidate.item];
+      }
+    }
+  }
+
+  return [];
+}
+
+function readFestivalText(payload, keys) {
+  for (const key of keys) {
+    const value = payload?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== '') {
+      return String(value).trim();
+    }
+  }
+  return null;
+}
+
+function readFestivalNumber(payload, keys) {
+  const value = readFestivalText(payload, keys);
+  if (!value) {
+    return null;
+  }
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function parseFestivalDate(value, endOfDay = false) {
+  if (!value) {
+    return null;
+  }
+  const text = String(value).trim();
+  if (!text) {
+    return null;
+  }
+  if (/^\d{8}$/.test(text)) {
+    const year = Number(text.slice(0, 4));
+    const month = Number(text.slice(4, 6));
+    const day = Number(text.slice(6, 8));
+    const date = new Date(Date.UTC(year, month - 1, day, endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0));
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+  const parsed = new Date(text);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  if (endOfDay && /^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    parsed.setUTCHours(23, 59, 59, 0);
+  }
+  return parsed;
+}
+
+function createFestivalExternalId(title, startDate, venueName, roadAddress) {
+  const seed = `${title}|${startDate.toISOString()}|${venueName || ''}|${roadAddress || ''}`;
+  const bytes = textEncoder.encode(seed);
+  return `festival-${base64UrlEncode(bytes).slice(0, 22)}`;
+}
+
+function isDaejeonFestival(payload) {
+  const haystack = [
+    readFestivalText(payload, ['축제명', 'fstvlNm', 'eventNm', 'eventTitle']),
+    readFestivalText(payload, ['개최장소', 'opar', 'venueName', 'fstvlCo']),
+    readFestivalText(payload, ['소재지도로명주소', '소재지 도로명주소', 'rdnmadr', 'roadAddress']),
+    readFestivalText(payload, ['소재지지번주소', 'lnmadr', 'address']),
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return haystack.includes('대전');
+}
+
+function normalizeFestival(payload) {
+  if (!isDaejeonFestival(payload)) {
+    return null;
+  }
+
+  const title = readFestivalText(payload, ['축제명', 'fstvlNm', 'eventNm', 'eventTitle']);
+  const venueName = readFestivalText(payload, ['개최장소', 'opar', 'venueName', 'fstvlCo']);
+  const startDate = parseFestivalDate(readFestivalText(payload, ['축제시작일자', '축제 시작일자', 'fstvlStartDate', 'eventStartDate', 'startDate']));
+  const endDate = parseFestivalDate(readFestivalText(payload, ['축제종료일자', '축제 종료일자', 'fstvlEndDate', 'eventEndDate', 'endDate']), true);
+  const homepageUrl = readFestivalText(payload, ['홈페이지주소', '홈페이지 주소', 'homepageUrl', 'homepage']);
+  const roadAddress = readFestivalText(payload, ['소재지도로명주소', '소재지 도로명주소', 'rdnmadr', 'roadAddress']);
+  const latitude = readFestivalNumber(payload, ['위도', 'latitude', 'lat']);
+  const longitude = readFestivalNumber(payload, ['경도', 'longitude', 'lng']);
+
+  if (!title || !startDate || !endDate || latitude === null || longitude === null) {
+    return null;
+  }
+
+  const now = Date.now();
+  if (endDate.getTime() < now) {
+    return null;
+  }
+
+  return {
+    externalId: readFestivalText(payload, ['축제일련번호', 'eventId', 'id']) || createFestivalExternalId(title, startDate, venueName, roadAddress),
+    title,
+    venueName,
+    district: '대전',
+    roadAddress,
+    startsAt: startDate.toISOString(),
+    endsAt: endDate.toISOString(),
+    homepageUrl,
+    latitude,
+    longitude,
+    summary: venueName ? `${venueName}에서 열리는 대전 축제예요.` : '대전에서 열리는 축제예요.',
+    rawPayload: payload,
+  };
+}
+
+async function ensureFestivalSource(env, requestUrl) {
+  const rows = await supabaseRequest(env, 'public_data_source?select=source_id,source_key&source_key=eq.jamissue-public-event-feed&limit=1');
+  if (rows?.[0]) {
+    return rows[0];
+  }
+
+  const created = await supabaseRequest(env, 'public_data_source', {
+    method: 'POST',
+    body: JSON.stringify({
+      source_key: 'jamissue-public-event-feed',
+      provider: 'public-event',
+      name: 'Daejeon Festival Feed',
+      source_url: requestUrl,
+      last_imported_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }),
+  });
+  return Array.isArray(created) ? created[0] : created;
+}
+
+async function syncFestivalsFromSource(env) {
+  const requestUrl = getFestivalSourceUrl(env);
+  if (!requestUrl) {
+    return [];
+  }
+
+  const response = await fetch(requestUrl, { headers: { Accept: 'application/json' } });
+  if (!response.ok) {
+    throw new Error(`축제 API를 불러오지 못했어요. (${response.status})`);
+  }
+
+  const payload = await response.json();
+  const items = extractFestivalItems(payload)
+    .map(normalizeFestival)
+    .filter(Boolean)
+    .sort((left, right) => new Date(left.startsAt).getTime() - new Date(right.startsAt).getTime())
+    .slice(0, 10);
+
+  const source = await ensureFestivalSource(env, requestUrl);
+  const sourceId = source.source_id;
+  const existingRows = await supabaseRequest(env, `public_event?select=public_event_id,external_id&source_id=eq.${encodeFilterValue(sourceId)}`);
+  const existingByExternalId = new Map((existingRows || []).map((row) => [String(row.external_id), row]));
+  const seenExternalIds = new Set();
+  const nowIso = new Date().toISOString();
+
+  for (const item of items) {
+    seenExternalIds.add(item.externalId);
+    const existing = existingByExternalId.get(item.externalId);
+    const body = {
+      source_id: sourceId,
+      external_id: item.externalId,
+      title: item.title,
+      venue_name: item.venueName,
+      district: item.district,
+      road_address: item.roadAddress,
+      latitude: item.latitude,
+      longitude: item.longitude,
+      starts_at: item.startsAt,
+      ends_at: item.endsAt,
+      summary: item.summary,
+      description: item.summary,
+      source_page_url: item.homepageUrl,
+      sync_status: 'imported',
+      raw_payload: item.rawPayload,
+      normalized_payload: {
+        title: item.title,
+        venue_name: item.venueName,
+        road_address: item.roadAddress,
+        starts_at: item.startsAt,
+        ends_at: item.endsAt,
+        homepage_url: item.homepageUrl,
+        latitude: item.latitude,
+        longitude: item.longitude,
+      },
+      updated_at: nowIso,
+    };
+
+    if (existing) {
+      await supabaseRequest(env, `public_event?public_event_id=eq.${encodeFilterValue(existing.public_event_id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    } else {
+      await supabaseRequest(env, 'public_event', {
+        method: 'POST',
+        body: JSON.stringify({ ...body, created_at: nowIso }),
+      });
+    }
+  }
+
+  const staleIds = (existingRows || [])
+    .filter((row) => !seenExternalIds.has(String(row.external_id)))
+    .map((row) => row.public_event_id);
+  if (staleIds.length > 0) {
+    await supabaseRequest(env, `public_event?public_event_id=in.(${staleIds.join(',')})`, {
+      method: 'DELETE',
+    });
+  }
+
+  await supabaseRequest(env, `public_data_source?source_id=eq.${encodeFilterValue(sourceId)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      last_imported_at: nowIso,
+      updated_at: nowIso,
+    }),
+  });
+
+  return items;
+}
+
+async function handleFestivals(request, env) {
+  try {
+    if (env.APP_PUBLIC_EVENT_SERVICE_KEY) {
+      await syncFestivalsFromSource(env);
+    }
+  } catch (error) {
+    console.error('festival sync failed', error);
+  }
+
+  const now = Date.now();
+  const upcomingCutoff = now + 30 * 24 * 60 * 60 * 1000;
+  const nowIso = new Date(now).toISOString();
+  const rows = await supabaseRequest(env, `public_event?select=public_event_id,title,venue_name,road_address,starts_at,ends_at,source_page_url,latitude,longitude&district=eq.${encodeFilterValue('대전')}&ends_at=gte.${encodeFilterValue(nowIso)}&order=starts_at.asc&limit=40`);
+  const festivals = (rows || [])
+    .filter((row) => {
+      const startTime = new Date(row.starts_at).getTime();
+      const endTime = new Date(row.ends_at).getTime();
+      return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= upcomingCutoff;
+    })
+    .slice(0, 10)
+    .map((row) => ({
+      id: String(row.public_event_id),
+      title: row.title,
+      venueName: row.venue_name ?? null,
+      startDate: row.starts_at ? String(row.starts_at).slice(0, 10) : '',
+      endDate: row.ends_at ? String(row.ends_at).slice(0, 10) : '',
+      homepageUrl: row.source_page_url ?? null,
+      roadAddress: row.road_address ?? null,
+      latitude: Number(row.latitude),
+      longitude: Number(row.longitude),
+      isOngoing: new Date(row.starts_at).getTime() <= now && new Date(row.ends_at).getTime() >= now,
+    }));
+  return jsonResponse(200, festivals, env, request);
 }
 async function handleBannerEvents(request, env) {
   const [eventRows, sourceRows] = await Promise.all([
@@ -1623,6 +1961,9 @@ async function routeRequest(request, env) {
   if (request.method === "GET" && url.pathname === "/api/my/summary") {
     return handleMySummary(request, env);
   }
+  if (request.method === "GET" && url.pathname === "/api/festivals") {
+    return handleFestivals(request, env);
+  }
   if (request.method === "GET" && url.pathname === "/api/banner/events") {
     return handleBannerEvents(request, env);
   }
@@ -1642,6 +1983,12 @@ export default {
     }
   },
 };
+
+
+
+
+
+
 
 
 

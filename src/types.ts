@@ -1,4 +1,6 @@
-﻿export type Category = 'all' | 'landmark' | 'food' | 'cafe' | 'night';
+﻿import type { PlaceCategory, PlaceCategoryFilter } from './lib/categories';
+
+export type Category = PlaceCategoryFilter;
 export type Tab = 'map' | 'feed' | 'course' | 'my';
 export type MyPageTabKey = 'stamps' | 'feeds' | 'routes';
 export type DrawerState = 'closed' | 'partial' | 'full';
@@ -36,7 +38,7 @@ export interface Place {
   positionId?: string;
   name: string;
   district: string;
-  category: Exclude<Category, 'all'>;
+  category: PlaceCategory;
   jamColor: string;
   accentColor: string;
   latitude: number;
@@ -145,6 +147,19 @@ export interface UserRouteLikeResponse {
   likedByMe: boolean;
 }
 
+export interface FestivalItem {
+  id: string;
+  title: string;
+  venueName: string | null;
+  startDate: string;
+  endDate: string;
+  homepageUrl: string | null;
+  roadAddress: string | null;
+  latitude: number;
+  longitude: number;
+  isOngoing: boolean;
+}
+
 export interface StampState {
   collectedPlaceIds: string[];
   logs: StampLog[];
@@ -214,7 +229,7 @@ export interface AdminPlace {
   id: string;
   name: string;
   district: string;
-  category: Exclude<Category, 'all'>;
+  category: PlaceCategory;
   isActive: boolean;
   reviewCount: number;
   updatedAt: string;
@@ -259,3 +274,5 @@ export interface RoadmapBannerMilestone {
   body: string;
   deliverable: string;
 }
+
+

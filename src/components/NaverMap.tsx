@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 import { getClientConfig } from '../config';
-import type { ApiStatus, Place } from '../types';
+import { categoryInfo } from '../lib/categories';
+import type { ApiStatus, FestivalItem, Place } from '../types';
 
 declare global {
   interface Window {
@@ -44,15 +45,43 @@ function loadNaverMaps(clientId: string) {
 }
 
 function placeMarkerContent(place: Place, isActive: boolean) {
-  const ring = isActive ? '#5f4660' : 'rgba(64, 40, 51, 0.12)';
+  const info = categoryInfo[place.category];
+  const ring = isActive ? '#5f4660' : 'rgba(95, 70, 96, 0.18)';
   const scale = isActive ? 'scale(1.08)' : 'scale(1)';
+  const shadow = isActive ? '0 14px 28px rgba(255,127,168,0.28)' : '0 10px 22px rgba(255,156,96,0.18)';
 
   return `
     <div style="transform:${scale};display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <div style="width:42px;height:36px;border-radius:16px 16px 12px 12px;background:linear-gradient(180deg,#fffaf2,#ffefce);box-shadow:0 10px 18px rgba(255,156,96,0.22);position:relative;border:2px solid ${ring};">
-        <div style="position:absolute;left:50%;top:52%;width:18px;height:18px;border-radius:999px;background:${place.jamColor};transform:translate(-50%, -50%);box-shadow:0 0 0 5px rgba(255,255,255,0.76);"></div>
+      <div style="position:relative;width:50px;height:50px;">
+        <div style="position:absolute;left:50%;top:3px;width:18px;height:18px;border-radius:999px;background:${info.jamColor};transform:translateX(-50%);"></div>
+        <div style="position:absolute;left:50%;bottom:3px;width:18px;height:18px;border-radius:999px;background:${info.jamColor};transform:translateX(-50%);"></div>
+        <div style="position:absolute;left:3px;top:50%;width:18px;height:18px;border-radius:999px;background:${info.jamColor};transform:translateY(-50%);"></div>
+        <div style="position:absolute;right:3px;top:50%;width:18px;height:18px;border-radius:999px;background:${info.jamColor};transform:translateY(-50%);"></div>
+        <div style="position:absolute;inset:11px;border-radius:999px;background:${info.color};border:2px solid ${ring};box-shadow:${shadow};display:flex;align-items:center;justify-content:center;color:#5f4660;font-size:15px;font-weight:900;">${info.icon}</div>
       </div>
-      <div style="min-width:90px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.92);color:#402833;font-size:11px;font-weight:700;text-align:center;box-shadow:0 8px 18px rgba(255,127,168,0.12);">${place.name}</div>
+      <div style="min-width:92px;max-width:120px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.95);color:#402833;font-size:11px;font-weight:700;text-align:center;box-shadow:0 8px 18px rgba(255,127,168,0.12);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${place.name}</div>
+    </div>
+  `;
+}
+
+function festivalMarkerContent(festival: FestivalItem, isActive: boolean) {
+  const ring = isActive ? '#ff4f93' : 'rgba(255, 79, 147, 0.22)';
+  const scale = isActive ? 'scale(1.06)' : 'scale(1)';
+  const statusLabel = festival.isOngoing ? '진행 중' : '예정';
+
+  return `
+    <div style="transform:${scale};display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <div style="position:relative;width:50px;height:50px;">
+        <div style="position:absolute;left:50%;top:0;width:20px;height:20px;border-radius:999px;background:#ffd4e6;transform:translateX(-50%);"></div>
+        <div style="position:absolute;left:50%;bottom:0;width:20px;height:20px;border-radius:999px;background:#ffd4e6;transform:translateX(-50%);"></div>
+        <div style="position:absolute;left:0;top:50%;width:20px;height:20px;border-radius:999px;background:#ffd4e6;transform:translateY(-50%);"></div>
+        <div style="position:absolute;right:0;top:50%;width:20px;height:20px;border-radius:999px;background:#ffd4e6;transform:translateY(-50%);"></div>
+        <div style="position:absolute;inset:12px;border-radius:999px;background:#fff4fa;border:2px solid ${ring};box-shadow:0 10px 24px rgba(255,93,146,0.18);display:flex;align-items:center;justify-content:center;color:#7b1948;font-size:10px;font-weight:900;">축제</div>
+      </div>
+      <div style="min-width:98px;max-width:124px;padding:7px 10px;border-radius:16px;background:rgba(255,255,255,0.95);color:#402833;font-size:11px;font-weight:700;text-align:center;box-shadow:0 8px 18px rgba(255,127,168,0.14);">
+        <div style="margin-bottom:3px;color:#ff4f93;font-size:10px;">${statusLabel}</div>
+        <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${festival.title}</div>
+      </div>
     </div>
   `;
 }
@@ -67,8 +96,11 @@ function currentLocationMarkerContent() {
 
 interface NaverMapProps {
   places: Place[];
+  festivals: FestivalItem[];
   selectedPlaceId: string | null;
+  selectedFestivalId: string | null;
   onSelectPlace: (placeId: string) => void;
+  onSelectFestival: (festivalId: string) => void;
   currentPosition: { latitude: number; longitude: number } | null;
   currentLocationStatus: ApiStatus;
   currentLocationMessage: string | null;
@@ -79,8 +111,11 @@ interface NaverMapProps {
 
 export function NaverMap({
   places,
+  festivals,
   selectedPlaceId,
+  selectedFestivalId,
   onSelectPlace,
+  onSelectFestival,
   currentPosition,
   currentLocationStatus,
   currentLocationMessage,
@@ -91,6 +126,7 @@ export function NaverMap({
   const mapElementRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const placeMarkersRef = useRef<any[]>([]);
+  const festivalMarkersRef = useRef<any[]>([]);
   const currentMarkerRef = useRef<any | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -130,7 +166,7 @@ export function NaverMap({
           new maps.LatLng(DAEJEON_BOUNDS.northEast.latitude, DAEJEON_BOUNDS.northEast.longitude),
         );
 
-        mapRef.current.fitBounds(bounds, { top: 64, right: 28, bottom: 120, left: 28 });
+        mapRef.current.fitBounds(bounds, { top: 52, right: 20, bottom: 96, left: 20 });
         setStatus('ready');
       })
       .catch((error: Error) => {
@@ -162,13 +198,38 @@ export function NaverMap({
         title: place.name,
         icon: {
           content: placeMarkerContent(place, place.id === selectedPlaceId),
-          anchor: new maps.Point(45, 54),
+          anchor: new maps.Point(46, 58),
         },
       });
       maps.Event.addListener(marker, 'click', () => onSelectPlace(place.id));
       placeMarkersRef.current.push(marker);
     });
   }, [onSelectPlace, places, selectedPlaceId, status]);
+
+  useEffect(() => {
+    if (status !== 'ready' || !window.naver?.maps || !mapRef.current) {
+      return;
+    }
+
+    const maps = window.naver.maps;
+    festivalMarkersRef.current.forEach((marker) => marker.setMap(null));
+    festivalMarkersRef.current = [];
+
+    festivals.forEach((festival) => {
+      const marker = new maps.Marker({
+        map: mapRef.current,
+        position: new maps.LatLng(festival.latitude, festival.longitude),
+        title: festival.title,
+        zIndex: 120,
+        icon: {
+          content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
+          anchor: new maps.Point(50, 60),
+        },
+      });
+      maps.Event.addListener(marker, 'click', () => onSelectFestival(festival.id));
+      festivalMarkersRef.current.push(marker);
+    });
+  }, [festivals, onSelectFestival, selectedFestivalId, status]);
 
   useEffect(() => {
     if (status !== 'ready' || !window.naver?.maps || !mapRef.current) {
@@ -205,17 +266,24 @@ export function NaverMap({
   }, [currentPosition, status]);
 
   useEffect(() => {
-    if (status !== 'ready' || !window.naver?.maps || !mapRef.current || !selectedPlaceId) {
+    if (status !== 'ready' || !window.naver?.maps || !mapRef.current) {
       return;
     }
 
-    const selectedPlace = places.find((place) => place.id === selectedPlaceId);
-    if (!selectedPlace) {
+    const selectedPlace = selectedPlaceId ? places.find((place) => place.id === selectedPlaceId) : null;
+    const selectedFestival = selectedFestivalId ? festivals.find((festival) => festival.id === selectedFestivalId) : null;
+    const target = selectedPlace
+      ? { latitude: selectedPlace.latitude, longitude: selectedPlace.longitude }
+      : selectedFestival
+        ? { latitude: selectedFestival.latitude, longitude: selectedFestival.longitude }
+        : null;
+
+    if (!target) {
       return;
     }
 
-    mapRef.current.panTo(new window.naver.maps.LatLng(selectedPlace.latitude, selectedPlace.longitude));
-  }, [places, selectedPlaceId, status]);
+    mapRef.current.panTo(new window.naver.maps.LatLng(target.latitude, target.longitude));
+  }, [festivals, places, selectedFestivalId, selectedPlaceId, status]);
 
   useEffect(() => {
     if (status !== 'ready' || !window.naver?.maps || !mapRef.current || !currentPosition || focusCurrentLocationKey === 0) {
@@ -244,12 +312,12 @@ export function NaverMap({
       )}
       <div className="map-floating-controls">
         <button type="button" className="map-locate-button" onClick={onLocateCurrentPosition} disabled={currentLocationStatus === 'loading'}>
-          {currentLocationStatus === 'loading' ? '위치 확인 중...' : currentPosition ? '내 위치 보기' : '내 위치 켜기'}
+          {currentLocationStatus === 'loading' ? '확인 중' : currentPosition ? '내 위치 보기' : '내 위치 켜기'}
         </button>
       </div>
       <div ref={mapElementRef} style={{ width: '100%', height }} />
       {currentLocationMessage && <div className="map-location-pill">{currentLocationMessage}</div>}
-      <div className="map-caption">대전 범위만 가볍게 보이도록 정리한 지도예요.</div>
     </div>
   );
 }
+

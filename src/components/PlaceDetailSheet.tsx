@@ -1,4 +1,5 @@
 ﻿import { useRef } from 'react';
+import { categoryInfo } from '../lib/categories';
 import { ReviewComposer } from './ReviewComposer';
 import { ReviewList } from './ReviewList';
 import type { ApiStatus, DrawerState, Place, Review, ReviewMood, StampLog } from '../types';
@@ -88,6 +89,7 @@ export function PlaceDetailSheet({
   const sheetClassName = `place-drawer place-drawer--${drawerState}`;
   const visitLabel = latestStamp ? latestStamp.visitLabel : '첫 방문 대기';
   const canClaimStamp = loggedIn && !todayStamp;
+  const categoryMeta = categoryInfo[place.category];
 
   return (
     <section className={sheetClassName} aria-label="장소 상세 드로워">
@@ -115,6 +117,9 @@ export function PlaceDetailSheet({
         </div>
 
         <div className="place-drawer__badges">
+          <span className="counter-pill" style={{ background: categoryMeta.color, color: '#4a3140' }}>
+            {categoryMeta.icon} {categoryMeta.name}
+          </span>
           <span className="counter-pill">{place.district}</span>
           <span className="counter-pill">{visitLabel}</span>
           <span className="counter-pill">누적 방문 {visitCount}회</span>

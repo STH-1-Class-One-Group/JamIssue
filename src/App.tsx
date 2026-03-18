@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   claimStamp,
   createComment,
@@ -7,6 +7,7 @@ import {
   getAuthSession,
   getBootstrap,
   getCommunityRoutes,
+  getFestivals,
   getMySummary,
   getProviderLoginUrl,
   logout,
@@ -18,9 +19,11 @@ import {
 import { BottomNav } from './components/BottomNav';
 import { CourseTab } from './components/CourseTab';
 import { FeedTab } from './components/FeedTab';
+import { FestivalDetailSheet } from './components/FestivalDetailSheet';
 import { MyPagePanel } from './components/MyPagePanel';
 import { NaverMap } from './components/NaverMap';
 import { PlaceDetailSheet } from './components/PlaceDetailSheet';
+import { categoryInfo, categoryItems } from './lib/categories';
 import { getCurrentDevicePosition } from './lib/geolocation';
 import {
   calculateDistanceMeters,
@@ -36,6 +39,7 @@ import type {
   Category,
   CommunityRouteSort,
   DrawerState,
+  FestivalItem,
   MyPageResponse,
   MyPageTabKey,
   Place,
@@ -51,13 +55,6 @@ const emptyProviders: AuthProvider[] = [
 ];
 
 const validTabs: Tab[] = ['map', 'feed', 'course', 'my'];
-const categoryItems: { key: Category; label: string }[] = [
-  { key: 'all', label: '??' },
-  { key: 'landmark', label: '??' },
-  { key: 'food', label: '??' },
-  { key: 'cafe', label: '??' },
-  { key: 'night', label: '??' },
-];
 const STAMP_UNLOCK_RADIUS_METERS = 120;
 
 function getInitialTab(): Tab {
@@ -144,10 +141,12 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [drawerState, setDrawerState] = useState<DrawerState>('closed');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [selectedFestivalId, setSelectedFestivalId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(getInitialNotice);
   const [bootstrapStatus, setBootstrapStatus] = useState<ApiStatus>('idle');
   const [bootstrapError, setBootstrapError] = useState<string | null>(null);
   const [places, setPlaces] = useState<Place[]>([]);
+  const [festivals, setFestivals] = useState<FestivalItem[]>([]);
   const [reviews, setReviews] = useState<BootstrapResponse['reviews']>([]);
   const [courses, setCourses] = useState<BootstrapResponse['courses']>([]);
   const [stampState, setStampState] = useState<BootstrapResponse['stamps']>({
@@ -170,7 +169,7 @@ export default function App() {
   const [reviewLikeUpdatingId, setReviewLikeUpdatingId] = useState<string | null>(null);
   const [commentSubmittingReviewId, setCommentSubmittingReviewId] = useState<string | null>(null);
   const [stampActionStatus, setStampActionStatus] = useState<ApiStatus>('idle');
-  const [stampActionMessage, setStampActionMessage] = useState('장소를 선택하면 오늘 스탬프 가능 여부를 알려드릴게요.');
+  const [stampActionMessage, setStampActionMessage] = useState('장소를 선택하면 오늘 스탬프 가능 여부를 바로 알려드릴게요.');
   const [routeSubmitting, setRouteSubmitting] = useState(false);
   const [routeError, setRouteError] = useState<string | null>(null);
   const [routeLikeUpdatingId, setRouteLikeUpdatingId] = useState<string | null>(null);
@@ -186,6 +185,13 @@ export default function App() {
 
     return places.find((place) => place.id === selectedPlaceId) ?? null;
   }, [places, selectedPlaceId]);
+  const selectedFestival = useMemo(() => {
+    if (!selectedFestivalId) {
+      return null;
+    }
+
+    return festivals.find((festival) => festival.id === selectedFestivalId) ?? null;
+  }, [festivals, selectedFestivalId]);
   const selectedPlaceReviews = selectedPlace ? reviews.filter((review) => review.placeId === selectedPlace.id) : [];
   const todayStamp = selectedPlace ? getTodayStampLog(stampState.logs, selectedPlace.id) : null;
   const latestStamp = selectedPlace ? getLatestPlaceStamp(stampState.logs, selectedPlace.id) : null;
@@ -215,13 +221,8 @@ export default function App() {
       return;
     }
 
-    const timeout = window.setTimeout(() => {
-      setNotice(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
+    const timeout = window.setTimeout(() => setNotice(null), 3200);
+    return () => window.clearTimeout(timeout);
   }, [notice]);
 
   useEffect(() => {
@@ -238,17 +239,17 @@ export default function App() {
 
   useEffect(() => {
     if (!selectedPlace) {
-      setStampActionMessage('장소를 선택하면 오늘 스탬프 가능 여부를 알려드릴게요.');
+      setStampActionMessage('장소를 선택하면 오늘 스탬프 가능 여부를 바로 알려드릴게요.');
       return;
     }
 
     if (!sessionUser) {
-      setStampActionMessage(`로그인하면 ${selectedPlace.name}에서 바로 스탬프를 찍을 수 있어요.`);
+      setStampActionMessage(`로그인하면 ${selectedPlace.name}에서 바로 현장 스탬프를 찍을 수 있어요.`);
       return;
     }
 
     if (todayStamp) {
-      setStampActionMessage(`${todayStamp.visitLabel} 스탬프를 이미 찍었어요. 오늘 피드도 바로 남길 수 있어요.`);
+      setStampActionMessage(`${todayStamp.visitLabel} 스탬프를 이미 찍었어요. 오늘 피드와 코스로 바로 이어갈 수 있어요.`);
       return;
     }
 
@@ -275,13 +276,15 @@ export default function App() {
     setBootstrapError(null);
 
     try {
-      const [bootstrap, auth, routes] = await Promise.all([
+      const [bootstrap, auth, routes, festivalResult] = await Promise.all([
         getBootstrap(),
         getAuthSession(),
         getCommunityRoutes(communityRouteSort),
+        getFestivals().catch(() => [] as FestivalItem[]),
       ]);
 
       setPlaces(bootstrap.places);
+      setFestivals(festivalResult);
       setReviews(bootstrap.reviews);
       setCourses(bootstrap.courses);
       setStampState(bootstrap.stamps);
@@ -290,6 +293,7 @@ export default function App() {
       setSessionUser(auth.user);
       setProviders(auth.providers);
       setSelectedPlaceId((current) => (current && bootstrap.places.some((place) => place.id === current) ? current : null));
+      setSelectedFestivalId((current) => (current && festivalResult.some((festival) => festival.id === current) ? current : null));
 
       if (auth.user) {
         setMyPage(await getMySummary());
@@ -300,7 +304,7 @@ export default function App() {
       setBootstrapStatus('ready');
       if (authState === 'naver-success' && auth.user?.profileCompletedAt === null) {
         setActiveTab('my');
-        setNotice('닉네임을 먼저 저장하면 바로 피드와 코스를 이어서 쓸 수 있어요.');
+        setNotice('닉네임을 먼저 저장하면 바로 피드와 코스로 이어갈 수 있어요.');
       }
     } catch (error) {
       setBootstrapError(formatErrorMessage(error));
@@ -331,13 +335,22 @@ export default function App() {
 
   function openPlace(placeId: string) {
     setActiveTab('map');
+    setSelectedFestivalId(null);
     setSelectedPlaceId(placeId);
+    setDrawerState('partial');
+  }
+
+  function openFestival(festivalId: string) {
+    setActiveTab('map');
+    setSelectedPlaceId(null);
+    setSelectedFestivalId(festivalId);
     setDrawerState('partial');
   }
 
   function closeDrawer() {
     setDrawerState('closed');
     setSelectedPlaceId(null);
+    setSelectedFestivalId(null);
   }
 
   function startProviderLogin(provider: 'naver' | 'kakao') {
@@ -537,11 +550,14 @@ export default function App() {
           <div className="map-stage">
             <NaverMap
               places={filteredPlaces}
+              festivals={festivals}
               selectedPlaceId={selectedPlace?.id ?? null}
+              selectedFestivalId={selectedFestival?.id ?? null}
               onSelectPlace={openPlace}
+              onSelectFestival={openFestival}
               currentPosition={currentPosition}
               currentLocationStatus={mapLocationStatus}
-              currentLocationMessage={mapLocationMessage}
+              currentLocationMessage={drawerState === 'closed' ? mapLocationMessage : null}
               focusCurrentLocationKey={mapLocationFocusKey}
               onLocateCurrentPosition={() => void refreshCurrentPosition(true)}
               height="100%"
@@ -551,24 +567,46 @@ export default function App() {
             <header className="map-stage__header">
               <div className="map-stage__brand">
                 <p className="eyebrow">DAEJEON JAM ISSUE</p>
-                <p className="map-stage__headline">지도를 보고 장소를 고른 뒤, 스탬프와 피드, 코스로 이어지는 흐름을 담았어요.</p>
+                <p className="map-stage__headline">꽃처럼 찍힌 장소를 눌러 드로워에서 바로 이어가세요.</p>
+              </div>
+              <div className="map-stage__summary">
+                <span className="counter-pill">장소 {selectedCategoryCount}곳</span>
+                <span className="counter-pill counter-pill--festival">행사 {festivals.length}개</span>
               </div>
             </header>
 
             {notice && <div className="floating-notice">{notice}</div>}
-            {bootstrapStatus === 'loading' && <section className="floating-status">대전 장소를 불러오고 있어요.</section>}
+            {bootstrapStatus === 'loading' && <section className="floating-status">대전 장소와 축제를 불러오고 있어요.</section>}
             {bootstrapStatus === 'error' && <section className="floating-status floating-status--error">{bootstrapError}</section>}
             {!hasRealData && bootstrapStatus === 'ready' && <section className="floating-status">현재는 데모 데이터로 먼저 보여드리고 있어요.</section>}
 
             <div className="map-filter-strip">
               <div className="chip-row compact-gap">
-                {categoryItems.map((item) => (
-                  <button key={item.key} type="button" className={item.key === activeCategory ? 'chip is-active' : 'chip'} onClick={() => setActiveCategory(item.key)}>
-                    {item.label}
-                  </button>
-                ))}
+                {categoryItems.map((item) => {
+                  const isActive = item.key === activeCategory;
+                  const info = item.key === 'all' ? null : categoryInfo[item.key];
+
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={isActive ? 'chip is-active map-filter-chip' : 'chip map-filter-chip'}
+                      onClick={() => setActiveCategory(item.key)}
+                      style={
+                        info
+                          ? {
+                              background: isActive ? info.color : 'rgba(255,255,255,0.94)',
+                              borderColor: info.jamColor,
+                              color: '#4a3140',
+                            }
+                          : undefined
+                      }
+                    >
+                      {info ? `${info.icon} ${item.label}` : item.label}
+                    </button>
+                  );
+                })}
               </div>
-              <span className="counter-pill">{selectedCategoryCount}곳</span>
             </div>
 
             <PlaceDetailSheet
@@ -596,6 +634,15 @@ export default function App() {
               onCreateReview={handleCreateReview}
               onToggleReviewLike={handleToggleReviewLike}
               onCreateComment={handleCreateComment}
+            />
+
+            <FestivalDetailSheet
+              festival={selectedFestival}
+              isOpen={Boolean(selectedFestival) && drawerState !== 'closed'}
+              drawerState={drawerState}
+              onClose={closeDrawer}
+              onExpand={() => setDrawerState('full')}
+              onCollapse={() => setDrawerState('partial')}
             />
           </div>
         ) : (
@@ -673,6 +720,7 @@ export default function App() {
             if (nextTab !== 'map') {
               setDrawerState('closed');
               setSelectedPlaceId(null);
+              setSelectedFestivalId(null);
             }
           }}
         />
@@ -680,3 +728,8 @@ export default function App() {
     </div>
   );
 }
+
+
+
+
+
