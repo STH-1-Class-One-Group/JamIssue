@@ -4,8 +4,8 @@ export type Category = PlaceCategoryFilter;
 export type Tab = 'map' | 'feed' | 'course' | 'my';
 export type MyPageTabKey = 'stamps' | 'feeds' | 'comments' | 'routes';
 export type DrawerState = 'closed' | 'partial' | 'full';
-export type ReviewMood = '혼자서' | '친구랑' | '데이트' | '야경 맛집';
-export type CourseMood = '전체' | '데이트' | '사진' | '힐링' | '비 오는 날';
+export type ReviewMood = '\uD63C\uC790\uC11C' | '\uCE5C\uAD6C\uB791' | '\uB370\uC774\uD2B8' | '\uC57C\uACBD \uB9DB\uC9D1';
+export type CourseMood = '\uC804\uCCB4' | '\uB370\uC774\uD2B8' | '\uC0AC\uC9C4' | '\uD790\uB9C1' | '\uBE44 \uC624\uB294 \uB0A0';
 export type ApiStatus = 'idle' | 'loading' | 'ready' | 'error';
 export type ProviderKey = 'naver' | 'kakao';
 export type CommunityRouteSort = 'popular' | 'latest';
@@ -119,7 +119,7 @@ export interface ReviewLikeResponse {
 export interface Course {
   id: string;
   title: string;
-  mood: Exclude<CourseMood, '전체'>;
+  mood: Exclude<CourseMood, '\uC804\uCCB4'>;
   duration: string;
   note: string;
   color: string;
@@ -168,11 +168,23 @@ export interface StampState {
 }
 
 export interface BootstrapResponse {
+  auth: AuthSessionResponse;
   places: Place[];
   reviews: Review[];
   courses: Course[];
   stamps: StampState;
   hasRealData: boolean;
+}
+
+export interface MapBootstrapResponse {
+  auth: AuthSessionResponse;
+  places: Place[];
+  stamps: StampState;
+  hasRealData: boolean;
+}
+
+export interface CourseBootstrapResponse {
+  courses: Course[];
 }
 
 export interface ReviewCreateRequest {
@@ -287,6 +299,3 @@ export interface RoadmapBannerMilestone {
   body: string;
   deliverable: string;
 }
-
-
-

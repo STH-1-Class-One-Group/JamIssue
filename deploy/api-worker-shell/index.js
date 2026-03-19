@@ -18,6 +18,10 @@ const NAVER_AUTHORIZE_URL = 'https://nid.naver.com/oauth2.0/authorize';
 const NAVER_TOKEN_URL = 'https://nid.naver.com/oauth2.0/token';
 const NAVER_PROFILE_URL = 'https://openapi.naver.com/v1/nid/me';
 const textEncoder = new TextEncoder();
+const STATIC_BASE_CACHE_TTL_MS = 5 * 60 * 1000;
+const FESTIVALS_CACHE_TTL_MS = 10 * 60 * 1000;
+let staticBaseCache = { expiresAt: 0, value: null, pending: null };
+let festivalsCache = { expiresAt: 0, syncAt: 0, value: null, pending: null };
 
 function jsonResponse(status, payload, env, request, extraHeaders = {}) {
   const headers = new Headers({
@@ -123,6 +127,16 @@ function buildInFilter(values) {
     return null;
   }
   return `in.(${unique.map((value) => encodeFilterValue(value)).join(',')})`;
+}
+
+async function rememberPending(cacheState, loader) {
+  if (cacheState.pending) {
+    return cacheState.pending;
+  }
+  cacheState.pending = loader().finally(() => {
+    cacheState.pending = null;
+  });
+  return cacheState.pending;
 }
 
 function formatDateTime(value) {
@@ -628,6 +642,7 @@ function mapPlace(row) {
     category: normalizePlaceCategory(row.category, row.slug),
     jamColor: getCategoryPalette(normalizePlaceCategory(row.category, row.slug), row).jamColor,
     accentColor: getCategoryPalette(normalizePlaceCategory(row.category, row.slug), row).accentColor,
+    imageUrl: row.image_url ?? null,
     latitude: row.latitude,
     longitude: row.longitude,
     summary: row.summary,
@@ -638,6 +653,29 @@ function mapPlace(row) {
     stampReward: row.stamp_reward,
     heroLabel: getCategoryPalette(normalizePlaceCategory(row.category, row.slug), row).heroLabel,
   };
+}
+
+async function loadStaticBaseRows(env) {
+  const now = Date.now();
+  if (staticBaseCache.value && staticBaseCache.expiresAt > now) {
+    return staticBaseCache.value;
+  }
+
+  return rememberPending(staticBaseCache, async () => {
+    const [placeRows, courseRows, coursePlaceRows] = await Promise.all([
+      supabaseRequest(env, "map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&is_active=eq.true&order=position_id.asc"),
+      supabaseRequest(env, "course?select=course_id,title,mood,duration,note,color,display_order&order=display_order.asc"),
+      supabaseRequest(env, "course_place?select=course_id,position_id,stop_order&order=stop_order.asc"),
+    ]);
+    const value = { placeRows, courseRows, coursePlaceRows };
+    staticBaseCache = {
+      ...staticBaseCache,
+      value,
+      expiresAt: Date.now() + STATIC_BASE_CACHE_TTL_MS,
+      pending: null,
+    };
+    return value;
+  });
 }
 
 function countComments(comments) {
@@ -813,10 +851,8 @@ function mapCommunityRoutes(routeRows, routePlaceRows, usersById, placesByPositi
   });
 }
 async function loadBaseData(env, sessionUserId = null) {
-  const [placeRows, courseRows, coursePlaceRows, feedRows] = await Promise.all([
-    supabaseRequest(env, "map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&is_active=eq.true&order=position_id.asc"),
-    supabaseRequest(env, "course?select=course_id,title,mood,duration,note,color,display_order&order=display_order.asc"),
-    supabaseRequest(env, "course_place?select=course_id,position_id,stop_order&order=stop_order.asc"),
+  const [{ placeRows, courseRows, coursePlaceRows }, feedRows] = await Promise.all([
+    loadStaticBaseRows(env),
     supabaseRequest(env, "feed?select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at&order=created_at.desc"),
   ]);
 
@@ -895,22 +931,112 @@ async function loadCommunityRoutes(env, options = {}) {
       : Promise.resolve([]),
   ]);
 
-  const positionIdsFilter = buildInFilter(routePlaceRows.map((row) => row.position_id));
   const userIdsFilter = buildInFilter(routeRows.map((row) => row.user_id));
-  const [placeRows, userRows] = await Promise.all([
-    positionIdsFilter
-      ? supabaseRequest(env, `map?select=position_id,slug,name&is_active=eq.true&position_id=${positionIdsFilter}`)
-      : Promise.resolve([]),
+  const [{ placeRows }, userRows] = await Promise.all([
+    loadStaticBaseRows(env),
     userIdsFilter
       ? supabaseRequest(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`)
       : Promise.resolve([]),
   ]);
 
-  const placesByPositionId = new Map(placeRows.map((row) => [String(row.position_id), { id: row.slug, name: row.name }]));
+  const neededPositionIds = new Set(routePlaceRows.map((row) => String(row.position_id)));
+  const placesByPositionId = new Map(
+    placeRows
+      .filter((row) => neededPositionIds.has(String(row.position_id)))
+      .map((row) => [String(row.position_id), { id: row.slug, name: row.name }]),
+  );
   const usersById = new Map(userRows.map((row) => [row.user_id, row]));
   const likedRouteIds = new Set(userRouteLikeRows.map((row) => String(row.route_id)));
   return mapCommunityRoutes(routeRows, routePlaceRows, usersById, placesByPositionId, likedRouteIds);
 }
+async function loadMapData(env, sessionUserId = null) {
+  const [{ placeRows }, userSessionRows = [], ownerRouteRows = [], userStampRows = []] = await Promise.all([
+    loadStaticBaseRows(env),
+    sessionUserId
+      ? supabaseRequest(env, `travel_session?select=travel_session_id,user_id,started_at,ended_at,last_stamp_at,stamp_count,created_at&user_id=eq.${encodeFilterValue(sessionUserId)}&order=started_at.desc`)
+      : Promise.resolve([]),
+    sessionUserId
+      ? supabaseRequest(env, `user_route?select=route_id,travel_session_id&user_id=eq.${encodeFilterValue(sessionUserId)}&order=created_at.desc`)
+      : Promise.resolve([]),
+    sessionUserId
+      ? supabaseRequest(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&user_id=eq.${encodeFilterValue(sessionUserId)}&order=created_at.desc`)
+      : Promise.resolve([]),
+  ]);
+
+  const places = placeRows.map(mapPlace);
+  const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
+  const collectedPlaceIds = [...new Set(userStampRows.map((row) => placesByPositionId.get(String(row.position_id))?.id).filter(Boolean))];
+  const stampLogs = buildStampLogs(userStampRows, placesByPositionId);
+  const travelSessions = buildTravelSessions(userSessionRows ?? [], userStampRows, placesByPositionId, ownerRouteRows ?? []);
+
+  return {
+    places,
+    collectedPlaceIds,
+    stampLogs,
+    travelSessions,
+  };
+}
+
+async function loadCuratedCourses(env) {
+  const { placeRows, courseRows, coursePlaceRows } = await loadStaticBaseRows(env);
+  const placesByPositionId = new Map(placeRows.map((row) => [String(row.position_id), mapPlace(row)]));
+  return mapCourses(courseRows, coursePlaceRows, placesByPositionId);
+}
+
+async function loadReviewData(env, sessionUserId = null, filters = {}) {
+  const { placeRows } = await loadStaticBaseRows(env);
+  const places = placeRows.map(mapPlace);
+  const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
+  const placeIdToPositionId = new Map(places.map((place) => [place.id, place.positionId]));
+  const reviewQuery = [
+    'select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at',
+    'order=created_at.desc',
+  ];
+
+  if (filters.placeId) {
+    const positionId = placeIdToPositionId.get(filters.placeId);
+    if (!positionId) {
+      return [];
+    }
+    reviewQuery.push(`position_id=eq.${encodeFilterValue(positionId)}`);
+  }
+
+  if (filters.userId) {
+    reviewQuery.push(`user_id=eq.${encodeFilterValue(filters.userId)}`);
+  }
+
+  const feedRows = await supabaseRequest(env, `feed?${reviewQuery.join('&')}`);
+  const feedIdsFilter = buildInFilter(feedRows.map((row) => row.feed_id));
+  const reviewStampIdsFilter = buildInFilter(feedRows.map((row) => row.stamp_id).filter(Boolean));
+  const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
+    feedIdsFilter
+      ? supabaseRequest(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=${feedIdsFilter}&order=created_at.asc`)
+      : Promise.resolve([]),
+    feedIdsFilter
+      ? supabaseRequest(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`)
+      : Promise.resolve([]),
+    reviewStampIdsFilter
+      ? supabaseRequest(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=${reviewStampIdsFilter}`)
+      : Promise.resolve([]),
+    sessionUserId && feedIdsFilter
+      ? supabaseRequest(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=${feedIdsFilter}`)
+      : Promise.resolve([]),
+  ]);
+
+  const userIdsFilter = buildInFilter([
+    ...feedRows.map((row) => row.user_id),
+    ...commentRows.map((row) => row.user_id),
+  ]);
+  const userRows = userIdsFilter
+    ? await supabaseRequest(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`)
+    : [];
+
+  const usersById = new Map(userRows.map((row) => [row.user_id, row]));
+  const stampRowsById = new Map((reviewStampRows ?? []).map((row) => [String(row.stamp_id), row]));
+  const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
+  return mapReviewRows(feedRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, likedFeedIds);
+}
+
 async function handleHealth(request, env) {
   return jsonResponse(200, {
     status: 'ok',
@@ -1046,10 +1172,30 @@ async function handleNaverCallback(request, env, url) {
   }
 }
 
+async function handleMapBootstrap(request, env) {
+  const sessionUser = await readSessionUser(request, env);
+  const mapData = await loadMapData(env, sessionUser?.id ?? null);
+  return jsonResponse(200, {
+    auth: createAuthResponse(sessionUser, env),
+    places: mapData.places.map(({ positionId, ...place }) => place),
+    stamps: {
+      collectedPlaceIds: mapData.collectedPlaceIds,
+      logs: mapData.stampLogs,
+      travelSessions: mapData.travelSessions,
+    },
+    hasRealData: mapData.places.length > 0,
+  }, env, request);
+}
+
+async function handleCuratedCourses(request, env) {
+  return jsonResponse(200, { courses: await loadCuratedCourses(env) }, env, request);
+}
+
 async function handleBootstrap(request, env) {
   const sessionUser = await readSessionUser(request, env);
   const baseData = await loadBaseData(env, sessionUser?.id ?? null);
   return jsonResponse(200, {
+    auth: createAuthResponse(sessionUser, env),
     places: baseData.places.map(({ positionId, ...place }) => place),
     reviews: baseData.reviews,
     courses: baseData.courses,
@@ -1063,17 +1209,9 @@ async function handleBootstrap(request, env) {
 }
 async function handleReviews(request, env, url) {
   const sessionUser = await readSessionUser(request, env);
-  const baseData = await loadBaseData(env, sessionUser?.id ?? null);
-  const placeId = url.searchParams.get('placeId');
-  const userId = url.searchParams.get('userId');
-  const reviews = baseData.reviews.filter((review) => {
-    if (placeId && review.placeId !== placeId) {
-      return false;
-    }
-    if (userId && review.userId !== userId) {
-      return false;
-    }
-    return true;
+  const reviews = await loadReviewData(env, sessionUser?.id ?? null, {
+    placeId: url.searchParams.get('placeId') ?? undefined,
+    userId: url.searchParams.get('userId') ?? undefined,
   });
   return jsonResponse(200, reviews, env, request);
 }
@@ -1422,37 +1560,53 @@ async function syncFestivalsFromSource(env) {
 }
 
 async function handleFestivals(request, env) {
-  try {
-    if (env.APP_PUBLIC_EVENT_SERVICE_KEY) {
-      await syncFestivalsFromSource(env);
-    }
-  } catch (error) {
-    console.error('festival sync failed', error);
+  const now = Date.now();
+  if (festivalsCache.value && festivalsCache.expiresAt > now) {
+    return jsonResponse(200, festivalsCache.value, env, request);
   }
 
-  const now = Date.now();
-  const upcomingCutoff = now + 30 * 24 * 60 * 60 * 1000;
-  const nowIso = new Date(now).toISOString();
-  const rows = await supabaseRequest(env, `public_event?select=public_event_id,title,venue_name,road_address,starts_at,ends_at,source_page_url,latitude,longitude&district=eq.${encodeFilterValue('대전')}&ends_at=gte.${encodeFilterValue(nowIso)}&order=starts_at.asc&limit=40`);
-  const festivals = (rows || [])
-    .filter((row) => {
-      const startTime = new Date(row.starts_at).getTime();
-      const endTime = new Date(row.ends_at).getTime();
-      return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= upcomingCutoff;
-    })
-    .slice(0, 10)
-    .map((row) => ({
-      id: String(row.public_event_id),
-      title: row.title,
-      venueName: row.venue_name ?? null,
-      startDate: row.starts_at ? String(row.starts_at).slice(0, 10) : '',
-      endDate: row.ends_at ? String(row.ends_at).slice(0, 10) : '',
-      homepageUrl: row.source_page_url ?? null,
-      roadAddress: row.road_address ?? null,
-      latitude: Number(row.latitude),
-      longitude: Number(row.longitude),
-      isOngoing: new Date(row.starts_at).getTime() <= now && new Date(row.ends_at).getTime() >= now,
-    }));
+  const festivals = await rememberPending(festivalsCache, async () => {
+    if (env.APP_PUBLIC_EVENT_SERVICE_KEY && festivalsCache.syncAt + FESTIVALS_CACHE_TTL_MS <= now) {
+      try {
+        await syncFestivalsFromSource(env);
+        festivalsCache.syncAt = Date.now();
+      } catch (error) {
+        console.error('festival sync failed', error);
+      }
+    }
+
+    const upcomingCutoff = now + 30 * 24 * 60 * 60 * 1000;
+    const nowIso = new Date(now).toISOString();
+    const rows = await supabaseRequest(env, `public_event?select=public_event_id,title,venue_name,road_address,starts_at,ends_at,source_page_url,latitude,longitude&district=eq.${encodeFilterValue('대전')}&ends_at=gte.${encodeFilterValue(nowIso)}&order=starts_at.asc&limit=40`);
+    const value = (rows || [])
+      .filter((row) => {
+        const startTime = new Date(row.starts_at).getTime();
+        const endTime = new Date(row.ends_at).getTime();
+        return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= upcomingCutoff;
+      })
+      .slice(0, 10)
+      .map((row) => ({
+        id: String(row.public_event_id),
+        title: row.title,
+        venueName: row.venue_name ?? null,
+        startDate: row.starts_at ? String(row.starts_at).slice(0, 10) : '',
+        endDate: row.ends_at ? String(row.ends_at).slice(0, 10) : '',
+        homepageUrl: row.source_page_url ?? null,
+        roadAddress: row.road_address ?? null,
+        latitude: Number(row.latitude),
+        longitude: Number(row.longitude),
+        isOngoing: new Date(row.starts_at).getTime() <= now && new Date(row.ends_at).getTime() >= now,
+      }));
+
+    festivalsCache = {
+      ...festivalsCache,
+      value,
+      expiresAt: Date.now() + FESTIVALS_CACHE_TTL_MS,
+      pending: null,
+    };
+    return value;
+  });
+
   return jsonResponse(200, festivals, env, request);
 }
 async function handleBannerEvents(request, env) {
@@ -1552,7 +1706,7 @@ async function loadSingleReview(env, reviewId, sessionUserId = null) {
   const [commentRows, likeRows, placeRows, stampRows, userFeedLikeRows = []] = await Promise.all([
     supabaseRequest(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=eq.${encodeFilterValue(reviewId)}&order=created_at.asc`),
     supabaseRequest(env, `feed_like?select=feed_id,user_id&feed_id=eq.${encodeFilterValue(reviewId)}`),
-    supabaseRequest(env, `map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,image_url,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&position_id=eq.${encodeFilterValue(reviewRow.position_id)}&limit=1`),
+    supabaseRequest(env, `map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&position_id=eq.${encodeFilterValue(reviewRow.position_id)}&limit=1`),
     reviewRow.stamp_id
       ? supabaseRequest(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=eq.${encodeFilterValue(reviewRow.stamp_id)}&limit=1`)
       : Promise.resolve([]),
@@ -2110,6 +2264,12 @@ async function routeRequest(request, env) {
   }
   if (request.method === "GET" && url.pathname === "/api/bootstrap") {
     return handleBootstrap(request, env);
+  }
+  if (request.method === "GET" && url.pathname === "/api/map-bootstrap") {
+    return handleMapBootstrap(request, env);
+  }
+  if (request.method === "GET" && url.pathname === "/api/courses/curated") {
+    return handleCuratedCourses(request, env);
   }
   if (request.method === "GET" && url.pathname === "/api/reviews") {
     return handleReviews(request, env, url);
