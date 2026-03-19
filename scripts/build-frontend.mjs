@@ -16,6 +16,7 @@ const APP_DESCRIPTION = "대전을 한 입에 고르는 모바일 여행 앱";
 const MAP_KEY_WARNING = "PUBLIC_NAVER_MAP_CLIENT_ID 값이 비어 있어 지도 영역은 안내 상태로 표시됩니다.";
 
 async function readPublicEnv() {
+  // .env.example 및 .env 파일 읽기 (우선순위: .env > .env.example > process.env)
   const envFiles = [path.join(rootDir, ".env.example"), path.join(rootDir, ".env")];
   const values = {
     ...process.env,
@@ -45,6 +46,8 @@ async function readPublicEnv() {
 
   Object.assign(values, process.env);
 
+  // 네이버 지도 API 키: PUBLIC_NAVER_MAP_CLIENT_ID 우선 확인 → 없으면 NAVER_MAP_CLIENT_ID 확인
+  // placeholder("YOUR_*") 값은 무시하고, 모두 없으면 ""로 설정 (지도 안내 상태 표시)
   const mapKey =
     (values.PUBLIC_NAVER_MAP_CLIENT_ID &&
     values.PUBLIC_NAVER_MAP_CLIENT_ID !== "YOUR_NAVER_MAP_CLIENT_ID"
@@ -53,6 +56,7 @@ async function readPublicEnv() {
     values.NAVER_MAP_CLIENT_ID ||
     "";
 
+  // API base URL: PUBLIC_APP_BASE_URL (프론트) 또는 APP_BASE_URL (백엔드) 설정값 사용
   return {
     apiBaseUrl: values.PUBLIC_APP_BASE_URL || values.APP_BASE_URL || "http://localhost:8000",
     naverMapClientId: mapKey,
@@ -130,6 +134,7 @@ async function writeStaticFiles(publicConfig) {
   await writeFile(path.join(siteDir, "index.html"), createIndexHtml(), "utf8");
   await writeFile(path.join(siteDir, "manifest.webmanifest"), createManifest(), "utf8");
   await writeFile(path.join(iconsDir, "jamissue-icon.svg"), createIconSvg(), "utf8");
+  // window.__JAMISSUE_CONFIG__로 프론트 런타임 설정을 주입 (src/config.ts의 getClientConfig()에서 읽음)
   await writeFile(
     path.join(siteDir, "app-config.js"),
     `window.__JAMISSUE_CONFIG__ = ${JSON.stringify(publicConfig, null, 2)};\n`,

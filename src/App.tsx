@@ -50,6 +50,7 @@ const emptyProviders: AuthProvider[] = [
   { key: 'kakao', label: '카카오', isEnabled: false, loginUrl: null },
 ];
 
+// 스탐프를 획득하려면 장소로부터 최소 120m 범위 내에 있어야 함 (Haversine 공식으로 GPS 거리 계산)
 const STAMP_UNLOCK_RADIUS_METERS = 120;
 
 function filterPlacesByCategory(places: Place[], category: Category) {
@@ -69,6 +70,7 @@ function formatErrorMessage(error: unknown) {
 }
 
 export default function App() {
+  // URL 동기화: 탭(지도/피드/코스/마이), 드로어 상태(닫힘/부분/전체), 선택 요소 ID
   const {
     activeTab,
     drawerState,
@@ -146,10 +148,12 @@ export default function App() {
   const canCreateReview = Boolean(sessionUser && selectedPlace && todayStamp);
   const placeNameById = useMemo(() => Object.fromEntries(places.map((place) => [place.id, place.name])), [places]);
 
+  // 앱 부팅: 초기 데이터(장소, 리뷰), 인증 정보, 커뮤니티 코스 로드
   useEffect(() => {
     void loadApp(true);
   }, []);
 
+  // 지도 탭 진입 시 현재 위치 자동 갱신 (위치 권한 필요)
   useEffect(() => {
     if (activeTab !== 'map' || mapLocationStatus !== 'idle') {
       return;
@@ -217,6 +221,7 @@ export default function App() {
 
   async function loadApp(withLoading: boolean) {
     const authParams = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search);
+    // OAuth 콜백 후 redirect 파라미터 (naver-success, naver-error 등)
     const authState = authParams?.get('auth');
 
     if (withLoading) {
@@ -251,6 +256,7 @@ export default function App() {
       }
 
       setBootstrapStatus('ready');
+      // OAuth 성공 후 첫 로그인 시: 프로필(닉네임) 입력 강제 유도로 완성된 계정 보장
       if (authState === 'naver-success' && auth.user?.profileCompletedAt === null) {
         goToTab('my');
         setNotice('닉네임을 먼저 저장하면 바로 피드와 코스로 이어갈 수 있어요.');
@@ -259,6 +265,7 @@ export default function App() {
       setBootstrapError(formatErrorMessage(error));
       setBootstrapStatus('error');
     } finally {
+      // OAuth 후 URL 정리: 새로고침 시 "naver-success" 공지 반복 방지
       clearAuthQueryParams();
     }
   }
@@ -287,6 +294,7 @@ export default function App() {
   }
 
   async function handleClaimStamp(place: Place) {
+    // 미로그인 유저: 로그인 탭으로 이동
     if (!sessionUser) {
       goToTab('my');
       setNotice('로그인해야 현장 스탬프를 찍을 수 있어요.');
@@ -295,6 +303,7 @@ export default function App() {
 
     setStampActionStatus('loading');
     try {
+      // 현재 위치 확인 → 거리 검증 → 스탬프 API 호출 순서로 진행
       const nextPosition = await getCurrentDevicePosition();
       setCurrentPosition({ latitude: nextPosition.latitude, longitude: nextPosition.longitude });
       const nextStampState = await claimStamp({
@@ -321,6 +330,7 @@ export default function App() {
     }
   }
 
+  // 장소 리뷰 작성 (이미지 선택적)
   async function handleCreateReview(payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) {
     if (!sessionUser || !selectedPlace) {
       goToTab('my');
@@ -330,6 +340,7 @@ export default function App() {
     setReviewSubmitting(true);
     setReviewError(null);
     try {
+      // 이미지가 있으면 uploadReviewImage로 서버 저장 후 URL 획득, 없으면 null로 진행
       let imageUrl: string | null = null;
       if (payload.file) {
         const uploaded = await uploadReviewImage(payload.file);
@@ -345,6 +356,7 @@ export default function App() {
       });
 
       setNotice('피드를 남겼어요. 같은 여행 흐름으로 코스까지 이어갈 수 있어요.');
+      // 리뷰 생성 후 전체 데이터 새로고침 (좋아요 카운트, 댓글 등 업데이트 반영)
       await loadApp(false);
       commitRouteState(
         {
@@ -362,6 +374,7 @@ export default function App() {
     }
   }
 
+  // 리뷰 댓글/대댓글 작성
   async function handleCreateComment(reviewId: string, body: string, parentId?: string) {
     if (!sessionUser) {
       goToTab('my');
@@ -371,7 +384,9 @@ export default function App() {
 
     setCommentSubmittingReviewId(reviewId);
     try {
+      // parentId가 있으면 대댓글, 없으면 댓글
       await createComment(reviewId, { body, parentId: parentId ?? null });
+      // 댓글 작성 후 전체 새로고침
       await loadApp(false);
     } catch (error) {
       setNotice(formatErrorMessage(error));
@@ -380,6 +395,7 @@ export default function App() {
     }
   }
 
+  // 리뷰 좋아요 토글 (누르면 토글, loadApp으로 전체 갱신)
   async function handleToggleReviewLike(reviewId: string) {
     if (!sessionUser) {
       goToTab('my');
@@ -390,6 +406,7 @@ export default function App() {
     setReviewLikeUpdatingId(reviewId);
     try {
       await toggleReviewLike(reviewId);
+      // 좋아요 상태 변경 후 전체 데이터 새로고침 (좋아요 카운트 반영)
       await loadApp(false);
     } catch (error) {
       setNotice(formatErrorMessage(error));
@@ -398,6 +415,7 @@ export default function App() {
     }
   }
 
+  // 코스(커뮤니티 라우트) 좋아요 토글
   async function handleToggleRouteLike(routeId: string) {
     if (!sessionUser) {
       goToTab('my');
@@ -408,6 +426,7 @@ export default function App() {
     setRouteLikeUpdatingId(routeId);
     try {
       await toggleCommunityRouteLike(routeId);
+      // 코스 좋아요 후: 코스 목록 새로고침 + 개인 통계 업데이트
       const nextRoutes = await getCommunityRoutes(communityRouteSort);
       setCommunityRoutes(nextRoutes);
       setMyPage(await getMySummary());
@@ -418,6 +437,7 @@ export default function App() {
     }
   }
 
+  // 여행 세션을 공개 코스로 발행 (travelSession 기반)
   async function handlePublishRoute(payload: { travelSessionId: string; title: string; description: string; mood: string }) {
     if (!sessionUser) {
       goToTab('my');
@@ -428,6 +448,7 @@ export default function App() {
     setRouteSubmitting(true);
     setRouteError(null);
     try {
+      // travelSessionId: 24시간 이내 방문들의 자동 그룹핑 (App.tsx 기본값 120m)
       await createUserRoute({
         travelSessionId: payload.travelSessionId,
         title: payload.title,
@@ -445,6 +466,7 @@ export default function App() {
     }
   }
 
+  // 프로필 업데이트 (닉네임): updateProfile에서 JWT 재발급 후 쿠키에 저장
   async function handleUpdateProfile(nextNickname: string) {
     if (!nextNickname || nextNickname.length < 2) {
       setProfileError('닉네임은 두 글자 이상으로 입력해 주세요.');
@@ -454,7 +476,9 @@ export default function App() {
     setProfileSaving(true);
     setProfileError(null);
     try {
+      // updateProfile: 백엔드는 새 JWT 토큰 발급 → set-cookie로 응답
       const auth = await updateProfile({ nickname: nextNickname });
+      // 업데이트된 사용자 정보로 즉시 반영 (새 토큰은 이미 쿠키에 저장됨)
       setSessionUser(auth.user);
       if (auth.user) {
         setMyPage(await getMySummary());
@@ -467,13 +491,17 @@ export default function App() {
     }
   }
 
+  // 로그아웃: 백엔드가 세션 쿠키 삭제 응답 → 클라이언트는 sessionUser null + 전체 새로고침
   async function handleLogout() {
     setIsLoggingOut(true);
     try {
+      // logout API: 백엔드는 set-cookie를 빈 값으로 응답 (세션 쿠키 삭제)
       await logout();
+      // 클라이언트 상태 초기화
       setSessionUser(null);
       setMyPage(null);
       setNotice('로그아웃했어요.');
+      // 전체 데이터 새로고침 (로그인 상태 반영)
       await loadApp(false);
     } catch (error) {
       setNotice(formatErrorMessage(error));

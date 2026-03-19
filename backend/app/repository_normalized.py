@@ -633,6 +633,19 @@ def get_review_comments(db: Session, review_id: str) -> list[CommentOut]:
 
 
 def create_review(db: Session, payload: ReviewCreate, user_id: str, nickname: str) -> ReviewOut:
+    """사용자가 스탬프 수집 후 여행 후기를 작성합니다.
+    
+    검증 순서:
+    1) 후기 본문이 공백이면 거부
+    2) 선택한 장소(place_id)가 활성 상태인지 확인
+    3) payload.stamp_id의 UserStamp 레코드 존재 확인 (자신의 스탐프인지 검증)
+    4) 스탐프와 선택 장소의 position_id 일치 여부 (오류 선택 장소와 실제 스탐프 위치 불일치 방지)
+    5) 같은 스탐프로 이미 후기를 남겼는지 확인 (1 스탐프 = 1 후기만 가능)
+    
+    성공 시: Feed 레코드 생성, mood + visit_ordinal 기반 badge 설정
+    
+    호출처: main.py POST /reviews
+    """
     body = payload.body.strip()
     if not body:
         raise ValueError("후기 본문을 적어 주세요.")
@@ -847,6 +860,21 @@ def toggle_stamp(
     longitude: float,
     radius_meters: int,
 ) -> StampState:
+    """사용자가 현재 위치에서 스탬프를 획득합니다.
+    
+    **비즈니스 규칙:**
+    1) 오늘 같은 장소에서 이미 획득한 스탐프 있으면 중복 획득 방지 (즉시 기존 상태 반환)
+    2) 서버 측에서 거리 재검증: ensure_stamp_can_be_collected (120m, 클라이언트 신뢰 불가)
+    3) 같은 장소 방문 순번 계산 (visit_ordinal = 이전 방문 횟수 + 1)
+    4) 마지막 스탐프 생성 시간 조회
+       - 24시간 내 스탐프 있으면 travel session에 추가 (연속 여행 추적)
+       - 없으면 새 travel session 생성 (일일 여행 구분)
+    5) UserStamp 레코드 생성
+    
+    반환: 최신 스탐프 상태 (사용자의 모든 스탐프 + travel sessions)
+    
+    호출처: main.py POST /stamps (헤더 Authorization + location)/(이전 main.py write_stamp_toggle)
+    """
     get_or_create_user(db, user_id, user_id)
     place = db.scalars(select(MapPlace).where(MapPlace.slug == place_id, MapPlace.is_active.is_(True))).first()
     if not place:

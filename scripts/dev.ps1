@@ -7,12 +7,12 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# 濡쒖뺄 媛쒕컻 寃쏀뿕???⑥씪 紐낅졊?쇰줈 臾띕뒗??
-# start  : ?꾩슂?섎㈃ ?꾨줎?몃? 鍮뚮뱶?섍퀬 MySQL, FastAPI, nginx瑜??쒖꽌?濡??щ┛??
-# stop   : 諛깃렇?쇱슫???꾨줈?몄뒪? ?ы듃瑜??뺣━?쒕떎.
-# status : ?꾩옱 ?ы듃, PID, 濡쒓렇 ?꾩튂瑜?蹂댁뿬以??
-# logs   : 二쇱슂 濡쒓렇瑜????붾㈃?먯꽌 紐⑥븘 蹂댁뿬以??
-# build  : ?꾨줎???뺤쟻 踰덈뱾留??ㅼ떆 留뚮뱺??
+# 로컬 개발 환경 제어 스크립트: MySQL(3306) + FastAPI(8001) + nginx(8000)를 동시 실행
+# start  : 필요시 프론트 빌드 후, MySQL, FastAPI, nginx를 백그라운드로 실행
+# stop   : 백그라운드 프로세스와 서비스를 종료
+# status : 현재 서비스, PID, 로그 파일 정보를 보여줌
+# logs   : 주요 로그를 마지막 N줄에서 모아 보여줌 (기본 40줄)
+# build  : 프론트엔드 번들만 재빌드
 
 $root = Split-Path -Parent $PSScriptRoot
 $backendDir = Join-Path $root "backend"
@@ -65,7 +65,7 @@ function Wait-TcpPort {
         [int]$TimeoutSeconds = 20
     )
 
-    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    # 포트 바인딩 확인: 서비스가 정상 시작되었는지 검증 (MySQL 3306, FastAPI 8001, nginx 8000)    $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
     while ((Get-Date) -lt $deadline) {
         if (Test-TcpPort -TargetHost $TargetHost -Port $Port) {
             return
@@ -86,6 +86,7 @@ function Start-HiddenProcess {
         [Parameter(Mandatory = $true)][string]$StdErr
     )
 
+    # 백그라운드 프로세스로 시작 (콘솔 창 보이지 않음, stdout/stderr를 로그 파일에 저장)
     foreach ($path in @($StdOut, $StdErr)) {
         if (Test-Path $path) {
             Remove-Item $path -Force

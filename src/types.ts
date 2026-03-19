@@ -64,36 +64,56 @@ export interface Comment {
 }
 
 export interface Review {
-  id: string;
+  // 기본 정보
+  id: string; // Feed.feed_id
   userId: string;
-  placeId: string;
+  placeId: string; // MapPlace.slug
   placeName: string;
-  author: string;
-  body: string;
-  mood: ReviewMood;
-  badge: string;
-  visitedAt: string;
-  imageUrl: string | null;
+  author: string; // User.nickname
+  body: string; // 후기 본문
+  
+  // 분위기 & 배지
+  mood: ReviewMood; // 방문한 상황 ('혼자서', '친구랑', '데이트', '야경 맛집')
+  badge: string; // 분위기 또는 방문 횟수 기반 배지 ("첫 방문", "친구 추천" 등)
+  
+  // 시간 & 이미지
+  visitedAt: string; // 방문 시간 (스탐프 생성 시간, "1시간 전" 형식)
+  imageUrl: string | null; // Supabase Storage URL
+  
+  // 상호작용
   commentCount: number;
   likeCount: number;
-  likedByMe: boolean;
-  stampId: string | null;
-  visitNumber: number;
-  visitLabel: string;
-  travelSessionId: string | null;
-  comments: Comment[];
+  likedByMe: boolean; // 현재 로그인 사용자의 좋아요 여부
+  
+  // 스탐프 & 여행 세션 정보
+  stampId: string | null; // 연결된 UserStamp.stamp_id
+  visitNumber: number; // 같은 장소 누적 방문 횟수 (1번째, 2번째 등)
+  visitLabel: string; // "3번째 방문" 같은 표시
+  travelSessionId: string | null; // 24시간 여행 세션 ID (경로 발행 기준)
+  
+  // 댓글 스레드
+  comments: Comment[]; // 트리 구조 (부모 댓글 + 답글)
 }
 
 export interface StampLog {
-  id: string;
-  placeId: string;
+  // 기본 정보
+  id: string; // UserStamp.stamp_id
+  placeId: string; // MapPlace.slug
   placeName: string;
-  stampedAt: string;
-  stampedDate: string;
-  visitNumber: number;
-  visitLabel: string;
-  travelSessionId: string | null;
-  isToday: boolean;
+  
+  // 시간 정보
+  stampedAt: string; // 스탐프 획득 시간 ("1시간 전" 형식)
+  stampedDate: string; // 날짜 (ISO format: "2024-01-15")
+  
+  // 방문 기록
+  visitNumber: number; // 누적 방문 횟수 (같은 장소 1번째/2번째/3번째)
+  visitLabel: string; // "3번째 방문" 표시
+  
+  // 여행 세션
+  travelSessionId: string | null; // 24시간 window 여행 세션 (경로 발행 기준)
+  
+  // UI 플래그
+  isToday: boolean; // stampedDate === 오늘인지 (오늘 획득한 스탐프 표시)
 }
 
 export interface TravelSession {

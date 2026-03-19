@@ -149,16 +149,20 @@ def build_auth_providers(app_settings: Settings) -> list[AuthProviderOut]:
 
 
 def get_session_user(request: Request, app_settings: Settings = Depends(get_settings)) -> SessionUser | None:
+    # Authorization 헤더와 쿠키 두 곳 모두 확인 (API는 헤더, 웹 프론트는 쿠키 우선)
     auth_header = request.headers.get("Authorization", "")
     header_token = auth_header.removeprefix("Bearer ").strip() if auth_header.startswith("Bearer ") else None
     cookie_token = request.cookies.get(ACCESS_TOKEN_COOKIE)
+    # JWT 복호화: 토큰 만료·서명 검증 실패 시 None 반환
     session_user = read_access_token(app_settings, header_token or cookie_token)
     if not session_user:
         return None
+    # 관리자 여부를 현재 시점에 다시 조회 (토큰은 발급 당시 값만 저장)
     return session_user.model_copy(update={"is_admin": app_settings.is_admin(session_user.id)})
 
 
 def require_session_user(session_user: SessionUser | None = Depends(get_session_user)) -> SessionUser:
+    # 의존성으로 주입되는 get_session_user. None이면 401 반환 (FastAPI 자동 생성)
     if not session_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="로그인이 필요해요.")
     return session_user
@@ -168,6 +172,7 @@ def require_admin_user(
     session_user: SessionUser = Depends(require_session_user),
     app_settings: Settings = Depends(get_settings),
 ) -> SessionUser:
+    # require_session_user 위에 체인: 로그인 필수 + 관리자 권한 필수
     if not app_settings.is_admin(session_user.id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="관리자 권한이 필요해요.")
     return session_user.model_copy(update={"is_admin": True})
@@ -310,16 +315,19 @@ def finish_naver_login(
     app_settings: Settings = Depends(get_settings),
 ) -> RedirectResponse:
     redirect_target = get_redirect_target(request, app_settings)
+    # 세션에서 3개 값 추출: naver_oauth_state(CSRF), oauth_link_user_id(기존 계정 연결용), oauth_link_provider
     expected_state = request.session.pop("naver_oauth_state", None)
     link_user_id = request.session.pop("oauth_link_user_id", None)
     link_provider = request.session.pop("oauth_link_provider", None)
 
+    # 네이버가 에러 반환한 경우
     if error:
         return RedirectResponse(
             build_redirect_url(redirect_target, auth="naver-error", reason=error_description or error),
             status_code=status.HTTP_302_FOUND,
         )
 
+    # 네이버가 에러 반환하지 않았지만, state 값 불일치 = CSRF 공격 감지
     if not code or not state or state != expected_state:
         return RedirectResponse(
             build_redirect_url(redirect_target, auth="naver-error", reason="state-mismatch"),
@@ -327,12 +335,16 @@ def finish_naver_login(
         )
 
     try:
+        # 네이버 인증 코드를 토큰으로 교환 → 토큰으로 프로필 조회
         token_payload = exchange_code_for_token(app_settings, code, state)
         profile = fetch_naver_profile(token_payload["access_token"])
+        # 계정 연결인지 신규 로그인인지 판단
         if link_user_id and link_provider == "naver":
+            # 기존 계정에 네이버 연동
             user = link_naver_identity(db, link_user_id, profile)
             success_code = "naver-linked"
         else:
+            # 신규 가입 또는 기존 네이버 로그인
             user = upsert_naver_user(db, profile)
             success_code = "naver-success"
     except (HTTPException, ValueError) as oauth_error:
@@ -348,12 +360,15 @@ def finish_naver_login(
         profile.profile_image,
         provider="naver",
     )
+    # JWT 토큰 발급
     access_token = issue_access_token(app_settings, session_user)
 
     response = RedirectResponse(
         build_redirect_url(redirect_target, auth=success_code),
         status_code=status.HTTP_302_FOUND,
     )
+    # 백엔드가 JWT 토큰을 프론트 쿠키에 저장함
+    # httponly=True로 JavaScript 접근 불가 (XSS 방지), samesite='lax'로 CSRF 방지
     response.set_cookie(
         key=ACCESS_TOKEN_COOKIE,
         value=access_token,
@@ -371,6 +386,7 @@ def logout(
     response: Response,
     app_settings: Settings = Depends(get_settings),
 ) -> AuthSessionResponse:
+    # 세션 쿠키 삭제 (쿠키 값을 빈 값으로 덮어씀)
     response.delete_cookie(ACCESS_TOKEN_COOKIE, path="/")
     return build_auth_response(None, app_settings)
 
@@ -642,6 +658,7 @@ def write_stamp_toggle(
     app_settings: Settings = Depends(get_settings),
 ) -> StampState:
     try:
+        # 클라이언트가 전달한 위치 좌표로 거리 재검증: STAMP_UNLOCK_RADIUS_METERS(120m) 확인
         return toggle_stamp(
             db,
             session_user.id,
@@ -651,8 +668,10 @@ def write_stamp_toggle(
             app_settings.stamp_unlock_radius_meters,
         )
     except PermissionError as error:
+        # 거리 제한 초과 → 403 Forbidden
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(error)) from error
     except ValueError as error:
+        # 장소 또는 사용자 없음 → 404 Not Found
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
 
 

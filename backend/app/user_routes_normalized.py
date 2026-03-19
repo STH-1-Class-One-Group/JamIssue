@@ -85,6 +85,22 @@ def list_user_routes_for_owner(db: Session, user_id: str) -> list[UserRouteOut]:
 
 
 def create_user_route(db: Session, payload: UserRouteCreate, user_id: str, nickname: str) -> UserRouteOut:
+    """사용자가 24시간 travel session을 기반으로 여행 코스(경로)를 발행합니다.
+    
+    비즈니스 규칙:
+    1) 제목 2글자 이상, 설명 8글자 이상 필수
+    2) travel_session_id 문자열 → 정수 파싱
+    3) Travel session이 존재하고 현재 사용자의 것인지 확인
+    4) 같은 travel session으로 이미 발행한 코스가 있으면 거부 (중복 발행 방지)
+    5) Travel session의 모든 스탐프를 시간 순서대로 조회
+    6) 중복 제거 + 비활성 장소 필터링 (실제 실행한 스탐프 장소만 포함)
+    7) 최소 2개 이상의 장소 필수 (단일 장소 코스 불가)
+    8) UserRoute 생성 및 각 장소마다 UserRoutePlace 레코드 생성 (순서 기록)
+    
+    반환: 새로 발행된 코스 정보 (title, mood, places 등)
+    
+    호출처: main.py POST /routes/publish (여행 코스 발행)
+    """
     title = payload.title.strip()
     description = payload.description.strip()
     if len(title) < 2:

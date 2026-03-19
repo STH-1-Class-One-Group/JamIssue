@@ -6,9 +6,13 @@ export interface CurrentDeviceLocation {
   accuracyMeters: number;
 }
 
+// 대전 시청 좌표 (대전 범역 외 위치 거부용)
 const DAEJEON_CENTER = { latitude: 36.3504, longitude: 127.3845 };
+// 대전 범역 반경 (45km, 대전시 실제 운영 범위 기준)
 const DAEJEON_VALID_RADIUS_METERS = 45_000;
+// GPS 정확도 요구 (5km 이상 오차면 "위치 정확도 부족" 재요청)
 const MAX_ACCEPTABLE_LOCATION_ACCURACY_METERS = 5_000;
+// GPS 정확도 우수 기준 (150m 이내면 바로 반환, 더 나은 값 대기 X)
 const EARLY_SUCCESS_LOCATION_ACCURACY_METERS = 150;
 
 function validateCurrentDevicePosition(position: GeolocationPosition): CurrentDeviceLocation {
@@ -18,6 +22,7 @@ function validateCurrentDevicePosition(position: GeolocationPosition): CurrentDe
     accuracyMeters: Math.round(position.coords.accuracy ?? 0),
   };
 
+  // 대전시 밖 위치 감지 시 및시 거부
   const distanceFromDaejeon = calculateDistanceMeters(
     DAEJEON_CENTER.latitude,
     DAEJEON_CENTER.longitude,
@@ -29,6 +34,7 @@ function validateCurrentDevicePosition(position: GeolocationPosition): CurrentDe
     throw new Error('현재 위치가 대전 반경 밖으로 잡혔어요. 위치 서비스나 Wi-Fi를 켠 뒤 다시 확인해 주세요.');
   }
 
+  // GPS 정확도 부족 시 재요청 (Wi-Fi 기반 위치정보는 오차 큼)
   if (nextPosition.accuracyMeters > MAX_ACCEPTABLE_LOCATION_ACCURACY_METERS) {
     throw new Error(`현재 위치 정확도가 약 ${formatDistanceMeters(nextPosition.accuracyMeters)}로 너무 넓어요. 위치를 다시 확인해 주세요.`);
   }
@@ -43,6 +49,7 @@ export function getCurrentDevicePosition() {
       return;
     }
 
+    // watchPosition으로 위치 변화 감지: 더 나은 정확도가 나올 때까지 대기
     let bestPosition: GeolocationPosition | null = null;
     let finished = false;
     let timeoutId = 0;

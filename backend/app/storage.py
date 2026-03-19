@@ -53,10 +53,26 @@ class SupabaseStorageAdapter:
         return token
 
     def build_object_path(self, owner_id: str, file_name: str) -> str:
+        """Supabase Storage 내부 경로를 구성합니다.
+        
+        경로 규칙: reviews/{안전한_user_id}/{file_name}
+        - user_id 예: "naver:0123456789" → "naver_0123456789" (콜론을 언더스코어로 변환)
+        - 목적: 사용자별 후기 이미지 폴더 분리, 중복 제거 방지
+        """
         safe_owner = owner_id.replace(":", "_")
         return f"reviews/{safe_owner}/{file_name}"
 
     def build_public_url(self, object_path: str) -> str:
+        """Supabase Storage 파일의 공개 URL을 구성합니다.
+        
+        2가지 방식:
+        1) APP_SUPABASE_STORAGE_PUBLIC_BASE_URL이 설정되면, 그 기반 URL 사용
+           → CDN URL이나 커스텀 도메인 (예: "https://cdn.example.com/supabase")
+        2) 없으면 Supabase 표준 공개 URL
+           → "https://{project-id}.supabase.co/storage/v1/object/public/{bucket}/{path}"
+        
+        호출처: save_review_image 마지막에 StoredFile.url로 반환
+        """
         if self.settings.supabase_storage_public_base_url:
             base_url = self.settings.supabase_storage_public_base_url.rstrip("/")
             return f"{base_url}/{quote(object_path)}"
@@ -67,6 +83,20 @@ class SupabaseStorageAdapter:
         )
 
     def save_review_image(self, *, owner_id: str, file_name: str, content_type: str, raw_bytes: bytes) -> StoredFile:
+        """사용자가 리뷰 작성 시 첨부한 이미지를 Supabase Storage에 업로드합니다.
+        
+        API 흐름:
+        1) build_object_path로 저장 경로 구성 (reviews/{user_id}/{file_name})
+        2) Supabase Storage v1 object 엔드포인트로 POST 요청
+           - Authorization: Bearer {service_role_key 또는 anon_key}
+           - x-upsert: false (기존 파일 덮어쓰기 차단)
+           - Content-Type: image/jpeg, image/png 등
+        3) 성공 시: build_public_url로 공개 URL 생성
+        4) 실패 시: HTTPError 또는 URLError 예외 발생
+        
+        반환: StoredFile (url, file_name, content_type)
+        호출처: main.py POST /reviews (image_url 필드 설정)
+        """
         object_path = self.build_object_path(owner_id, file_name)
         upload_url = (
             f"{self.settings.supabase_url.rstrip('/')}/storage/v1/object/"

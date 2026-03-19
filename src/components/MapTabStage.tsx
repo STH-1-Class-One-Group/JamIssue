@@ -14,46 +14,59 @@ import type {
 } from '../types';
 
 interface MapTabStageProps {
-  activeCategory: Category;
+  // UI 상태
+  activeCategory: Category; // 현재 선택된 카테고리 필터 (모든음식/카페/전시 등)
   setActiveCategory: (category: Category) => void;
-  notice: string | null;
-  bootstrapStatus: ApiStatus;
+  notice: string | null; // 임시 공지사항 (배너에 표시)
+  drawerState: DrawerState; // 하단 시트 상태 ('closed' | 'partial' | 'full')
+  
+  // 부트스트랩 데이터: 초기 로딩 상태
+  bootstrapStatus: ApiStatus; // 'idle' | 'loading' | 'success' | 'error'
   bootstrapError: string | null;
-  filteredPlaces: Place[];
-  festivals: FestivalItem[];
+  filteredPlaces: Place[]; // activeCategory 기준 필터된 장소 목록
+  festivals: FestivalItem[]; // 축제 목록
+  
+  // 위치 및 지도 상태
+  currentPosition: { latitude: number; longitude: number } | null; // GPS 좌표 (watchPosition)
+  mapLocationStatus: ApiStatus; // 위치 조회 상태 (정확도 표시용)
+  mapLocationMessage: string | null; // 위치 조회 메시지
+  mapLocationFocusKey: number; // 위치 변경 사이클 (지도 포커싱 트리거)
+  
+  // 선택된 장소/축제 및 상세 정보
   selectedPlace: Place | null;
   selectedFestival: FestivalItem | null;
-  currentPosition: { latitude: number; longitude: number } | null;
-  mapLocationStatus: ApiStatus;
-  mapLocationMessage: string | null;
-  mapLocationFocusKey: number;
-  drawerState: DrawerState;
+  selectedPlaceReviews: BootstrapResponse['reviews']; // 선택 장소의 모든 후기 목록
+  visitCount: number; // 현재 사용자의 선택 장소 방문 횟수
+  latestStamp: BootstrapResponse['stamps']['logs'][number] | null; // 가장 최근 스탐프
+  todayStamp: BootstrapResponse['stamps']['logs'][number] | null; // 오늘 같은 장소 스탐프 (중복 방지용)
+  
+  // 스탐프 및 리뷰 작업 상태
+  stampActionStatus: ApiStatus; // 스탐프 획득/삭제 요청 상태
+  stampActionMessage: string; // 거리 초과 등 피드백 메시지
+  reviewProofMessage: string; // "스탐프를 먼저 획득해주세요" 등
+  reviewError: string | null; // 후기 작성 오류
+  reviewSubmitting: boolean; // 후기 제출 중
+  reviewLikeUpdatingId: string | null; // 좋아요 요청 중인 리뷰 ID
+  commentSubmittingReviewId: string | null; // 댓글 요청 중인 리뷰 ID
+  canCreateReview: boolean; // 로그인 여부 + 스탐프 확보 여부
+  
+  // 사용자 상태
   sessionUser: SessionUser | null;
-  selectedPlaceReviews: BootstrapResponse['reviews'];
-  visitCount: number;
-  latestStamp: BootstrapResponse['stamps']['logs'][number] | null;
-  todayStamp: BootstrapResponse['stamps']['logs'][number] | null;
-  stampActionStatus: ApiStatus;
-  stampActionMessage: string;
-  reviewProofMessage: string;
-  reviewError: string | null;
-  reviewSubmitting: boolean;
-  reviewLikeUpdatingId: string | null;
-  commentSubmittingReviewId: string | null;
-  canCreateReview: boolean;
-  onOpenPlace: (placeId: string) => void;
+  
+  // 콜백 함수들
+  onOpenPlace: (placeId: string) => void; // 지도 마커 클릭→ URL 라우팅
   onOpenFestival: (festivalId: string) => void;
-  onCloseDrawer: () => void;
-  onExpandPlaceDrawer: () => void;
-  onCollapsePlaceDrawer: () => void;
+  onCloseDrawer: () => void; // 하단 시트 닫기
+  onExpandPlaceDrawer: () => void; // 시트 전개 (높이 확대)
+  onCollapsePlaceDrawer: () => void; // 시트 축소 (높이 축소)
   onExpandFestivalDrawer: () => void;
   onCollapseFestivalDrawer: () => void;
-  onRequestLogin: () => void;
-  onClaimStamp: (place: Place) => Promise<void>;
+  onRequestLogin: () => void; // "로그인" 버튼 클릭
+  onClaimStamp: (place: Place) => Promise<void>; // "스탐프 받기" 버튼 (거리, 중복 체크 후 API 호출)
   onCreateReview: (payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) => Promise<void>;
   onToggleReviewLike: (reviewId: string) => Promise<void>;
   onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
-  onLocateCurrentPosition: () => void;
+  onLocateCurrentPosition: () => void; // "현재 위치 찾기" 버튼
 }
 
 export function MapTabStage({

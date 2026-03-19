@@ -8,8 +8,11 @@ export type RouteState = {
   drawerState: DrawerState;
 };
 
+// 유효한 탭 목록 (URL 파라미터 검증용)
 const validTabs: Tab[] = ['map', 'feed', 'course', 'my'];
 
+// URL에서 앱 상태 복원 (쿼리 파라미터 → RouteState)
+// 예: ?tab=map&place=123&drawer=partial → { tab: 'map', placeId: '123', ... }
 export function getInitialRouteState(): RouteState {
   if (typeof window === 'undefined') {
     return { tab: 'map', placeId: null, festivalId: null, drawerState: 'closed' };
@@ -20,6 +23,7 @@ export function getInitialRouteState(): RouteState {
   const placeId = params.get('place');
   const festivalId = params.get('festival');
   const drawer = params.get('drawer');
+  // invalid tab일 때는 기본값 'map' 사용, 단 OAuth 후라면 'my' 강제 (프로필 입력 유도)
   const resolvedTab = tab && validTabs.includes(tab as Tab) ? (tab as Tab) : params.get('auth') ? 'my' : 'map';
   const resolvedDrawer = drawer === 'full' || drawer === 'partial' ? drawer : placeId || festivalId ? 'partial' : 'closed';
 
@@ -31,6 +35,8 @@ export function getInitialRouteState(): RouteState {
   };
 }
 
+// RouteState → URL로 변환 (상태 동기화)
+// place/festival 선택 시 drawer를 'partial'로 강제 설정 (단, drawerState가 'closed'일 때)
 export function buildRouteUrl(routeState: RouteState) {
   if (typeof window === 'undefined') {
     return '/';
@@ -48,6 +54,7 @@ export function buildRouteUrl(routeState: RouteState) {
     params.delete('place');
     params.set('drawer', routeState.drawerState === 'closed' ? 'partial' : routeState.drawerState);
   } else {
+    // feed/course/my 탭이면 place/festival/drawer 파라미터 모두 제거
     params.delete('place');
     params.delete('festival');
     params.delete('drawer');
@@ -62,6 +69,7 @@ export function getInitialNotice() {
     return null;
   }
 
+  // OAuth 콜백 파라미터(?auth=naver-success 등)에서 초기 공지 메시지 생성
   const params = new URLSearchParams(window.location.search);
   const auth = params.get('auth');
   const reason = params.get('reason');
@@ -82,6 +90,7 @@ export function clearAuthQueryParams() {
     return;
   }
 
+  // OAuth 후 ?auth=naver-success 등을 정리: 새로고침 시 "로그인 성공" 공지 반복 방지
   const params = new URLSearchParams(window.location.search);
   if (!params.has('auth') && !params.has('reason')) {
     return;

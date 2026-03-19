@@ -5,30 +5,41 @@ import { ReviewList } from './ReviewList';
 import type { ApiStatus, DrawerState, Place, Review, ReviewMood, StampLog } from '../types';
 
 interface PlaceDetailSheetProps {
-  place: Place | null;
-  reviews: Review[];
-  isOpen: boolean;
-  drawerState: DrawerState;
-  loggedIn: boolean;
-  visitCount: number;
-  latestStamp: StampLog | null;
-  todayStamp: StampLog | null;
-  stampActionStatus: ApiStatus;
-  stampActionMessage: string;
-  reviewProofMessage: string;
+  // 선택된 장소 정보
+  place: Place | null; // null이면 시트 닫혀있음
+  reviews: Review[]; // 선택 장소의 모든 후기 (여행 리포트)
+  
+  // 시트 상태
+  isOpen: boolean; // 장소 선택했는지 (place !== null과 동일해야함)
+  drawerState: DrawerState; // 'closed' | 'partial' | 'full' (높이)
+  
+  // 사용자 및 스탐프 상태
+  loggedIn: boolean; // sessionUser !== null
+  visitCount: number; // 현재 사용자의 이 장소 누적 방문 횟수
+  latestStamp: StampLog | null; // 가장 최근 스탐프 정보 (시간 표시용: "1시간 전")
+  todayStamp: StampLog | null; // 오늘 이 장소에서 받은 스탐프 (중복 획득 방지)
+  
+  // 스탐프 획득 상태
+  stampActionStatus: ApiStatus; // 스탐프 요청 로딩/에러
+  stampActionMessage: string; // "반경 120m 안에서만 받을 수 있어요" 등
+  reviewProofMessage: string; // "스탐프를 먼저 획득해주세요"
+  
+  // 후기 작성 상태
   reviewError: string | null;
-  reviewSubmitting: boolean;
-  reviewLikeUpdatingId: string | null;
-  commentSubmittingReviewId: string | null;
-  canCreateReview: boolean;
-  onClose: () => void;
-  onExpand: () => void;
-  onCollapse: () => void;
-  onRequestLogin: () => void;
-  onClaimStamp: (place: Place) => Promise<void>;
-  onCreateReview: (payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) => Promise<void>;
-  onToggleReviewLike: (reviewId: string) => Promise<void>;
-  onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
+  reviewSubmitting: boolean; // 이미지 업로드 또는 API 호출 중
+  reviewLikeUpdatingId: string | null; // 좋아요 토글 중인 리뷰 ID
+  commentSubmittingReviewId: string | null; // 댓글 제출 중인 리뷰 ID
+  canCreateReview: boolean; // loggedIn && (todayStamp !== null || latestStamp?.placeId === place.id)
+  
+  // 콜백
+  onClose: () => void; // 시트 닫기 (place = null)
+  onExpand: () => void; // 시트 최대화
+  onCollapse: () => void; // 시트 최소화 (부분 전개)
+  onRequestLogin: () => void; // "로그인" 버튼
+  onClaimStamp: (place: Place) => Promise<void>; // "스탐프 받기" (거리 재검증 후 toggle_stamp 호출)
+  onCreateReview: (payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) => Promise<void>; // 후기 제출
+  onToggleReviewLike: (reviewId: string) => Promise<void>; // 좋아요 토글
+  onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>; // 댓글/답글 추가
 }
 
 export function PlaceDetailSheet({

@@ -39,10 +39,12 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers || undefined);
   const isFormData = typeof FormData !== 'undefined' && init?.body instanceof FormData;
 
+  // FormData는 브라우저가 multipart/form-data를 자동 설정하므로, 수동으로 Content-Type 설정하지 않음
   if (!isFormData && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
+  // credentials: 'include' → 백엔드의 쿠키 기반 세션 인증 사용 (logout 때 세션 쿠키 삭제)
   const response = await fetch(`${apiBaseUrl}${path}`, {
     credentials: 'include',
     cache: 'no-store',
@@ -63,6 +65,7 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(message, response.status);
   }
 
+  // 204 No Content: 서버가 응답 본문을 보내지 않은 경우 (주로 DELETE/PATCH 후)
   if (response.status === 204) {
     return undefined as T;
   }

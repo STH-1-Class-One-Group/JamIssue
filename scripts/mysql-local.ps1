@@ -5,8 +5,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# 프로젝트 폴더 안에서만 동작하는 portable MySQL 제어 스크립트다.
-# 시스템 서비스 등록 없이 데이터 디렉터리와 로그를 .runtime/mysql 아래에 유지한다.
+# 프로젝트 폴더 안에서만 동작하는 portable MySQL 제어 스크립트
+# 시스템 서비스 등록 없이 데이터/로그/임시 파일을 .runtime/mysql 디렉터리 아래에 격리 저장
+# Setup: mysqld --initialize로 처음 한 번 DB 초기화 (root 초기 암호 생성)
+# Start: MySQL 인스턴스 시작, Stop: 종료
 
 $root = Split-Path -Parent $PSScriptRoot
 $runtimeRoot = Join-Path $root ".runtime/mysql"

@@ -56,6 +56,15 @@ def build_naver_login_url(settings: Settings, state: str) -> str:
 
 
 def exchange_code_for_token(settings: Settings, code: str, state: str) -> dict:
+    """OAuth 권한 코드(code)를 네이버에 제출해 접근토큰와 갱신토큰을 받습니다.
+    
+    OAuth2 Authorization Code 플로우의 token endpoint 호출:
+    1) code: 사용자가 승인 후 리다이렉트 시 받은 권한 코드 (1회용, ~10분 유효)
+    2) state: CSRF 검증용 (redirect_uri 검증하지 않으므로 state가 유일한 CSRF 방어)
+    3) access_token: 네이버 API 호출에 사용 (유효기간 ~1시간)
+    
+    이후 fetch_naver_profile에서 access_token으로 사용자 정보(id, nickname 등) 조회합니다.
+    """
     ensure_naver_login_config(settings)
     params = {
         "grant_type": "authorization_code",
@@ -83,6 +92,16 @@ def exchange_code_for_token(settings: Settings, code: str, state: str) -> dict:
 
 
 def fetch_naver_profile(access_token: str) -> NaverProfile:
+    """exchange_code_for_token에서 받은 access_token을 사용해 네이버 사용자 정보를 조회합니다.
+    
+    GET /v1/nid/me 호출해서 로그인한 사용자의 프로필을 가져옵니다:
+    - id: 네이버 고유ID (영구적, 계정 삭제 후 재가입해도 같은 ID 안 줌)
+    - nickname: 사용자 프로필명 (비어있을 수 있음 → 신규가입시 입력 강제)
+    - email: 네이버 계정 이메일 (사용자 동의 필요, 비어있을 수 있음)
+    - profile_image: 프로필 이미지 URL (비어있을 수 있음)
+    
+    finish_naver_login에서 이 정보로 upsert_naver_user 또는 link_naver_identity 호출합니다.
+    """
     request = Request(
         NAVER_PROFILE_URL,
         headers={

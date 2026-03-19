@@ -13,39 +13,61 @@ from sqlalchemy.engine import URL, make_url
 class Settings(BaseSettings):
     """FastAPI 서버에서 사용하는 환경 설정 집합입니다."""
 
-    env: str = "development"
+    env: str = "development" # Environment type (development/production)
     host: str = "127.0.0.1"
     port: int = 8001
-    cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000"
-    frontend_url: str = "http://localhost:8000"
-    session_secret: str = "jamissue-local-session-secret"
-    session_https: bool = False
-    jwt_secret: str = "jamissue-local-jwt-secret"
-    jwt_algorithm: str = "HS256"
-    jwt_access_token_minutes: int = 60 * 24 * 14
-    admin_user_ids: str = ""
+    cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000" # Comma-separated list
+    frontend_url: str = "http://localhost:8000" # Redirect target for OAuth callbacks
+    
+    # 세션 및 토큰 보안
+    session_secret: str = "jamissue-local-session-secret" # OAuth state 저장용 (SessionMiddleware)
+    session_https: bool = False # Secure flag for cookies (production=True)
+    jwt_secret: str = "jamissue-local-jwt-secret" # HS256 signing key
+    jwt_algorithm: str = "HS256" # Only HS256 supported
+    jwt_access_token_minutes: int = 60 * 24 * 14 # 14 days expiration
+    admin_user_ids: str = "" # Comma-separated admin IDs (rechecked per request)
+    
+    # 데이터베이스
     database_url: str = "mysql+pymysql://jamissue:jamissue@127.0.0.1:3306/jamissue?charset=utf8mb4"
-    seed_demo_data: bool = False
-    cleanup_legacy_demo_data: bool = True
-    auto_import_public_data: bool = True
-    public_data_path: str = "data/public_bundle.json"
-    public_data_source_url: str = ""
+    seed_demo_data: bool = False # Load demo users/places on startup
+    cleanup_legacy_demo_data: bool = True # Delete old demo data before seeding
+    
+    # 공개 데이터 & 축제 정보
+    auto_import_public_data: bool = True # Load places/courses from public_bundle.json on startup
+    public_data_path: str = "data/public_bundle.json" # Relative to backend root
+    public_data_source_url: str = "" # Optional: fetch from URL instead of local file
     public_event_path: str = "data/public_events.json"
-    public_event_source_url: str = ""
-    public_event_service_key: str = ""
-    public_event_city_keyword: str = "대전"
-    public_event_refresh_minutes: int = 360
-    public_event_limit: int = 6
-    storage_backend: Literal["local", "supabase"] = "local"
-    upload_dir: str = "storage/uploads"
-    upload_base_url: str = "/uploads"
-    max_upload_size_bytes: int = 5 * 1024 * 1024
-    stamp_unlock_radius_meters: int = 120
-    supabase_url: str = ""
-    supabase_anon_key: str = ""
-    supabase_service_role_key: str = ""
-    supabase_storage_bucket: str = "review-images"
-    supabase_storage_public_base_url: str = ""
+    public_event_source_url: str = "" # Optional: fetch from public event provider
+    public_event_service_key: str = "" # API key for event provider (if used)
+    public_event_city_keyword: str = "대전" # City filter for event harvesting
+    public_event_refresh_minutes: int = 360 # Background refresh interval
+    public_event_limit: int = 6 # Max events to display
+    
+    # 파일 업로드 (후기 이미지)
+    storage_backend: Literal["local", "supabase"] = "local" # LocalStorageAdapter vs SupabaseStorageAdapter
+    upload_dir: str = "storage/uploads" # Relative to backend root if not absolute
+    upload_base_url: str = "/uploads" # URL prefix for LocalStorageAdapter
+    max_upload_size_bytes: int = 5 * 1024 * 1024 # 5MB limit
+    
+    # Stamp & Location Validation
+    stamp_unlock_radius_meters: int = 120 # Client-side 120m, server re-validates (보안)
+    
+    # Supabase Database & Storage
+    supabase_url: str = "" # https://{project-id}.supabase.co
+    supabase_anon_key: str = "" # Public key for client queries
+    supabase_service_role_key: str = "" # Server-only admin key (image upload, user admin)
+    supabase_storage_bucket: str = "review-images" # Bucket name
+    supabase_storage_public_base_url: str = "" # Optional CDN URL (if omitted, uses standard Supabase URL)
+
+    # OAuth2 - Naver Login
+    naver_login_client_id: str = ""
+    naver_login_client_secret: str = ""
+    naver_login_callback_url: str = "http://localhost:8000/api/auth/naver/callback" # Must match Naver dev console
+
+    # OAuth2 - Kakao Login (Not Yet Implemented)
+    kakao_login_client_id: str = ""
+    kakao_login_client_secret: str = ""
+    kakao_login_callback_url: str = "http://localhost:8000/api/auth/kakao/callback"
 
     naver_login_client_id: str = ""
     naver_login_client_secret: str = ""

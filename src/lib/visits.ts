@@ -8,6 +8,8 @@ export function calculateDistanceMeters(
   endLatitude: number,
   endLongitude: number,
 ) {
+  // Haversine 공식: 지구 표면의 2개 지점 간 대원거리(최단 거리) 계산
+  // 스탬프 거리제한(120m 반경) 검증에 사용
   const earthRadiusMeters = 6_371_000;
   const latitudeDelta = ((endLatitude - startLatitude) * Math.PI) / 180;
   const longitudeDelta = ((endLongitude - startLongitude) * Math.PI) / 180;
@@ -29,14 +31,17 @@ export function formatDistanceMeters(distanceMeters: number) {
   return `${(distanceMeters / 1000).toFixed(1)}km`;
 }
 
+// 오늘 해당 장소를 방문했는지 확인 (하루 1회 스탐프 제한)
 export function getTodayStampLog(stampLogs: StampLog[], placeId: string) {
   return stampLogs.find((stampLog) => stampLog.placeId === placeId && stampLog.isToday) ?? null;
 }
 
+// 해당 장소를 몇 번 방문했는지 카운트
 export function getPlaceVisitCount(stampLogs: StampLog[], placeId: string) {
   return stampLogs.filter((stampLog) => stampLog.placeId === placeId).length;
 }
 
+// 가장 최근 방문 기록 조회 (visitLabel에서 "1시간 전" 등으로 표시)
 export function getLatestPlaceStamp(stampLogs: StampLog[], placeId: string) {
   return stampLogs.find((stampLog) => stampLog.placeId === placeId) ?? null;
 }
