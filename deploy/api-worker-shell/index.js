@@ -949,6 +949,94 @@ async function loadCommunityRoutes(env, options = {}) {
   const likedRouteIds = new Set(userRouteLikeRows.map((row) => String(row.route_id)));
   return mapCommunityRoutes(routeRows, routePlaceRows, usersById, placesByPositionId, likedRouteIds);
 }
+async function loadMapData(env, sessionUserId = null) {
+  const [{ placeRows }, userSessionRows = [], ownerRouteRows = [], userStampRows = []] = await Promise.all([
+    loadStaticBaseRows(env),
+    sessionUserId
+      ? supabaseRequest(env, `travel_session?select=travel_session_id,user_id,started_at,ended_at,last_stamp_at,stamp_count,created_at&user_id=eq.${encodeFilterValue(sessionUserId)}&order=started_at.desc`)
+      : Promise.resolve([]),
+    sessionUserId
+      ? supabaseRequest(env, `user_route?select=route_id,travel_session_id&user_id=eq.${encodeFilterValue(sessionUserId)}&order=created_at.desc`)
+      : Promise.resolve([]),
+    sessionUserId
+      ? supabaseRequest(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&user_id=eq.${encodeFilterValue(sessionUserId)}&order=created_at.desc`)
+      : Promise.resolve([]),
+  ]);
+
+  const places = placeRows.map(mapPlace);
+  const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
+  const collectedPlaceIds = [...new Set(userStampRows.map((row) => placesByPositionId.get(String(row.position_id))?.id).filter(Boolean))];
+  const stampLogs = buildStampLogs(userStampRows, placesByPositionId);
+  const travelSessions = buildTravelSessions(userSessionRows ?? [], userStampRows, placesByPositionId, ownerRouteRows ?? []);
+
+  return {
+    places,
+    collectedPlaceIds,
+    stampLogs,
+    travelSessions,
+  };
+}
+
+async function loadCuratedCourses(env) {
+  const { placeRows, courseRows, coursePlaceRows } = await loadStaticBaseRows(env);
+  const placesByPositionId = new Map(placeRows.map((row) => [String(row.position_id), mapPlace(row)]));
+  return mapCourses(courseRows, coursePlaceRows, placesByPositionId);
+}
+
+async function loadReviewData(env, sessionUserId = null, filters = {}) {
+  const { placeRows } = await loadStaticBaseRows(env);
+  const places = placeRows.map(mapPlace);
+  const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
+  const placeIdToPositionId = new Map(places.map((place) => [place.id, place.positionId]));
+  const reviewQuery = [
+    'select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at',
+    'order=created_at.desc',
+  ];
+
+  if (filters.placeId) {
+    const positionId = placeIdToPositionId.get(filters.placeId);
+    if (!positionId) {
+      return [];
+    }
+    reviewQuery.push(`position_id=eq.${encodeFilterValue(positionId)}`);
+  }
+
+  if (filters.userId) {
+    reviewQuery.push(`user_id=eq.${encodeFilterValue(filters.userId)}`);
+  }
+
+  const feedRows = await supabaseRequest(env, `feed?${reviewQuery.join('&')}`);
+  const feedIdsFilter = buildInFilter(feedRows.map((row) => row.feed_id));
+  const reviewStampIdsFilter = buildInFilter(feedRows.map((row) => row.stamp_id).filter(Boolean));
+  const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
+    feedIdsFilter
+      ? supabaseRequest(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=${feedIdsFilter}&order=created_at.asc`)
+      : Promise.resolve([]),
+    feedIdsFilter
+      ? supabaseRequest(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`)
+      : Promise.resolve([]),
+    reviewStampIdsFilter
+      ? supabaseRequest(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=${reviewStampIdsFilter}`)
+      : Promise.resolve([]),
+    sessionUserId && feedIdsFilter
+      ? supabaseRequest(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=${feedIdsFilter}`)
+      : Promise.resolve([]),
+  ]);
+
+  const userIdsFilter = buildInFilter([
+    ...feedRows.map((row) => row.user_id),
+    ...commentRows.map((row) => row.user_id),
+  ]);
+  const userRows = userIdsFilter
+    ? await supabaseRequest(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`)
+    : [];
+
+  const usersById = new Map(userRows.map((row) => [row.user_id, row]));
+  const stampRowsById = new Map((reviewStampRows ?? []).map((row) => [String(row.stamp_id), row]));
+  const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
+  return mapReviewRows(feedRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, likedFeedIds);
+}
+
 async function handleHealth(request, env) {
   return jsonResponse(200, {
     status: 'ok',
@@ -1084,6 +1172,25 @@ async function handleNaverCallback(request, env, url) {
   }
 }
 
+async function handleMapBootstrap(request, env) {
+  const sessionUser = await readSessionUser(request, env);
+  const mapData = await loadMapData(env, sessionUser?.id ?? null);
+  return jsonResponse(200, {
+    auth: createAuthResponse(sessionUser, env),
+    places: mapData.places.map(({ positionId, ...place }) => place),
+    stamps: {
+      collectedPlaceIds: mapData.collectedPlaceIds,
+      logs: mapData.stampLogs,
+      travelSessions: mapData.travelSessions,
+    },
+    hasRealData: mapData.places.length > 0,
+  }, env, request);
+}
+
+async function handleCuratedCourses(request, env) {
+  return jsonResponse(200, { courses: await loadCuratedCourses(env) }, env, request);
+}
+
 async function handleBootstrap(request, env) {
   const sessionUser = await readSessionUser(request, env);
   const baseData = await loadBaseData(env, sessionUser?.id ?? null);
@@ -1102,17 +1209,9 @@ async function handleBootstrap(request, env) {
 }
 async function handleReviews(request, env, url) {
   const sessionUser = await readSessionUser(request, env);
-  const baseData = await loadBaseData(env, sessionUser?.id ?? null);
-  const placeId = url.searchParams.get('placeId');
-  const userId = url.searchParams.get('userId');
-  const reviews = baseData.reviews.filter((review) => {
-    if (placeId && review.placeId !== placeId) {
-      return false;
-    }
-    if (userId && review.userId !== userId) {
-      return false;
-    }
-    return true;
+  const reviews = await loadReviewData(env, sessionUser?.id ?? null, {
+    placeId: url.searchParams.get('placeId') ?? undefined,
+    userId: url.searchParams.get('userId') ?? undefined,
   });
   return jsonResponse(200, reviews, env, request);
 }

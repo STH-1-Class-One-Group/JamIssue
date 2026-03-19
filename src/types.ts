@@ -176,6 +176,17 @@ export interface BootstrapResponse {
   hasRealData: boolean;
 }
 
+export interface MapBootstrapResponse {
+  auth: AuthSessionResponse;
+  places: Place[];
+  stamps: StampState;
+  hasRealData: boolean;
+}
+
+export interface CourseBootstrapResponse {
+  courses: Course[];
+}
+
 export interface ReviewCreateRequest {
   placeId: string;
   stampId: string;
