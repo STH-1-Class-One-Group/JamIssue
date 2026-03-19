@@ -650,6 +650,7 @@ function countComments(comments) {
 
 function buildCommentTree(commentRows, usersById) {
   const commentsById = new Map();
+  const rowsById = new Map(commentRows.map((row) => [String(row.comment_id), row]));
   const roots = [];
 
   for (const row of commentRows) {
@@ -667,14 +668,39 @@ function buildCommentTree(commentRows, usersById) {
   }
 
   for (const comment of commentsById.values()) {
-    if (comment.parentId && commentsById.has(comment.parentId)) {
-      commentsById.get(comment.parentId).replies.push(comment);
+    const parentRow = comment.parentId ? rowsById.get(comment.parentId) : null;
+    const rootParentId = parentRow ? String(parentRow.parent_id ?? parentRow.comment_id) : null;
+    if (rootParentId && commentsById.has(rootParentId)) {
+      commentsById.get(rootParentId).replies.push(comment);
     } else {
       roots.push(comment);
     }
   }
 
   return roots;
+}
+
+function buildMyComments(commentRows, reviewsById) {
+  return [...commentRows]
+    .sort((left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime())
+    .map((row) => {
+      const review = reviewsById.get(String(row.feed_id));
+      if (!review) {
+        return null;
+      }
+      return {
+        id: String(row.comment_id),
+        reviewId: String(row.feed_id),
+        placeId: review.placeId,
+        placeName: review.placeName,
+        body: row.is_deleted ? '삭제된 댓글입니다.' : row.body,
+        isDeleted: row.is_deleted,
+        parentId: row.parent_id ? String(row.parent_id) : null,
+        createdAt: formatDateTime(row.created_at),
+        reviewBody: review.body,
+      };
+    })
+    .filter(Boolean);
 }
 
 function mapReviewRows(feedRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, likedFeedIds = new Set()) {
@@ -1067,6 +1093,25 @@ async function handleMyRoutes(request, env) {
   return jsonResponse(200, await loadCommunityRoutes(env, { ownerUserId: sessionUser.id, sessionUserId: sessionUser.id }), env, request);
 }
 
+function mapMyComments(commentRows, feedRows, placesByPositionId) {
+  const feedById = new Map(feedRows.map((row) => [String(row.feed_id), row]));
+  return commentRows.map((row) => {
+    const feed = feedById.get(String(row.feed_id));
+    const place = feed ? placesByPositionId.get(String(feed.position_id)) : null;
+    return {
+      id: String(row.comment_id),
+      reviewId: String(row.feed_id),
+      placeId: place?.id ?? String(feed?.position_id ?? ''),
+      placeName: place?.name ?? '장소 정보 없음',
+      body: row.is_deleted ? '삭제된 댓글입니다.' : row.body,
+      isDeleted: row.is_deleted,
+      parentId: row.parent_id ? String(row.parent_id) : null,
+      createdAt: formatDateTime(row.created_at),
+      reviewBody: feed?.body ?? '',
+    };
+  });
+}
+
 async function handleMySummary(request, env) {
   const sessionUser = await readSessionUser(request, env);
   if (!sessionUser) {
@@ -1076,6 +1121,12 @@ async function handleMySummary(request, env) {
   const baseData = await loadBaseData(env, sessionUser.id);
   const routes = await loadCommunityRoutes(env, { ownerUserId: sessionUser.id, sessionUserId: sessionUser.id });
   const reviewItems = baseData.reviews.filter((review) => review.userId === sessionUser.id);
+  const reviewById = new Map(baseData.reviews.map((review) => [String(review.id), review]));
+  const myCommentRows = await supabaseRequest(
+    env,
+    `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&user_id=eq.${encodeFilterValue(sessionUser.id)}&order=created_at.desc`,
+  );
+  const myComments = buildMyComments(myCommentRows ?? [], reviewById);
   const collectedSet = new Set(baseData.collectedPlaceIds);
   const visitedPlaces = baseData.places.filter((place) => collectedSet.has(place.id)).map(({ positionId, ...place }) => place);
   const unvisitedPlaces = baseData.places.filter((place) => !collectedSet.has(place.id)).map(({ positionId, ...place }) => place);
@@ -1090,6 +1141,7 @@ async function handleMySummary(request, env) {
       routeCount: routes.length,
     },
     reviews: reviewItems,
+    comments: myComments,
     stampLogs: baseData.stampLogs,
     travelSessions: baseData.travelSessions,
     visitedPlaces,
@@ -1478,7 +1530,7 @@ async function readFeedRow(env, reviewId) {
 }
 
 async function readCommentRow(env, commentId) {
-  const rows = await supabaseRequest(env, `user_comment?select=comment_id,feed_id&comment_id=eq.${encodeFilterValue(commentId)}&limit=1`);
+  const rows = await supabaseRequest(env, `user_comment?select=comment_id,feed_id,parent_id&comment_id=eq.${encodeFilterValue(commentId)}&limit=1`);
   return rows?.[0] ?? null;
 }
 
@@ -1662,7 +1714,7 @@ async function handleCreateComment(request, env, reviewId) {
 
   const payload = await readJsonBody(request);
   const body = String(payload.body ?? '').trim();
-  const parentId = payload.parentId ? Number(payload.parentId) : null;
+  let parentId = payload.parentId ? Number(payload.parentId) : null;
   if (!body) {
     return jsonResponse(400, { detail: '댓글을 조금 더 적어 주세요.' }, env, request);
   }
@@ -1671,6 +1723,9 @@ async function handleCreateComment(request, env, reviewId) {
     const parentComment = await readCommentRow(env, parentId);
     if (!parentComment || String(parentComment.feed_id) !== String(reviewId)) {
       return jsonResponse(400, { detail: '같은 후기 안의 댓글에만 답글을 달 수 있어요.' }, env, request);
+    }
+    if (parentComment.parent_id) {
+      parentId = Number(parentComment.parent_id);
     }
   }
 

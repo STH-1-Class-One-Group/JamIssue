@@ -1,4 +1,4 @@
-from datetime import timedelta
+﻿from datetime import timedelta
 from pathlib import Path
 
 from sqlalchemy import create_engine, event, func, select
@@ -229,6 +229,28 @@ def test_reply_of_reply_is_flattened_to_depth_one(tmp_path: Path):
     assert tree[0].replies[1].body == '대댓글의 답글'
     assert len(tree[0].replies[1].replies) == 0
 
+
+
+def test_my_page_includes_my_comments(tmp_path: Path):
+    session = build_session(tmp_path)
+    load_seed_data(session)
+
+    stamp_state = claim_stamp_for(session, 'user-owner', 'hanbat-forest')
+    review = create_review(
+        session,
+        ReviewCreate(placeId='hanbat-forest', stampId=stamp_id_for_place(stamp_state, 'hanbat-forest'), body='댓글 목록 테스트 후기', mood='설렘', imageUrl=None),
+        'user-owner',
+        '소희',
+    )
+    create_comment(session, review.id, CommentCreate(body='루트 댓글', parentId=None), 'user-owner', '소희')
+    root = session.scalars(select(UserComment).where(UserComment.body == '루트 댓글')).one()
+    create_comment(session, review.id, CommentCreate(body='답글 댓글', parentId=str(root.comment_id)), 'user-owner', '소희')
+
+    my_page = get_my_page(session, 'user-owner', False)
+
+    assert len(my_page.comments) == 2
+    assert my_page.comments[0].place_name == '한밭수목원 잼가든'
+    assert my_page.comments[0].review_body == '댓글 목록 테스트 후기'
 
 def test_delete_review_removes_comments_and_likes(tmp_path: Path):
     session = build_session(tmp_path)

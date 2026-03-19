@@ -230,6 +230,9 @@ export function MyPagePanel({
               <button type="button" className={activeTab === 'feeds' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('feeds')}>
                 내가 쓴 피드
               </button>
+              <button type="button" className={activeTab === 'comments' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('comments')}>
+                내가 쓴 댓글
+              </button>
               <button type="button" className={activeTab === 'routes' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('routes')}>
                 생성한 코스
               </button>
@@ -274,6 +277,28 @@ export function MyPagePanel({
                   </article>
                 ))}
                 {myPage.reviews.length === 0 && <p className="empty-copy">아직 작성한 피드가 없어요.</p>}
+              </div>
+            )}
+
+            {activeTab === 'comments' && (
+              <div className="review-stack">
+                {myPage.comments.map((comment) => (
+                  <article key={comment.id} className="review-card">
+                    <div className="review-card__top">
+                      <div>
+                        <strong>{comment.placeName}</strong>
+                        <p>{comment.parentId ? '답글' : '댓글'} · {comment.createdAt}</p>
+                      </div>
+                      <span className="counter-pill">{comment.isDeleted ? '삭제됨' : '작성됨'}</span>
+                    </div>
+                    <p className="review-card__body">{comment.body}</p>
+                    <p className="section-copy">원문: {comment.reviewBody}</p>
+                    <button type="button" className="text-button review-card__place-link" onClick={() => onOpenPlace(comment.placeId)}>
+                      장소 열기
+                    </button>
+                  </article>
+                ))}
+                {myPage.comments.length === 0 && <p className="empty-copy">아직 작성한 댓글이 없어요.</p>}
               </div>
             )}
 

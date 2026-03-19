@@ -97,7 +97,7 @@ function CommentItem({
           </form>
         )}
 
-        {comment.replies.length > 0 && (
+        {!isReply && comment.replies.length > 0 && (
           <ul className="comment-thread__children">
             {comment.replies.map((reply) => (
               <CommentItem

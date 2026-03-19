@@ -1,4 +1,4 @@
-﻿"""FastAPI request and response models for JamIssue."""
+"""FastAPI request and response models for JamIssue."""
 
 from __future__ import annotations
 
@@ -201,6 +201,17 @@ class ProfileUpdateRequest(ApiModel):
     nickname: str
 
 
+class MyCommentOut(ApiModel):
+    id: str
+    review_id: str = Field(alias='reviewId')
+    place_id: str = Field(alias='placeId')
+    place_name: str = Field(alias='placeName')
+    body: str
+    is_deleted: bool = Field(alias='isDeleted')
+    parent_id: str | None = Field(default=None, alias='parentId')
+    created_at: str = Field(alias='createdAt')
+    review_body: str = Field(alias='reviewBody')
+
 class MyStatsOut(ApiModel):
     review_count: int = Field(alias='reviewCount')
     stamp_count: int = Field(alias='stampCount')
@@ -213,6 +224,7 @@ class MyPageResponse(ApiModel):
     user: SessionUser
     stats: MyStatsOut
     reviews: list[ReviewOut]
+    comments: list[MyCommentOut] = Field(default_factory=list)
     stamp_logs: list[StampLogOut] = Field(default_factory=list, alias='stampLogs')
     travel_sessions: list[TravelSessionOut] = Field(default_factory=list, alias='travelSessions')
     visited_places: list[PlaceOut] = Field(default_factory=list, alias='visitedPlaces')

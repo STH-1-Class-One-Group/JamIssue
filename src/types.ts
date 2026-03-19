@@ -1,8 +1,8 @@
-﻿import type { PlaceCategory, PlaceCategoryFilter } from './lib/categories';
+import type { PlaceCategory, PlaceCategoryFilter } from './lib/categories';
 
 export type Category = PlaceCategoryFilter;
 export type Tab = 'map' | 'feed' | 'course' | 'my';
-export type MyPageTabKey = 'stamps' | 'feeds' | 'routes';
+export type MyPageTabKey = 'stamps' | 'feeds' | 'comments' | 'routes';
 export type DrawerState = 'closed' | 'partial' | 'full';
 export type ReviewMood = '혼자서' | '친구랑' | '데이트' | '야경 맛집';
 export type CourseMood = '전체' | '데이트' | '사진' | '힐링' | '비 오는 날';
@@ -202,6 +202,17 @@ export interface StampClaimRequest {
   longitude: number;
 }
 
+export interface MyComment {
+  id: string;
+  reviewId: string;
+  placeId: string;
+  placeName: string;
+  body: string;
+  isDeleted: boolean;
+  parentId: string | null;
+  createdAt: string;
+  reviewBody: string;
+}
 export interface MyStats {
   reviewCount: number;
   stampCount: number;
@@ -214,6 +225,7 @@ export interface MyPageResponse {
   user: SessionUser;
   stats: MyStats;
   reviews: Review[];
+  comments: MyComment[];
   stampLogs: StampLog[];
   travelSessions: TravelSession[];
   visitedPlaces: Place[];
