@@ -54,14 +54,14 @@ function CommentItem({
           <span>{comment.createdAt}</span>
         </div>
         <p>{comment.isDeleted ? '삭제된 댓글입니다.' : comment.body}</p>
-        {!comment.isDeleted && (
+        {!comment.isDeleted && !isReply && (
           <button type="button" className="comment-thread__reply-toggle" onClick={() => (canWriteComment ? setReplyOpen((value) => !value) : onRequestLogin())}>
             답글 달기
           </button>
         )}
       </div>
 
-      {replyOpen && (
+      {!isReply && replyOpen && (
         <form className="comment-thread__reply-form" onSubmit={handleReplySubmit}>
           <input value={replyBody} onChange={(event) => setReplyBody(event.target.value)} placeholder="답글 내용을 적어 보세요" />
           <button type="submit" className="comment-thread__submit" disabled={submittingReviewId === reviewId || replyBody.trim().length < 2}>
