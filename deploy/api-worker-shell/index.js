@@ -663,7 +663,7 @@ async function loadStaticBaseRows(env) {
 
   return rememberPending(staticBaseCache, async () => {
     const [placeRows, courseRows, coursePlaceRows] = await Promise.all([
-      supabaseRequest(env, "map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,image_url,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&is_active=eq.true&order=position_id.asc"),
+      supabaseRequest(env, "map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&is_active=eq.true&order=position_id.asc"),
       supabaseRequest(env, "course?select=course_id,title,mood,duration,note,color,display_order&order=display_order.asc"),
       supabaseRequest(env, "course_place?select=course_id,position_id,stop_order&order=stop_order.asc"),
     ]);
@@ -1706,7 +1706,7 @@ async function loadSingleReview(env, reviewId, sessionUserId = null) {
   const [commentRows, likeRows, placeRows, stampRows, userFeedLikeRows = []] = await Promise.all([
     supabaseRequest(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=eq.${encodeFilterValue(reviewId)}&order=created_at.asc`),
     supabaseRequest(env, `feed_like?select=feed_id,user_id&feed_id=eq.${encodeFilterValue(reviewId)}`),
-    supabaseRequest(env, `map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,image_url,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&position_id=eq.${encodeFilterValue(reviewRow.position_id)}&limit=1`),
+    supabaseRequest(env, `map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&position_id=eq.${encodeFilterValue(reviewRow.position_id)}&limit=1`),
     reviewRow.stamp_id
       ? supabaseRequest(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=eq.${encodeFilterValue(reviewRow.stamp_id)}&limit=1`)
       : Promise.resolve([]),
@@ -2264,6 +2264,12 @@ async function routeRequest(request, env) {
   }
   if (request.method === "GET" && url.pathname === "/api/bootstrap") {
     return handleBootstrap(request, env);
+  }
+  if (request.method === "GET" && url.pathname === "/api/map-bootstrap") {
+    return handleMapBootstrap(request, env);
+  }
+  if (request.method === "GET" && url.pathname === "/api/courses/curated") {
+    return handleCuratedCourses(request, env);
   }
   if (request.method === "GET" && url.pathname === "/api/reviews") {
     return handleReviews(request, env, url);
