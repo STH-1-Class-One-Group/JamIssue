@@ -199,6 +199,37 @@ def test_delete_comment_keeps_reply_tree(tmp_path: Path):
     assert updated_tree[0].replies[0].body == '대댓글'
 
 
+def test_reply_of_reply_is_flattened_to_depth_one(tmp_path: Path):
+    """대댓글의 답글은 2단계 깊이를 초과하지 않고 부모 댓글의 자식으로 귀속됩니다."""
+    session = build_session(tmp_path)
+    load_seed_data(session)
+
+    stamp_state = claim_stamp_for(session, 'user-owner', 'hanbat-forest')
+    review = create_review(session, ReviewCreate(placeId='hanbat-forest', stampId=stamp_id_for_place(stamp_state, 'hanbat-forest'), body='계층 테스트 후기', mood='설렘', imageUrl=None), 'user-owner', '소희')
+
+    # Create root comment (depth 0)
+    create_comment(session, review.id, CommentCreate(body='루트 댓글', parentId=None), 'user-a', '민서')
+    root = session.scalars(select(UserComment).where(UserComment.body == '루트 댓글')).one()
+
+    # Create depth-1 reply
+    create_comment(session, review.id, CommentCreate(body='대댓글', parentId=str(root.comment_id)), 'user-b', '가은')
+    reply = session.scalars(select(UserComment).where(UserComment.body == '대댓글')).one()
+
+    # Attempt to create depth-2 reply (should be redirected to root comment as parent)
+    tree = create_comment(session, review.id, CommentCreate(body='대댓글의 답글', parentId=str(reply.comment_id)), 'user-c', '지우')
+
+    deep_reply = session.scalars(select(UserComment).where(UserComment.body == '대댓글의 답글')).one()
+
+    # The reply-of-reply must point to the root comment, not the depth-1 reply
+    assert deep_reply.parent_id == root.comment_id
+
+    # The tree must have exactly one root with two depth-1 replies (no depth-2 nesting)
+    assert len(tree) == 1
+    assert len(tree[0].replies) == 2
+    assert tree[0].replies[1].body == '대댓글의 답글'
+    assert len(tree[0].replies[1].replies) == 0
+
+
 def test_delete_review_removes_comments_and_likes(tmp_path: Path):
     session = build_session(tmp_path)
     load_seed_data(session)

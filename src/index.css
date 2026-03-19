@@ -820,6 +820,10 @@ textarea {
   list-style: none;
 }
 
+.comment-thread__children .comment-thread__children {
+  margin-left: 0;
+}
+
 .comment-thread__list {
   display: grid;
   gap: 10px;

@@ -17,6 +17,7 @@ function CommentItem({
   submittingReviewId,
   onSubmitComment,
   onRequestLogin,
+  isReply = false,
 }: {
   comment: Comment;
   reviewId: string;
@@ -24,6 +25,7 @@ function CommentItem({
   submittingReviewId: string | null;
   onSubmitComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
   onRequestLogin: () => void;
+  isReply?: boolean;
 }) {
   const [replyBody, setReplyBody] = useState('');
   const [replyOpen, setReplyOpen] = useState(false);
@@ -37,7 +39,9 @@ function CommentItem({
     if (replyBody.trim().length < 2) {
       return;
     }
-    await onSubmitComment(reviewId, replyBody.trim(), comment.id);
+    // When replying to a reply, target the root comment to enforce 2-level depth
+    const parentId = isReply && comment.parentId ? comment.parentId : comment.id;
+    await onSubmitComment(reviewId, replyBody.trim(), parentId);
     setReplyBody('');
     setReplyOpen(false);
   }
@@ -77,6 +81,7 @@ function CommentItem({
               submittingReviewId={submittingReviewId}
               onSubmitComment={onSubmitComment}
               onRequestLogin={onRequestLogin}
+              isReply={true}
             />
           ))}
         </ul>
