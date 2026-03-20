@@ -166,6 +166,26 @@ export function createComment(reviewId: string, payload: CommentCreateRequest) {
   });
 }
 
+
+export function updateComment(reviewId: string, commentId: string, payload: { body: string }) {
+  return fetchJson<Comment[]>(`/api/reviews/${reviewId}/comments/${commentId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteComment(reviewId: string, commentId: string) {
+  return fetchJson<Comment[]>(`/api/reviews/${reviewId}/comments/${commentId}`, {
+    method: 'DELETE',
+  });
+}
+
+export function deleteReview(reviewId: string) {
+  return fetchJson<{ reviewId: string; deleted: boolean }>(`/api/reviews/${reviewId}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function uploadReviewImage(file: File) {
   const body = new FormData();
   body.append('file', file);
@@ -210,4 +230,5 @@ export function getPublicEventBanner() {
 export function getFestivals() {
   return fetchJson<FestivalItem[]>('/api/festivals');
 }
+
 

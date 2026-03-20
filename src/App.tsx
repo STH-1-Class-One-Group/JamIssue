@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   claimStamp,
   createComment,
+  updateComment,
+  deleteComment,
+  deleteReview,
   createReview,
   createUserRoute,
   getCommunityRoutes,
@@ -117,6 +120,8 @@ export default function App() {
   const [reviewError, setReviewError] = useState<string | null>(null);
   const [reviewLikeUpdatingId, setReviewLikeUpdatingId] = useState<string | null>(null);
   const [commentSubmittingReviewId, setCommentSubmittingReviewId] = useState<string | null>(null);
+  const [commentMutatingId, setCommentMutatingId] = useState<string | null>(null);
+  const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
   const [activeCommentReviewId, setActiveCommentReviewId] = useState<string | null>(null);
   const [highlightedCommentId, setHighlightedCommentId] = useState<string | null>(null);
   const [highlightedReviewId, setHighlightedReviewId] = useState<string | null>(null);
@@ -624,6 +629,102 @@ export default function App() {
     }
   }
 
+  async function handleUpdateComment(reviewId: string, commentId: string, body: string) {
+    if (!sessionUser) {
+      goToTab('my');
+      setNotice('댓글을 수정하려면 먼저 로그인해 주세요.');
+      return;
+    }
+
+    setCommentMutatingId(commentId);
+    try {
+      const updatedComments = await updateComment(reviewId, commentId, { body });
+      patchReviewCollections(reviewId, (review) => ({
+        ...review,
+        comments: updatedComments,
+        commentCount: updatedComments.length,
+      }));
+      if (activeTab === 'my') {
+        await refreshMyPageForUser(sessionUser, true);
+      }
+    } catch (error) {
+      setNotice(formatErrorMessage(error));
+    } finally {
+      setCommentMutatingId(null);
+    }
+  }
+
+  async function handleDeleteComment(reviewId: string, commentId: string) {
+    if (!sessionUser) {
+      goToTab('my');
+      setNotice('댓글을 삭제하려면 먼저 로그인해 주세요.');
+      return;
+    }
+
+    setCommentMutatingId(commentId);
+    try {
+      const updatedComments = await deleteComment(reviewId, commentId);
+      patchReviewCollections(reviewId, (review) => ({
+        ...review,
+        comments: updatedComments,
+        commentCount: updatedComments.length,
+      }));
+      if (activeTab === 'my') {
+        await refreshMyPageForUser(sessionUser, true);
+      }
+    } catch (error) {
+      setNotice(formatErrorMessage(error));
+    } finally {
+      setCommentMutatingId(null);
+    }
+  }
+
+  async function handleDeleteReview(reviewId: string) {
+    if (!sessionUser) {
+      goToTab('my');
+      setNotice('피드를 삭제하려면 먼저 로그인해 주세요.');
+      return;
+    }
+
+    setDeletingReviewId(reviewId);
+    try {
+      await deleteReview(reviewId);
+      setReviews((current) => current.filter((review) => review.id !== reviewId));
+      setSelectedPlaceReviews((current) => current.filter((review) => review.id !== reviewId));
+      for (const placeId of Object.keys(placeReviewsCacheRef.current)) {
+        placeReviewsCacheRef.current[placeId] = placeReviewsCacheRef.current[placeId].filter((review) => review.id !== reviewId);
+      }
+      setMyPage((current) => {
+        if (!current) {
+          return current;
+        }
+        return {
+          ...current,
+          reviews: current.reviews.filter((review) => review.id !== reviewId),
+          comments: current.comments.filter((comment) => comment.reviewId !== reviewId),
+          stats: {
+            ...current.stats,
+            reviewCount: Math.max(0, current.stats.reviewCount - 1),
+          },
+        };
+      });
+      if (activeCommentReviewId === reviewId) {
+        handleCloseReviewComments();
+      }
+      if (highlightedReviewId === reviewId) {
+        setHighlightedReviewId(null);
+      }
+      setNotice('피드를 삭제했어요.');
+      if (activeTab === 'my') {
+        await refreshMyPageForUser(sessionUser, true);
+      }
+    } catch (error) {
+      setNotice(formatErrorMessage(error));
+    } finally {
+      setDeletingReviewId(null);
+    }
+  }
+
   async function handleToggleReviewLike(reviewId: string) {
     if (!sessionUser) {
       goToTab('my');
@@ -865,11 +966,16 @@ export default function App() {
                 sessionUser={sessionUser}
                 reviewLikeUpdatingId={reviewLikeUpdatingId}
                 commentSubmittingReviewId={commentSubmittingReviewId}
+                commentMutatingId={commentMutatingId}
+                deletingReviewId={deletingReviewId}
                 activeCommentReviewId={activeCommentReviewId}
                 highlightedCommentId={highlightedCommentId}
                 highlightedReviewId={highlightedReviewId}
                 onToggleReviewLike={handleToggleReviewLike}
                 onCreateComment={handleCreateComment}
+                onUpdateComment={handleUpdateComment}
+                onDeleteComment={handleDeleteComment}
+                onDeleteReview={handleDeleteReview}
                 onRequestLogin={() => goToTab('my')}
                 onOpenPlace={handleOpenPlaceWithReturn}
                 onOpenComments={handleOpenReviewComments}
@@ -915,6 +1021,7 @@ export default function App() {
                 onOpenPlace={handleOpenPlaceWithReturn}
                 onOpenComment={(reviewId, commentId) => handleOpenCommentWithReturn(reviewId, commentId)}
                 onOpenReview={handleOpenReviewWithReturn}
+                onDeleteReview={handleDeleteReview}
               />
             )}
           </div>

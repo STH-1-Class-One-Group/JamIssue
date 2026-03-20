@@ -927,3 +927,36 @@ body {
 .place-drawer__preview-body {
   margin: 0 !important;
 }
+
+.comment-thread__actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 10px !important;
+}
+
+.feed-comment-sheet__header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.feed-comment-sheet__delete {
+  min-width: 88px !important;
+  white-space: nowrap !important;
+}
+
+.review-link-button--danger {
+  color: #b83465 !important;
+  border-color: rgba(184, 52, 101, 0.22) !important;
+  background: rgba(255, 246, 249, 0.98) !important;
+}
+
+.review-card__place-link--danger {
+  color: var(--color-destructive);
+}
+.review-card__place-link--danger:hover {
+  border-color: color-mix(in srgb, var(--color-destructive) 24%, transparent);
+  background: color-mix(in srgb, var(--color-destructive) 8%, white);
+}
+

@@ -21,6 +21,7 @@ interface MyPagePanelProps {
   onOpenPlace: (placeId: string) => void;
   onOpenComment: (reviewId: string, commentId: string) => void;
   onOpenReview: (reviewId: string) => void;
+  onDeleteReview: (reviewId: string) => Promise<void>;
 }
 
 const routeMoodOptions: CourseMood[] = ['데이트', '사진', '힐링', '비 오는 날'];
@@ -59,6 +60,7 @@ export function MyPagePanel({
   onOpenPlace,
   onOpenComment,
   onOpenReview,
+  onDeleteReview,
 }: MyPagePanelProps) {
   const [nickname, setNickname] = useState(sessionUser?.nickname ?? '');
   const [showVisitedDetail, setShowVisitedDetail] = useState(false);
@@ -293,6 +295,9 @@ export function MyPagePanel({
                       <button type="button" className="review-link-button" onClick={() => onOpenPlace(review.placeId)}>
                         이 장소 보기
                       </button>
+                      <button type="button" className="review-card__place-link review-card__place-link--danger" onClick={() => void onDeleteReview(review.id)}>
+                        피드 삭제
+                      </button>
                     </div>
                   </article>
                 ))}
@@ -423,6 +428,9 @@ export function MyPagePanel({
     </section>
   );
 }
+
+
+
 
 
 

@@ -8,11 +8,16 @@ interface FeedTabProps {
   sessionUser: SessionUser | null;
   reviewLikeUpdatingId: string | null;
   commentSubmittingReviewId: string | null;
+  commentMutatingId: string | null;
+  deletingReviewId: string | null;
   activeCommentReviewId: string | null;
   highlightedCommentId: string | null;
   highlightedReviewId: string | null;
   onToggleReviewLike: (reviewId: string) => Promise<void>;
   onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
+  onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
+  onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;
+  onDeleteReview: (reviewId: string) => Promise<void>;
   onRequestLogin: () => void;
   onOpenPlace: (placeId: string) => void;
   onOpenComments: (reviewId: string, commentId?: string | null) => void;
@@ -24,11 +29,16 @@ export function FeedTab({
   sessionUser,
   reviewLikeUpdatingId,
   commentSubmittingReviewId,
+  commentMutatingId,
+  deletingReviewId,
   activeCommentReviewId,
   highlightedCommentId,
   highlightedReviewId,
   onToggleReviewLike,
   onCreateComment,
+  onUpdateComment,
+  onDeleteComment,
+  onDeleteReview,
   onRequestLogin,
   onOpenPlace,
   onOpenComments,
@@ -49,11 +59,15 @@ export function FeedTab({
           reviews={reviews}
           canWriteComment={Boolean(sessionUser)}
           canToggleLike={Boolean(sessionUser)}
+          currentUserId={sessionUser?.id ?? null}
           highlightedReviewId={highlightedReviewId}
           likingReviewId={reviewLikeUpdatingId}
           submittingReviewId={commentSubmittingReviewId}
           onToggleLike={onToggleReviewLike}
           onSubmitComment={onCreateComment}
+          onUpdateComment={onUpdateComment}
+          onDeleteComment={onDeleteComment}
+          onDeleteReview={onDeleteReview}
           onRequestLogin={onRequestLogin}
           onOpenPlace={onOpenPlace}
           onOpenComments={(reviewId) => onOpenComments(reviewId)}
@@ -65,10 +79,16 @@ export function FeedTab({
         review={activeReview}
         isOpen={activeCommentReviewId !== null}
         canWriteComment={Boolean(sessionUser)}
+        currentUserId={sessionUser?.id ?? null}
         submittingReviewId={commentSubmittingReviewId}
+        mutatingCommentId={commentMutatingId}
+        deletingReviewId={deletingReviewId}
         highlightedCommentId={highlightedCommentId}
         onClose={onCloseComments}
         onSubmitComment={onCreateComment}
+        onUpdateComment={onUpdateComment}
+        onDeleteComment={onDeleteComment}
+        onDeleteReview={onDeleteReview}
         onRequestLogin={onRequestLogin}
       />
     </>

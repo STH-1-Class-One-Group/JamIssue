@@ -1684,7 +1684,7 @@ async function readFeedRow(env, reviewId) {
 }
 
 async function readCommentRow(env, commentId) {
-  const rows = await supabaseRequest(env, `user_comment?select=comment_id,feed_id,parent_id&comment_id=eq.${encodeFilterValue(commentId)}&limit=1`);
+  const rows = await supabaseRequest(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,is_deleted&comment_id=eq.${encodeFilterValue(commentId)}&limit=1`);
   return rows?.[0] ?? null;
 }
 
@@ -1896,6 +1896,100 @@ async function handleCreateComment(request, env, reviewId) {
 
   const comments = (await loadSingleReview(env, reviewId, sessionResult.sessionUser.id))?.comments ?? [];
   return jsonResponse(200, comments, env, request);
+}
+
+async function handleUpdateComment(request, env, reviewId, commentId) {
+  const sessionResult = await requireSessionUser(request, env);
+  if (sessionResult.response) {
+    return sessionResult.response;
+  }
+
+  const reviewRow = await readFeedRow(env, reviewId);
+  if (!reviewRow) {
+    return jsonResponse(404, { detail: '후기를 찾지 못했어요.' }, env, request);
+  }
+
+  const commentRow = await readCommentRow(env, commentId);
+  if (!commentRow || String(commentRow.feed_id) !== String(reviewId)) {
+    return jsonResponse(404, { detail: '댓글을 찾지 못했어요.' }, env, request);
+  }
+  if (commentRow.user_id !== sessionResult.sessionUser.id) {
+    return jsonResponse(403, { detail: '내 댓글만 수정할 수 있어요.' }, env, request);
+  }
+  if (commentRow.is_deleted) {
+    return jsonResponse(400, { detail: '삭제된 댓글은 수정할 수 없어요.' }, env, request);
+  }
+
+  const payload = await readJsonBody(request);
+  const body = String(payload.body ?? '').trim();
+  if (!body) {
+    return jsonResponse(400, { detail: '댓글을 조금 더 적어 주세요.' }, env, request);
+  }
+
+  await supabaseRequest(env, `user_comment?comment_id=eq.${encodeFilterValue(commentId)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      body,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+
+  const comments = (await loadSingleReview(env, reviewId, sessionResult.sessionUser.id))?.comments ?? [];
+  return jsonResponse(200, comments, env, request);
+}
+
+async function handleDeleteComment(request, env, reviewId, commentId) {
+  const sessionResult = await requireSessionUser(request, env);
+  if (sessionResult.response) {
+    return sessionResult.response;
+  }
+
+  const reviewRow = await readFeedRow(env, reviewId);
+  if (!reviewRow) {
+    return jsonResponse(404, { detail: '후기를 찾지 못했어요.' }, env, request);
+  }
+
+  const commentRow = await readCommentRow(env, commentId);
+  if (!commentRow || String(commentRow.feed_id) !== String(reviewId)) {
+    return jsonResponse(404, { detail: '댓글을 찾지 못했어요.' }, env, request);
+  }
+  if (commentRow.user_id !== sessionResult.sessionUser.id) {
+    return jsonResponse(403, { detail: '내 댓글만 삭제할 수 있어요.' }, env, request);
+  }
+
+  await supabaseRequest(env, `user_comment?comment_id=eq.${encodeFilterValue(commentId)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      body: '[deleted]',
+      is_deleted: true,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+
+  const comments = (await loadSingleReview(env, reviewId, sessionResult.sessionUser.id))?.comments ?? [];
+  return jsonResponse(200, comments, env, request);
+}
+
+async function handleDeleteReview(request, env, reviewId) {
+  const sessionResult = await requireSessionUser(request, env);
+  if (sessionResult.response) {
+    return sessionResult.response;
+  }
+
+  const reviewRow = await readFeedRow(env, reviewId);
+  if (!reviewRow) {
+    return jsonResponse(404, { detail: '후기를 찾지 못했어요.' }, env, request);
+  }
+  if (reviewRow.user_id !== sessionResult.sessionUser.id) {
+    return jsonResponse(403, { detail: '내가 쓴 피드만 삭제할 수 있어요.' }, env, request);
+  }
+
+  await supabaseRequest(env, `feed?feed_id=eq.${encodeFilterValue(reviewId)}`, {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' },
+  });
+
+  return jsonResponse(200, { reviewId: String(reviewId), deleted: true }, env, request);
 }
 
 async function handleToggleReviewLike(request, env, reviewId) {
@@ -2235,7 +2329,9 @@ async function proxyToOrigin(request, env) {
 async function routeRequest(request, env) {
   const url = new URL(request.url);
   const reviewCommentMatch = url.pathname.match(/^\/api\/reviews\/(\d+)\/comments$/);
+  const reviewCommentDetailMatch = url.pathname.match(/^\/api\/reviews\/(\d+)\/comments\/(\d+)$/);
   const reviewLikeMatch = url.pathname.match(/^\/api\/reviews\/(\d+)\/like$/);
+  const reviewDetailMatch = url.pathname.match(/^\/api\/reviews\/(\d+)$/);
   const communityRouteLikeMatch = url.pathname.match(/^\/api\/community-routes\/(\d+)\/like$/);
 
   if (request.method === "OPTIONS") {
@@ -2288,8 +2384,17 @@ async function routeRequest(request, env) {
   if (request.method === "POST" && reviewCommentMatch) {
     return handleCreateComment(request, env, reviewCommentMatch[1]);
   }
+  if (request.method === "PATCH" && reviewCommentDetailMatch) {
+    return handleUpdateComment(request, env, reviewCommentDetailMatch[1], reviewCommentDetailMatch[2]);
+  }
+  if (request.method === "DELETE" && reviewCommentDetailMatch) {
+    return handleDeleteComment(request, env, reviewCommentDetailMatch[1], reviewCommentDetailMatch[2]);
+  }
   if (request.method === "POST" && reviewLikeMatch) {
     return handleToggleReviewLike(request, env, reviewLikeMatch[1]);
+  }
+  if (request.method === "DELETE" && reviewDetailMatch) {
+    return handleDeleteReview(request, env, reviewDetailMatch[1]);
   }
   if (request.method === "POST" && url.pathname === "/api/stamps/toggle") {
     return handleToggleStamp(request, env);
@@ -2331,6 +2436,12 @@ export default {
     }
   },
 };
+
+
+
+
+
+
 
 
 
