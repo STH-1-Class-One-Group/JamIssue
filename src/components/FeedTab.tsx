@@ -10,6 +10,7 @@ interface FeedTabProps {
   commentSubmittingReviewId: string | null;
   activeCommentReviewId: string | null;
   highlightedCommentId: string | null;
+  highlightedReviewId: string | null;
   onToggleReviewLike: (reviewId: string) => Promise<void>;
   onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
   onRequestLogin: () => void;
@@ -25,6 +26,7 @@ export function FeedTab({
   commentSubmittingReviewId,
   activeCommentReviewId,
   highlightedCommentId,
+  highlightedReviewId,
   onToggleReviewLike,
   onCreateComment,
   onRequestLogin,
@@ -47,6 +49,7 @@ export function FeedTab({
           reviews={reviews}
           canWriteComment={Boolean(sessionUser)}
           canToggleLike={Boolean(sessionUser)}
+          highlightedReviewId={highlightedReviewId}
           likingReviewId={reviewLikeUpdatingId}
           submittingReviewId={commentSubmittingReviewId}
           onToggleLike={onToggleReviewLike}

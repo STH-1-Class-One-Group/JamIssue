@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   claimStamp,
   createComment,
@@ -118,7 +118,14 @@ export default function App() {
   const [commentSubmittingReviewId, setCommentSubmittingReviewId] = useState<string | null>(null);
   const [activeCommentReviewId, setActiveCommentReviewId] = useState<string | null>(null);
   const [highlightedCommentId, setHighlightedCommentId] = useState<string | null>(null);
-  const [returnView, setReturnView] = useState<{ tab: Tab; myPageTab: MyPageTabKey; activeCommentReviewId: string | null; highlightedCommentId: string | null } | null>(null);
+  const [highlightedReviewId, setHighlightedReviewId] = useState<string | null>(null);
+  const [returnView, setReturnView] = useState<{
+    tab: Tab;
+    myPageTab: MyPageTabKey;
+    activeCommentReviewId: string | null;
+    highlightedCommentId: string | null;
+    highlightedReviewId: string | null;
+  } | null>(null);
   const [stampActionStatus, setStampActionStatus] = useState<ApiStatus>('idle');
   const [stampActionMessage, setStampActionMessage] = useState('장소를 선택하면 오늘 스탬프 가능 여부를 바로 알려드릴게요.');
   const [routeSubmitting, setRouteSubmitting] = useState(false);
@@ -235,6 +242,7 @@ export default function App() {
 
   function handleOpenReviewComments(reviewId: string, commentId: string | null = null) {
     goToTab('feed');
+    setHighlightedReviewId(reviewId);
     setActiveCommentReviewId(reviewId);
     setHighlightedCommentId(commentId);
   }
@@ -251,9 +259,39 @@ export default function App() {
         myPageTab,
         activeCommentReviewId,
         highlightedCommentId,
+        highlightedReviewId,
       });
     }
     openPlace(placeId);
+  }
+
+  function handleOpenReviewWithReturn(reviewId: string) {
+    if (activeTab !== 'feed') {
+      setReturnView({
+        tab: activeTab,
+        myPageTab,
+        activeCommentReviewId,
+        highlightedCommentId,
+        highlightedReviewId,
+      });
+    }
+    setHighlightedReviewId(reviewId);
+    setHighlightedCommentId(null);
+    setActiveCommentReviewId(null);
+    goToTab('feed');
+  }
+
+  function handleOpenCommentWithReturn(reviewId: string, commentId: string | null = null) {
+    if (activeTab !== 'feed') {
+      setReturnView({
+        tab: activeTab,
+        myPageTab,
+        activeCommentReviewId,
+        highlightedCommentId,
+        highlightedReviewId,
+      });
+    }
+    handleOpenReviewComments(reviewId, commentId);
   }
 
   useEffect(() => {
@@ -702,10 +740,11 @@ export default function App() {
   const canNavigateBack = activeCommentReviewId !== null || activeTab !== 'map' || selectedPlaceId !== null || selectedFestivalId !== null || drawerState !== 'closed';
 
   function handleNavigateBack() {
-    if (returnView && activeTab === 'map') {
+    if (returnView && activeTab !== returnView.tab) {
       setMyPageTab(returnView.myPageTab);
       setActiveCommentReviewId(returnView.activeCommentReviewId);
       setHighlightedCommentId(returnView.highlightedCommentId);
+      setHighlightedReviewId(returnView.highlightedReviewId);
       const nextTab = returnView.tab;
       setReturnView(null);
       commitRouteState({ tab: nextTab, placeId: null, festivalId: null, drawerState: 'closed' }, 'replace');
@@ -807,6 +846,7 @@ export default function App() {
                 commentSubmittingReviewId={commentSubmittingReviewId}
                 activeCommentReviewId={activeCommentReviewId}
                 highlightedCommentId={highlightedCommentId}
+                highlightedReviewId={highlightedReviewId}
                 onToggleReviewLike={handleToggleReviewLike}
                 onCreateComment={handleCreateComment}
                 onRequestLogin={() => goToTab('my')}
@@ -852,7 +892,8 @@ export default function App() {
                 onSaveNickname={handleUpdateProfile}
                 onPublishRoute={handlePublishRoute}
                 onOpenPlace={handleOpenPlaceWithReturn}
-                onOpenComment={(reviewId, commentId) => handleOpenReviewComments(reviewId, commentId)}
+                onOpenComment={(reviewId, commentId) => handleOpenCommentWithReturn(reviewId, commentId)}
+                onOpenReview={handleOpenReviewWithReturn}
               />
             )}
           </div>
@@ -870,3 +911,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -20,6 +20,7 @@ interface MyPagePanelProps {
   onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
   onOpenPlace: (placeId: string) => void;
   onOpenComment: (reviewId: string, commentId: string) => void;
+  onOpenReview: (reviewId: string) => void;
 }
 
 const routeMoodOptions: CourseMood[] = ['데이트', '사진', '힐링', '비 오는 날'];
@@ -57,6 +58,7 @@ export function MyPagePanel({
   onPublishRoute,
   onOpenPlace,
   onOpenComment,
+  onOpenReview,
 }: MyPagePanelProps) {
   const [nickname, setNickname] = useState(sessionUser?.nickname ?? '');
   const [showVisitedDetail, setShowVisitedDetail] = useState(false);
@@ -270,18 +272,28 @@ export function MyPagePanel({
             {activeTab === 'feeds' && (
               <div className="review-stack">
                 {myPage.reviews.map((review) => (
-                  <article key={review.id} className="review-card">
-                    <div className="review-card__top">
-                      <div>
-                        <strong>{review.placeName}</strong>
-                        <p>{review.visitLabel} · {review.visitedAt}</p>
+                  <article key={review.id} className="review-card review-card--my-feed">
+                    <div className="review-card__top review-card__top--feed">
+                      <div className="review-card__title-block review-card__title-block--feed">
+                        <p className="eyebrow">{review.mood}</p>
+                        <strong className="review-card__title">{review.placeName}</strong>
+                        <p className="review-card__author-line">{review.visitLabel} · {review.visitedAt}</p>
                       </div>
-                      <span className="mood-pill">{review.mood}</span>
+                    </div>
+                    <div className="review-card__tag-row">
+                      <span className="review-card__visit-pill">{review.visitLabel}</span>
+                      {review.travelSessionId && <span className="soft-tag">연속 여행 기록</span>}
+                      <span className="soft-tag">{review.badge}</span>
                     </div>
                     <p className="review-card__body">{review.body}</p>
-                    <button type="button" className="text-button review-card__place-link" onClick={() => onOpenPlace(review.placeId)}>
-                      장소 열기
-                    </button>
+                    <div className="review-card__actions review-card__actions--my-feed">
+                      <button type="button" className="review-card__place-link" onClick={() => onOpenReview(review.id)}>
+                        내 피드 보기
+                      </button>
+                      <button type="button" className="review-link-button" onClick={() => onOpenPlace(review.placeId)}>
+                        이 장소 보기
+                      </button>
+                    </div>
                   </article>
                 ))}
                 {myPage.reviews.length === 0 && <p className="empty-copy">아직 작성한 피드가 없어요.</p>}
@@ -411,6 +423,9 @@ export function MyPagePanel({
     </section>
   );
 }
+
+
+
 
 
 

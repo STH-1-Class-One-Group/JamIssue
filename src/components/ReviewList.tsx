@@ -1,10 +1,12 @@
-﻿import { CommentThread } from './CommentThread';
+﻿import { useEffect, useRef } from 'react';
+import { CommentThread } from './CommentThread';
 import type { Review } from '../types';
 
 interface ReviewListProps {
   reviews: Review[];
   canWriteComment: boolean;
   canToggleLike: boolean;
+  highlightedReviewId?: string | null;
   likingReviewId: string | null;
   submittingReviewId: string | null;
   onToggleLike: (reviewId: string) => Promise<void>;
@@ -20,6 +22,7 @@ export function ReviewList({
   reviews,
   canWriteComment,
   canToggleLike,
+  highlightedReviewId = null,
   likingReviewId,
   submittingReviewId,
   onToggleLike,
@@ -30,6 +33,39 @@ export function ReviewList({
   emptyTitle,
   emptyBody,
 }: ReviewListProps) {
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!highlightedReviewId) {
+      return;
+    }
+
+    const listEl = listRef.current;
+    if (!listEl) {
+      return;
+    }
+
+    const selector = `[data-review-id="${highlightedReviewId}"]`;
+    const scrollToReview = () => {
+      const target = listEl.querySelector<HTMLElement>(selector);
+      if (!target) {
+        return;
+      }
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    scrollToReview();
+    const rafA = window.requestAnimationFrame(scrollToReview);
+    const rafB = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(scrollToReview);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(rafA);
+      window.cancelAnimationFrame(rafB);
+    };
+  }, [highlightedReviewId, reviews]);
+
   if (reviews.length === 0) {
     return (
       <section className="sheet-card stack-gap">
@@ -40,9 +76,13 @@ export function ReviewList({
   }
 
   return (
-    <div className="review-stack">
+    <div ref={listRef} className="review-stack">
       {reviews.map((review) => (
-        <article key={review.id} className="review-card">
+        <article
+          key={review.id}
+          data-review-id={review.id}
+          className={review.id === highlightedReviewId ? 'review-card review-card--highlighted' : 'review-card'}
+        >
           <div className="review-card__top review-card__top--feed">
             <div className="review-card__title-block review-card__title-block--feed">
               <p className="eyebrow">{review.mood}</p>
