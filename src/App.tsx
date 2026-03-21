@@ -1071,6 +1071,7 @@ export default function App() {
             reviewError={reviewError}
             reviewSubmitting={reviewSubmitting}
             canCreateReview={canCreateReview}
+            hasCreatedReviewToday={hasCreatedReviewToday}
             onOpenFeedReview={() => {
               if (!selectedPlace) {
                 return;

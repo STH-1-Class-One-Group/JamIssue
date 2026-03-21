@@ -1,4 +1,4 @@
-﻿/* 2026-03-18 prototype reset */
+/* 2026-03-18 prototype reset */
 .phone-shell--map {
   display: block !important;
 }
@@ -1032,3 +1032,89 @@ body {
 }
 
 
+
+/* 2026-03-21 interaction cleanup */
+:root {
+  --ui-control-bg: rgba(255, 255, 255, 0.94);
+  --ui-control-border: rgba(255, 127, 168, 0.22);
+  --ui-control-text: #5f4660;
+  --ui-control-active-bg: linear-gradient(180deg, #fff4f8, #ffe7ef);
+  --ui-control-active-border: rgba(255, 93, 146, 0.28);
+  --ui-pill-bg: rgba(255, 240, 246, 0.92);
+  --ui-pill-border: rgba(255, 127, 168, 0.18);
+  --ui-pill-text: #c84d7d;
+}
+
+.bottom-nav {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+
+.bottom-nav__item,
+.chip,
+.map-filter-chip,
+.secondary-button,
+.review-link-button {
+  background: var(--ui-control-bg) !important;
+  border: 1px solid var(--ui-control-border) !important;
+  color: var(--ui-control-text) !important;
+}
+
+.bottom-nav__item.is-active,
+.chip.is-active,
+.secondary-button.is-complete,
+.soft-tag.is-complete,
+.map-filter-chip.is-active {
+  background: var(--ui-control-active-bg) !important;
+  border-color: var(--ui-control-active-border) !important;
+  color: #ff4f93 !important;
+}
+
+.counter-pill,
+.soft-tag {
+  background: var(--ui-pill-bg) !important;
+  border: 1px solid var(--ui-pill-border) !important;
+  color: var(--ui-pill-text) !important;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #ff7fab, #ff5d92) !important;
+  border: 1px solid rgba(255, 93, 146, 0.24) !important;
+  color: #fff !important;
+}
+
+.bottom-nav__item {
+  min-height: 44px !important;
+  min-width: 0 !important;
+  padding: 0 4px !important;
+  font-size: var(--type-sm) !important;
+}
+
+.app-back-button {
+  bottom: calc(var(--bottom-nav-offset) + 24px) !important;
+  right: 14px !important;
+}
+
+.map-route-preview-card {
+  bottom: calc(var(--bottom-nav-offset) + 28px) !important;
+}
+
+.map-route-preview-card__close {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+
+.file-picker.is-disabled {
+  opacity: 0.56 !important;
+  pointer-events: none !important;
+}
+
+.review-composer textarea:disabled {
+  background: rgba(248, 244, 247, 0.94) !important;
+  color: rgba(93, 77, 101, 0.58) !important;
+  cursor: not-allowed !important;
+}

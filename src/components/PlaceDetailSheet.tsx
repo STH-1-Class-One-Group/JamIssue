@@ -12,6 +12,7 @@ interface PlaceDetailSheetProps {
   visitCount: number;
   latestStamp: StampLog | null;
   todayStamp: StampLog | null;
+  hasCreatedReviewToday: boolean;
   stampActionStatus: ApiStatus;
   stampActionMessage: string;
   reviewProofMessage: string;
@@ -51,6 +52,7 @@ export function PlaceDetailSheet({
   visitCount,
   latestStamp,
   todayStamp,
+  hasCreatedReviewToday,
   stampActionStatus,
   stampActionMessage,
   reviewProofMessage,
@@ -102,6 +104,7 @@ export function PlaceDetailSheet({
   const canClaimStamp = loggedIn && !todayStamp;
   const categoryMeta = categoryInfo[place.category];
   const reviewPreview = reviews.slice(0, 2);
+  const reviewComposerStatus = !loggedIn ? 'login' : hasCreatedReviewToday ? 'daily-limit' : todayStamp ? 'ready' : 'claim';
 
   return (
     <section className={sheetClassName} aria-label="장소 상세 시트">
@@ -145,13 +148,13 @@ export function PlaceDetailSheet({
 
         <div className="sheet-card place-drawer__proof-card">
           <div className="place-drawer__proof-copy">
-            <strong>오늘 방문 인증</strong>
+            <strong>오늘 스탬프</strong>
             <p>{stampActionMessage}</p>
           </div>
           <div className="place-drawer__proof-action">
             {!loggedIn ? (
               <>
-                <span className="place-drawer__proof-kicker">피드와 코스 해금</span>
+                <span className="place-drawer__proof-kicker">피드 · 코스 해금</span>
                 <button type="button" className="primary-button place-drawer__proof-button" onClick={onRequestLogin}>
                   로그인하고 시작
                 </button>
@@ -163,11 +166,7 @@ export function PlaceDetailSheet({
                 onClick={() => void onClaimStamp(place)}
                 disabled={!canClaimStamp || stampActionStatus === 'loading'}
               >
-                {todayStamp
-                  ? '오늘 인증 완료'
-                  : stampActionStatus === 'loading'
-                    ? '확인 중'
-                    : '오늘 인증하기'}
+                {todayStamp ? '오늘 스탬프 완료' : stampActionStatus === 'loading' ? '확인 중' : '오늘 스탬프 찍기'}
               </button>
             )}
           </div>
@@ -182,6 +181,7 @@ export function PlaceDetailSheet({
           placeName={place.name}
           loggedIn={loggedIn}
           canSubmit={canCreateReview}
+          status={reviewComposerStatus}
           submitting={reviewSubmitting}
           errorMessage={reviewError}
           proofMessage={reviewProofMessage}
@@ -189,12 +189,7 @@ export function PlaceDetailSheet({
             if (!todayStamp) {
               return Promise.resolve();
             }
-            return onCreateReview({
-              stampId: todayStamp.id,
-              body,
-              mood,
-              file,
-            });
+            return onCreateReview({ stampId: todayStamp.id, body, mood, file });
           }}
           onRequestLogin={onRequestLogin}
           onRequestProof={() => {
@@ -227,7 +222,7 @@ export function PlaceDetailSheet({
                   <span className="counter-pill counter-pill--muted">{review.badge}</span>
                 </div>
                 <p className="review-card__meta-line">
-                  {review.visitLabel} · {formatVisitedAt(review.visitedAt)}
+                  {review.visitLabel} / {formatVisitedAt(review.visitedAt)}
                 </p>
                 <p className="review-card__body place-drawer__preview-body">{review.body}</p>
               </article>

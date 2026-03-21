@@ -1,4 +1,4 @@
-import { categoryInfo, categoryItems } from '../lib/categories';
+﻿import { categoryInfo, categoryItems } from '../lib/categories';
 import { FestivalDetailSheet } from './FestivalDetailSheet';
 import { NaverMap } from './NaverMap';
 import { PlaceDetailSheet } from './PlaceDetailSheet';
@@ -42,6 +42,7 @@ interface MapTabStageProps {
   reviewError: string | null;
   reviewSubmitting: boolean;
   canCreateReview: boolean;
+  hasCreatedReviewToday: boolean;
   onOpenFeedReview: () => void;
   onClearRoutePreview: () => void;
   initialMapCenter?: { lat: number; lng: number };
@@ -88,6 +89,7 @@ export function MapTabStage({
   reviewError,
   reviewSubmitting,
   canCreateReview,
+  hasCreatedReviewToday,
   onOpenFeedReview,
   onClearRoutePreview,
   initialMapCenter,
@@ -146,7 +148,7 @@ export function MapTabStage({
       </div>
 
       {notice && <div className="floating-notice">{notice}</div>}
-      {bootstrapStatus === 'loading' && <section className="floating-status">{'\uB300\uC804 \uC9C0\uB3C4\uB97C \uBD88\uB7EC\uC624\uACE0 \uC788\uC5B4\uC694.'}</section>}
+      {bootstrapStatus === 'loading' && <section className="floating-status">대전 지도를 불러오고 있어요.</section>}
       {bootstrapStatus === 'error' && <section className="floating-status floating-status--error">{bootstrapError}</section>}
 
       <NaverMap
@@ -176,8 +178,8 @@ export function MapTabStage({
               <h3>{routePreview.title}</h3>
               <p className="section-copy">{routePreview.subtitle}</p>
             </div>
-            <button type="button" className="map-route-preview-card__close" onClick={onClearRoutePreview} aria-label={'\uACBD\uB85C \uBBF8\uB9AC\uBCF4\uAE30 \uB2EB\uAE30'}>
-              <span aria-hidden="true">?</span>
+            <button type="button" className="map-route-preview-card__close" onClick={onClearRoutePreview} aria-label="경로 미리보기 닫기">
+              <span aria-hidden="true">{'\u00D7'}</span>
             </button>
           </div>
           <div className="course-card__places community-route-places map-route-preview-card__places">
@@ -214,6 +216,7 @@ export function MapTabStage({
         visitCount={visitCount}
         latestStamp={latestStamp}
         todayStamp={todayStamp}
+        hasCreatedReviewToday={hasCreatedReviewToday}
         stampActionStatus={stampActionStatus}
         stampActionMessage={stampActionMessage}
         reviewProofMessage={reviewProofMessage}
