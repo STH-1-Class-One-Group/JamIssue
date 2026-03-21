@@ -99,6 +99,7 @@ export interface StampLog {
   visitNumber: number;
   visitLabel: string;
   travelSessionId: string | null;
+  travelSessionStampCount: number;
   isToday: boolean;
 }
 

@@ -26,6 +26,7 @@ import { BottomNav } from './components/BottomNav';
 import { CourseTab } from './components/CourseTab';
 import { EventTab } from './components/EventTab';
 import { FeedTab } from './components/FeedTab';
+import { FloatingBackButton } from './components/FloatingBackButton';
 import { MapTabStage } from './components/MapTabStage';
 import { MyPagePanel } from './components/MyPagePanel';
 import {
@@ -134,7 +135,7 @@ export default function App() {
     feedPlaceFilterId: string | null;
   } | null>(null);
   const [stampActionStatus, setStampActionStatus] = useState<ApiStatus>('idle');
-  const [stampActionMessage, setStampActionMessage] = useState('?μ냼瑜??좏깮?섎㈃ ?ㅻ뒛 ?ㅽ꺃??媛???щ?瑜?諛붾줈 ?뺤씤?????덉뼱??');
+  const [stampActionMessage, setStampActionMessage] = useState('장소를 선택하면 오늘 스탬프 가능 여부를 바로 확인할 수 있어요.');
   const [routeSubmitting, setRouteSubmitting] = useState(false);
   const [routeError, setRouteError] = useState<string | null>(null);
   const [routeLikeUpdatingId, setRouteLikeUpdatingId] = useState<string | null>(null);
@@ -487,170 +488,32 @@ export default function App() {
   }
 
   useEffect(() => {
-    void loadApp(true);
-  }, []);
-
-  useEffect(() => {
-    if (activeTab !== 'map' || mapLocationStatus !== 'idle') {
-      return;
-    }
-
-    void refreshCurrentPosition(false);
-  }, [activeTab, mapLocationStatus]);
-
-  useEffect(() => {
-    if (!notice) {
-      return;
-    }
-    const timeout = window.setTimeout(() => setNotice(null), 3200);
-    return () => window.clearTimeout(timeout);
-  }, [notice]);
-
-  useEffect(() => {
-    if (activeTab === 'my' && sessionUser && !myPage) {
-      void refreshMyPageForUser(sessionUser, true);
-    }
-    if (activeTab === 'my' && myPageTab === 'admin' && sessionUser?.isAdmin && !adminSummary) {
-      void refreshAdminSummary(true).catch((error) => {
-        setNotice(formatErrorMessage(error));
-      });
-    }
-  }, [activeTab, adminSummary, myPage, myPageTab, refreshAdminSummary, refreshMyPageForUser, sessionUser]);
-
-  useEffect(() => {
-    if (activeTab !== 'course') {
-      return;
-    }
-
-    void ensureCuratedCourses().catch((error) => {
-      setNotice(formatErrorMessage(error));
-    });
-
-    const cached = communityRoutesCacheRef.current[communityRouteSort];
-    if (cached) {
-      setCommunityRoutes(cached);
-      return;
-    }
-
-    void fetchCommunityRoutes(communityRouteSort, true).catch((error) => {
-      setNotice(formatErrorMessage(error));
-    });
-  }, [activeTab, communityRouteSort, communityRoutesCacheRef, ensureCuratedCourses, fetchCommunityRoutes, setCommunityRoutes]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    if (communityRoutesCacheRef.current[communityRouteSort]) {
-      return;
-    }
-
-    const run = () => {
-      void fetchCommunityRoutes(communityRouteSort, true).catch(() => {});
-    };
-
-    const timeout = window.setTimeout(run, 180);
-    return () => window.clearTimeout(timeout);
-  }, [communityRouteSort, communityRoutesCacheRef, fetchCommunityRoutes]);
-
-  useEffect(() => {
-    if (activeTab !== 'feed' && activeCommentReviewId === null) {
-      return;
-    }
-
-    void ensureFeedReviews().catch((error) => {
-      setNotice(formatErrorMessage(error));
-    });
-  }, [activeCommentReviewId, activeTab, ensureFeedReviews]);
-
-  useEffect(() => {
-    if (!selectedPlaceId) {
-      setSelectedPlaceReviews([]);
-      return;
-    }
-
-    const cachedReviews = placeReviewsCacheRef.current[selectedPlaceId];
-    if (cachedReviews) {
-      setSelectedPlaceReviews(cachedReviews);
-      return;
-    }
-
-    void getReviews({ placeId: selectedPlaceId })
-      .then((nextReviews) => {
-        placeReviewsCacheRef.current[selectedPlaceId] = nextReviews;
-        setSelectedPlaceReviews(nextReviews);
-      })
-      .catch((error) => {
-        setNotice(formatErrorMessage(error));
-      });
-  }, [placeReviewsCacheRef, selectedPlaceId, setSelectedPlaceReviews]);
-
-  useEffect(() => {
-    if (
-      activeTab === 'my' &&
-      myPageTab === 'comments' &&
-      sessionUser &&
-      myPage &&
-      myPage.comments.length === 0 &&
-      !myCommentsLoadedOnce
-    ) {
-      void loadMoreMyComments(true);
-    }
-  }, [activeTab, myCommentsLoadedOnce, myPage, myPageTab, sessionUser]);
-
-  useEffect(() => {
-    if (activeTab !== 'feed' && activeCommentReviewId !== null) {
-      setActiveCommentReviewId(null);
-      setHighlightedCommentId(null);
-    }
-  }, [activeCommentReviewId, activeTab]);
-
-  useEffect(() => {
-    if (!selectedPlaceId) {
-      return;
-    }
-
-    const isVisibleInCurrentCategory = filteredPlaces.some((place) => place.id === selectedPlaceId);
-    if (!isVisibleInCurrentCategory) {
-      commitRouteState(
-        {
-          tab: 'map',
-          placeId: null,
-          festivalId: null,
-          drawerState: 'closed',
-        },
-        'replace',
-      );
-    }
-  }, [commitRouteState, filteredPlaces, selectedPlaceId]);
-  useEffect(() => {
     if (!selectedPlace) {
-      setStampActionMessage('?μ냼瑜??좏깮?섎㈃ ?ㅻ뒛 ?ㅽ꺃??媛???щ?瑜?諛붾줈 ?뺤씤?????덉뼱??');
+      setStampActionMessage('\uC7A5\uC18C\uB97C \uC120\uD0DD\uD558\uBA74 \uC624\uB298 \uC2A4\uD0EC\uD504 \uAC00\uB2A5 \uC5EC\uBD80\uB97C \uBC14\uB85C \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.');
       return;
     }
 
     if (!sessionUser) {
-      setStampActionMessage(`${selectedPlace.name}?먯꽌 ?ㅽ꺃?꾨? 李띿쑝?ㅻ㈃ 癒쇱? 濡쒓렇?명빐 二쇱꽭??`);
+      setStampActionMessage(`${selectedPlace.name}\uC5D0\uC11C \uC2A4\uD0EC\uD504\uB97C \uCC0D\uC73C\uB824\uBA74 \uBA3C\uC800 \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.`);
       return;
     }
 
     if (todayStamp) {
-      setStampActionMessage(`${todayStamp.visitLabel} ?ㅻ뒛 ?ㅽ꺃?꾨? ?대? 李띿뿀?댁슂.`);
+      setStampActionMessage(`${todayStamp.visitLabel} \uC624\uB298 \uC2A4\uD0EC\uD504\uB97C \uC774\uBBF8 \uCC0D\uC5C8\uC5B4\uC694.`);
       return;
     }
 
     if (typeof selectedPlaceDistanceMeters !== 'number') {
-      setStampActionMessage('?꾩옱 ?꾩튂瑜??뺤씤?섎㈃ ?ㅻ뒛 ?ㅽ꺃??媛???щ?瑜?諛붾줈 ?덈궡???쒕┫寃뚯슂.');
+      setStampActionMessage('\uD604\uC7AC \uC704\uCE58\uB97C \uD655\uC778\uD558\uBA74 \uC624\uB298 \uC2A4\uD0EC\uD504 \uAC00\uB2A5 \uC5EC\uBD80\uB97C \uBC14\uB85C \uC548\uB0B4\uD574 \uB4DC\uB9B4\uAC8C\uC694.');
       return;
     }
 
     if (selectedPlaceDistanceMeters <= STAMP_UNLOCK_RADIUS_METERS) {
-      setStampActionMessage(`?꾩옣 諛섍꼍 ${formatDistanceMeters(selectedPlaceDistanceMeters)} ?덉씠?먯슂. 吏湲?諛붾줈 ?ㅻ뒛 ?ㅽ꺃?꾨? 李띿쓣 ???덉뼱??`);
+      setStampActionMessage(`\uD604\uC7A5 \uBC18\uACBD ${formatDistanceMeters(selectedPlaceDistanceMeters)} \uC548\uC774\uC5D0\uC694. \uC9C0\uAE08 \uBC14\uB85C \uC624\uB298 \uC2A4\uD0EC\uD504\uB97C \uCC0D\uC744 \uC218 \uC788\uC5B4\uC694.`);
       return;
     }
 
-    setStampActionMessage(`?꾩옣源뚯? ${formatDistanceMeters(selectedPlaceDistanceMeters)} ?⑥븯?댁슂. ${STAMP_UNLOCK_RADIUS_METERS}m ?덉쑝濡??ㅼ뼱?ㅻ㈃ ?ㅻ뒛 ?ㅽ꺃?꾨? 李띿쓣 ???덉뼱??`);
+    setStampActionMessage(`\uD604\uC7A5\uAE4C\uC9C0 ${formatDistanceMeters(selectedPlaceDistanceMeters)} \uB0A8\uC544 \uC788\uC5B4\uC694. ${STAMP_UNLOCK_RADIUS_METERS}m \uC548\uC73C\uB85C \uB4E4\uC5B4\uC624\uBA74 \uC624\uB298 \uC2A4\uD0EC\uD504\uB97C \uCC0D\uC744 \uC218 \uC788\uC5B4\uC694.`);
   }, [selectedPlace, selectedPlaceDistanceMeters, sessionUser, todayStamp]);
 
   async function loadApp(withLoading: boolean) {
@@ -1199,12 +1062,12 @@ export default function App() {
   }
 
   const reviewProofMessage = !sessionUser
-    ? '濡쒓렇?명븯硫??ㅻ뒛 諛⑸Ц ?몄쬆 ?ㅼ뿉留??쇰뱶瑜??④만 ???덉뼱??'
+    ? '\uB85C\uADF8\uC778\uD558\uBA74 \uC624\uB298 \uBC29\uBB38 \uC778\uC99D \uB4A4\uC5D0\uB9CC \uD53C\uB4DC\uB97C \uB0A8\uAE38 \uC218 \uC788\uC5B4\uC694.'
     : hasCreatedReviewToday
-      ? '?ㅻ뒛? ?대? ?쇰뱶瑜??묒꽦?덉뼱?? ?쇰뱶???섎（???섎굹留??④만 ???덉뼱??'
+      ? '\uC624\uB298\uC740 \uC774\uBBF8 \uC774 \uC7A5\uC18C \uD53C\uB4DC\uB97C \uC791\uC131\uD588\uC5B4\uC694. \uD53C\uB4DC\uB294 \uD558\uB8E8\uC5D0 \uD558\uB098\uB9CC \uB0A8\uAE38 \uC218 \uC788\uC5B4\uC694.'
       : todayStamp
-        ? `${todayStamp.visitLabel} 諛⑸Ц ?ㅽ꺃?꾧? ?뺤씤?먯뼱?? ?ㅻ뒛 ?쇰뱶 ??媛쒕? ?묒꽦?????덉뼱??`
-        : '?ㅻ뒛 諛⑸Ц ?ㅽ꺃?꾨? 癒쇱? 留덉튂硫??쇰뱶瑜??묒꽦?????덉뼱??';
+        ? `${todayStamp.visitLabel} \uBC29\uBB38 \uC2A4\uD0EC\uD504\uAC00 \uD655\uC778\uB410\uC5B4\uC694. \uC624\uB298 \uD53C\uB4DC \uD55C \uAC1C\uB97C \uC791\uC131\uD560 \uC218 \uC788\uC5B4\uC694.`
+        : '\uC624\uB298 \uBC29\uBB38 \uC2A4\uD0EC\uD504\uB97C \uBA3C\uC800 \uCC0D\uC73C\uBA74 \uD53C\uB4DC\uB97C \uC791\uC131\uD560 \uC218 \uC788\uC5B4\uC694.';
 
   return (
     <div className="map-app-shell">
@@ -1373,11 +1236,7 @@ export default function App() {
           </div>
         )}
 
-        {canNavigateBack && (
-          <button type="button" className="app-back-button" onClick={handleNavigateBack} aria-label="이전 화면으로 돌아가기">
-            <span aria-hidden="true">{'\u2190'}</span>
-          </button>
-        )}
+        {canNavigateBack && <FloatingBackButton onNavigateBack={handleNavigateBack} />}
 
         <BottomNav activeTab={activeTab} onChange={handleBottomNavChange} />
       </div>

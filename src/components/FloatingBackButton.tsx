@@ -1,0 +1,229 @@
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
+
+const STORAGE_KEY = 'jamissue-back-button-position';
+const BUTTON_SIZE = 46;
+const EDGE_PADDING = 12;
+const BOTTOM_PADDING = 110;
+const TOUCH_DRAG_DELAY_MS = 260;
+
+interface Position {
+  x: number;
+  y: number;
+}
+
+function clampPosition(position: Position) {
+  if (typeof window === 'undefined') {
+    return position;
+  }
+
+  const maxX = Math.max(EDGE_PADDING, window.innerWidth - BUTTON_SIZE - EDGE_PADDING);
+  const maxY = Math.max(EDGE_PADDING, window.innerHeight - BUTTON_SIZE - BOTTOM_PADDING);
+
+  return {
+    x: Math.min(Math.max(position.x, EDGE_PADDING), maxX),
+    y: Math.min(Math.max(position.y, EDGE_PADDING), maxY),
+  };
+}
+
+function getDefaultPosition(): Position {
+  if (typeof window === 'undefined') {
+    return { x: EDGE_PADDING, y: EDGE_PADDING };
+  }
+
+  return clampPosition({
+    x: window.innerWidth - BUTTON_SIZE - 14,
+    y: window.innerHeight - BUTTON_SIZE - 132,
+  });
+}
+
+function readStoredPosition() {
+  if (typeof window === 'undefined') {
+    return getDefaultPosition();
+  }
+
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return getDefaultPosition();
+    }
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.x !== 'number' || typeof parsed?.y !== 'number') {
+      return getDefaultPosition();
+    }
+    return clampPosition(parsed);
+  } catch {
+    return getDefaultPosition();
+  }
+}
+
+interface FloatingBackButtonProps {
+  onNavigateBack: () => void;
+}
+
+export function FloatingBackButton({ onNavigateBack }: FloatingBackButtonProps) {
+  const [position, setPosition] = useState<Position>(() => readStoredPosition());
+  const [isDragging, setIsDragging] = useState(false);
+  const handledTapRef = useRef(false);
+  const touchTimerRef = useRef<number | null>(null);
+  const dragStateRef = useRef({
+    pointerId: -1,
+    startX: 0,
+    startY: 0,
+    originX: 0,
+    originY: 0,
+    hasMoved: false,
+    dragEnabled: false,
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const nextPosition = clampPosition(position);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPosition));
+    if (nextPosition.x !== position.x || nextPosition.y !== position.y) {
+      setPosition(nextPosition);
+    }
+
+    return undefined;
+  }, [position]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    function handleResize() {
+      setPosition((current) => clampPosition(current));
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => () => {
+    if (touchTimerRef.current !== null) {
+      window.clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+  }, []);
+
+  const style = useMemo(() => ({ left: position.x, top: position.y }), [position.x, position.y]);
+
+  function clearTouchTimer() {
+    if (touchTimerRef.current !== null) {
+      window.clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+  }
+
+  function finishDrag(pointerId: number) {
+    if (dragStateRef.current.pointerId !== pointerId) {
+      return;
+    }
+
+    clearTouchTimer();
+    dragStateRef.current.pointerId = -1;
+    dragStateRef.current.dragEnabled = false;
+    setIsDragging(false);
+  }
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    handledTapRef.current = false;
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: position.x,
+      originY: position.y,
+      hasMoved: false,
+      dragEnabled: event.pointerType === 'mouse',
+    };
+
+    if (event.pointerType !== 'mouse') {
+      clearTouchTimer();
+      touchTimerRef.current = window.setTimeout(() => {
+        if (dragStateRef.current.pointerId === event.pointerId) {
+          dragStateRef.current.dragEnabled = true;
+          setIsDragging(true);
+        }
+      }, TOUCH_DRAG_DELAY_MS);
+    } else {
+      setIsDragging(true);
+    }
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (dragStateRef.current.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - dragStateRef.current.startX;
+    const deltaY = event.clientY - dragStateRef.current.startY;
+    if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+      dragStateRef.current.hasMoved = true;
+    }
+
+    if (!dragStateRef.current.dragEnabled) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsDragging(true);
+    setPosition(clampPosition({
+      x: dragStateRef.current.originX + deltaX,
+      y: dragStateRef.current.originY + deltaY,
+    }));
+  }
+
+  function handlePointerUp(event: ReactPointerEvent<HTMLButtonElement>) {
+    const shouldNavigate = dragStateRef.current.pointerId === event.pointerId && !dragStateRef.current.hasMoved && !dragStateRef.current.dragEnabled;
+    finishDrag(event.pointerId);
+    if (shouldNavigate) {
+      handledTapRef.current = true;
+      onNavigateBack();
+    }
+  }
+
+  function handlePointerCancel(event: ReactPointerEvent<HTMLButtonElement>) {
+    finishDrag(event.pointerId);
+  }
+
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    if (handledTapRef.current) {
+      handledTapRef.current = false;
+      event.preventDefault();
+      return;
+    }
+
+    if (dragStateRef.current.hasMoved || isDragging) {
+      event.preventDefault();
+      return;
+    }
+
+    onNavigateBack();
+  }
+
+  return (
+    <button
+      type="button"
+      className={isDragging ? 'app-back-button is-dragging' : 'app-back-button'}
+      style={style}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onClick={handleClick}
+      aria-label="?? ???? ????"
+    >
+      <span aria-hidden="true">{'\u2190'}</span>
+    </button>
+  );
+}

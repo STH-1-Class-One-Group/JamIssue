@@ -1303,3 +1303,18 @@ body {
   background: linear-gradient(180deg, #fff7fa, #ffeef4) !important;
   border-color: rgba(255, 93, 146, 0.34) !important;
 }
+
+/* 2026-03-21 draggable back button */
+.app-back-button {
+  position: fixed !important;
+  right: auto !important;
+  bottom: auto !important;
+  touch-action: none !important;
+  user-select: none !important;
+  cursor: grab !important;
+}
+
+.app-back-button.is-dragging {
+  cursor: grabbing !important;
+  box-shadow: 0 16px 28px rgba(74, 44, 63, 0.14) !important;
+}

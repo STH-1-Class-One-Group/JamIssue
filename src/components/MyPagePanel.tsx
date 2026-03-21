@@ -329,18 +329,16 @@ export function MyPagePanel({
                       <div className="review-card__title-block review-card__title-block--feed">
                         <p className="eyebrow">STAMP LOG</p>
                         <strong className="review-card__title">{stampLog.placeName}</strong>
-                        <p className="review-card__author-line">획득 · {stampLog.stampedAt}</p>
+                        <p className="review-card__author-line">{'\uD68D\uB4DD / '}{stampLog.stampedAt}</p>
                       </div>
                     </div>
                     <div className="review-card__tag-row">
                       <span className="review-card__visit-pill">{stampLog.visitLabel}</span>
-                      {stampLog.isToday && <span className="soft-tag is-complete">오늘</span>}
-                      {stampLog.travelSessionId && <span className="soft-tag">여행 세션 연결</span>}
+                      {stampLog.isToday && <span className="soft-tag is-complete">{'\uC624\uB298'}</span>}
+                      {stampLog.travelSessionId && stampLog.travelSessionStampCount >= 2 && <span className="soft-tag">{'\uC5EC\uD589 \uC138\uC158 \uC5F0\uACB0'}</span>}
                     </div>
                     <div className="review-card__actions review-card__actions--my-feed">
-                      <button type="button" className="review-link-button" onClick={() => onOpenPlace(stampLog.placeId)}>
-                        이 장소 보기
-                      </button>
+                      <button type="button" className="review-link-button" onClick={() => onOpenPlace(stampLog.placeId)}>{'\uC774 \uC7A5\uC18C \uBCF4\uAE30'}</button>
                     </div>
                   </article>
                 ))}

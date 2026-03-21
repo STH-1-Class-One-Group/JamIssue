@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+﻿import { useRef } from 'react';
 import { categoryInfo } from '../lib/categories';
 import { ReviewComposer } from './ReviewComposer';
 import type { ApiStatus, DrawerState, Place, Review, ReviewMood, StampLog } from '../types';
@@ -154,7 +154,7 @@ export function PlaceDetailSheet({
           <div className="place-drawer__proof-action">
             {!loggedIn ? (
               <>
-                <span className="place-drawer__proof-kicker">피드 · 코스 해금</span>
+                <span className="place-drawer__proof-kicker">피드와 코스 시작</span>
                 <button type="button" className="primary-button place-drawer__proof-button" onClick={onRequestLogin}>
                   로그인하고 시작
                 </button>

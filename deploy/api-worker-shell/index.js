@@ -203,19 +203,30 @@ function buildSessionDurationLabel(session) {
 
 function buildStampLogs(stampRows, placesByPositionId) {
   const todayKey = toSeoulDateKey();
+  const sessionCounts = new Map();
+  for (const row of stampRows) {
+    if (!row.travel_session_id) {
+      continue;
+    }
+    const sessionId = String(row.travel_session_id);
+    sessionCounts.set(sessionId, (sessionCounts.get(sessionId) ?? 0) + 1);
+  }
+
   return [...stampRows]
     .sort((left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime())
     .map((row) => {
       const place = placesByPositionId.get(String(row.position_id));
+      const travelSessionId = row.travel_session_id ? String(row.travel_session_id) : null;
       return {
         id: String(row.stamp_id),
         placeId: place?.id ?? String(row.position_id),
-        placeName: place?.name ?? "장소 정보 없음",
+        placeName: place?.name ?? "?? ?? ??",
         stampedAt: formatDateTime(row.created_at),
         stampedDate: formatDate(row.created_at),
         visitNumber: row.visit_ordinal ?? 1,
         visitLabel: formatVisitLabel(row.visit_ordinal ?? 1),
-        travelSessionId: row.travel_session_id ? String(row.travel_session_id) : null,
+        travelSessionId,
+        travelSessionStampCount: travelSessionId ? Number(sessionCounts.get(travelSessionId) ?? 0) : 0,
         isToday: row.stamp_date === todayKey,
       };
     });
