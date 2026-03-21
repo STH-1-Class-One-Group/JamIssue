@@ -92,6 +92,12 @@ function currentLocationMarkerContent() {
   `;
 }
 
+function routeStepMarkerContent(step: number) {
+  return `
+    <div style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:999px;background:#5f4660;color:#fff;font-size:11px;font-weight:800;box-shadow:0 10px 24px rgba(95,70,96,0.22);border:2px solid rgba(255,255,255,0.9);">${step}</div>
+  `;
+}
+
 interface NaverMapProps {
   places: Place[];
   festivals: FestivalItem[];
@@ -107,6 +113,7 @@ interface NaverMapProps {
   initialCenter?: { lat: number; lng: number };
   initialZoom?: number;
   onViewportChange?: (lat: number, lng: number, zoom: number) => void;
+  routePreviewPlaces?: Place[];
   height?: string;
 }
 
@@ -125,6 +132,7 @@ export function NaverMap({
   initialCenter,
   initialZoom,
   onViewportChange,
+  routePreviewPlaces = [],
   height = '100%',
 }: NaverMapProps) {
   const mapElementRef = useRef<HTMLDivElement | null>(null);
@@ -132,6 +140,8 @@ export function NaverMap({
   const placeMarkersRef = useRef<any[]>([]);
   const festivalMarkersRef = useRef<any[]>([]);
   const currentMarkerRef = useRef<any | null>(null);
+  const routeLineRef = useRef<any | null>(null);
+  const routeStepMarkersRef = useRef<any[]>([]);
   const onViewportChangeRef = useRef(onViewportChange);
   const idleListenerRef = useRef<any>(null);
   const viewportDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -331,6 +341,56 @@ export function NaverMap({
 
     mapRef.current.panTo(new window.naver.maps.LatLng(currentPosition.latitude, currentPosition.longitude));
   }, [currentPosition, focusCurrentLocationKey, status]);
+
+  useEffect(() => {
+    if (status !== 'ready' || !window.naver?.maps || !mapRef.current) {
+      return;
+    }
+
+    const maps = window.naver.maps;
+    if (routeLineRef.current) {
+      routeLineRef.current.setMap(null);
+      routeLineRef.current = null;
+    }
+    routeStepMarkersRef.current.forEach((marker) => marker.setMap(null));
+    routeStepMarkersRef.current = [];
+
+    if (!routePreviewPlaces || routePreviewPlaces.length === 0) {
+      return;
+    }
+
+    const path = routePreviewPlaces.map((place) => new maps.LatLng(place.latitude, place.longitude));
+    routeLineRef.current = new maps.Polyline({
+      map: mapRef.current,
+      path,
+      strokeColor: '#ff6b9d',
+      strokeOpacity: 0.82,
+      strokeWeight: 4,
+      strokeLineCap: 'round',
+      strokeLineJoin: 'round',
+      zIndex: 120,
+    });
+
+    routeStepMarkersRef.current = routePreviewPlaces.map((place, index) => new maps.Marker({
+      map: mapRef.current,
+      position: new maps.LatLng(place.latitude, place.longitude),
+      title: '',
+      zIndex: 165,
+      icon: {
+        content: routeStepMarkerContent(index + 1),
+        anchor: new maps.Point(13, 13),
+      },
+    }));
+
+    if (routePreviewPlaces.length >= 2 && !selectedPlaceId && !selectedFestivalId) {
+      const bounds = new maps.LatLngBounds();
+      routePreviewPlaces.forEach((place) => bounds.extend(new maps.LatLng(place.latitude, place.longitude)));
+      mapRef.current.fitBounds(bounds, { top: 72, right: 40, bottom: 120, left: 40 });
+    } else if (routePreviewPlaces.length === 1 && !selectedPlaceId && !selectedFestivalId) {
+      mapRef.current.panTo(new maps.LatLng(routePreviewPlaces[0].latitude, routePreviewPlaces[0].longitude));
+    }
+  }, [routePreviewPlaces, selectedFestivalId, selectedPlaceId, status]);
+
 
   if (!clientId || status === 'error') {
     return (

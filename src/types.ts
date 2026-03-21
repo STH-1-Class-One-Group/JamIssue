@@ -126,6 +126,15 @@ export interface Course {
   placeIds: string[];
 }
 
+export interface RoutePreview {
+  id: string;
+  title: string;
+  subtitle: string;
+  mood: string;
+  placeIds: string[];
+  placeNames: string[];
+}
+
 export interface UserRoute {
   id: string;
   authorId: string;
@@ -298,4 +307,20 @@ export interface RoadmapBannerMilestone {
   title: string;
   body: string;
   deliverable: string;
+}
+export interface DiscoverySearchResponse {
+  query: string;
+  places: Place[];
+  routes: UserRoute[];
+}
+
+export interface PlaceRecommendation {
+  place: Place;
+  score: number;
+  reason: string;
+}
+
+export interface DiscoveryRecommendationsResponse {
+  placeId: string;
+  items: PlaceRecommendation[];
 }

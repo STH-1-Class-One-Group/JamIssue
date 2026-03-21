@@ -9,6 +9,7 @@ import {
   createUserRoute,
   getCommunityRoutes,
   getCuratedCourses,
+  getAdminSummary,
   getFestivals,
   getMapBootstrap,
   getMySummary,
@@ -17,6 +18,7 @@ import {
   logout,
   toggleCommunityRouteLike,
   toggleReviewLike,
+  updatePlaceVisibility,
   updateProfile,
   uploadReviewImage,
 } from './api/client';
@@ -41,6 +43,7 @@ import type {
   Category,
   CommunityRouteSort,
   FestivalItem,
+  AdminSummaryResponse,
   MyPageResponse,
   MyPageTabKey,
   Place,
@@ -49,6 +52,7 @@ import type {
   Tab,
   UserRoute,
   DrawerState,
+  RoutePreview,
 } from './types';
 
 const emptyProviders: AuthProvider[] = [
@@ -92,6 +96,7 @@ export default function App() {
   const [initialMapViewport] = useState(getInitialMapViewport);
 
   const [myPageTab, setMyPageTab] = useState<MyPageTabKey>('stamps');
+  const [selectedRoutePreview, setSelectedRoutePreview] = useState<RoutePreview | null>(null);
   const [feedPlaceFilterId, setFeedPlaceFilterId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [notice, setNotice] = useState<string | null>(getInitialNotice);
@@ -113,6 +118,9 @@ export default function App() {
   const [communityRoutes, setCommunityRoutes] = useState<UserRoute[]>([]);
   const [communityRouteSort, setCommunityRouteSort] = useState<CommunityRouteSort>('popular');
   const [myPage, setMyPage] = useState<MyPageResponse | null>(null);
+  const [adminSummary, setAdminSummary] = useState<AdminSummaryResponse | null>(null);
+  const [adminBusyPlaceId, setAdminBusyPlaceId] = useState<string | null>(null);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [currentPosition, setCurrentPosition] = useState<{ latitude: number; longitude: number } | null>(null);
   const [mapLocationStatus, setMapLocationStatus] = useState<ApiStatus>('idle');
   const [mapLocationMessage, setMapLocationMessage] = useState<string | null>(null);
@@ -158,6 +166,16 @@ export default function App() {
 
     return places.find((place) => place.id === selectedPlaceId) ?? null;
   }, [places, selectedPlaceId]);
+  const routePreviewPlaces = useMemo(() => {
+    if (!selectedRoutePreview) {
+      return [];
+    }
+
+    return selectedRoutePreview.placeIds
+      .map((placeId) => places.find((place) => place.id === placeId) ?? null)
+      .filter(Boolean) as Place[];
+  }, [places, selectedRoutePreview]);
+
   const selectedFestival = useMemo(() => {
     if (!selectedFestivalId) {
       return null;
@@ -238,6 +256,24 @@ export default function App() {
     coursesLoadedRef.current = true;
   }
 
+  async function refreshAdminSummary(force = false) {
+    if (!sessionUser?.isAdmin) {
+      setAdminSummary(null);
+      return null;
+    }
+    if (!force && activeTab !== 'my' && adminSummary !== null) {
+      return adminSummary;
+    }
+    setAdminLoading(true);
+    try {
+      const nextSummary = await getAdminSummary();
+      setAdminSummary(nextSummary);
+      return nextSummary;
+    } finally {
+      setAdminLoading(false);
+    }
+  }
+
   async function refreshMyPageForUser(user: SessionUser | null, force = false) {
     if (!user) {
       setMyPage(null);
@@ -263,6 +299,25 @@ export default function App() {
     setHighlightedCommentId(null);
   }
 
+  function handleOpenRoutePreview(route: RoutePreview) {
+    if (activeTab !== 'map') {
+      setReturnView({
+        tab: activeTab,
+        myPageTab,
+        activeCommentReviewId,
+        highlightedCommentId,
+        highlightedReviewId,
+        placeId: selectedPlaceId,
+        festivalId: selectedFestivalId,
+        drawerState,
+        feedPlaceFilterId,
+      });
+    }
+    setSelectedRoutePreview(route);
+    handleCloseReviewComments();
+    commitRouteState({ tab: 'map', placeId: null, festivalId: null, drawerState: 'closed' }, activeTab === 'map' ? 'replace' : 'push');
+  }
+
   function handleOpenPlaceWithReturn(placeId: string) {
     if (activeTab !== 'map') {
       setReturnView({
@@ -277,6 +332,7 @@ export default function App() {
         feedPlaceFilterId,
       });
     }
+    setSelectedRoutePreview(null);
     openPlace(placeId);
   }
 
@@ -315,6 +371,8 @@ export default function App() {
         feedPlaceFilterId,
       });
     }
+    setSelectedRoutePreview(null);
+    setSelectedRoutePreview(null);
     setFeedPlaceFilterId(placeId);
     setHighlightedReviewId(null);
     setHighlightedCommentId(null);
@@ -362,7 +420,12 @@ export default function App() {
     if (activeTab === 'my' && sessionUser && !myPage) {
       void refreshMyPageForUser(sessionUser, true);
     }
-  }, [activeTab, myPage, sessionUser]);
+    if (activeTab === 'my' && sessionUser?.isAdmin && !adminSummary) {
+      void refreshAdminSummary(true).catch((error) => {
+        setNotice(formatErrorMessage(error));
+      });
+    }
+  }, [activeTab, adminSummary, myPage, sessionUser]);
 
   useEffect(() => {
     if (activeTab !== 'course') {
@@ -442,6 +505,9 @@ export default function App() {
 
   function handleBottomNavChange(nextTab: Tab) {
     setReturnView(null);
+    if (nextTab !== 'map') {
+      setSelectedRoutePreview(null);
+    }
     if (nextTab !== 'feed') {
       setActiveCommentReviewId(null);
       setHighlightedCommentId(null);
@@ -855,6 +921,29 @@ export default function App() {
     }
   }
 
+  async function handleToggleAdminPlace(placeId: string, nextValue: boolean) {
+    if (!sessionUser?.isAdmin) {
+      return;
+    }
+    setAdminBusyPlaceId(placeId);
+    try {
+      const updated = await updatePlaceVisibility(placeId, { isActive: nextValue });
+      setAdminSummary((current) => current ? {
+        ...current,
+        places: current.places.map((place) => place.id === placeId ? updated : place),
+      } : current);
+      const nextMap = await getMapBootstrap();
+      setPlaces(nextMap.places);
+      setStampState(nextMap.stamps);
+      setHasRealData(nextMap.hasRealData);
+      setNotice(nextValue ? '\uC7A5\uC18C \uB178\uCD9C\uC744 \uCF1C\uB450\uC5C8\uC5B4\uC694.' : '\uC7A5\uC18C \uB178\uCD9C\uC744 \uC228\uACBC\uC5B4\uC694.');
+    } catch (error) {
+      setNotice(formatErrorMessage(error));
+    } finally {
+      setAdminBusyPlaceId(null);
+    }
+  }
+
   async function handleUpdateProfile(nextNickname: string) {
     if (!nextNickname || nextNickname.length < 2) {
       setProfileError('닉네임은 두 글자 이상으로 입력해 주세요.');
@@ -891,7 +980,7 @@ export default function App() {
     }
   }
 
-  const canNavigateBack = activeCommentReviewId !== null || activeTab !== 'map' || selectedPlaceId !== null || selectedFestivalId !== null || drawerState !== 'closed';
+  const canNavigateBack = activeCommentReviewId !== null || activeTab !== 'map' || selectedPlaceId !== null || selectedFestivalId !== null || drawerState !== 'closed' || selectedRoutePreview !== null;
 
   function handleNavigateBack() {
     if (returnView && activeTab !== returnView.tab) {
@@ -900,6 +989,8 @@ export default function App() {
       setHighlightedCommentId(returnView.highlightedCommentId);
       setHighlightedReviewId(returnView.highlightedReviewId);
       setFeedPlaceFilterId(returnView.feedPlaceFilterId);
+      setSelectedRoutePreview(null);
+      setSelectedRoutePreview(null);
       const nextTab = returnView.tab;
       setReturnView(null);
       commitRouteState(
@@ -911,6 +1002,16 @@ export default function App() {
         },
         'replace',
       );
+      return;
+    }
+
+    if (selectedRoutePreview) {
+      setSelectedRoutePreview(null);
+      return;
+    }
+
+    if (selectedRoutePreview) {
+      setSelectedRoutePreview(null);
       return;
     }
 
@@ -955,6 +1056,8 @@ export default function App() {
             drawerState={drawerState}
             sessionUser={sessionUser}
             selectedPlaceReviews={selectedPlaceReviews}
+            routePreview={selectedRoutePreview}
+            routePreviewPlaces={routePreviewPlaces}
             visitCount={visitCount}
             latestStamp={latestStamp}
             todayStamp={todayStamp}
@@ -972,9 +1075,16 @@ export default function App() {
             }}
             initialMapCenter={{ lat: initialMapViewport.lat, lng: initialMapViewport.lng }}
             initialMapZoom={initialMapViewport.zoom}
-            onOpenPlace={openPlace}
-            onOpenFestival={openFestival}
+            onOpenPlace={(placeId) => {
+              setSelectedRoutePreview(null);
+              openPlace(placeId);
+            }}
+            onOpenFestival={(festivalId) => {
+              setSelectedRoutePreview(null);
+              openFestival(festivalId);
+            }}
             onCloseDrawer={closeDrawer}
+            onClearRoutePreview={() => setSelectedRoutePreview(null)}
             onExpandPlaceDrawer={() =>
               selectedPlace &&
               commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'full' }, 'replace')
@@ -1044,6 +1154,7 @@ export default function App() {
                 }}
                 onToggleLike={handleToggleRouteLike}
                 onOpenPlace={handleOpenPlaceWithReturn}
+                onOpenRoutePreview={handleOpenRoutePreview}
                 onRequestLogin={() => goToTab('my')}
               />
             )}
@@ -1059,6 +1170,9 @@ export default function App() {
                 profileError={profileError}
                 routeSubmitting={routeSubmitting}
                 routeError={routeError}
+                adminSummary={adminSummary}
+                adminBusyPlaceId={adminBusyPlaceId}
+                adminLoading={adminLoading}
                 onChangeTab={setMyPageTab}
                 onLogin={startProviderLogin}
                 onLogout={handleLogout}
@@ -1068,6 +1182,10 @@ export default function App() {
                 onOpenComment={(reviewId, commentId) => handleOpenCommentWithReturn(reviewId, commentId)}
                 onOpenReview={handleOpenReviewWithReturn}
                 onDeleteReview={handleDeleteReview}
+                onRefreshAdmin={async () => {
+                  await refreshAdminSummary(true);
+                }}
+                onToggleAdminPlace={handleToggleAdminPlace}
               />
             )}
           </div>

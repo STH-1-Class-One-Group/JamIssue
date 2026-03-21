@@ -1,4 +1,4 @@
-﻿const PROVIDERS = [
+const PROVIDERS = [
   { key: 'naver', label: '네이버' },
   { key: 'kakao', label: '카카오' },
 ];
@@ -1248,6 +1248,78 @@ function mapMyComments(commentRows, feedRows, placesByPositionId) {
       reviewBody: feed?.body ?? '',
     };
   });
+}
+
+async function buildAdminSummary(env) {
+  const [userCount, placeCount, reviewCount, commentCount, stampCount, placeRows, feedRows] = await Promise.all([
+    supabaseCount(env, 'user'),
+    supabaseCount(env, 'map'),
+    supabaseCount(env, 'feed'),
+    supabaseCount(env, 'user_comment'),
+    supabaseCount(env, 'user_stamp'),
+    supabaseRequest(env, 'map?select=position_id,slug,name,district,category,is_active,updated_at&order=is_active.desc,name.asc'),
+    supabaseRequest(env, 'feed?select=position_id'),
+  ]);
+
+  const reviewCountByPosition = new Map();
+  for (const row of feedRows ?? []) {
+    const key = String(row.position_id);
+    reviewCountByPosition.set(key, (reviewCountByPosition.get(key) ?? 0) + 1);
+  }
+
+  return {
+    userCount,
+    placeCount,
+    reviewCount,
+    commentCount,
+    stampCount,
+    sourceReady: true,
+    places: (placeRows ?? []).map((row) => ({
+      id: row.slug,
+      name: row.name,
+      district: row.district,
+      category: normalizePlaceCategory(row.category, row.slug),
+      isActive: Boolean(row.is_active),
+      reviewCount: reviewCountByPosition.get(String(row.position_id)) ?? 0,
+      updatedAt: formatDateTime(row.updated_at),
+    })),
+  };
+}
+
+async function handleAdminSummary(request, env) {
+  const sessionUser = await readSessionUser(request, env);
+  if (!sessionUser || !sessionUser.isAdmin) {
+    return jsonResponse(403, { detail: '???? ? ? ???.' }, env, request);
+  }
+  return jsonResponse(200, await buildAdminSummary(env), env, request);
+}
+
+async function handleAdminPlaceVisibility(request, env, placeId) {
+  const sessionUser = await readSessionUser(request, env);
+  if (!sessionUser || !sessionUser.isAdmin) {
+    return jsonResponse(403, { detail: '???? ??? ? ???.' }, env, request);
+  }
+  const payload = await request.json().catch(() => null);
+  const nextValue = Boolean(payload?.isActive);
+  const nowIso = new Date().toISOString();
+  const updatedRows = await supabaseRequest(env, `map?slug=eq.${encodeFilterValue(placeId)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ is_active: nextValue, updated_at: nowIso }),
+  });
+  const updatedRow = Array.isArray(updatedRows) ? updatedRows[0] : null;
+  if (!updatedRow) {
+    return jsonResponse(404, { detail: '??? ?? ? ???.' }, env, request);
+  }
+  const reviewRows = await supabaseRequest(env, `feed?select=feed_id&position_id=eq.${encodeFilterValue(updatedRow.position_id)}`);
+  return jsonResponse(200, {
+    id: updatedRow.slug,
+    name: updatedRow.name,
+    district: updatedRow.district,
+    category: normalizePlaceCategory(updatedRow.category, updatedRow.slug),
+    isActive: Boolean(updatedRow.is_active),
+    reviewCount: (reviewRows ?? []).length,
+    updatedAt: formatDateTime(updatedRow.updated_at),
+  }, env, request);
 }
 
 async function handleMySummary(request, env) {

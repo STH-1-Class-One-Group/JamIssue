@@ -14,31 +14,38 @@ export function AdminPanel({ summary, busyPlaceId, isImporting, onRefreshImport,
   }
 
   return (
-    <section className="admin-panel card-block">
-      <div className="section-title-row">
+    <section className="admin-panel sheet-card stack-gap">
+      <div className="section-title-row section-title-row--tight">
         <div>
           <p className="eyebrow">ADMIN</p>
-          <h3>운영 대시보드</h3>
+          <h3>{'운영 요약'}</h3>
         </div>
         <button type="button" className="secondary-button" onClick={() => void onRefreshImport()} disabled={isImporting}>
-          {isImporting ? '가져오는 중...' : '공공 데이터 다시 가져오기'}
+          {isImporting ? '갱신 중' : '다시 불러오기'}
         </button>
       </div>
+
       <div className="admin-metrics">
-        <article><strong>{summary.userCount}</strong><span>사용자</span></article>
-        <article><strong>{summary.placeCount}</strong><span>장소</span></article>
-        <article><strong>{summary.reviewCount}</strong><span>후기</span></article>
-        <article><strong>{summary.commentCount}</strong><span>댓글</span></article>
+        <article><strong>{summary.userCount}</strong><span>{'사용자'}</span></article>
+        <article><strong>{summary.placeCount}</strong><span>{'장소'}</span></article>
+        <article><strong>{summary.reviewCount}</strong><span>{'피드'}</span></article>
+        <article><strong>{summary.commentCount}</strong><span>{'댓글'}</span></article>
       </div>
+
       <div className="admin-place-list">
         {summary.places.map((place) => (
           <article key={place.id} className="admin-place-item">
-            <div>
+            <div className="admin-place-item__copy">
               <strong>{place.name}</strong>
-              <p>{place.district} / 후기 {place.reviewCount}개 / {place.updatedAt}</p>
+              <p>{place.district} / {'피드'} {place.reviewCount}{'개'} / {place.updatedAt}</p>
             </div>
-            <button type="button" className={place.isActive ? 'secondary-button is-complete' : 'secondary-button'} onClick={() => void onTogglePlace(place.id, !place.isActive)} disabled={busyPlaceId === place.id}>
-              {busyPlaceId === place.id ? '저장 중...' : place.isActive ? '노출 중' : '숨김'}
+            <button
+              type="button"
+              className={place.isActive ? 'secondary-button is-complete' : 'secondary-button'}
+              onClick={() => void onTogglePlace(place.id, !place.isActive)}
+              disabled={busyPlaceId === place.id}
+            >
+              {busyPlaceId === place.id ? '적용 중' : place.isActive ? '노출 중' : '숨김'}
             </button>
           </article>
         ))}

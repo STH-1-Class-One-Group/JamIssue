@@ -10,6 +10,7 @@ import type {
   FestivalItem,
   Place,
   ReviewMood,
+  RoutePreview,
   SessionUser,
 } from '../types';
 
@@ -30,6 +31,8 @@ interface MapTabStageProps {
   drawerState: DrawerState;
   sessionUser: SessionUser | null;
   selectedPlaceReviews: BootstrapResponse['reviews'];
+  routePreview: RoutePreview | null;
+  routePreviewPlaces: Place[];
   visitCount: number;
   latestStamp: BootstrapResponse['stamps']['logs'][number] | null;
   todayStamp: BootstrapResponse['stamps']['logs'][number] | null;
@@ -40,6 +43,7 @@ interface MapTabStageProps {
   reviewSubmitting: boolean;
   canCreateReview: boolean;
   onOpenFeedReview: () => void;
+  onClearRoutePreview: () => void;
   initialMapCenter?: { lat: number; lng: number };
   initialMapZoom?: number;
   onOpenPlace: (placeId: string) => void;
@@ -73,6 +77,8 @@ export function MapTabStage({
   drawerState,
   sessionUser,
   selectedPlaceReviews,
+  routePreview,
+  routePreviewPlaces,
   visitCount,
   latestStamp,
   todayStamp,
@@ -83,6 +89,7 @@ export function MapTabStage({
   reviewSubmitting,
   canCreateReview,
   onOpenFeedReview,
+  onClearRoutePreview,
   initialMapCenter,
   initialMapZoom,
   onOpenPlace,
@@ -115,7 +122,6 @@ export function MapTabStage({
           {categoryItems.map((item) => {
             const isActive = item.key === activeCategory;
             const info = item.key === 'all' ? null : categoryInfo[item.key];
-
             return (
               <button
                 key={item.key}
@@ -132,7 +138,7 @@ export function MapTabStage({
                     : undefined
                 }
               >
-                {info ? `${info.icon} ${item.label}` : item.label}
+                {info ? String(info.icon) + ' ' + item.label : item.label}
               </button>
             );
           })}
@@ -140,7 +146,7 @@ export function MapTabStage({
       </div>
 
       {notice && <div className="floating-notice">{notice}</div>}
-      {bootstrapStatus === 'loading' && <section className="floating-status">대전 장소와 축제를 불러오고 있어요.</section>}
+      {bootstrapStatus === 'loading' && <section className="floating-status">{'\uB300\uC804 \uC9C0\uB3C4\uB97C \uBD88\uB7EC\uC624\uACE0 \uC788\uC5B4\uC694.'}</section>}
       {bootstrapStatus === 'error' && <section className="floating-status floating-status--error">{bootstrapError}</section>}
 
       <NaverMap
@@ -158,8 +164,31 @@ export function MapTabStage({
         initialCenter={initialMapCenter}
         initialZoom={initialMapZoom}
         onViewportChange={onMapViewportChange}
+        routePreviewPlaces={routePreviewPlaces}
         height="100%"
       />
+
+      {!selectedPlace && !selectedFestival && routePreview && (
+        <section className="map-route-preview-card">
+          <div className="map-route-preview-card__top">
+            <div>
+              <p className="eyebrow">ROUTE PREVIEW</p>
+              <h3>{routePreview.title}</h3>
+              <p className="section-copy">{routePreview.subtitle}</p>
+            </div>
+            <button type="button" className="map-route-preview-card__close" onClick={onClearRoutePreview} aria-label={'\uACBD\uB85C \uBBF8\uB9AC\uBCF4\uAE30 \uB2EB\uAE30'}>
+              <span aria-hidden="true">?</span>
+            </button>
+          </div>
+          <div className="course-card__places community-route-places map-route-preview-card__places">
+            {routePreview.placeNames.map((placeName, index) => (
+              <span key={routePreview.id + '-' + placeName + '-' + index} className="soft-tag">
+                {index + 1}. {placeName}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
 
       {!selectedPlace && !selectedFestival && (
         <section className="map-drawer-teaser">

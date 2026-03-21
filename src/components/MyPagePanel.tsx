@@ -1,7 +1,8 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
+import { AdminPanel } from './AdminPanel';
 import { ProviderButtons } from './ProviderButtons';
-import type { AuthProvider, CourseMood, MyPageResponse, MyPageTabKey, SessionUser, TravelSession } from '../types';
+import type { AdminSummaryResponse, AuthProvider, CourseMood, MyPageResponse, MyPageTabKey, SessionUser, TravelSession } from '../types';
 
 interface MyPagePanelProps {
   sessionUser: SessionUser | null;
@@ -13,6 +14,9 @@ interface MyPagePanelProps {
   profileError: string | null;
   routeSubmitting: boolean;
   routeError: string | null;
+  adminSummary: AdminSummaryResponse | null;
+  adminBusyPlaceId: string | null;
+  adminLoading: boolean;
   onChangeTab: (nextTab: MyPageTabKey) => void;
   onLogin: (provider: 'naver' | 'kakao') => void;
   onLogout: () => Promise<void>;
@@ -22,6 +26,8 @@ interface MyPagePanelProps {
   onOpenComment: (reviewId: string, commentId: string) => void;
   onOpenReview: (reviewId: string) => void;
   onDeleteReview: (reviewId: string) => Promise<void>;
+  onRefreshAdmin: () => Promise<void>;
+  onToggleAdminPlace: (placeId: string, nextValue: boolean) => Promise<void>;
 }
 
 const routeMoodOptions: CourseMood[] = ['데이트', '사진', '힐링', '비 오는 날'];
@@ -52,6 +58,9 @@ export function MyPagePanel({
   profileError,
   routeSubmitting,
   routeError,
+  adminSummary,
+  adminBusyPlaceId,
+  adminLoading,
   onChangeTab,
   onLogin,
   onLogout,
@@ -61,6 +70,8 @@ export function MyPagePanel({
   onOpenComment,
   onOpenReview,
   onDeleteReview,
+  onRefreshAdmin,
+  onToggleAdminPlace,
 }: MyPagePanelProps) {
   const [nickname, setNickname] = useState(sessionUser?.nickname ?? '');
   const [showVisitedDetail, setShowVisitedDetail] = useState(false);
@@ -438,6 +449,16 @@ export function MyPagePanel({
               </div>
             )}
           </section>
+
+          {sessionUser.isAdmin && (
+            <AdminPanel
+              summary={adminSummary}
+              busyPlaceId={adminBusyPlaceId}
+              isImporting={adminLoading}
+              onRefreshImport={onRefreshAdmin}
+              onTogglePlace={onToggleAdminPlace}
+            />
+          )}
         </>
       )}
     </section>
