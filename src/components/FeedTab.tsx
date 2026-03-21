@@ -1,4 +1,5 @@
 ﻿import { useMemo } from 'react';
+import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { FeedCommentSheet } from './FeedCommentSheet';
 import { ReviewList } from './ReviewList';
@@ -59,6 +60,12 @@ export function FeedTab({
 }: FeedTabProps) {
   const skipFeedScrollRestore = Boolean(highlightedReviewId || activeCommentReviewId || highlightedCommentId);
   const scrollRef = useScrollRestoration<HTMLElement>(`feed:${placeFilterId ?? 'all'}`, { skipRestore: skipFeedScrollRestore });
+  const loadMoreRef = useAutoLoadMore({
+    enabled: hasMore && !placeFilterId,
+    loading: loadingMore,
+    onLoadMore,
+    rootRef: scrollRef,
+  });
   const visibleReviews = useMemo(
     () => (placeFilterId ? reviews.filter((review) => review.placeId === placeFilterId) : reviews),
     [placeFilterId, reviews],
@@ -106,8 +113,9 @@ export function FeedTab({
         />
         {hasMore && (
           <div className="list-load-more-row">
+            <div ref={loadMoreRef} className="list-load-more-sentinel" aria-hidden="true" />
             <button type="button" className="secondary-button" onClick={() => void onLoadMore()} disabled={loadingMore}>
-              {loadingMore ? '???? ?' : '?? ? ????'}
+              {loadingMore ? 'Loading...' : 'More feed'}
             </button>
           </div>
         )}

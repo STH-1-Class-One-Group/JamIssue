@@ -133,7 +133,7 @@ export function PlaceDetailSheet({
 
         {place.imageUrl && (
           <div className="place-drawer__hero">
-            <img src={place.imageUrl} alt={place.name} className="place-drawer__hero-image" />
+            <img src={place.imageUrl} alt={place.name} className="place-drawer__hero-image" loading="lazy" decoding="async" />
           </div>
         )}
 

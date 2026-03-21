@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
+import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { ProviderButtons } from './ProviderButtons';
 import type { AdminSummaryResponse, AuthProvider, CourseMood, MyPageResponse, MyPageTabKey, SessionUser, TravelSession } from '../types';
 
@@ -103,6 +104,12 @@ export function MyPagePanel({
   const [showSettings, setShowSettings] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, DraftState>>({});
   const scrollRef = useScrollRestoration<HTMLElement>(`my:${activeTab}`);
+  const commentsLoadMoreRef = useAutoLoadMore({
+    enabled: activeTab === 'comments' && commentsHasMore,
+    loading: commentsLoadingMore,
+    onLoadMore: () => onLoadMoreComments(),
+    rootRef: scrollRef,
+  });
 
   useEffect(() => {
     setNickname(sessionUser?.nickname ?? '');

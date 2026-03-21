@@ -1864,3 +1864,9 @@ textarea {
   content-visibility: auto;
   contain-intrinsic-size: 320px;
 }
+
+
+.list-load-more-sentinel {
+  width: 100%;
+  height: 1px;
+}
