@@ -233,21 +233,36 @@ export function MyPagePanel({
           <section className="sheet-card stack-gap">
             <div className="chip-row compact-gap my-page-primary-tabs">
               <button type="button" className={activeTab === 'stamps' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('stamps')}>
-                얻은 스탬프
+                {'\uC2A4\uD0EC\uD504'}
               </button>
               <button type="button" className={activeTab === 'feeds' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('feeds')}>
-                내가 쓴 피드
+                {'\uD53C\uB4DC'}
               </button>
               <button type="button" className={activeTab === 'comments' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('comments')}>
-                내가 쓴 댓글
+                {'\uB313\uAE00'}
               </button>
               <button type="button" className={activeTab === 'routes' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('routes')}>
-                생성한 코스
+                {'\uCF54\uC2A4'}
               </button>
             </div>
 
             {activeTab === 'stamps' && (
               <div className="review-stack">
+                {unpublishedSessions.length > 0 && (
+                  <article className="sheet-card stack-gap">
+                    <div className="section-title-row section-title-row--tight">
+                      <div>
+                        <p className="eyebrow">READY TO PUBLISH</p>
+                        <h3>{'\uCF54\uC2A4\uB85C \uBC1C\uD589\uD560 \uC218 \uC788\uB294 \uC5EC\uC815\uC774 \uC788\uC5B4\uC694'}</h3>
+                      </div>
+                      <span className="counter-pill">{unpublishedSessions.length}{'\uAC1C'}</span>
+                    </div>
+                    <p className="section-copy">{'\u0032\u0034\uC2DC\uAC04 \uC548\uC5D0 \uC774\uC5B4\uC9C4 \uC2A4\uD0EC\uD504 \uAE30\uB85D\uC744 \uACF5\uAC1C \uCF54\uC2A4\uB85C \uBC1C\uD589\uD574 \uBCF4\uC138\uC694.'}</p>
+                    <button type="button" className="primary-button route-submit-button" onClick={() => onChangeTab('routes')}>
+                      {'\uCF54\uC2A4 \uBC1C\uD589\uD558\uB7EC \uAC00\uAE30'}
+                    </button>
+                  </article>
+                )}
                 {myPage.stampLogs.map((stampLog) => (
                   <article key={stampLog.id} className="review-card review-card--stamp-log">
                     <div className="review-card__top">

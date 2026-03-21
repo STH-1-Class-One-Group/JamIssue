@@ -92,6 +92,7 @@ export default function App() {
   const [initialMapViewport] = useState(getInitialMapViewport);
 
   const [myPageTab, setMyPageTab] = useState<MyPageTabKey>('stamps');
+  const [feedPlaceFilterId, setFeedPlaceFilterId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [notice, setNotice] = useState<string | null>(getInitialNotice);
   const [bootstrapStatus, setBootstrapStatus] = useState<ApiStatus>('idle');
@@ -134,6 +135,7 @@ export default function App() {
     placeId: string | null;
     festivalId: string | null;
     drawerState: DrawerState;
+    feedPlaceFilterId: string | null;
   } | null>(null);
   const [stampActionStatus, setStampActionStatus] = useState<ApiStatus>('idle');
   const [stampActionMessage, setStampActionMessage] = useState('장소를 선택하면 오늘 스탬프 가능 여부를 바로 알려드릴게요.');
@@ -272,6 +274,7 @@ export default function App() {
         placeId: selectedPlaceId,
         festivalId: selectedFestivalId,
         drawerState,
+        feedPlaceFilterId,
       });
     }
     openPlace(placeId);
@@ -288,9 +291,32 @@ export default function App() {
         placeId: selectedPlaceId,
         festivalId: selectedFestivalId,
         drawerState,
+        feedPlaceFilterId,
       });
     }
+    setFeedPlaceFilterId(null);
     setHighlightedReviewId(reviewId);
+    setHighlightedCommentId(null);
+    setActiveCommentReviewId(null);
+    goToTab('feed');
+  }
+
+  function handleOpenPlaceFeedWithReturn(placeId: string) {
+    if (activeTab !== 'feed') {
+      setReturnView({
+        tab: activeTab,
+        myPageTab,
+        activeCommentReviewId,
+        highlightedCommentId,
+        highlightedReviewId,
+        placeId: selectedPlaceId,
+        festivalId: selectedFestivalId,
+        drawerState,
+        feedPlaceFilterId,
+      });
+    }
+    setFeedPlaceFilterId(placeId);
+    setHighlightedReviewId(null);
     setHighlightedCommentId(null);
     setActiveCommentReviewId(null);
     goToTab('feed');
@@ -307,6 +333,7 @@ export default function App() {
         placeId: selectedPlaceId,
         festivalId: selectedFestivalId,
         drawerState,
+        feedPlaceFilterId,
       });
     }
     handleOpenReviewComments(reviewId, commentId);
@@ -412,6 +439,19 @@ export default function App() {
       setHighlightedCommentId(null);
     }
   }, [activeCommentReviewId, activeTab]);
+
+  function handleBottomNavChange(nextTab: Tab) {
+    setReturnView(null);
+    if (nextTab !== 'feed') {
+      setActiveCommentReviewId(null);
+      setHighlightedCommentId(null);
+      setHighlightedReviewId(null);
+    }
+    if (nextTab === 'feed') {
+      setFeedPlaceFilterId(null);
+    }
+    goToTab(nextTab);
+  }
 
   useEffect(() => {
     if (!selectedPlaceId) {
@@ -859,6 +899,7 @@ export default function App() {
       setActiveCommentReviewId(returnView.activeCommentReviewId);
       setHighlightedCommentId(returnView.highlightedCommentId);
       setHighlightedReviewId(returnView.highlightedReviewId);
+      setFeedPlaceFilterId(returnView.feedPlaceFilterId);
       const nextTab = returnView.tab;
       setReturnView(null);
       commitRouteState(
@@ -924,8 +965,10 @@ export default function App() {
             reviewSubmitting={reviewSubmitting}
             canCreateReview={canCreateReview}
             onOpenFeedReview={() => {
-              const primaryReview = selectedPlaceReviews[0];
-              handleOpenReviewWithReturn(primaryReview?.id ?? null);
+              if (!selectedPlace) {
+                return;
+              }
+              handleOpenPlaceFeedWithReturn(selectedPlace.id);
             }}
             initialMapCenter={{ lat: initialMapViewport.lat, lng: initialMapViewport.lng }}
             initialMapZoom={initialMapViewport.zoom}
@@ -965,6 +1008,8 @@ export default function App() {
                 reviews={reviews}
                 sessionUser={sessionUser}
                 reviewLikeUpdatingId={reviewLikeUpdatingId}
+                placeFilterId={feedPlaceFilterId}
+                placeFilterName={feedPlaceFilterId ? placeNameById[feedPlaceFilterId] ?? null : null}
                 commentSubmittingReviewId={commentSubmittingReviewId}
                 commentMutatingId={commentMutatingId}
                 deletingReviewId={deletingReviewId}
@@ -977,6 +1022,7 @@ export default function App() {
                 onDeleteComment={handleDeleteComment}
                 onDeleteReview={handleDeleteReview}
                 onRequestLogin={() => goToTab('my')}
+                onClearPlaceFilter={() => setFeedPlaceFilterId(null)}
                 onOpenPlace={handleOpenPlaceWithReturn}
                 onOpenComments={handleOpenReviewComments}
                 onCloseComments={handleCloseReviewComments}
@@ -1034,7 +1080,7 @@ export default function App() {
           </button>
         )}
 
-        <BottomNav activeTab={activeTab} onChange={goToTab} />
+        <BottomNav activeTab={activeTab} onChange={handleBottomNavChange} />
       </div>
     </div>
   );
