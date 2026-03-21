@@ -1204,3 +1204,61 @@ body {
   width: 100% !important;
   justify-content: center !important;
 }
+
+/* 2026-03-21 my page detail cleanup */
+.review-card--stamp-log .review-card__title-block--feed {
+  gap: 8px !important;
+}
+
+.review-card--stamp-log .review-card__tag-row {
+  gap: 10px !important;
+  margin-top: 6px !important;
+}
+
+.review-card--stamp-log .review-card__visit-pill,
+.review-card--stamp-log .soft-tag {
+  min-height: 34px !important;
+  padding: 7px 12px !important;
+  border-radius: 999px !important;
+}
+
+.review-card--stamp-log .review-card__actions {
+  margin-top: 4px !important;
+}
+
+.review-card--stamp-log .review-link-button {
+  min-width: 118px !important;
+}
+
+.review-card--comment-log .review-card__content-stack {
+  gap: 12px !important;
+}
+
+.review-card--comment-log .review-card__quote-block,
+.review-card--comment-log .review-card__quote-block--muted {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.review-card--comment-log .review-card__label {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin-bottom: 4px !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: rgba(216, 79, 134, 0.92) !important;
+}
+
+.review-card--comment-log .section-copy,
+.review-card--comment-log .review-card__body {
+  margin: 0 !important;
+}
+
+.review-card--stamp-log .soft-tag.is-complete {
+  background: var(--role-tag-bg) !important;
+  border-color: var(--role-tag-border) !important;
+  color: var(--role-tag-text) !important;
+}
