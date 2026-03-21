@@ -17,3 +17,4 @@
 - [screen-spec.md](/D:/Code305/JamIssue/docs/screen-spec.md)
 - [community-routes.md](/D:/Code305/JamIssue/docs/community-routes.md)
 - [account-identity-schema.md](/D:/Code305/JamIssue/docs/account-identity-schema.md)
+- [code-flow-diagrams.md](/D:/Code305/JamIssue/docs/code-flow-diagrams.md)
