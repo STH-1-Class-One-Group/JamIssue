@@ -40,6 +40,20 @@ interface DraftState {
   mood: string;
 }
 
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="review-action-button__svg" aria-hidden="true">
+      <path
+        d="M12 21s-6.716-4.309-9.193-8.19C1.25 10.387 2.17 6.9 5.41 5.61c1.98-.788 4.183-.145 5.59 1.495 1.408-1.64 3.611-2.283 5.59-1.495 3.24 1.29 4.16 4.777 2.603 7.2C18.716 16.691 12 21 12 21Z"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 function buildDefaultDraft(session: TravelSession): DraftState {
   const firstPlaceName = session.placeNames[0] ?? '하루 코스';
   const lastPlaceName = session.placeNames[session.placeNames.length - 1] ?? firstPlaceName;
@@ -292,21 +306,23 @@ export function MyPagePanel({
                 )}
                 {myPage.stampLogs.map((stampLog) => (
                   <article key={stampLog.id} className="review-card review-card--stamp-log">
-                    <div className="review-card__top">
-                      <div>
-                        <strong>{stampLog.placeName}</strong>
-                        <p>{stampLog.isToday ? '오늘 찍은 스탬프' : '방문 스탬프 기록'}</p>
+                    <div className="review-card__top review-card__top--feed">
+                      <div className="review-card__title-block review-card__title-block--feed">
+                        <p className="eyebrow">STAMP LOG</p>
+                        <strong className="review-card__title">{stampLog.placeName}</strong>
+                        <p className="review-card__author-line">획득 · {stampLog.stampedAt}</p>
                       </div>
-                      <span className="counter-pill">{stampLog.visitLabel}</span>
                     </div>
-                    <div className="chip-row compact-gap review-card__meta-wrap">
-                      <span className="soft-tag">획득 {stampLog.stampedAt}</span>
+                    <div className="review-card__tag-row">
+                      <span className="review-card__visit-pill">{stampLog.visitLabel}</span>
                       {stampLog.isToday && <span className="soft-tag is-complete">오늘</span>}
                       {stampLog.travelSessionId && <span className="soft-tag">여행 세션 연결</span>}
                     </div>
-                    <button type="button" className="text-button review-card__place-link" onClick={() => onOpenPlace(stampLog.placeId)}>
-                      장소 열기
-                    </button>
+                    <div className="review-card__actions review-card__actions--my-feed">
+                      <button type="button" className="review-link-button" onClick={() => onOpenPlace(stampLog.placeId)}>
+                        이 장소 보기
+                      </button>
+                    </div>
                   </article>
                 ))}
                 {myPage.stampLogs.length === 0 && <p className="empty-copy">아직 찍은 스탬프가 없어요.</p>}
@@ -436,12 +452,18 @@ export function MyPagePanel({
                 <div className="review-stack">
                   {myPage.routes.map((route) => (
                     <article key={route.id} className="community-route-card community-route-card--my">
-                      <div className="community-route-card__header">
-                        <div>
-                          <p className="eyebrow">PUBLISHED</p>
+                      <div className="community-route-card__header community-route-card__header--feedlike">
+                        <div className="community-route-card__title-block">
+                          <div className="community-route-card__tag-row">
+                            <span className="soft-tag">발행 완료</span>
+                          </div>
                           <h4>{route.title}</h4>
+                          <p className="community-route-meta community-route-meta--inline">{route.createdAt}</p>
                         </div>
-                        <span className="counter-pill">좋아요 {route.likeCount}</span>
+                        <span className="review-action-button review-action-button--static community-like-button" aria-hidden="true">
+                          <span className="review-action-button__icon"><HeartIcon filled={true} /></span>
+                          <span className="review-action-button__label">{route.likeCount}</span>
+                        </span>
                       </div>
                       <p>{route.description}</p>
                       <div className="course-card__places community-route-places">
@@ -473,6 +495,7 @@ export function MyPagePanel({
     </section>
   );
 }
+
 
 
 
