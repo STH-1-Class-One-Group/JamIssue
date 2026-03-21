@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   claimStamp,
   createComment,
@@ -836,6 +836,23 @@ export default function App() {
         likeCount: result.likeCount,
         likedByMe: result.likedByMe,
       }));
+      setMyPage((current) => {
+        if (!current) {
+          return current;
+        }
+        return {
+          ...current,
+          routes: current.routes.map((route) =>
+            route.id === routeId
+              ? {
+                  ...route,
+                  likeCount: result.likeCount,
+                  likedByMe: result.likedByMe,
+                }
+              : route,
+          ),
+        };
+      });
     } catch (error) {
       setNotice(formatErrorMessage(error));
     } finally {
