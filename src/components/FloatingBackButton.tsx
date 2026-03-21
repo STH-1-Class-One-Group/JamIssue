@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
 
-const STORAGE_KEY = 'jamissue-back-button-position';
 const BUTTON_SIZE = 46;
 const EDGE_PADDING = 12;
 const BOTTOM_PADDING = 110;
@@ -36,32 +35,12 @@ function getDefaultPosition(): Position {
   });
 }
 
-function readStoredPosition() {
-  if (typeof window === 'undefined') {
-    return getDefaultPosition();
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return getDefaultPosition();
-    }
-    const parsed = JSON.parse(raw);
-    if (typeof parsed?.x !== 'number' || typeof parsed?.y !== 'number') {
-      return getDefaultPosition();
-    }
-    return clampPosition(parsed);
-  } catch {
-    return getDefaultPosition();
-  }
-}
-
 interface FloatingBackButtonProps {
   onNavigateBack: () => void;
 }
 
 export function FloatingBackButton({ onNavigateBack }: FloatingBackButtonProps) {
-  const [position, setPosition] = useState<Position>(() => readStoredPosition());
+  const [position, setPosition] = useState<Position>(() => getDefaultPosition());
   const [isDragging, setIsDragging] = useState(false);
   const handledTapRef = useRef(false);
   const touchTimerRef = useRef<number | null>(null);
@@ -75,19 +54,6 @@ export function FloatingBackButton({ onNavigateBack }: FloatingBackButtonProps) 
     dragEnabled: false,
   });
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
-
-    const nextPosition = clampPosition(position);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextPosition));
-    if (nextPosition.x !== position.x || nextPosition.y !== position.y) {
-      setPosition(nextPosition);
-    }
-
-    return undefined;
-  }, [position]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
