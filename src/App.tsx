@@ -1,4 +1,4 @@
-﻿import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   claimStamp,
   createComment,
@@ -23,8 +23,11 @@ import {
   uploadReviewImage,
 } from './api/client';
 import { BottomNav } from './components/BottomNav';
+import { CourseTab } from './components/CourseTab';
 import { EventTab } from './components/EventTab';
+import { FeedTab } from './components/FeedTab';
 import { MapTabStage } from './components/MapTabStage';
+import { MyPagePanel } from './components/MyPagePanel';
 import {
   useAppRouteState,
   clearAuthQueryParams,
@@ -59,9 +62,6 @@ import type {
 
 const STAMP_UNLOCK_RADIUS_METERS = 120;
 
-const FeedTab = lazy(() => import('./components/FeedTab').then((module) => ({ default: module.FeedTab })));
-const CourseTab = lazy(() => import('./components/CourseTab').then((module) => ({ default: module.CourseTab })));
-const MyPagePanel = lazy(() => import('./components/MyPagePanel').then((module) => ({ default: module.MyPagePanel })));
 
 
 function filterPlacesByCategory(places: Place[], category: Category) {
