@@ -555,6 +555,11 @@ export default function App() {
   ]);
 
   useEffect(() => {
+    if (activeTab !== 'map') {
+      setSelectedPlaceReviews([]);
+      return;
+    }
+
     if (!selectedPlaceId) {
       setSelectedPlaceReviews([]);
       return;
@@ -572,7 +577,7 @@ export default function App() {
         setSelectedPlaceReviews(nextReviews);
       })
       .catch((error) => setNotice(formatErrorMessage(error)));
-  }, [selectedPlaceId]);
+  }, [activeTab, selectedPlaceId]);
 
   async function loadApp(withLoading: boolean) {
     const authParams = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search);
