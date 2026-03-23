@@ -354,11 +354,7 @@ def read_places(
 
 @app.get("/api/places/{place_id}", response_model=PlaceOut, tags=["places"])
 def read_place(place_id: str, db: Session = Depends(get_db)) -> PlaceOut:
-    try:
-        return get_place(db, place_id)
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
-
+    return read_place_service(db, place_id)
 
 @app.get("/api/courses", response_model=list[CourseOut], tags=["courses"])
 def read_courses(
@@ -444,15 +440,7 @@ def write_review(
     db: Session = Depends(get_db),
     session_user: SessionUser = Depends(require_session_user),
 ) -> ReviewOut:
-    try:
-        return create_review(db, payload, session_user.id, session_user.nickname)
-    except ValueError as error:
-        detail = str(error)
-        status_code = status.HTTP_400_BAD_REQUEST
-        if "장소" in detail:
-            status_code = status.HTTP_404_NOT_FOUND
-        raise HTTPException(status_code=status_code, detail=detail) from error
-
+    return create_review_service(db, payload, session_user)
 
 @app.delete("/api/reviews/{review_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["reviews"])
 def remove_review(
@@ -460,14 +448,8 @@ def remove_review(
     db: Session = Depends(get_db),
     session_user: SessionUser = Depends(require_session_user),
 ) -> Response:
-    try:
-        delete_review(db, review_id, session_user.id, is_admin=session_user.is_admin)
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
-    except PermissionError as error:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(error)) from error
+    delete_review_service(db, review_id, session_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
 
 @app.post("/api/reviews/{review_id}/like", response_model=ReviewLikeResponse, tags=["reviews"])
 def like_review(
@@ -475,23 +457,11 @@ def like_review(
     db: Session = Depends(get_db),
     session_user: SessionUser = Depends(require_session_user),
 ) -> ReviewLikeResponse:
-    try:
-        return toggle_review_like(db, review_id, session_user.id, session_user.nickname)
-    except ValueError as error:
-        detail = str(error)
-        status_code = status.HTTP_400_BAD_REQUEST
-        if "찾지 못" in detail:
-            status_code = status.HTTP_404_NOT_FOUND
-        raise HTTPException(status_code=status_code, detail=detail) from error
-
+    return toggle_review_like_service(db, review_id, session_user)
 
 @app.get("/api/reviews/{review_id}/comments", response_model=list[CommentOut], tags=["reviews"])
 def read_review_comments(review_id: str, db: Session = Depends(get_db)) -> list[CommentOut]:
-    try:
-        return get_review_comments(db, review_id)
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
-
+    return read_review_comments_service(db, review_id)
 
 @app.post("/api/reviews/{review_id}/comments", response_model=list[CommentOut], tags=["reviews"])
 def write_review_comment(
@@ -500,15 +470,7 @@ def write_review_comment(
     db: Session = Depends(get_db),
     session_user: SessionUser = Depends(require_session_user),
 ) -> list[CommentOut]:
-    try:
-        return create_comment(db, review_id, payload, session_user.id, session_user.nickname)
-    except ValueError as error:
-        detail = str(error)
-        status_code = status.HTTP_400_BAD_REQUEST
-        if "후기" in detail:
-            status_code = status.HTTP_404_NOT_FOUND
-        raise HTTPException(status_code=status_code, detail=detail) from error
-
+    return create_comment_service(db, review_id, payload, session_user)
 
 @app.delete("/api/reviews/{review_id}/comments/{comment_id}", response_model=list[CommentOut], tags=["reviews"])
 def remove_review_comment(
@@ -517,13 +479,7 @@ def remove_review_comment(
     db: Session = Depends(get_db),
     session_user: SessionUser = Depends(require_session_user),
 ) -> list[CommentOut]:
-    try:
-        return delete_comment(db, review_id, comment_id, session_user.id, is_admin=session_user.is_admin)
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
-    except PermissionError as error:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(error)) from error
-
+    return delete_comment_service(db, review_id, comment_id, session_user)
 
 @app.post("/api/reviews/upload", response_model=UploadResponse, tags=["reviews"])
 async def upload_review_image(
@@ -540,11 +496,7 @@ def read_my_summary(
     session_user: SessionUser = Depends(require_session_user),
     app_settings: Settings = Depends(get_settings),
 ) -> MyPageResponse:
-    try:
-        return get_my_page(db, session_user.id, app_settings.is_admin(session_user.id))
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
-
+    return read_my_page_service(db, session_user, app_settings)
 
 @app.delete("/api/my/account", status_code=status.HTTP_204_NO_CONTENT, tags=["my"])
 def remove_my_account(
@@ -576,20 +528,7 @@ def write_stamp_toggle(
     session_user: SessionUser = Depends(require_session_user),
     app_settings: Settings = Depends(get_settings),
 ) -> StampState:
-    try:
-        return toggle_stamp(
-            db,
-            session_user.id,
-            payload.place_id,
-            payload.latitude,
-            payload.longitude,
-            app_settings.stamp_unlock_radius_meters,
-        )
-    except PermissionError as error:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(error)) from error
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
-
+    return toggle_stamp_service(db, payload, session_user, app_settings)
 
 @app.get("/api/admin/summary", response_model=AdminSummaryResponse, tags=["admin"])
 def read_admin_summary(
