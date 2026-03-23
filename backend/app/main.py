@@ -12,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .config import Settings, get_settings
 from .db import Base, get_db, get_engine, get_session_factory
-from .jwt_auth import ACCESS_TOKEN_COOKIE, clear_auth_cookie, issue_access_token, read_access_token, set_auth_cookie
+from .jwt_auth import ACCESS_TOKEN_COOKIE, clear_auth_cookie, read_access_token, set_auth_cookie
 from .models import (
     AdminPlaceOut,
     AdminSummaryResponse,
@@ -42,13 +42,7 @@ from .models import (
     UserRouteLikeResponse,
     UserRouteOut,
 )
-from .naver_oauth import (
-    build_naver_login_url,
-    build_redirect_url,
-    exchange_code_for_token,
-    fetch_naver_profile,
-    generate_oauth_state,
-)
+from .naver_oauth import build_naver_login_url, generate_oauth_state
 from .public_event_api import router as public_event_router
 from .repository_normalized import (
     create_comment,
@@ -56,32 +50,30 @@ from .repository_normalized import (
     delete_account,
     delete_comment,
     delete_review,
-    get_admin_summary,
     get_bootstrap,
     get_my_page,
     get_place,
     get_review_comments,
     get_stamps,
-    import_public_bundle,
     list_courses,
     list_places,
     list_reviews,
-    to_session_user,
     toggle_review_like,
-    update_user_profile,
     toggle_stamp,
-    update_place_visibility,
-    upsert_naver_user,
-    link_naver_identity,
 )
 from .seed import seed_database
-from .storage import (
-    FileTooLargeError,
-    InvalidFileTypeError,
-    StorageConfigurationError,
-    StorageUploadError,
-    get_review_image_upload_service,
+from .storage import FileTooLargeError, InvalidFileTypeError, StorageConfigurationError, StorageUploadError
+from .services.admin_service import import_public_data_service, patch_admin_place_service, read_admin_summary_service
+from .services.auth_service import (
+    PROVIDER_LABELS,
+    SUPPORTED_PROVIDERS,
+    build_auth_providers,
+    build_auth_response,
+    complete_naver_login,
+    get_redirect_target,
+    update_profile_session_payload,
 )
+from .services.upload_service import upload_review_image_service
 from .user_routes_normalized import (
     create_user_route,
     delete_user_route,
@@ -156,20 +148,6 @@ def on_startup() -> None:
         seed_database(db, settings)
 
 
-def build_auth_providers(app_settings: Settings) -> list[AuthProviderOut]:
-    providers: list[AuthProviderOut] = []
-    for provider in SUPPORTED_PROVIDERS:
-        providers.append(
-            AuthProviderOut(
-                key=provider,
-                label=PROVIDER_LABELS[provider],
-                isEnabled=app_settings.provider_enabled(provider),
-                loginUrl=f"/api/auth/{provider}/login",
-            )
-        )
-    return providers
-
-
 def get_session_user(request: Request, app_settings: Settings = Depends(get_settings)) -> SessionUser | None:
     auth_header = request.headers.get("Authorization", "")
     header_token = auth_header.removeprefix("Bearer ").strip() if auth_header.startswith("Bearer ") else None
@@ -241,15 +219,9 @@ def patch_auth_profile(
     session_user: SessionUser = Depends(require_session_user),
     app_settings: Settings = Depends(get_settings),
 ) -> AuthSessionResponse:
-    try:
-        user = update_user_profile(db, session_user.id, payload)
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
-
-    next_session_user = to_session_user(user, app_settings.is_admin(user.user_id), provider=user.provider)
-    access_token = issue_access_token(app_settings, next_session_user)
+    auth_response, access_token = update_profile_session_payload(db, session_user.id, payload, app_settings)
     set_auth_cookie(response, app_settings, access_token)
-    return build_auth_response(next_session_user, app_settings)
+    return auth_response
 
 
 @app.get("/api/auth/{provider}/login", tags=["auth"])
@@ -323,52 +295,17 @@ def finish_naver_login(
     error_description: str | None = None,
     app_settings: Settings = Depends(get_settings),
 ) -> RedirectResponse:
-    redirect_target = get_redirect_target(request, app_settings)
-    expected_state = request.session.pop("naver_oauth_state", None)
-    link_user_id = request.session.pop("oauth_link_user_id", None)
-    link_provider = request.session.pop("oauth_link_provider", None)
-
-    if error:
-        return RedirectResponse(
-            build_redirect_url(redirect_target, auth="naver-error", reason=error_description or error),
-            status_code=status.HTTP_302_FOUND,
-        )
-
-    if not code or not state or state != expected_state:
-        return RedirectResponse(
-            build_redirect_url(redirect_target, auth="naver-error", reason="state-mismatch"),
-            status_code=status.HTTP_302_FOUND,
-        )
-
-    try:
-        token_payload = exchange_code_for_token(app_settings, code, state)
-        profile = fetch_naver_profile(token_payload["access_token"])
-        if link_user_id and link_provider == "naver":
-            user = link_naver_identity(db, link_user_id, profile)
-            success_code = "naver-linked"
-        else:
-            user = upsert_naver_user(db, profile)
-            success_code = "naver-success"
-    except (HTTPException, ValueError) as oauth_error:
-        detail = oauth_error.detail if isinstance(oauth_error, HTTPException) else str(oauth_error)
-        return RedirectResponse(
-            build_redirect_url(redirect_target, auth="naver-error", reason=detail),
-            status_code=status.HTTP_302_FOUND,
-        )
-
-    session_user = to_session_user(
-        user,
-        app_settings.is_admin(user.user_id),
-        profile.profile_image,
-        provider="naver",
+    response, access_token = complete_naver_login(
+        request,
+        db,
+        code=code,
+        state=state,
+        error=error,
+        error_description=error_description,
+        app_settings=app_settings,
     )
-    access_token = issue_access_token(app_settings, session_user)
-
-    response = RedirectResponse(
-        build_redirect_url(redirect_target, auth=success_code),
-        status_code=status.HTTP_302_FOUND,
-    )
-    set_auth_cookie(response, app_settings, access_token)
+    if access_token:
+        set_auth_cookie(response, app_settings, access_token)
     return response
 
 
@@ -576,20 +513,7 @@ async def upload_review_image(
     session_user: SessionUser = Depends(require_session_user),
     app_settings: Settings = Depends(get_settings),
 ) -> UploadResponse:
-    upload_service = get_review_image_upload_service(app_settings)
-    raw_bytes = await file.read()
-    stored_file = upload_service.save_review_image(
-        owner_id=session_user.id,
-        original_file_name=file.filename,
-        content_type=file.content_type,
-        raw_bytes=raw_bytes,
-    )
-
-    return UploadResponse(
-        url=stored_file.url,
-        fileName=stored_file.file_name,
-        contentType=stored_file.content_type,
-    )
+    return await upload_review_image_service(file, session_user, app_settings)
 
 
 @app.get("/api/my/summary", response_model=MyPageResponse, tags=["my"])
@@ -655,7 +579,7 @@ def read_admin_summary(
     _: SessionUser = Depends(require_admin_user),
     app_settings: Settings = Depends(get_settings),
 ) -> AdminSummaryResponse:
-    return get_admin_summary(db, app_settings)
+    return read_admin_summary_service(db, app_settings)
 
 
 @app.patch("/api/admin/places/{place_id}", response_model=AdminPlaceOut, tags=["admin"])
@@ -665,10 +589,7 @@ def patch_place_visibility(
     db: Session = Depends(get_db),
     _: SessionUser = Depends(require_admin_user),
 ) -> AdminPlaceOut:
-    try:
-        return update_place_visibility(db, place_id, is_active=payload.is_active, is_manual_override=payload.is_manual_override)
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
+    return patch_admin_place_service(db, place_id, payload)
 
 
 @app.post("/api/admin/import/public-data", response_model=PublicImportResponse, tags=["admin"])
@@ -677,5 +598,5 @@ def import_public_data(
     _: SessionUser = Depends(require_admin_user),
     app_settings: Settings = Depends(get_settings),
 ) -> PublicImportResponse:
-    return import_public_bundle(db, app_settings)
+    return import_public_data_service(db, app_settings)
 
