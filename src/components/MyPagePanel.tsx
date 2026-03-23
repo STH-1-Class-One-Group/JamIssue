@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+﻿import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { ProviderButtons } from './ProviderButtons';

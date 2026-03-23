@@ -1335,7 +1335,7 @@ async function handleReviewDetail(request, env, reviewId) {
   const sessionUser = await readSessionUser(request, env);
   const review = await loadSingleReview(env, reviewId, sessionUser?.id ?? null);
   if (!review) {
-    return jsonResponse(404, { detail: '???????? ??????.' }, env, request);
+    return jsonResponse(404, { detail: '??? ?? ? ???.' }, env, request);
   }
   return jsonResponse(200, review, env, request);
 }
@@ -1414,7 +1414,7 @@ async function buildAdminSummary(env) {
 async function handleAdminSummary(request, env) {
   const sessionUser = await readSessionUser(request, env);
   if (!sessionUser || !sessionUser.isAdmin) {
-    return jsonResponse(403, { detail: '???? ? ? ???.' }, env, request);
+    return jsonResponse(403, { detail: '??? ???.' }, env, request);
   }
   return jsonResponse(200, await buildAdminSummary(env), env, request);
 }

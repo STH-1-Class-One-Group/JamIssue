@@ -67,13 +67,13 @@ export function getInitialNotice() {
   const auth = params.get('auth');
   const reason = params.get('reason');
   if (auth === 'naver-success') {
-    return '?ㅼ씠踰?濡쒓렇?몄쓣 ?곌껐?덉뼱??';
+    return '네이버 로그인을 연결했어요.';
   }
   if (auth === 'naver-linked') {
-    return '?ㅼ씠踰?怨꾩젙???곌껐?덉뼱??';
+    return '네이버 계정을 연결했어요.';
   }
   if (auth === 'naver-error') {
-    return reason ? `?ㅼ씠踰?濡쒓렇?몄뿉 ?ㅽ뙣?덉뼱?? (${reason})` : '?ㅼ씠踰?濡쒓렇?몄뿉 ?ㅽ뙣?덉뼱??';
+    return reason ? `네이버 로그인에 실패했어요. (${reason})` : '네이버 로그인에 실패했어요.';
   }
   return null;
 }
