@@ -88,7 +88,7 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
                 left: '50%',
                 width: 'auto',
                 height: '100%',
-                transform: 'translate(-50%, -50%) rotate(90deg)',
+                transform: 'translate(-50%, -50%) rotate(-90deg)',
                 transformOrigin: 'center center',
                 borderRadius: '14px',
                 display: 'block',
