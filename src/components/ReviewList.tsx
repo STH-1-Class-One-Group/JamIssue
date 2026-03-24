@@ -66,7 +66,7 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
         overflow: 'hidden',
         background: 'rgba(255, 250, 252, 0.96)',
         border: '1px solid rgba(255, 176, 201, 0.16)',
-        padding: '6px',
+        padding: '0',
         position: 'relative',
       }}
     >
@@ -86,8 +86,9 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                width: 'auto',
-                height: '100%',
+                width: '138%',
+                height: 'auto',
+                maxWidth: 'none',
                 transform: 'translate(-50%, -50%) rotate(-90deg)',
                 transformOrigin: 'center center',
                 borderRadius: '14px',
@@ -97,7 +98,7 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
             : {
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
+                objectFit: 'cover',
                 borderRadius: '14px',
                 display: 'block',
                 margin: 0,
@@ -259,3 +260,4 @@ export function ReviewList({
     </div>
   );
 }
+
