@@ -60,8 +60,8 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
       className="review-card__image-frame"
       style={{
         width: '100%',
-        height: 'min(280px, 64vw)',
-        maxHeight: '280px',
+        height: 'min(220px, 56vw)',
+        maxHeight: '220px',
         borderRadius: '20px',
         overflow: 'hidden',
         background: 'rgba(255, 250, 252, 0.96)',
@@ -86,7 +86,7 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
-                width: '138%',
+                width: 'calc(100% + 180px)',
                 height: 'auto',
                 maxWidth: 'none',
                 transform: 'translate(-50%, -50%) rotate(-90deg)',
@@ -260,4 +260,5 @@ export function ReviewList({
     </div>
   );
 }
+
 
