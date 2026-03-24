@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { CommentThread } from './CommentThread';
 import type { Review } from '../types';
 
@@ -53,88 +53,7 @@ function CommentIcon() {
 }
 
 function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
-  const [rotatedSrc, setRotatedSrc] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    let previousObjectUrl: string | null = null;
-    const image = new window.Image();
-
-    image.onload = () => {
-      if (cancelled) {
-        return;
-      }
-
-      const shouldRotate = image.naturalHeight > image.naturalWidth * 1.12;
-      if (!shouldRotate) {
-        setRotatedSrc((current) => {
-          if (current && current !== previousObjectUrl) {
-            URL.revokeObjectURL(current);
-          }
-          return null;
-        });
-        return;
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = image.naturalHeight;
-      canvas.height = image.naturalWidth;
-
-      const context = canvas.getContext('2d');
-      if (!context) {
-        setRotatedSrc(null);
-        return;
-      }
-
-      context.translate(canvas.width / 2, canvas.height / 2);
-      context.rotate(Math.PI / 2);
-      context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
-
-      canvas.toBlob(
-        (blob) => {
-          if (cancelled || !blob) {
-            return;
-          }
-
-          const nextUrl = URL.createObjectURL(blob);
-          setRotatedSrc((current) => {
-            if (current) {
-              URL.revokeObjectURL(current);
-            }
-            previousObjectUrl = nextUrl;
-            return nextUrl;
-          });
-        },
-        'image/jpeg',
-        0.92,
-      );
-    };
-
-    image.onerror = () => {
-      if (!cancelled) {
-        setRotatedSrc((current) => {
-          if (current) {
-            URL.revokeObjectURL(current);
-          }
-          return null;
-        });
-      }
-    };
-
-    image.src = src;
-
-    return () => {
-      cancelled = true;
-      setRotatedSrc((current) => {
-        if (current) {
-          URL.revokeObjectURL(current);
-        }
-        return null;
-      });
-    };
-  }, [src]);
-
-  const displaySrc = useMemo(() => rotatedSrc ?? src, [rotatedSrc, src]);
+  const [isTall, setIsTall] = useState(false);
 
   return (
     <div
@@ -148,22 +67,42 @@ function ReviewImageFrame({ src, alt }: { src: string; alt: string }) {
         background: 'rgba(255, 250, 252, 0.96)',
         border: '1px solid rgba(255, 176, 201, 0.16)',
         padding: '6px',
+        position: 'relative',
       }}
     >
       <img
         className="review-card__image"
-        src={displaySrc}
+        src={src}
         alt={alt}
         loading="lazy"
         decoding="async"
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          borderRadius: '14px',
-          display: 'block',
-          margin: 0,
+        onLoad={(event) => {
+          const target = event.currentTarget;
+          setIsTall(target.naturalHeight > target.naturalWidth * 1.12);
         }}
+        style={
+          isTall
+            ? {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: 'auto',
+                height: '100%',
+                transform: 'translate(-50%, -50%) rotate(90deg)',
+                transformOrigin: 'center center',
+                borderRadius: '14px',
+                display: 'block',
+                margin: 0,
+              }
+            : {
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                borderRadius: '14px',
+                display: 'block',
+                margin: 0,
+              }
+        }
       />
     </div>
   );
