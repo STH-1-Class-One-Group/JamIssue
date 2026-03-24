@@ -1413,3 +1413,28 @@ body {
   border: 1px solid rgba(255, 176, 201, 0.16) !important;
   padding: 6px !important;
 }
+
+/* 2026-03-24 hard cap review image height */
+.review-card__image-frame {
+  position: relative !important;
+  width: 100% !important;
+  height: min(280px, 64vw) !important;
+  max-height: 280px !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  background: rgba(255, 250, 252, 0.96) !important;
+  border: 1px solid rgba(255, 176, 201, 0.16) !important;
+  padding: 6px !important;
+}
+
+.review-card__image-frame .review-card__image {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 14px !important;
+  object-fit: contain !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}

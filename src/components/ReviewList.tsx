@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import { CommentThread } from './CommentThread';
 import type { Review } from '../types';
 
@@ -139,7 +139,17 @@ export function ReviewList({
 
           <p className="review-card__body">{review.body}</p>
 
-          {review.imageUrl && <img className="review-card__image" src={review.imageUrl} alt={`${review.placeName} 후기 이미지`} />}
+          {review.imageUrl && (
+            <div className="review-card__image-frame">
+              <img
+                className="review-card__image"
+                src={review.imageUrl}
+                alt={`${review.placeName} 후기 이미지`}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
 
           <div className="review-card__actions">
             <div className="review-card__action-group">
