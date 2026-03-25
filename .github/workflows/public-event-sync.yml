@@ -22,7 +22,7 @@ jobs:
           node-version: "20"
       - name: Import Daejeon public events
         env:
-          PUBLIC_EVENT_IMPORT_URL: https://api.daegeon.jamissue.com/api/internal/public-events/import
+          PUBLIC_EVENT_IMPORT_URL: https://api.daejeon.jamissue.com/api/internal/public-events/import
           EVENT_IMPORT_TOKEN: ${{ secrets.EVENT_IMPORT_TOKEN }}
           FESTIVAL_SYNC_RANGE_DAYS: "90"
         run: node scripts/sync-daejeon-events.mjs

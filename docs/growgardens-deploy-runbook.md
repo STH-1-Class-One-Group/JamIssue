@@ -16,7 +16,7 @@ GitHub main
 
 운영 기준:
 - 프런트: `https://daejeon.jamissue.com`
-- API: `https://api.daegeon.jamissue.com`
+- API: `https://api.daejeon.jamissue.com`
 - 운영 반영 브랜치: `main`
 
 ## 2. GitHub Actions 워크플로
@@ -63,7 +63,7 @@ EVENT_IMPORT_TOKEN=<random long token>
 `GitHub > Repository > Settings > Secrets and variables > Actions > Repository variables`
 
 ```env
-PUBLIC_APP_BASE_URL=https://api.daegeon.jamissue.com
+PUBLIC_APP_BASE_URL=https://api.daejeon.jamissue.com
 PUBLIC_NAVER_MAP_CLIENT_ID=<NAVER_MAP_CLIENT_ID>
 ```
 
@@ -78,7 +78,7 @@ APP_SESSION_HTTPS=true
 APP_FRONTEND_URL=https://daejeon.jamissue.com
 APP_CORS_ORIGINS=https://daejeon.jamissue.com
 APP_NAVER_LOGIN_CLIENT_ID=<NAVER_LOGIN_CLIENT_ID>
-APP_NAVER_LOGIN_CALLBACK_URL=https://api.daegeon.jamissue.com/api/auth/naver/callback
+APP_NAVER_LOGIN_CALLBACK_URL=https://api.daejeon.jamissue.com/api/auth/naver/callback
 APP_STORAGE_BACKEND=supabase
 APP_SUPABASE_URL=https://<project-ref>.supabase.co
 APP_SUPABASE_STORAGE_BUCKET=review-images
@@ -117,7 +117,7 @@ APP_EVENT_IMPORT_TOKEN=<same value as GitHub EVENT_IMPORT_TOKEN>
 https://daejeon.jamissue.com
 
 Callback URL
-https://api.daegeon.jamissue.com/api/auth/naver/callback
+https://api.daejeon.jamissue.com/api/auth/naver/callback
 ```
 
 ## 4. 행사 동기화 운영 원칙

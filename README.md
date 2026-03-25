@@ -6,7 +6,7 @@
 
 - 배포 브랜치: `main`
 - 프런트 도메인: `https://daejeon.jamissue.com`
-- API 도메인: `https://api.daegeon.jamissue.com`
+- API 도메인: `https://api.daejeon.jamissue.com`
 - Pages 프로젝트: `daejeon-jamissue-pages`
 - Worker 프로젝트: `daejeon-jamissue-api`
 - 데이터 저장소: Supabase
@@ -55,7 +55,7 @@ EVENT_IMPORT_TOKEN=<random long token>
 `GitHub > Repository > Settings > Secrets and variables > Actions > Repository variables`
 
 ```env
-PUBLIC_APP_BASE_URL=https://api.daegeon.jamissue.com
+PUBLIC_APP_BASE_URL=https://api.daejeon.jamissue.com
 PUBLIC_NAVER_MAP_CLIENT_ID=<NAVER_MAP_CLIENT_ID>
 ```
 
@@ -74,7 +74,7 @@ APP_SESSION_HTTPS=true
 APP_FRONTEND_URL=https://daejeon.jamissue.com
 APP_CORS_ORIGINS=https://daejeon.jamissue.com
 APP_NAVER_LOGIN_CLIENT_ID=<NAVER_LOGIN_CLIENT_ID>
-APP_NAVER_LOGIN_CALLBACK_URL=https://api.daegeon.jamissue.com/api/auth/naver/callback
+APP_NAVER_LOGIN_CALLBACK_URL=https://api.daejeon.jamissue.com/api/auth/naver/callback
 APP_STORAGE_BACKEND=supabase
 APP_SUPABASE_URL=https://<project-ref>.supabase.co
 APP_SUPABASE_STORAGE_BUCKET=review-images
@@ -122,7 +122,7 @@ APP_EVENT_IMPORT_TOKEN=<same value as GitHub EVENT_IMPORT_TOKEN>
 https://daejeon.jamissue.com
 
 Callback URL
-https://api.daegeon.jamissue.com/api/auth/naver/callback
+https://api.daejeon.jamissue.com/api/auth/naver/callback
 ```
 
 ## 행사 데이터 구조

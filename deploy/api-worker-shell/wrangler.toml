@@ -12,7 +12,7 @@ APP_ORIGIN_API_URL = ""
 APP_NAVER_LOGIN_CLIENT_ID = "eiMR4RuAFWOIIoXoxmnN"
 APP_FRONTEND_URL = "https://daejeon.jamissue.com"
 APP_CORS_ORIGINS = "https://daejeon.jamissue.com"
-APP_NAVER_LOGIN_CALLBACK_URL = "https://api.daegeon.jamissue.com/api/auth/naver/callback"
+APP_NAVER_LOGIN_CALLBACK_URL = "https://api.daejeon.jamissue.com/api/auth/naver/callback"
 APP_STORAGE_BACKEND = "supabase"
 APP_SUPABASE_URL = "https://ifofgcaqrgtiurzqhiyy.supabase.co"
 APP_SUPABASE_STORAGE_BUCKET = "review-images"
@@ -22,5 +22,5 @@ APP_SESSION_HTTPS = "true"
 APP_ENV = "worker-first"
 
 [[routes]]
-pattern = "api.daegeon.jamissue.com"
+pattern = "api.daejeon.jamissue.com"
 custom_domain = true
