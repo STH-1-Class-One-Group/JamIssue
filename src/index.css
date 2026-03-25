@@ -767,6 +767,35 @@ textarea {
   color: var(--pink-deep);
   font-size: 12px;
   font-weight: 700;
+  text-decoration: none;
+}
+
+.festival-card {
+  display: grid;
+  gap: 10px;
+}
+
+.festival-card__period {
+  margin-top: 4px;
+}
+
+.festival-card__location {
+  display: grid;
+  gap: 4px;
+}
+
+.festival-card__location-primary,
+.festival-card__location-secondary {
+  margin: 0;
+}
+
+.festival-card__location-primary {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.festival-card__actions {
+  justify-content: flex-end;
 }
 
 .comment-thread {

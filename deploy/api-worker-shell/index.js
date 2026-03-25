@@ -185,6 +185,16 @@ function toSeoulDateKey(value = null) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date);
 }
 
+function isFestivalOngoingInSeoul(startsAt, endsAt, nowValue = Date.now()) {
+  if (!startsAt || !endsAt) {
+    return false;
+  }
+  const startDateKey = toSeoulDateKey(startsAt);
+  const endDateKey = toSeoulDateKey(endsAt);
+  const nowDateKey = toSeoulDateKey(nowValue);
+  return startDateKey <= nowDateKey && endDateKey >= nowDateKey;
+}
+
 function formatVisitLabel(visitNumber) {
   const safeVisitNumber = Number.isFinite(Number(visitNumber)) && Number(visitNumber) > 0 ? Number(visitNumber) : 1;
   return `${safeVisitNumber}번째 방문`;
@@ -2383,13 +2393,13 @@ async function handleFestivalsFromDb(request, env) {
         id: String(row.public_event_id),
         title: row.title,
         venueName: row.venue_name ?? null,
-        startDate: row.starts_at ? String(row.starts_at).slice(0, 10) : '',
-        endDate: row.ends_at ? String(row.ends_at).slice(0, 10) : '',
+        startDate: row.starts_at ? toSeoulDateKey(row.starts_at) : '',
+        endDate: row.ends_at ? toSeoulDateKey(row.ends_at) : '',
         homepageUrl: row.source_page_url ?? null,
         roadAddress: row.road_address ?? row.address ?? null,
         latitude: parseFestivalCoordinate(row.latitude),
         longitude: parseFestivalCoordinate(row.longitude),
-        isOngoing: new Date(row.starts_at).getTime() <= now && new Date(row.ends_at).getTime() >= now,
+        isOngoing: isFestivalOngoingInSeoul(row.starts_at, row.ends_at, now),
       }));
 
     festivalsCache = {
@@ -2427,7 +2437,7 @@ async function handleBannerEventsFromDb(request, env) {
         summary: row.summary ?? '',
         sourcePageUrl: row.source_page_url ?? null,
         linkedPlaceName: null,
-        isOngoing: new Date(row.starts_at).getTime() <= now && new Date(row.ends_at).getTime() >= now,
+        isOngoing: isFestivalOngoingInSeoul(row.starts_at, row.ends_at, now),
       }))
     : [];
 

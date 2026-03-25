@@ -1292,7 +1292,7 @@ export default function App() {
             )}
 
             {activeTab === 'event' && (
-              <EventTab festivals={festivals} onOpenFestival={handleOpenFestivalWithReturn} />
+              <EventTab festivals={festivals} />
             )}
 
             {activeTab === 'course' && (

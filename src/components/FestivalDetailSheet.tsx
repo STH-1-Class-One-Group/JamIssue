@@ -9,6 +9,13 @@ interface FestivalDetailSheetProps {
   onCollapse: () => void;
 }
 
+function formatFestivalTitle(title: string) {
+  return title
+    .replace(/\[([^\]]+)\]/g, '$1')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 export function FestivalDetailSheet({
   festival,
   isOpen,
@@ -30,11 +37,11 @@ export function FestivalDetailSheet({
     : '일정 업데이트 전';
 
   return (
-    <section className={sheetClassName} aria-label="축제 상세 드로워">
+    <section className={sheetClassName} aria-label="행사 상세 서랍">
       <button
         type="button"
         className="place-drawer__handle"
-        aria-label="드로워 높이 조절"
+        aria-label="서랍 높이 조절"
         onClick={drawerState === 'partial' ? onExpand : onCollapse}
       >
         <span />
@@ -44,8 +51,8 @@ export function FestivalDetailSheet({
         <div className="place-drawer__header">
           <div>
             <p className="eyebrow">FESTIVAL</p>
-            <h2>{festival.title}</h2>
-            <p className="place-drawer__summary">{festival.venueName || festival.roadAddress || '대전 곳곳에서 열리는 축제 정보예요.'}</p>
+            <h2>{formatFestivalTitle(festival.title)}</h2>
+            <p className="place-drawer__summary">{festival.venueName || festival.roadAddress || '대전 곳곳에서 열리는 행사 정보예요.'}</p>
           </div>
           <button type="button" className="text-button" onClick={onClose}>
             닫기
@@ -53,7 +60,7 @@ export function FestivalDetailSheet({
         </div>
 
         <div className="place-drawer__badges">
-          <span className="counter-pill">{festival.isOngoing ? '진행 중' : '행사 예정'}</span>
+          {festival.isOngoing ? <span className="counter-pill">진행 중</span> : null}
           <span className="counter-pill">{periodLabel}</span>
         </div>
 
@@ -75,7 +82,7 @@ export function FestivalDetailSheet({
         <div className="sheet-card stack-gap">
           <div>
             <strong>공식 홈페이지</strong>
-            <p>{festival.homepageUrl ? '축제 홈페이지에서 세부 일정을 바로 확인할 수 있어요.' : '공식 홈페이지 주소가 아직 제공되지 않았어요.'}</p>
+            <p>{festival.homepageUrl ? '홈페이지에서 세부 일정을 바로 확인할 수 있어요.' : '공식 홈페이지 주소가 아직 제공되지 않았어요.'}</p>
           </div>
           {festival.homepageUrl ? (
             <a className="primary-button primary-button--block" href={festival.homepageUrl} target="_blank" rel="noreferrer">
