@@ -119,10 +119,6 @@ textarea {
   inset: 0;
 }
 
-.phone-shell__body--with-status {
-  top: 62px;
-}
-
 .phone-shell__status-slot .global-status-banner {
   position: relative;
   left: auto;

@@ -269,9 +269,6 @@ export default function App() {
     if (notice) {
       return { tone: 'info' as const, message: notice };
     }
-    if (bootstrapStatus === 'loading') {
-      return { tone: 'info' as const, message: '지도를 준비하고 있어요.' };
-    }
     if (bootstrapStatus === 'error' && bootstrapError) {
       return { tone: 'error' as const, message: bootstrapError };
     }
@@ -1334,7 +1331,7 @@ export default function App() {
             />
           </div>
         )}
-        <div className={globalStatus ? 'phone-shell__body phone-shell__body--with-status' : 'phone-shell__body'}>
+        <div className="phone-shell__body">
           {activeTab === 'map' ? (
             <MapTabStage
               activeCategory={activeCategory}
