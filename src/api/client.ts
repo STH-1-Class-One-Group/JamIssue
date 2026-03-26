@@ -20,6 +20,7 @@ import type {
   PublicImportResponse,
   Review,
   ReviewCreateRequest,
+  ReviewUpdateRequest,
   ReviewFeedPageResponse,
   ReviewLikeResponse,
   StampClaimRequest,
@@ -306,6 +307,15 @@ export function getReviewDetail(reviewId: string) {
 export async function createReview(payload: ReviewCreateRequest) {
   const response = await fetchJson<Review>('/api/reviews', {
     method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  invalidateApiCache(['/api/reviews', '/api/my/summary']);
+  return response;
+}
+
+export async function updateReview(reviewId: string, payload: ReviewUpdateRequest) {
+  const response = await fetchJson<Review>(`/api/reviews/${reviewId}`, {
+    method: 'PATCH',
     body: JSON.stringify(payload),
   });
   invalidateApiCache(['/api/reviews', '/api/my/summary']);

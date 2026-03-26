@@ -6,6 +6,7 @@ import {
   deleteComment,
   deleteReview,
   createReview,
+  updateReview,
   createUserRoute,
   getAuthSession,
   getFestivals,
@@ -121,6 +122,7 @@ export default function App() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
   const [reviewLikeUpdatingId, setReviewLikeUpdatingId] = useState<string | null>(null);
+  const [updatingReviewId, setUpdatingReviewId] = useState<string | null>(null);
   const [commentSubmittingReviewId, setCommentSubmittingReviewId] = useState<string | null>(null);
   const [commentMutatingId, setCommentMutatingId] = useState<string | null>(null);
   const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
@@ -854,6 +856,31 @@ export default function App() {
     }
   }
 
+  async function handleUpdateReview(reviewId: string, payload: { body: string; mood: ReviewMood }) {
+    if (!sessionUser) {
+      goToTab('my');
+      setNotice('피드를 수정하려면 먼저 로그인해 주세요.');
+      return;
+    }
+
+    setUpdatingReviewId(reviewId);
+    try {
+      const updatedReview = await updateReview(reviewId, {
+        body: payload.body.trim(),
+        mood: payload.mood,
+      });
+      upsertReviewCollections(updatedReview);
+      if (activeTab === 'my') {
+        await refreshMyPageForUser(sessionUser, true);
+      }
+      setNotice('피드를 수정했어요.');
+    } catch (error) {
+      setNotice(formatErrorMessage(error));
+    } finally {
+      setUpdatingReviewId(null);
+    }
+  }
+
   async function handleToggleReviewLike(reviewId: string) {
     if (!sessionUser) {
       goToTab('my');
@@ -1272,6 +1299,7 @@ export default function App() {
                 commentSubmittingReviewId={commentSubmittingReviewId}
                 commentMutatingId={commentMutatingId}
                 deletingReviewId={deletingReviewId}
+                updatingReviewId={updatingReviewId}
                 activeCommentReviewId={activeCommentReviewId}
                 highlightedCommentId={highlightedCommentId}
                 highlightedReviewId={highlightedReviewId}
@@ -1283,6 +1311,7 @@ export default function App() {
                 onUpdateComment={handleUpdateComment}
                 onDeleteComment={handleDeleteComment}
                 onDeleteReview={handleDeleteReview}
+                onUpdateReview={handleUpdateReview}
                 onRequestLogin={() => goToTab('my')}
                 onClearPlaceFilter={() => setFeedPlaceFilterId(null)}
                 onOpenPlace={handleOpenPlaceWithReturn}

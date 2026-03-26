@@ -3,7 +3,7 @@ import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { FeedCommentSheet } from './FeedCommentSheet';
 import { ReviewList } from './ReviewList';
-import type { Review, SessionUser } from '../types';
+import type { Review, ReviewMood, SessionUser } from '../types';
 
 interface FeedTabProps {
   reviews: Review[];
@@ -14,6 +14,7 @@ interface FeedTabProps {
   commentSubmittingReviewId: string | null;
   commentMutatingId: string | null;
   deletingReviewId: string | null;
+  updatingReviewId: string | null;
   activeCommentReviewId: string | null;
   highlightedCommentId: string | null;
   highlightedReviewId: string | null;
@@ -25,6 +26,7 @@ interface FeedTabProps {
   onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
   onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;
   onDeleteReview: (reviewId: string) => Promise<void>;
+  onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood }) => Promise<void>;
   onRequestLogin: () => void;
   onClearPlaceFilter: () => void;
   onOpenPlace: (placeId: string) => void;
@@ -41,6 +43,7 @@ export function FeedTab({
   commentSubmittingReviewId,
   commentMutatingId,
   deletingReviewId,
+  updatingReviewId,
   activeCommentReviewId,
   highlightedCommentId,
   highlightedReviewId,
@@ -52,6 +55,7 @@ export function FeedTab({
   onUpdateComment,
   onDeleteComment,
   onDeleteReview,
+  onUpdateReview,
   onRequestLogin,
   onClearPlaceFilter,
   onOpenPlace,
@@ -128,12 +132,14 @@ export function FeedTab({
         submittingReviewId={commentSubmittingReviewId}
         mutatingCommentId={commentMutatingId}
         deletingReviewId={deletingReviewId}
+        updatingReviewId={updatingReviewId}
         highlightedCommentId={highlightedCommentId}
         onClose={onCloseComments}
         onSubmitComment={onCreateComment}
         onUpdateComment={onUpdateComment}
         onDeleteComment={onDeleteComment}
         onDeleteReview={onDeleteReview}
+        onUpdateReview={onUpdateReview}
         onRequestLogin={onRequestLogin}
       />
     </>

@@ -104,7 +104,7 @@ settings = get_settings()
 app = FastAPI(
     title="JamIssue API",
     version="1.0.0",
-    summary="??꾩쓣 ???낆뿉 怨좊Ⅴ??紐⑤컮???ы뻾 ??,
+    summary="JamIssue API server",
 )
 
 app.add_middleware(
