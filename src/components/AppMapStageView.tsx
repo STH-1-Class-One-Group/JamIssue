@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { MapTabStage } from './MapTabStage';
 import type {
   ApiStatus,
@@ -53,7 +54,7 @@ interface AppMapStageViewProps {
   onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
 }
 
-export function AppMapStageView({
+export const AppMapStageView = memo(function AppMapStageView({
   initialMapViewport,
   onOpenPlaceFeed,
   ...props
@@ -66,4 +67,4 @@ export function AppMapStageView({
       initialMapZoom={initialMapViewport.zoom}
     />
   );
-}
+});

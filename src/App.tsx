@@ -545,6 +545,82 @@ export default function App() {
     commitRouteState,
   });
 
+  const handleMapOpenPlaceFeed = useCallback(() => {
+    if (!selectedPlace) {
+      return;
+    }
+    handleOpenPlaceFeedWithReturn(selectedPlace.id);
+  }, [handleOpenPlaceFeedWithReturn, selectedPlace]);
+
+  const handleMapOpenPlace = useCallback((placeId: string) => {
+    setSelectedRoutePreview(null);
+    openPlace(placeId);
+  }, [openPlace, setSelectedRoutePreview]);
+
+  const handleMapOpenFestival = useCallback((festivalId: string) => {
+    setSelectedRoutePreview(null);
+    openFestival(festivalId);
+  }, [openFestival, setSelectedRoutePreview]);
+
+  const handleClearRoutePreview = useCallback(() => {
+    setSelectedRoutePreview(null);
+  }, [setSelectedRoutePreview]);
+
+  const handleExpandPlaceDrawer = useCallback(() => {
+    if (!selectedPlace) {
+      return;
+    }
+    commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'full' }, 'replace');
+  }, [commitRouteState, selectedPlace]);
+
+  const handleCollapsePlaceDrawer = useCallback(() => {
+    if (!selectedPlace) {
+      return;
+    }
+    commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'partial' }, 'replace');
+  }, [commitRouteState, selectedPlace]);
+
+  const handleExpandFestivalDrawer = useCallback(() => {
+    if (!selectedFestival) {
+      return;
+    }
+    commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: 'full' }, 'replace');
+  }, [commitRouteState, selectedFestival]);
+
+  const handleCollapseFestivalDrawer = useCallback(() => {
+    if (!selectedFestival) {
+      return;
+    }
+    commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: 'partial' }, 'replace');
+  }, [commitRouteState, selectedFestival]);
+
+  const handleRequestLogin = useCallback(() => {
+    goToTab('my');
+  }, [goToTab]);
+
+  const handleLocateCurrentPosition = useCallback(() => {
+    void refreshCurrentPosition(true);
+  }, [refreshCurrentPosition]);
+
+  const handleClearPlaceFilter = useCallback(() => {
+    setFeedPlaceFilterId(null);
+  }, [setFeedPlaceFilterId]);
+
+  const handleChangeRouteSort = useCallback((sort: 'popular' | 'latest') => {
+    setCommunityRouteSort(sort);
+    void fetchCommunityRoutes(sort).catch(reportBackgroundError);
+  }, [fetchCommunityRoutes, reportBackgroundError, setCommunityRouteSort]);
+
+  const handleRetryMyPage = useCallback(async () => {
+    if (!sessionUser) {
+      return;
+    }
+    await refreshMyPageForUser(sessionUser, true);
+  }, [refreshMyPageForUser, sessionUser]);
+
+  const handleOpenCommentFromMyPage = useCallback((reviewId: string, commentId: string) => {
+    handleOpenCommentWithReturn(reviewId, commentId);
+  }, [handleOpenCommentWithReturn]);
   return (
     <div className="map-app-shell">
       <div className={[
@@ -595,43 +671,20 @@ export default function App() {
               reviewSubmitting={reviewSubmitting}
               canCreateReview={canCreateReview}
               hasCreatedReviewToday={hasCreatedReviewToday}
-              initialMapViewport={{ lat: initialMapViewport.lat, lng: initialMapViewport.lng, zoom: initialMapViewport.zoom }}
-              onOpenPlaceFeed={() => {
-                if (!selectedPlace) {
-                  return;
-                }
-                handleOpenPlaceFeedWithReturn(selectedPlace.id);
-              }}
-              onOpenPlace={(placeId) => {
-                setSelectedRoutePreview(null);
-                openPlace(placeId);
-              }}
-              onOpenFestival={(festivalId) => {
-                setSelectedRoutePreview(null);
-                openFestival(festivalId);
-              }}
+              initialMapViewport={initialMapViewport}
+              onOpenPlaceFeed={handleMapOpenPlaceFeed}
+              onOpenPlace={handleMapOpenPlace}
+              onOpenFestival={handleMapOpenFestival}
               onCloseDrawer={closeDrawer}
-              onClearRoutePreview={() => setSelectedRoutePreview(null)}
-              onExpandPlaceDrawer={() =>
-                selectedPlace &&
-                commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'full' }, 'replace')
-              }
-              onCollapsePlaceDrawer={() =>
-                selectedPlace &&
-                commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'partial' }, 'replace')
-              }
-              onExpandFestivalDrawer={() =>
-                selectedFestival &&
-                commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: 'full' }, 'replace')
-              }
-              onCollapseFestivalDrawer={() =>
-                selectedFestival &&
-                commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: 'partial' }, 'replace')
-              }
-              onRequestLogin={() => goToTab('my')}
+              onClearRoutePreview={handleClearRoutePreview}
+              onExpandPlaceDrawer={handleExpandPlaceDrawer}
+              onCollapsePlaceDrawer={handleCollapsePlaceDrawer}
+              onExpandFestivalDrawer={handleExpandFestivalDrawer}
+              onCollapseFestivalDrawer={handleCollapseFestivalDrawer}
+              onRequestLogin={handleRequestLogin}
               onClaimStamp={handleClaimStamp}
               onCreateReview={handleCreateReview}
-              onLocateCurrentPosition={() => void refreshCurrentPosition(true)}
+              onLocateCurrentPosition={handleLocateCurrentPosition}
               onMapViewportChange={updateMapViewportInUrl}
             />
           ) : (
@@ -675,24 +728,21 @@ export default function App() {
               onUpdateComment={handleUpdateComment}
               onDeleteComment={handleDeleteComment}
               onDeleteReview={handleDeleteReview}
-              onRequestLogin={() => goToTab('my')}
-              onClearPlaceFilter={() => setFeedPlaceFilterId(null)}
+              onRequestLogin={handleRequestLogin}
+              onClearPlaceFilter={handleClearPlaceFilter}
               onOpenPlace={handleOpenPlaceWithReturn}
               onOpenComments={handleOpenReviewComments}
               onCloseComments={handleCloseReviewComments}
-              onChangeRouteSort={(sort) => {
-                setCommunityRouteSort(sort);
-                void fetchCommunityRoutes(sort).catch(reportBackgroundError);
-              }}
+              onChangeRouteSort={handleChangeRouteSort}
               onToggleRouteLike={handleToggleRouteLike}
               onOpenRoutePreview={handleOpenRoutePreview}
               onChangeMyPageTab={setMyPageTab}
               onLogin={startProviderLogin}
-              onRetryMyPage={async () => { if (sessionUser) { await refreshMyPageForUser(sessionUser, true); } }}
+              onRetryMyPage={handleRetryMyPage}
               onLogout={handleLogout}
               onSaveNickname={handleUpdateProfile}
               onPublishRoute={handlePublishRoute}
-              onOpenCommentFromMyPage={(reviewId, commentId) => handleOpenCommentWithReturn(reviewId, commentId)}
+              onOpenCommentFromMyPage={handleOpenCommentFromMyPage}
               onOpenReview={handleOpenReviewWithReturn}
               onUpdateReview={handleUpdateReview}
               onMarkNotificationRead={handleMarkNotificationRead}

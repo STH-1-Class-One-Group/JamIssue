@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { CourseTab } from './CourseTab';
 import { EventTab } from './EventTab';
 import { FeedTab } from './FeedTab';
@@ -84,7 +85,7 @@ interface AppPageStageProps {
   onToggleAdminManualOverride: (placeId: string, nextValue: boolean) => Promise<void>;
 }
 
-export function AppPageStage({
+export const AppPageStage = memo(function AppPageStage({
   activeTab,
   reviews,
   sessionUser,
@@ -237,4 +238,4 @@ export function AppPageStage({
       )}
     </div>
   );
-}
+});
