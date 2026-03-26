@@ -198,6 +198,32 @@ function mergeEventSeries(items) {
   return merged;
 }
 
+function deduplicateSeriesByExternalId(items) {
+  const grouped = new Map();
+  for (const item of items) {
+    const key = String(item.externalId || '');
+    const existing = grouped.get(key);
+    if (!existing) {
+      grouped.set(key, { ...item });
+      continue;
+    }
+    if (new Date(item.startsAt).getTime() < new Date(existing.startsAt).getTime()) {
+      existing.startsAt = item.startsAt;
+    }
+    if (new Date(item.endsAt).getTime() > new Date(existing.endsAt).getTime()) {
+      existing.endsAt = item.endsAt;
+    }
+    if (!existing.summary && item.summary) {
+      existing.summary = item.summary;
+    }
+    existing.rawPayload = {
+      ...(existing.rawPayload || {}),
+      mergedEventSeqs: [...new Set([...(existing.rawPayload?.mergedEventSeqs || []), ...(item.rawPayload?.mergedEventSeqs || []), item.rawPayload?.eventSeq].filter(Boolean))],
+    };
+  }
+  return [...grouped.values()];
+}
+
 function parseMaxPage(html) {
   const pageNumbers = [...html.matchAll(/fn_link_page\((\d+)\)/g)].map((match) => Number(match[1]));
   return pageNumbers.length > 0 ? Math.max(...pageNumbers) : 1;
@@ -312,7 +338,7 @@ async function collectEvents(range) {
 
   return {
     pageCount: maxPage,
-    items: mergeEventSeries([...uniqueItems.values()]),
+    items: deduplicateSeriesByExternalId(mergeEventSeries([...uniqueItems.values()])),
   };
 }
 

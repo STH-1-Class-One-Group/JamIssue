@@ -326,6 +326,45 @@ function mergeImportedFestivalItems(items) {
   }, []);
 }
 
+function deduplicateImportedFestivalItemsByExternalId(items) {
+  const grouped = new Map();
+  for (const item of items) {
+    const key = String(item.externalId || "");
+    const existing = grouped.get(key);
+    if (!existing) {
+      grouped.set(key, { ...item });
+      continue;
+    }
+    if (new Date(item.startsAt).getTime() < new Date(existing.startsAt).getTime()) {
+      existing.startsAt = item.startsAt;
+    }
+    if (new Date(item.endsAt).getTime() > new Date(existing.endsAt).getTime()) {
+      existing.endsAt = item.endsAt;
+    }
+    if (!existing.summary && item.summary) {
+      existing.summary = item.summary;
+    }
+    if (!existing.homepageUrl && item.homepageUrl) {
+      existing.homepageUrl = item.homepageUrl;
+    }
+    if (!existing.roadAddress && item.roadAddress) {
+      existing.roadAddress = item.roadAddress;
+    }
+    if (!existing.address && item.address) {
+      existing.address = item.address;
+    }
+    if ((!Number.isFinite(Number(existing.latitude)) || !Number.isFinite(Number(existing.longitude))) && Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude))) {
+      existing.latitude = item.latitude;
+      existing.longitude = item.longitude;
+    }
+    existing.rawPayload = {
+      ...(existing.rawPayload || {}),
+      mergedExternalIds: [...new Set([...(existing.rawPayload?.mergedExternalIds || []), ...(item.rawPayload?.mergedExternalIds || []), item.externalId].filter(Boolean))],
+    };
+  }
+  return [...grouped.values()];
+}
+
 function groupFestivalRowsBySeries(rows) {
   return rows.reduce((acc, row) => {
     const previous = acc[acc.length - 1];
@@ -2494,9 +2533,9 @@ async function ensureImportedFestivalSource(env, requestUrl, sourceName) {
 
 async function upsertImportedFestivalItems(env, items, options = {}) {
   const cityKeyword = getTargetFestivalCityKeyword(env);
-  const normalizedItems = mergeImportedFestivalItems((items || [])
+  const normalizedItems = deduplicateImportedFestivalItemsByExternalId(mergeImportedFestivalItems((items || [])
     .map((item) => normalizeFestivalImportItem(item, cityKeyword))
-    .filter(Boolean));
+    .filter(Boolean)));
   if (normalizedItems.length === 0) {
     throw new Error('No valid festival items were provided for import.');
   }
