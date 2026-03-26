@@ -756,7 +756,10 @@ function buildCommentTree(commentRows, usersById) {
       replies: collapseDeletedNodes(node.replies),
     };
     if (nextNode.isDeleted) {
-      acc.push(...nextNode.replies);
+      acc.push(...nextNode.replies.map((reply) => ({
+        ...reply,
+        parentId: null,
+      })));
       return acc;
     }
     acc.push(nextNode);
