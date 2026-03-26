@@ -98,7 +98,31 @@ export function useAppBootstrapLifecycle({
   formatErrorMessage,
   reportBackgroundError,
 }: UseAppBootstrapLifecycleParams) {
-  const hasBootstrappedRef = useRef(false);
+  const refreshMyPageForUserRef = useRef(refreshMyPageForUser);
+  const resetReviewCachesRef = useRef(resetReviewCaches);
+  const goToTabRef = useRef(goToTab);
+  const formatErrorMessageRef = useRef(formatErrorMessage);
+  const reportBackgroundErrorRef = useRef(reportBackgroundError);
+
+  useEffect(() => {
+    refreshMyPageForUserRef.current = refreshMyPageForUser;
+  }, [refreshMyPageForUser]);
+
+  useEffect(() => {
+    resetReviewCachesRef.current = resetReviewCaches;
+  }, [resetReviewCaches]);
+
+  useEffect(() => {
+    goToTabRef.current = goToTab;
+  }, [goToTab]);
+
+  useEffect(() => {
+    formatErrorMessageRef.current = formatErrorMessage;
+  }, [formatErrorMessage]);
+
+  useEffect(() => {
+    reportBackgroundErrorRef.current = reportBackgroundError;
+  }, [reportBackgroundError]);
 
   useEffect(() => {
     if (!selectedPlaceId || activeTab !== 'map') {
@@ -161,11 +185,6 @@ export function useAppBootstrapLifecycle({
   ]);
 
   useEffect(() => {
-    if (hasBootstrappedRef.current) {
-      return;
-    }
-    hasBootstrappedRef.current = true;
-
     let active = true;
 
     void (async () => {
@@ -185,7 +204,7 @@ export function useAppBootstrapLifecycle({
         setStampState(bootstrap.stamps);
         setHasRealData(bootstrap.hasRealData);
         setSessionUser(bootstrap.auth.user);
-        resetReviewCaches();
+        resetReviewCachesRef.current();
         setFeedNextCursor(null);
         setFeedHasMore(false);
         setFeedLoadingMore(false);
@@ -198,7 +217,7 @@ export function useAppBootstrapLifecycle({
         setSelectedFestivalId(null);
 
         if (bootstrap.auth.user) {
-          await refreshMyPageForUser(bootstrap.auth.user, true);
+          await refreshMyPageForUserRef.current(bootstrap.auth.user, true);
           if (!active) {
             return;
           }
@@ -208,11 +227,11 @@ export function useAppBootstrapLifecycle({
 
         setBootstrapStatus('ready');
         if (authState === 'naver-success' && bootstrap.auth.user?.profileCompletedAt === null) {
-          goToTab('my');
+          goToTabRef.current('my');
           setNotice('닉네임을 먼저 정하면 같은 계정으로 스탬프와 피드를 이어서 남길 수 있어요.');
         }
       } catch (error) {
-        setBootstrapError(formatErrorMessage(error));
+        setBootstrapError(formatErrorMessageRef.current(error));
         setBootstrapStatus('error');
       } finally {
         clearAuthQueryParams();
@@ -227,16 +246,12 @@ export function useAppBootstrapLifecycle({
         setFestivals(festivalResult);
         setSelectedFestivalId((current) => (current && festivalResult.some((festival) => festival.id === current) ? current : null));
       })
-      .catch(reportBackgroundError);
+      .catch((error) => reportBackgroundErrorRef.current(error));
 
     return () => {
       active = false;
     };
   }, [
-    formatErrorMessage,
-    goToTab,
-    refreshMyPageForUser,
-    resetReviewCaches,
     setBootstrapError,
     setBootstrapStatus,
     setFeedHasMore,
