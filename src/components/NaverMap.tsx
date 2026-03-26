@@ -110,20 +110,20 @@ function getSelectionVerticalOffset(mapElement: HTMLDivElement | null, targetTyp
   const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 640;
   if (mapHeight <= 0) {
     if (targetType === 'place') {
-      return isMobileViewport ? 310 : 235;
+      return isMobileViewport ? 360 : 250;
     }
-    return isMobileViewport ? 240 : 180;
+    return isMobileViewport ? 280 : 190;
   }
 
   const ratio = targetType === 'place'
-    ? (isMobileViewport ? 0.46 : 0.36)
-    : (isMobileViewport ? 0.34 : 0.27);
+    ? (isMobileViewport ? 0.56 : 0.38)
+    : (isMobileViewport ? 0.42 : 0.29);
   const minOffset = targetType === 'place'
-    ? (isMobileViewport ? 290 : 220)
-    : (isMobileViewport ? 220 : 160);
+    ? (isMobileViewport ? 340 : 240)
+    : (isMobileViewport ? 260 : 170);
   const maxOffset = targetType === 'place'
-    ? (isMobileViewport ? 360 : 290)
-    : (isMobileViewport ? 280 : 220);
+    ? (isMobileViewport ? 430 : 310)
+    : (isMobileViewport ? 330 : 230);
   return Math.min(maxOffset, Math.max(minOffset, Math.round(mapHeight * ratio)));
 }
 
@@ -445,11 +445,13 @@ export function NaverMap({
     }
 
     if (typeof map.panBy === 'function') {
+      const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 640;
+      const panDelayMs = isMobileViewport && targetType === 'place' ? 260 : 180;
       window.setTimeout(() => {
         if (mapRef.current === map) {
           map.panBy(0, -getSelectionVerticalOffset(mapElementRef.current, targetType));
         }
-      }, 180);
+      }, panDelayMs);
     }
   }, [festivals, places, selectedFestivalId, selectedPlaceId, status]);
 

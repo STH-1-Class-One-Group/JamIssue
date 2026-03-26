@@ -2,8 +2,8 @@
 
 const BUTTON_SIZE = 46;
 const EDGE_PADDING = 12;
-const DESKTOP_BOTTOM_PADDING = 150;
-const MOBILE_BOTTOM_PADDING = 250;
+const DESKTOP_BOTTOM_PADDING = 120;
+const MOBILE_SHEET_OFFSET = 180;
 const TOUCH_DRAG_DELAY_MS = 260;
 
 interface Position {
@@ -11,32 +11,63 @@ interface Position {
   y: number;
 }
 
+interface Bounds {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
+function getPlacementBounds(): Bounds | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const shell = document.querySelector<HTMLElement>('.phone-shell');
+  if (shell) {
+    const rect = shell.getBoundingClientRect();
+    return {
+      minX: rect.left + EDGE_PADDING,
+      maxX: rect.right - BUTTON_SIZE - EDGE_PADDING,
+      minY: rect.top + EDGE_PADDING,
+      maxY: rect.bottom - BUTTON_SIZE - EDGE_PADDING,
+    };
+  }
+
+  return {
+    minX: EDGE_PADDING,
+    maxX: Math.max(EDGE_PADDING, window.innerWidth - BUTTON_SIZE - EDGE_PADDING),
+    minY: EDGE_PADDING,
+    maxY: Math.max(EDGE_PADDING, window.innerHeight - BUTTON_SIZE - DESKTOP_BOTTOM_PADDING),
+  };
+}
+
 function getDefaultPosition(): Position {
   if (typeof window === 'undefined') {
     return { x: EDGE_PADDING, y: EDGE_PADDING };
   }
 
+  const bounds = getPlacementBounds();
+  if (!bounds) {
+    return { x: EDGE_PADDING, y: EDGE_PADDING };
+  }
+
   const isMobileViewport = window.innerWidth <= 640;
-  const bottomPadding = isMobileViewport ? MOBILE_BOTTOM_PADDING : DESKTOP_BOTTOM_PADDING;
   return clampPosition({
-    x: window.innerWidth - BUTTON_SIZE - EDGE_PADDING,
-    y: window.innerHeight - BUTTON_SIZE - bottomPadding,
+    x: bounds.maxX,
+    y: isMobileViewport ? bounds.maxY - MOBILE_SHEET_OFFSET : bounds.maxY - DESKTOP_BOTTOM_PADDING,
   });
 }
 
 function clampPosition(position: Position) {
-  if (typeof window === 'undefined') {
+  const bounds = getPlacementBounds();
+  if (!bounds) {
     return position;
   }
 
-  const maxX = Math.max(EDGE_PADDING, window.innerWidth - BUTTON_SIZE - EDGE_PADDING);
-  const isMobileViewport = window.innerWidth <= 640;
-  const bottomPadding = isMobileViewport ? MOBILE_BOTTOM_PADDING : DESKTOP_BOTTOM_PADDING;
-  const maxY = Math.max(EDGE_PADDING, window.innerHeight - BUTTON_SIZE - bottomPadding);
-
   return {
-    x: Math.min(Math.max(position.x, EDGE_PADDING), maxX),
-    y: Math.min(Math.max(position.y, EDGE_PADDING), maxY),
+    x: Math.min(Math.max(position.x, bounds.minX), bounds.maxX),
+    y: Math.min(Math.max(position.y, bounds.minY), bounds.maxY),
   };
 }
 
