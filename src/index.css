@@ -869,29 +869,32 @@ textarea {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .festival-card__status-chip {
-  padding: 0;
-  background: transparent;
-  border: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 240, 246, 0.92);
+  border: 1px solid rgba(255, 164, 197, 0.28) !important;
   color: var(--pink-deep);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  line-height: 1;
+  letter-spacing: -0.015em;
 }
 
 .festival-card__status-chip::before {
   content: '';
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 7px;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
   border-radius: 999px;
   background: currentColor;
-  vertical-align: middle;
+  flex: 0 0 auto;
 }
 
 .festival-card__date {
