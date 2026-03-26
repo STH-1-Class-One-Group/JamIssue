@@ -48,6 +48,7 @@
 CLOUDFLARE_API_TOKEN=<Cloudflare API token>
 CLOUDFLARE_ACCOUNT_ID=<Cloudflare account id>
 EVENT_IMPORT_TOKEN=<random long token>
+PUBLIC_SUPABASE_ANON_KEY=<SUPABASE_ANON_KEY>
 ```
 
 설명:
@@ -61,11 +62,15 @@ EVENT_IMPORT_TOKEN=<random long token>
 ```env
 PUBLIC_APP_BASE_URL=https://api.daejeon.jamissue.com
 PUBLIC_NAVER_MAP_CLIENT_ID=<NAVER_MAP_CLIENT_ID>
+PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 ```
 
 설명:
 - `PUBLIC_APP_BASE_URL`: 프런트에서 호출할 API 주소
 - `PUBLIC_NAVER_MAP_CLIENT_ID`: 네이버 지도용 공개 client id
+
+- `PUBLIC_SUPABASE_URL`: 프런트에서 Realtime 연결에 사용할 Supabase project URL
+- `PUBLIC_SUPABASE_ANON_KEY`: 프런트에서 Realtime 연결에 사용할 Supabase anon key
 
 ### Cloudflare Worker Variables
 
