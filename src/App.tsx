@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import {
   getAuthSession,
   getMyCommentsPage,
-  getProviderLoginUrl,
   getReviewFeedPage,
 } from './api/client';
 import { AppMapStageView } from './components/AppMapStageView';
@@ -14,12 +13,12 @@ import { GlobalStatusBanner } from './components/GlobalStatusBanner';
 import {
   useAppRouteState,
   getInitialNotice,
-  getLoginReturnUrl,
   getInitialMapViewport,
   updateMapViewportInUrl,
 } from './hooks/useAppRouteState';
 import { useAppDataState } from './hooks/useAppDataState';
 import { useAppBootstrapLifecycle } from './hooks/useAppBootstrapLifecycle';
+import { useAppAuthActions } from './hooks/useAppAuthActions';
 import { useAppFeedbackEffects } from './hooks/useAppFeedbackEffects';
 import { useAppMapActions } from './hooks/useAppMapActions';
 import { useAppNavigationHelpers } from './hooks/useAppNavigationHelpers';
@@ -203,6 +202,21 @@ export default function App() {
     mapLocationStatus,
     mapLocationMessage,
   });
+  const {
+    startProviderLogin,
+    handleUpdateProfile,
+    handleLogout,
+  } = useAppAuthActions({
+    setSessionUser,
+    setProviders,
+    setMyPage,
+    setNotice,
+    setIsLoggingOut,
+    setProfileSaving,
+    setProfileError,
+    formatErrorMessage,
+  });
+
 
   useNotificationLifecycle({
     sessionUser,
@@ -402,10 +416,6 @@ export default function App() {
     refreshMyPageForUser,
     formatErrorMessage,
   });
-
-  function startProviderLogin(provider: 'naver' | 'kakao') {
-    window.location.assign(getProviderLoginUrl(provider, getLoginReturnUrl()));
-  }
 
   const {
     handleCreateReview,
@@ -631,42 +641,6 @@ export default function App() {
       setNotice(formatErrorMessage(error));
     } finally {
       setAdminLoading(false);
-    }
-  }
-
-  async function handleUpdateProfile(nextNickname: string) {
-    if (!nextNickname || nextNickname.length < 2) {
-      setProfileError('닉네임은 두 글자 이상으로 입력해 주세요.');
-      return;
-    }
-    setProfileSaving(true);
-    setProfileError(null);
-    try {
-      const auth = await updateProfile({ nickname: nextNickname });
-      setSessionUser(auth.user);
-      if (auth.user) {
-        setMyPage((current) => (current && auth.user ? { ...current, user: auth.user } : current));
-      }
-      setNotice('닉네임을 저장했어요. 이제 같은 계정으로 기록을 이어볼 수 있어요.');
-    } catch (error) {
-      setProfileError(formatErrorMessage(error));
-    } finally {
-      setProfileSaving(false);
-    }
-  }
-
-  async function handleLogout() {
-    setIsLoggingOut(true);
-    try {
-      const auth = await logout();
-      setSessionUser(auth.user);
-      setProviders(auth.providers);
-      setMyPage(null);
-      setNotice('로그아웃했어요.');
-    } catch (error) {
-      setNotice(formatErrorMessage(error));
-    } finally {
-      setIsLoggingOut(false);
     }
   }
 
