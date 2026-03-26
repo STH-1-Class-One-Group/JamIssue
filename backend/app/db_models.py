@@ -402,19 +402,22 @@ class UserNotification(Base):
     __tablename__ = "user_notification"
 
     notification_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    recipient_id: Mapped[str] = mapped_column(ForeignKey("user.user_id", ondelete="CASCADE"), nullable=False, index=True)
-    actor_id: Mapped[str | None] = mapped_column(ForeignKey("user.user_id", ondelete="SET NULL"), nullable=True, index=True)
-    notification_type: Mapped[str] = mapped_column(String(40), nullable=False)
-    title: Mapped[str] = mapped_column(String(200), nullable=False)
-    body: Mapped[str] = mapped_column(String(500), nullable=False)
+    user_id: Mapped[str] = mapped_column(ForeignKey("user.user_id", ondelete="CASCADE"), nullable=False, index=True)
+    actor_user_id: Mapped[str | None] = mapped_column(ForeignKey("user.user_id", ondelete="SET NULL"), nullable=True, index=True)
+    notification_type: Mapped[str] = mapped_column(String(30), name="type", nullable=False)
+    title: Mapped[str] = mapped_column(String(120), nullable=False)
+    body: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    review_id: Mapped[int | None] = mapped_column(ForeignKey("feed.feed_id", ondelete="CASCADE"), nullable=True, index=True)
+    comment_id: Mapped[int | None] = mapped_column(ForeignKey("user_comment.comment_id", ondelete="CASCADE"), nullable=True, index=True)
+    route_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
-    review_id: Mapped[int | None] = mapped_column(ForeignKey("feed.feed_id", ondelete="SET NULL"), nullable=True, index=True)
-    comment_id: Mapped[int | None] = mapped_column(ForeignKey("user_comment.comment_id", ondelete="SET NULL"), nullable=True, index=True)
-    route_id: Mapped[int | None] = mapped_column(ForeignKey("user_route.route_id", ondelete="SET NULL"), nullable=True, index=True)
+    read_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    extra_metadata: Mapped[dict] = mapped_column(JSON, name="metadata", nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow_naive, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow_naive, onupdate=utcnow_naive, nullable=False)
 
-    recipient: Mapped["User"] = relationship(foreign_keys=[recipient_id])
-    actor: Mapped["User"] = relationship(foreign_keys=[actor_id])
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
+    actor: Mapped["User"] = relationship(foreign_keys=[actor_user_id])
 
 
 

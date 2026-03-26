@@ -593,7 +593,7 @@ export default function App() {
     return () => {
       unsubscribe();
     };
-  }, [sessionUser?.id]);
+  }, [sessionUser?.id, subscribeNotifications]);
 
   useEffect(() => {
     if (activeTab === 'feed') {

@@ -598,8 +598,8 @@ def _to_notification_out(notification: UserNotification) -> UserNotificationOut:
 def _create_notification(
     db: Session,
     *,
-    recipient_id: str,
-    actor_id: str | None,
+    user_id: str,
+    actor_user_id: str | None,
     notification_type: str,
     title: str,
     body: str,
@@ -608,12 +608,12 @@ def _create_notification(
     route_id: int | None = None,
 ) -> None:
     """Insert a notification row without committing (caller commits)."""
-    if recipient_id == actor_id:
+    if user_id == actor_user_id:
         return
     db.add(
         UserNotification(
-            recipient_id=recipient_id,
-            actor_id=actor_id,
+            user_id=user_id,
+            actor_user_id=actor_user_id,
             notification_type=notification_type,
             title=title,
             body=body,
@@ -622,6 +622,7 @@ def _create_notification(
             comment_id=comment_id,
             route_id=route_id,
             created_at=utcnow_naive(),
+            updated_at=utcnow_naive(),
         )
     )
 
@@ -631,7 +632,7 @@ def get_user_notifications(db: Session, user_id: str) -> list[UserNotificationOu
     rows = db.scalars(
         select(UserNotification)
         .options(_joinedload(UserNotification.actor))
-        .where(UserNotification.recipient_id == user_id)
+        .where(UserNotification.user_id == user_id)
         .order_by(UserNotification.created_at.desc(), UserNotification.notification_id.desc())
         .limit(50)
     ).unique().all()
@@ -645,12 +646,14 @@ def mark_notification_read(db: Session, notification_id: str, user_id: str) -> U
         raise ValueError("알림 ID 형식이 올바르지 않아요.") from error
     notification = db.scalars(
         select(UserNotification)
-        .where(UserNotification.notification_id == nid, UserNotification.recipient_id == user_id)
+        .where(UserNotification.notification_id == nid, UserNotification.user_id == user_id)
     ).first()
     if not notification:
         raise ValueError("알림을 찾을 수 없어요.")
     if not notification.is_read:
         notification.is_read = True
+        notification.read_at = utcnow_naive()
+        notification.updated_at = utcnow_naive()
         db.commit()
         db.refresh(notification)
     return _to_notification_out(notification)
@@ -658,10 +661,11 @@ def mark_notification_read(db: Session, notification_id: str, user_id: str) -> U
 
 def mark_all_notifications_read(db: Session, user_id: str) -> int:
     from sqlalchemy import update as _update
+    now = utcnow_naive()
     result = db.execute(
         _update(UserNotification)
-        .where(UserNotification.recipient_id == user_id, UserNotification.is_read.is_(False))
-        .values(is_read=True)
+        .where(UserNotification.user_id == user_id, UserNotification.is_read.is_(False))
+        .values(is_read=True, read_at=now, updated_at=now)
     )
     db.commit()
     return result.rowcount
@@ -673,7 +677,7 @@ def delete_notification(db: Session, notification_id: str, user_id: str) -> None
     except ValueError as error:
         raise ValueError("알림 ID 형식이 올바르지 않아요.") from error
     notification = db.scalars(
-        select(UserNotification).where(UserNotification.notification_id == nid, UserNotification.recipient_id == user_id)
+        select(UserNotification).where(UserNotification.notification_id == nid, UserNotification.user_id == user_id)
     ).first()
     if not notification:
         raise ValueError("알림을 찾을 수 없어요.")
@@ -721,8 +725,8 @@ def create_comment(db: Session, review_id: str, payload: CommentCreate, user_id:
         if feed.user_id != user.user_id:
             _create_notification(
                 db,
-                recipient_id=feed.user_id,
-                actor_id=user.user_id,
+                user_id=feed.user_id,
+                actor_user_id=user.user_id,
                 notification_type="review-comment",
                 title=f"{user.nickname}님이 댓글을 남겼어요.",
                 body=body[:100],
@@ -735,8 +739,8 @@ def create_comment(db: Session, review_id: str, payload: CommentCreate, user_id:
         if parent_comment and parent_comment.user_id != user.user_id and not parent_comment.is_deleted:
             _create_notification(
                 db,
-                recipient_id=parent_comment.user_id,
-                actor_id=user.user_id,
+                user_id=parent_comment.user_id,
+                actor_user_id=user.user_id,
                 notification_type="comment-reply",
                 title=f"{user.nickname}님이 답글을 남겼어요.",
                 body=body[:100],
