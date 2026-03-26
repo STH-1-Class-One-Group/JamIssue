@@ -20,6 +20,7 @@ const NAVER_PROFILE_URL = 'https://openapi.naver.com/v1/nid/me';
 const textEncoder = new TextEncoder();
 const STATIC_BASE_CACHE_TTL_MS = 5 * 60 * 1000;
 const FESTIVALS_CACHE_TTL_MS = 10 * 60 * 1000;
+const SUPABASE_REQUEST_TIMEOUT_MS = 8000;
 let staticBaseCache = { expiresAt: 0, value: null, pending: null };
 let festivalsCache = { expiresAt: 0, syncAt: 0, value: null, pending: null };
 
@@ -93,11 +94,25 @@ async function supabaseRequest(env, path, init = {}) {
     headers.set('Prefer', 'return=representation');
   }
 
-  const response = await fetch(`${env.APP_SUPABASE_URL}/rest/v1/${path}`, {
-    method,
-    headers,
-    body: init.body,
-  });
+  const controller = new AbortController();
+  const timeoutMs = Number(env.APP_SUPABASE_REQUEST_TIMEOUT_MS || SUPABASE_REQUEST_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(`Supabase request timed out after ${timeoutMs}ms: ${path}`), timeoutMs);
+  let response;
+  try {
+    response = await fetch(`${env.APP_SUPABASE_URL}/rest/v1/${path}`, {
+      method,
+      headers,
+      body: init.body,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error(`Supabase request timed out after ${timeoutMs}ms: ${path}`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!response.ok) {
     const detail = await response.text();
@@ -111,6 +126,10 @@ async function supabaseRequest(env, path, init = {}) {
 
   const contentType = response.headers.get('content-type') ?? '';
   return contentType.includes('application/json') ? JSON.parse(text) : text;
+}
+
+function logPublicFallback(routeName, error) {
+  console.error(`[public-fallback] ${routeName}`, error);
 }
 
 function encodeFilterValue(value) {
@@ -1299,7 +1318,18 @@ async function handleNaverCallback(request, env, url) {
 
 async function handleMapBootstrap(request, env) {
   const sessionUser = await readSessionUser(request, env);
-  const mapData = await loadMapData(env, sessionUser?.id ?? null);
+  let mapData;
+  try {
+    mapData = await loadMapData(env, sessionUser?.id ?? null);
+  } catch (error) {
+    logPublicFallback('map-bootstrap', error);
+    mapData = {
+      places: [],
+      collectedPlaceIds: [],
+      stampLogs: [],
+      travelSessions: [],
+    };
+  }
   return jsonResponse(200, {
     auth: createAuthResponse(sessionUser, env),
     places: mapData.places.map(({ positionId, ...place }) => place),
@@ -1313,7 +1343,12 @@ async function handleMapBootstrap(request, env) {
 }
 
 async function handleCuratedCourses(request, env) {
-  return jsonResponse(200, { courses: await loadCuratedCourses(env) }, env, request);
+  try {
+    return jsonResponse(200, { courses: await loadCuratedCourses(env) }, env, request);
+  } catch (error) {
+    logPublicFallback('courses-curated', error);
+    return jsonResponse(200, { courses: [] }, env, request);
+  }
 }
 
 async function handleBootstrap(request, env) {
@@ -1343,10 +1378,16 @@ async function handleReviews(request, env, url) {
 
 async function handleReviewFeed(request, env, url) {
   const sessionUser = await readSessionUser(request, env);
-  const payload = await loadReviewPageData(env, sessionUser?.id ?? null, {
-    cursor: url.searchParams.get('cursor') ?? null,
-    limit: parseListLimit(url, 10, 20),
-  });
+  let payload;
+  try {
+    payload = await loadReviewPageData(env, sessionUser?.id ?? null, {
+      cursor: url.searchParams.get('cursor') ?? null,
+      limit: parseListLimit(url, 10, 20),
+    });
+  } catch (error) {
+    logPublicFallback('review-feed', error);
+    payload = { items: [], nextCursor: null };
+  }
   return jsonResponse(200, payload, env, request);
 }
 
@@ -1362,7 +1403,13 @@ async function handleReviewDetail(request, env, reviewId) {
 async function handleCommunityRoutes(request, env, url) {
   const sessionUser = await readSessionUser(request, env);
   const sort = url.searchParams.get('sort') === 'latest' ? 'latest' : 'popular';
-  const routes = await loadCommunityRoutes(env, { sort, sessionUserId: sessionUser?.id ?? null });
+  let routes;
+  try {
+    routes = await loadCommunityRoutes(env, { sort, sessionUserId: sessionUser?.id ?? null });
+  } catch (error) {
+    logPublicFallback('community-routes', error);
+    routes = [];
+  }
   return jsonResponse(200, routes, env, request);
 }
 
@@ -2386,38 +2433,44 @@ async function handleFestivalsFromDb(request, env) {
     return jsonResponse(200, festivalsCache.value, env, request);
   }
 
-  const festivals = await rememberPending(festivalsCache, async () => {
-    const nowIso = new Date(now).toISOString();
-    const windowEndIso = getFestivalWindowEnd(now).toISOString();
-    const rows = await loadFestivalRowsFromDb(env, nowIso, windowEndIso, 100);
-    const value = rows
-      .filter((row) => {
-        const startTime = new Date(row.starts_at).getTime();
-        const endTime = new Date(row.ends_at).getTime();
-        return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= getFestivalWindowEnd(now).getTime();
-      })
-      .slice(0, 10)
-      .map((row) => ({
-        id: String(row.public_event_id),
-        title: row.title,
-        venueName: row.venue_name ?? null,
-        startDate: row.starts_at ? toSeoulDateKey(row.starts_at) : '',
-        endDate: row.ends_at ? toSeoulDateKey(row.ends_at) : '',
-        homepageUrl: row.source_page_url ?? null,
-        roadAddress: row.road_address ?? row.address ?? null,
-        latitude: parseFestivalCoordinate(row.latitude),
-        longitude: parseFestivalCoordinate(row.longitude),
-        isOngoing: isFestivalOngoingInSeoul(row.starts_at, row.ends_at, now),
-      }));
+  let festivals;
+  try {
+    festivals = await rememberPending(festivalsCache, async () => {
+      const nowIso = new Date(now).toISOString();
+      const windowEndIso = getFestivalWindowEnd(now).toISOString();
+      const rows = await loadFestivalRowsFromDb(env, nowIso, windowEndIso, 100);
+      const value = rows
+        .filter((row) => {
+          const startTime = new Date(row.starts_at).getTime();
+          const endTime = new Date(row.ends_at).getTime();
+          return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= getFestivalWindowEnd(now).getTime();
+        })
+        .slice(0, 10)
+        .map((row) => ({
+          id: String(row.public_event_id),
+          title: row.title,
+          venueName: row.venue_name ?? null,
+          startDate: row.starts_at ? toSeoulDateKey(row.starts_at) : '',
+          endDate: row.ends_at ? toSeoulDateKey(row.ends_at) : '',
+          homepageUrl: row.source_page_url ?? null,
+          roadAddress: row.road_address ?? row.address ?? null,
+          latitude: parseFestivalCoordinate(row.latitude),
+          longitude: parseFestivalCoordinate(row.longitude),
+          isOngoing: isFestivalOngoingInSeoul(row.starts_at, row.ends_at, now),
+        }));
 
-    festivalsCache = {
-      ...festivalsCache,
-      value,
-      expiresAt: Date.now() + FESTIVALS_CACHE_TTL_MS,
-      pending: null,
-    };
-    return value;
-  });
+      festivalsCache = {
+        ...festivalsCache,
+        value,
+        expiresAt: Date.now() + FESTIVALS_CACHE_TTL_MS,
+        pending: null,
+      };
+      return value;
+    });
+  } catch (error) {
+    logPublicFallback('festivals', error);
+    festivals = festivalsCache.value ?? [];
+  }
 
   return jsonResponse(200, festivals, env, request);
 }
