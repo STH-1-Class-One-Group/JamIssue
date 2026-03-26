@@ -19,6 +19,7 @@ import {
 import { useAppDataState } from './hooks/useAppDataState';
 import { useAppBootstrapLifecycle } from './hooks/useAppBootstrapLifecycle';
 import { useAppAuthActions } from './hooks/useAppAuthActions';
+import { useAppAdminActions } from './hooks/useAppAdminActions';
 import { useAppFeedbackEffects } from './hooks/useAppFeedbackEffects';
 import { useAppMapActions } from './hooks/useAppMapActions';
 import { useAppNavigationHelpers } from './hooks/useAppNavigationHelpers';
@@ -506,76 +507,23 @@ export default function App() {
     }
   }
 
-  async function handleToggleAdminPlace(placeId: string, nextValue: boolean) {
-    if (!sessionUser?.isAdmin) {
-      return;
-    }
-    setAdminBusyPlaceId(placeId);
-    try {
-      const updated = await updatePlaceVisibility(placeId, { isActive: nextValue });
-      setAdminSummary((current) => current ? {
-        ...current,
-        places: current.places.map((place) => place.id === placeId ? updated : place),
-      } : current);
-      const nextMap = await getMapBootstrap();
-      setPlaces(nextMap.places);
-      setStampState(nextMap.stamps);
-      setHasRealData(nextMap.hasRealData);
-      setNotice(nextValue ? '\uC7A5\uC18C \uB178\uCD9C\uC744 \uCF1C\uB450\uC5C8\uC5B4\uC694.' : '\uC7A5\uC18C \uB178\uCD9C\uC744 \uC228\uACBC\uC5B4\uC694.');
-    } catch (error) {
-      setNotice(formatErrorMessage(error));
-    } finally {
-      setAdminBusyPlaceId(null);
-    }
-  }
-
-
-  async function handleToggleAdminManualOverride(placeId: string, nextValue: boolean) {
-    if (!sessionUser?.isAdmin) {
-      return;
-    }
-    setAdminBusyPlaceId(placeId);
-    try {
-      const updated = await updatePlaceVisibility(placeId, { isManualOverride: nextValue });
-      setAdminSummary((current) => current ? {
-        ...current,
-        places: current.places.map((place) => place.id === placeId ? updated : place),
-      } : current);
-      setNotice(nextValue ? '공공데이터 자동 동기화에서 보호해둘게요.' : '공공데이터 자동 동기화 보호를 해제했어요.');
-    } catch (error) {
-      setNotice(formatErrorMessage(error));
-    } finally {
-      setAdminBusyPlaceId(null);
-    }
-  }
-
-  async function handleRefreshAdminImport() {
-    if (!sessionUser?.isAdmin) {
-      return;
-    }
-
-    setAdminLoading(true);
-    try {
-      await importPublicData();
-      const [nextSummary, nextMap, nextFestivals] = await Promise.all([
-        refreshAdminSummary(true),
-        getMapBootstrap(),
-        getFestivals(),
-      ]);
-      if (nextSummary) {
-        setAdminSummary(nextSummary);
-      }
-      setPlaces(nextMap.places);
-      setStampState(nextMap.stamps);
-      setHasRealData(nextMap.hasRealData);
-      setFestivals(nextFestivals);
-      setNotice('행사 데이터를 다시 불러왔어요.');
-    } catch (error) {
-      setNotice(formatErrorMessage(error));
-    } finally {
-      setAdminLoading(false);
-    }
-  }
+  const {
+    handleToggleAdminPlace,
+    handleToggleAdminManualOverride,
+    handleRefreshAdminImport,
+  } = useAppAdminActions({
+    sessionUser,
+    setAdminBusyPlaceId,
+    setAdminSummary,
+    setPlaces,
+    setStampState,
+    setHasRealData,
+    setNotice,
+    setAdminLoading,
+    setFestivals,
+    refreshAdminSummary,
+    formatErrorMessage,
+  });
 
   const { canNavigateBack, handleNavigateBack, handleBottomNavChange } = useAppShellNavigation({
     returnView,
