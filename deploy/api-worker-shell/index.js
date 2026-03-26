@@ -930,6 +930,10 @@ function countComments(comments) {
 }
 
 function buildCommentTree(commentRows, usersById) {
+  const isDeletedCommentRow = (row) => {
+    const body = String(row?.body ?? '').trim();
+    return Boolean(row?.is_deleted) || body === '[deleted]' || body === '삭제된 댓글입니다.';
+  };
   const commentsById = new Map();
   const rowsById = new Map(commentRows.map((row) => [String(row.comment_id), row]));
   const roots = [];
@@ -939,9 +943,9 @@ function buildCommentTree(commentRows, usersById) {
       id: String(row.comment_id),
       userId: row.user_id,
       author: usersById.get(row.user_id)?.nickname ?? '이름 없음',
-      body: row.is_deleted ? '삭제된 댓글입니다.' : row.body,
+      body: isDeletedCommentRow(row) ? '삭제된 댓글입니다.' : row.body,
       parentId: row.parent_id ? String(row.parent_id) : null,
-      isDeleted: row.is_deleted,
+      isDeleted: isDeletedCommentRow(row),
       createdAt: formatDateTime(row.created_at),
       replies: [],
     };
@@ -979,8 +983,12 @@ function buildCommentTree(commentRows, usersById) {
 }
 
 function buildMyComments(commentRows, reviewsById) {
+  const isDeletedCommentRow = (row) => {
+    const body = String(row?.body ?? '').trim();
+    return Boolean(row?.is_deleted) || body === '[deleted]' || body === '삭제된 댓글입니다.';
+  };
   return [...commentRows]
-    .filter((row) => !row.is_deleted)
+    .filter((row) => !isDeletedCommentRow(row))
     .sort((left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime())
     .map((row) => {
       const review = reviewsById.get(String(row.feed_id));
@@ -992,8 +1000,8 @@ function buildMyComments(commentRows, reviewsById) {
         reviewId: String(row.feed_id),
         placeId: review.placeId,
         placeName: review.placeName,
-        body: row.is_deleted ? '삭제된 댓글입니다.' : row.body,
-        isDeleted: row.is_deleted,
+        body: row.body,
+        isDeleted: false,
         parentId: row.parent_id ? String(row.parent_id) : null,
         createdAt: formatDateTime(row.created_at),
         reviewBody: review.body,
@@ -1621,8 +1629,12 @@ async function handleMyRoutes(request, env) {
 }
 
 function mapMyComments(commentRows, feedRows, placesByPositionId) {
+  const isDeletedCommentRow = (row) => {
+    const body = String(row?.body ?? '').trim();
+    return Boolean(row?.is_deleted) || body === '[deleted]' || body === '삭제된 댓글입니다.';
+  };
   const feedById = new Map(feedRows.map((row) => [String(row.feed_id), row]));
-  return commentRows.filter((row) => !row.is_deleted).map((row) => {
+  return commentRows.filter((row) => !isDeletedCommentRow(row)).map((row) => {
     const feed = feedById.get(String(row.feed_id));
     const place = feed ? placesByPositionId.get(String(feed.position_id)) : null;
     return {
@@ -1630,8 +1642,8 @@ function mapMyComments(commentRows, feedRows, placesByPositionId) {
       reviewId: String(row.feed_id),
       placeId: place?.id ?? String(feed?.position_id ?? ''),
       placeName: place?.name ?? '장소 정보 없음',
-      body: row.is_deleted ? '삭제된 댓글입니다.' : row.body,
-      isDeleted: row.is_deleted,
+      body: row.body,
+      isDeleted: false,
       parentId: row.parent_id ? String(row.parent_id) : null,
       createdAt: formatDateTime(row.created_at),
       reviewBody: feed?.body ?? '',
