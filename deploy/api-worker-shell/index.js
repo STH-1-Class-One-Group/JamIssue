@@ -9,7 +9,6 @@ const BADGE_BY_MOOD = {
   '혼자서': '로컬 탐방',
   '데이트': '데이트 코스',
   '야경 맛집': '야경 성공',
-  '야경픽': '야경 성공',
 };
 
 const SESSION_COOKIE_NAME = 'jamissue_worker_session';
