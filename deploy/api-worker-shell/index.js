@@ -39,6 +39,9 @@ import {
 } from './services/notifications.js';
 import { createReviewReadService } from './services/reviews.js';
 import { createCommunityRouteService } from './services/community-routes.js';
+import { createMyService } from './services/my.js';
+import { createAdminService } from './services/admin.js';
+import { createStampService } from './services/stamps.js';
 import {
   buildInFilter,
   encodeFilterValue,
@@ -256,6 +259,22 @@ const communityRouteService = createCommunityRouteService({
   loadStaticBaseRows,
 });
 
+const myService = createMyService({
+  communityRouteService,
+  loadBaseData,
+  loadStaticBaseRows,
+  loadUserNotifications,
+});
+
+const adminService = createAdminService({
+  normalizePlaceCategory,
+});
+
+const stampService = createStampService({
+  buildNearPlaceMessage,
+  loadBaseData,
+});
+
 function mapCourses(courseRows, coursePlaceRows, placesByPositionId) {
   const placeIdsByCourseId = new Map();
   for (const row of coursePlaceRows) {
@@ -350,338 +369,6 @@ async function loadBaseData(env, sessionUserId = null) {
     travelSessions,
   };
 }
-function mapMyComments(commentRows, feedRows, placesByPositionId) {
-  const isDeletedCommentRow = (row) => {
-    const body = String(row?.body ?? '').trim();
-    return Boolean(row?.is_deleted) || body === '[deleted]' || body === '삭제된 댓글입니다.';
-  };
-  const feedById = new Map(feedRows.map((row) => [String(row.feed_id), row]));
-  return commentRows.filter((row) => !isDeletedCommentRow(row)).map((row) => {
-    const feed = feedById.get(String(row.feed_id));
-    const place = feed ? placesByPositionId.get(String(feed.position_id)) : null;
-    return {
-      id: String(row.comment_id),
-      reviewId: String(row.feed_id),
-      placeId: place?.id ?? String(feed?.position_id ?? ''),
-      placeName: place?.name ?? '장소 정보 없음',
-      body: row.body,
-      isDeleted: false,
-      parentId: row.parent_id ? String(row.parent_id) : null,
-      createdAt: formatDateTime(row.created_at),
-      reviewBody: feed?.body ?? '',
-    };
-  });
-}
-
-async function buildAdminSummary(env) {
-  const [userCount, placeCount, reviewCount, commentCount, stampCount, placeRows, feedRows] = await Promise.all([
-    supabaseCount(env, 'user'),
-    supabaseCount(env, 'map'),
-    supabaseCount(env, 'feed'),
-    supabaseCount(env, 'user_comment'),
-    supabaseCount(env, 'user_stamp'),
-    supabaseRequest(env, 'map?select=position_id,slug,name,district,category,is_active,is_manual_override,updated_at&order=is_active.desc,name.asc'),
-    supabaseRequest(env, 'feed?select=position_id'),
-  ]);
-
-  const reviewCountByPosition = new Map();
-  for (const row of feedRows ?? []) {
-    const key = String(row.position_id);
-    reviewCountByPosition.set(key, (reviewCountByPosition.get(key) ?? 0) + 1);
-  }
-
-  return {
-    userCount,
-    placeCount,
-    reviewCount,
-    commentCount,
-    stampCount,
-    sourceReady: true,
-    places: (placeRows ?? []).map((row) => ({
-      id: row.slug,
-      name: row.name,
-      district: row.district,
-      category: normalizePlaceCategory(row.category, row.slug),
-      isActive: Boolean(row.is_active),
-      isManualOverride: Boolean(row.is_manual_override),
-      reviewCount: reviewCountByPosition.get(String(row.position_id)) ?? 0,
-      updatedAt: formatDateTime(row.updated_at),
-    })),
-  };
-}
-
-async function handleAdminSummary(request, env) {
-  const sessionUser = await readSessionUser(request, env);
-  if (!sessionUser || !sessionUser.isAdmin) {
-    return jsonResponse(403, { detail: '??? ???.' }, env, request);
-  }
-  return jsonResponse(200, await buildAdminSummary(env), env, request);
-}
-
-async function handleAdminPlaceVisibility(request, env, placeId) {
-  const sessionUser = await readSessionUser(request, env);
-  if (!sessionUser || !sessionUser.isAdmin) {
-    return jsonResponse(403, { detail: '???? ??? ? ???.' }, env, request);
-  }
-  const payload = await request.json().catch(() => null);
-  const body = {};
-  if (typeof payload?.isActive === 'boolean') body.is_active = payload.isActive;
-  if (typeof payload?.isManualOverride === 'boolean') body.is_manual_override = payload.isManualOverride;
-  body.updated_at = new Date().toISOString();
-  const updatedRows = await supabaseRequest(env, `map?slug=eq.${encodeFilterValue(placeId)}`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-  });
-  const updatedRow = Array.isArray(updatedRows) ? updatedRows[0] : null;
-  if (!updatedRow) {
-    return jsonResponse(404, { detail: '??? ?? ? ???.' }, env, request);
-  }
-  const reviewRows = await supabaseRequest(env, `feed?select=feed_id&position_id=eq.${encodeFilterValue(updatedRow.position_id)}`);
-  return jsonResponse(200, {
-    id: updatedRow.slug,
-    name: updatedRow.name,
-    district: updatedRow.district,
-    category: normalizePlaceCategory(updatedRow.category, updatedRow.slug),
-    isActive: Boolean(updatedRow.is_active),
-    isManualOverride: Boolean(updatedRow.is_manual_override),
-    reviewCount: (reviewRows ?? []).length,
-    updatedAt: formatDateTime(updatedRow.updated_at),
-  }, env, request);
-}
-
-async function handleAdminImportPublicData(request, env) {
-  const sessionUser = await readSessionUser(request, env);
-  if (!sessionUser || !sessionUser.isAdmin) {
-    return jsonResponse(403, { detail: '관리자만 공공데이터를 다시 불러올 수 있어요.' }, env, request);
-  }
-
-  const sourceRows = await supabaseRequest(
-    env,
-    `public_data_source?select=name,last_imported_at&source_key=eq.${encodeFilterValue('jamissue-public-event-feed')}&limit=1`,
-  );
-  const source = sourceRows?.[0] ?? null;
-
-  return jsonResponse(200, {
-    importedPlaces: 0,
-    importedCourses: 0,
-    importedEvents: 0,
-    mode: 'scheduled',
-    detail: '공공 행사 동기화는 GitHub Actions 주간 작업으로 처리돼요.',
-    importedAt: source?.last_imported_at ?? null,
-  }, env, request);
-}
-
-async function handleMySummary(request, env) {
-  const sessionUser = await readSessionUser(request, env);
-  if (!sessionUser) {
-    return jsonResponse(401, { detail: "로그인이 필요해요." }, env, request);
-  }
-
-  const baseData = await loadBaseData(env, sessionUser.id);
-  const routes = await communityRouteService.loadCommunityRoutes(env, { ownerUserId: sessionUser.id, sessionUserId: sessionUser.id });
-  const reviewItems = baseData.reviews.filter((review) => review.userId === sessionUser.id);
-  const reviewById = new Map(baseData.reviews.map((review) => [String(review.id), review]));
-  const notifications = await loadUserNotifications(env, sessionUser.id);
-  const myCommentRows = await supabaseRequest(
-    env,
-    `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&user_id=eq.${encodeFilterValue(sessionUser.id)}&order=created_at.desc`,
-  );
-  const myComments = buildMyComments(myCommentRows ?? [], reviewById);
-  const collectedSet = new Set(baseData.collectedPlaceIds);
-  const visitedPlaces = baseData.places.filter((place) => collectedSet.has(place.id)).map(({ positionId, ...place }) => place);
-  const unvisitedPlaces = baseData.places.filter((place) => !collectedSet.has(place.id)).map(({ positionId, ...place }) => place);
-
-  return jsonResponse(200, {
-    user: sessionUser,
-    stats: {
-      reviewCount: reviewItems.length,
-      stampCount: baseData.stampLogs.length,
-      uniquePlaceCount: collectedSet.size,
-      totalPlaceCount: baseData.places.length,
-      routeCount: routes.length,
-    },
-    reviews: reviewItems,
-    comments: myComments,
-    notifications,
-    unreadNotificationCount: notifications.filter((notification) => !notification.isRead).length,
-    stampLogs: baseData.stampLogs,
-    travelSessions: baseData.travelSessions,
-    visitedPlaces,
-    unvisitedPlaces,
-    collectedPlaces: visitedPlaces,
-    routes,
-  }, env, request);
-}
-function getStampUnlockRadius(env) {
-  const parsed = Number(env.APP_STAMP_UNLOCK_RADIUS_METERS ?? '120');
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 120;
-}
-
-function calculateDistanceMeters(startLatitude, startLongitude, endLatitude, endLongitude) {
-  const earthRadiusMeters = 6_371_000;
-  const latitudeDelta = ((endLatitude - startLatitude) * Math.PI) / 180;
-  const longitudeDelta = ((endLongitude - startLongitude) * Math.PI) / 180;
-  const startLatitudeRadians = (startLatitude * Math.PI) / 180;
-  const endLatitudeRadians = (endLatitude * Math.PI) / 180;
-
-  const haversine =
-    Math.sin(latitudeDelta / 2) ** 2 +
-    Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2;
-
-  return earthRadiusMeters * (2 * Math.asin(Math.sqrt(haversine)));
-}
-
-function buildNearPlaceMessage(placeName, distanceMeters, unlockRadius) {
-  return `${placeName}까지 ${formatDistanceMeters(distanceMeters)} 남았어요. 반경 ${unlockRadius}m 안에 들어오면 열려요.`;
-}
-
-async function readJsonBody(request) {
-  try {
-    return await request.json();
-  } catch {
-    throw new Error('요청 형식이 올바르지 않아요.');
-  }
-}
-
-async function requireSessionUser(request, env) {
-  const sessionUser = await readSessionUser(request, env);
-  if (!sessionUser) {
-    return { response: jsonResponse(401, { detail: '로그인이 필요해요.' }, env, request) };
-  }
-  return { sessionUser };
-}
-
-function buildReviewInteractionDeps() {
-  return {
-    badgeByMood: BADGE_BY_MOOD,
-    countUnreadNotifications,
-    createUserNotification,
-    loadBaseData,
-    loadNotificationById,
-    loadSingleReview: reviewReadService.loadSingleReview,
-    publishNotificationEvent,
-    readSessionUser,
-  };
-}
-
-async function handleToggleStamp(request, env) {
-  const sessionResult = await requireSessionUser(request, env);
-  if (sessionResult.response) {
-    return sessionResult.response;
-  }
-
-  const payload = await readJsonBody(request);
-  const placeId = String(payload.placeId ?? "").trim();
-  const latitude = Number(payload.latitude);
-  const longitude = Number(payload.longitude);
-  if (!placeId || !Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    return jsonResponse(400, { detail: "장소와 현재 좌표가 필요해요." }, env, request);
-  }
-
-  const baseData = await loadBaseData(env, sessionResult.sessionUser.id);
-  const place = baseData.places.find((item) => item.id === placeId);
-  if (!place) {
-    return jsonResponse(404, { detail: "장소를 찾지 못했어요." }, env, request);
-  }
-
-  const distanceMeters = calculateDistanceMeters(latitude, longitude, place.latitude, place.longitude);
-  const unlockRadius = getStampUnlockRadius(env);
-  if (distanceMeters > unlockRadius) {
-    return jsonResponse(403, { detail: buildNearPlaceMessage(place.name, distanceMeters, unlockRadius) }, env, request);
-  }
-
-  const stampDate = toSeoulDateKey();
-  const existingTodayRows = await supabaseRequest(env, `user_stamp?select=stamp_id&user_id=eq.${encodeFilterValue(sessionResult.sessionUser.id)}&position_id=eq.${encodeFilterValue(place.positionId)}&stamp_date=eq.${encodeFilterValue(stampDate)}&limit=1`);
-  if (existingTodayRows?.[0]) {
-    const nextBaseData = await loadBaseData(env, sessionResult.sessionUser.id);
-    return jsonResponse(200, {
-      collectedPlaceIds: nextBaseData.collectedPlaceIds,
-      logs: nextBaseData.stampLogs,
-      travelSessions: nextBaseData.travelSessions,
-    }, env, request);
-  }
-
-  const nowIso = new Date().toISOString();
-  const placeStampRows = await supabaseRequest(env, `user_stamp?select=stamp_id&user_id=eq.${encodeFilterValue(sessionResult.sessionUser.id)}&position_id=eq.${encodeFilterValue(place.positionId)}`);
-  const visitOrdinal = (placeStampRows?.length ?? 0) + 1;
-
-  const lastStampRows = await supabaseRequest(env, `user_stamp?select=stamp_id,travel_session_id,created_at&user_id=eq.${encodeFilterValue(sessionResult.sessionUser.id)}&order=created_at.desc&limit=1`);
-  const lastStampRow = lastStampRows?.[0] ?? null;
-  let travelSessionId = null;
-
-  if (lastStampRow) {
-    const gapMs = new Date(nowIso).getTime() - new Date(lastStampRow.created_at).getTime();
-    if (gapMs <= 1000 * 60 * 60 * 24) {
-      if (lastStampRow.travel_session_id) {
-        travelSessionId = Number(lastStampRow.travel_session_id);
-        const sessionRows = await supabaseRequest(env, `travel_session?select=stamp_count&travel_session_id=eq.${encodeFilterValue(travelSessionId)}&limit=1`);
-        const sessionRow = sessionRows?.[0] ?? null;
-        await supabaseRequest(env, `travel_session?travel_session_id=eq.${encodeFilterValue(travelSessionId)}`, {
-          method: "PATCH",
-          body: JSON.stringify({
-            ended_at: nowIso,
-            last_stamp_at: nowIso,
-            stamp_count: Number(sessionRow?.stamp_count ?? 0) + 1,
-            updated_at: nowIso,
-          }),
-        });
-      } else {
-        const createdSessions = await supabaseRequest(env, "travel_session?select=travel_session_id", {
-          method: "POST",
-          body: JSON.stringify({
-            user_id: sessionResult.sessionUser.id,
-            started_at: lastStampRow.created_at,
-            ended_at: nowIso,
-            last_stamp_at: nowIso,
-            stamp_count: 2,
-            created_at: nowIso,
-            updated_at: nowIso,
-          }),
-        });
-        travelSessionId = Number(createdSessions?.[0]?.travel_session_id);
-        await supabaseRequest(env, `user_stamp?stamp_id=eq.${encodeFilterValue(lastStampRow.stamp_id)}`, {
-          method: "PATCH",
-          body: JSON.stringify({ travel_session_id: travelSessionId }),
-        });
-      }
-    }
-  }
-
-  if (!travelSessionId) {
-    const createdSessions = await supabaseRequest(env, "travel_session?select=travel_session_id", {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: sessionResult.sessionUser.id,
-        started_at: nowIso,
-        ended_at: nowIso,
-        last_stamp_at: nowIso,
-        stamp_count: 1,
-        created_at: nowIso,
-        updated_at: nowIso,
-      }),
-    });
-    travelSessionId = Number(createdSessions?.[0]?.travel_session_id);
-  }
-
-  await supabaseRequest(env, "user_stamp?select=stamp_id", {
-    method: "POST",
-    body: JSON.stringify({
-      user_id: sessionResult.sessionUser.id,
-      position_id: Number(place.positionId),
-      travel_session_id: travelSessionId,
-      stamp_date: stampDate,
-      visit_ordinal: visitOrdinal,
-      created_at: nowIso,
-    }),
-  });
-
-  const nextBaseData = await loadBaseData(env, sessionResult.sessionUser.id);
-  return jsonResponse(200, {
-    collectedPlaceIds: nextBaseData.collectedPlaceIds,
-    logs: nextBaseData.stampLogs,
-    travelSessions: nextBaseData.travelSessions,
-  }, env, request);
-}
 function resolveOriginUrl(request, env) {
   const originBaseUrl = (env.APP_ORIGIN_API_URL ?? '').trim();
   if (!originBaseUrl) {
@@ -752,20 +439,20 @@ async function routeRequest(request, env) {
     ["GET", "/api/reviews", () => reviewReadService.handleReviews(request, env, url)],
     ["POST", "/api/reviews/upload", () => handleReviewUpload(request, env, buildReviewInteractionDeps())],
     ["POST", "/api/reviews", () => handleCreateReview(request, env, buildReviewInteractionDeps())],
-    ["POST", "/api/stamps/toggle", () => handleToggleStamp(request, env)],
+    ["POST", "/api/stamps/toggle", () => stampService.handleToggleStamp(request, env)],
     ["GET", "/api/community-routes", () => communityRouteService.handleCommunityRoutes(request, env, url)],
     ["POST", "/api/community-routes", () => communityRouteService.handleCreateUserRoute(request, env)],
     ["GET", "/api/my/routes", () => communityRouteService.handleMyRoutes(request, env)],
-    ["GET", "/api/my/summary", () => handleMySummary(request, env)],
+    ["GET", "/api/my/summary", () => myService.handleMySummary(request, env)],
     ["GET", "/api/my/notifications", () => handleMyNotifications(request, env)],
     ["GET", "/api/my/notifications/realtime-channel", () => handleNotificationRealtimeChannel(request, env)],
-    ["GET", "/api/my/comments", () => handleMyComments(request, env, url)],
+    ["GET", "/api/my/comments", () => myService.handleMyComments(request, env, url)],
     ["PATCH", "/api/notifications/read-all", () => handleMarkAllNotificationsRead(request, env)],
     ["GET", "/api/festivals", () => handleFestivals(request, env)],
     ["GET", "/api/banner/events", () => handleBannerEvents(request, env)],
     ["POST", "/api/internal/public-events/import", () => handleFestivalImport(request, env)],
-    ["GET", "/api/admin/summary", () => handleAdminSummary(request, env)],
-    ["POST", "/api/admin/import/public-data", () => handleAdminImportPublicData(request, env)],
+    ["GET", "/api/admin/summary", () => adminService.handleAdminSummary(request, env)],
+    ["POST", "/api/admin/import/public-data", () => adminService.handleAdminImportPublicData(request, env)],
   ];
 
   for (const [method, pathname, handler] of exactRoutes) {
@@ -837,7 +524,7 @@ async function routeRequest(request, env) {
     [
       "PATCH",
       /^\/api\/admin\/places\/([^/]+)$/,
-      (match) => handleAdminPlaceVisibility(request, env, match[1]),
+      (match) => adminService.handleAdminPlaceVisibility(request, env, match[1]),
     ],
   ];
 
