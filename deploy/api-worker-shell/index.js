@@ -1,3 +1,14 @@
+import { formatDate, formatDateTime, toSeoulDateKey } from './lib/dates.js';
+import { applyCorsHeaders, handlePreflight, jsonResponse, redirectResponse } from './lib/http.js';
+import {
+  buildInFilter,
+  encodeFilterValue,
+  getSupabaseKey,
+  parseListLimit,
+  rememberPending,
+  supabaseRequest,
+} from './lib/supabase.js';
+
 const PROVIDERS = [
   { key: 'naver', label: '네이버' },
   { key: 'kakao', label: '카카오' },
@@ -23,168 +34,6 @@ const STATIC_BASE_CACHE_TTL_MS = 5 * 60 * 1000;
 const FESTIVALS_CACHE_TTL_MS = 10 * 60 * 1000;
 let staticBaseCache = { expiresAt: 0, value: null, pending: null };
 let festivalsCache = { expiresAt: 0, syncAt: 0, value: null, pending: null };
-
-function jsonResponse(status, payload, env, request, extraHeaders = {}) {
-  const headers = new Headers({
-    'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'no-store',
-    ...extraHeaders,
-  });
-  applyCorsHeaders(headers, env, request);
-  return new Response(JSON.stringify(payload), { status, headers });
-}
-
-function redirectResponse(location, env, request, cookies = []) {
-  const headers = new Headers({
-    location,
-    'cache-control': 'no-store',
-  });
-  applyCorsHeaders(headers, env, request);
-  for (const cookie of cookies) {
-    headers.append('set-cookie', cookie);
-  }
-  return new Response(null, { status: 302, headers });
-}
-
-function applyCorsHeaders(headers, env, request) {
-  const origin = request.headers.get('Origin');
-  const allowedOrigins = (env.APP_CORS_ORIGINS ?? '')
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-  const fallbackOrigin = env.APP_FRONTEND_URL ?? '*';
-  const allowOrigin = origin && allowedOrigins.includes(origin) ? origin : fallbackOrigin;
-  headers.set('Access-Control-Allow-Origin', allowOrigin);
-  headers.set('Access-Control-Allow-Credentials', 'true');
-  headers.set('Access-Control-Allow-Headers', 'content-type, authorization');
-  headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-  headers.set('Vary', 'Origin');
-}
-
-function handlePreflight(env, request) {
-  const headers = new Headers();
-  applyCorsHeaders(headers, env, request);
-  return new Response(null, { status: 204, headers });
-}
-
-function getSupabaseKey(env) {
-  return env.APP_SUPABASE_SERVICE_ROLE_KEY || env.APP_SUPABASE_ANON_KEY || '';
-}
-
-async function supabaseRequest(env, path, init = {}) {
-  if (!env.APP_SUPABASE_URL) {
-    throw new Error('APP_SUPABASE_URL is empty.');
-  }
-
-  const apiKey = getSupabaseKey(env);
-  if (!apiKey) {
-    throw new Error('Supabase API key is missing.');
-  }
-
-  const headers = new Headers(init.headers || undefined);
-  headers.set('apikey', apiKey);
-  headers.set('Authorization', `Bearer ${apiKey}`);
-  headers.set('Accept', 'application/json');
-
-  const method = init.method ?? 'GET';
-  if (init.body && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
-  if (method !== 'GET' && method !== 'HEAD' && !headers.has('Prefer')) {
-    headers.set('Prefer', 'return=representation');
-  }
-
-  const response = await fetch(`${env.APP_SUPABASE_URL}/rest/v1/${path}`, {
-    method,
-    headers,
-    body: init.body,
-  });
-
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Supabase request failed (${response.status}): ${detail}`);
-  }
-
-  const text = await response.text();
-  if (!text) {
-    return null;
-  }
-
-  const contentType = response.headers.get('content-type') ?? '';
-  return contentType.includes('application/json') ? JSON.parse(text) : text;
-}
-
-function encodeFilterValue(value) {
-  return encodeURIComponent(String(value));
-}
-
-function parseListLimit(url, defaultLimit = 12, maxLimit = 24) {
-  const raw = Number(url.searchParams.get('limit') ?? defaultLimit);
-  if (!Number.isFinite(raw) || raw <= 0) {
-    return defaultLimit;
-  }
-  return Math.min(Math.floor(raw), maxLimit);
-}
-
-function uniqueValues(values) {
-  return [...new Set((values ?? []).filter((value) => value !== null && value !== undefined && value !== ''))];
-}
-
-function buildInFilter(values) {
-  const unique = uniqueValues(values);
-  if (unique.length === 0) {
-    return null;
-  }
-  return `in.(${unique.map((value) => encodeFilterValue(value)).join(',')})`;
-}
-
-async function rememberPending(cacheState, loader) {
-  if (cacheState.pending) {
-    return cacheState.pending;
-  }
-  cacheState.pending = loader().finally(() => {
-    cacheState.pending = null;
-  });
-  return cacheState.pending;
-}
-
-function formatDateTime(value) {
-  if (!value) {
-    return '';
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat('ko-KR', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Asia/Seoul',
-  }).format(date);
-}
-
-function formatDate(value) {
-  if (!value) {
-    return "";
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat('ko-KR', {
-    month: '2-digit',
-    day: '2-digit',
-    timeZone: 'Asia/Seoul',
-  }).format(date);
-}
-
-function toSeoulDateKey(value = null) {
-  const date = value ? new Date(value) : new Date();
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(date);
-}
 
 function isFestivalOngoingInSeoul(startsAt, endsAt, nowValue = Date.now()) {
   if (!startsAt || !endsAt) {
