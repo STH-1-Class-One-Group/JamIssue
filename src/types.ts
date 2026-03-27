@@ -214,6 +214,7 @@ export interface ReviewCreateRequest {
 export interface ReviewUpdateRequest {
   body: string;
   mood: ReviewMood;
+  imageUrl?: string | null;
 }
 
 export interface CommentCreateRequest {

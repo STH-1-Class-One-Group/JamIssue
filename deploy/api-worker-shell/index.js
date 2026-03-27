@@ -3254,6 +3254,10 @@ async function handleUpdateReview(request, env, reviewId) {
   const payload = await readJsonBody(request);
   const body = String(payload.body ?? '').trim();
   const mood = String(payload.mood ?? '').trim();
+  const imageUrlProvided = Object.prototype.hasOwnProperty.call(payload, 'imageUrl');
+  const imageUrl = imageUrlProvided
+    ? (payload.imageUrl ? String(payload.imageUrl) : null)
+    : undefined;
 
   if (!body) {
     return jsonResponse(400, { detail: '?꾧린瑜?議곌툑 ???곸뼱 二쇱꽭??' }, env, request);
@@ -3267,6 +3271,7 @@ async function handleUpdateReview(request, env, reviewId) {
     body: JSON.stringify({
       body,
       mood,
+      ...(imageUrlProvided ? { image_url: imageUrl } : {}),
       badge: BADGE_BY_MOOD[mood] ?? '\uD604\uC7A5 \uBC29\uBB38',
       updated_at: new Date().toISOString(),
     }),

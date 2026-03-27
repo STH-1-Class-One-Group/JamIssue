@@ -124,16 +124,25 @@ export function useAppReviewActions({
     }
   }
 
-  async function handleUpdateReview(reviewId: string, payload: { body: string; mood: ReviewMood }) {
+  async function handleUpdateReview(reviewId: string, payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean }) {
     if (!sessionUser) {
       goToTab('my');
       setNotice('피드를 수정하려면 먼저 로그인해 주세요.');
       return;
     }
 
+    let imageUrl: string | null | undefined;
+    if (payload.file) {
+      const uploaded = await uploadReviewImage(payload.file);
+      imageUrl = uploaded.url;
+    } else if (payload.removeImage) {
+      imageUrl = null;
+    }
+
     const updatedReview = await updateReview(reviewId, {
       body: payload.body.trim(),
       mood: payload.mood,
+      imageUrl,
     });
     patchReviewCollections(reviewId, () => updatedReview);
     setMyPage((current) => {

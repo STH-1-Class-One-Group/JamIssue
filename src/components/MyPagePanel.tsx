@@ -27,7 +27,7 @@ interface MyPagePanelProps {
   onOpenPlace: (placeId: string) => void;
   onOpenComment: (reviewId: string, commentId: string) => void;
   onOpenReview: (reviewId: string) => void;
-  onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood }) => Promise<void>;
+  onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean }) => Promise<void>;
   onDeleteReview: (reviewId: string) => Promise<void>;
   onMarkNotificationRead: (notificationId: string) => Promise<void>;
   onMarkAllNotificationsRead: () => Promise<void>;
@@ -158,6 +158,8 @@ export function MyPagePanel({
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editingReviewBody, setEditingReviewBody] = useState('');
   const [editingReviewMood, setEditingReviewMood] = useState<ReviewMood>('혼자서');
+  const [editingReviewFile, setEditingReviewFile] = useState<File | null>(null);
+  const [editingReviewRemoveImage, setEditingReviewRemoveImage] = useState(false);
   const [reviewUpdatingId, setReviewUpdatingId] = useState<string | null>(null);
   const [reviewEditError, setReviewEditError] = useState<string | null>(null);
   const [notificationBusyId, setNotificationBusyId] = useState<string | null>(null);
@@ -188,6 +190,8 @@ export function MyPagePanel({
     setEditingReviewId(review.id);
     setEditingReviewBody(review.body);
     setEditingReviewMood(review.mood);
+    setEditingReviewFile(null);
+    setEditingReviewRemoveImage(false);
     setReviewEditError(null);
   }
 
@@ -195,6 +199,8 @@ export function MyPagePanel({
     setEditingReviewId(null);
     setEditingReviewBody('');
     setEditingReviewMood('혼자서');
+    setEditingReviewFile(null);
+    setEditingReviewRemoveImage(false);
     setReviewEditError(null);
   }
 
@@ -522,6 +528,58 @@ export function MyPagePanel({
                             disabled={reviewUpdatingId === review.id}
                           />
                         </label>
+                        <div className="route-builder-field">
+                          <span>피드 이미지</span>
+                          {review.imageUrl && !editingReviewFile && !editingReviewRemoveImage && (
+                            <img
+                              src={review.imageUrl}
+                              alt={`${review.placeName} 기존 피드 이미지`}
+                              className="review-card__image"
+                              style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '16px' }}
+                            />
+                          )}
+                          {editingReviewFile && <p className="section-copy">새 이미지 선택됨: {editingReviewFile.name}</p>}
+                          {review.imageUrl && editingReviewRemoveImage && !editingReviewFile && (
+                            <p className="section-copy">기존 이미지는 삭제됩니다.</p>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={reviewUpdatingId === review.id}
+                            onChange={(event) => {
+                              const nextFile = event.target.files?.[0] ?? null;
+                              setEditingReviewFile(nextFile);
+                              if (nextFile) {
+                                setEditingReviewRemoveImage(false);
+                              }
+                            }}
+                          />
+                          <div className="chip-row compact-gap">
+                            {review.imageUrl && (
+                              <button
+                                type="button"
+                                className={editingReviewRemoveImage ? 'chip is-active' : 'chip'}
+                                onClick={() => {
+                                  setEditingReviewRemoveImage((current) => !current);
+                                  setEditingReviewFile(null);
+                                }}
+                                disabled={reviewUpdatingId === review.id}
+                              >
+                                이미지 삭제
+                              </button>
+                            )}
+                            {editingReviewFile && (
+                              <button
+                                type="button"
+                                className="chip"
+                                onClick={() => setEditingReviewFile(null)}
+                                disabled={reviewUpdatingId === review.id}
+                              >
+                                새 이미지 취소
+                              </button>
+                            )}
+                          </div>
+                        </div>
                         {reviewEditError ? <p className="form-error-copy">{reviewEditError}</p> : null}
                         <div className="review-card__actions review-card__actions--my-feed">
                           <button
@@ -542,6 +600,8 @@ export function MyPagePanel({
                               void onUpdateReview(review.id, {
                                 body: editingReviewBody.trim(),
                                 mood: editingReviewMood,
+                                file: editingReviewFile,
+                                removeImage: editingReviewRemoveImage,
                               })
                                 .then(() => {
                                   cancelEditingReview();

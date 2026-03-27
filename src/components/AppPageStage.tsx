@@ -75,7 +75,7 @@ interface AppPageStageProps {
   onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
   onOpenCommentFromMyPage: (reviewId: string, commentId: string) => void;
   onOpenReview: (reviewId: string) => Promise<void>;
-  onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood }) => Promise<void>;
+  onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean }) => Promise<void>;
   onMarkNotificationRead: (notificationId: string) => Promise<void>;
   onMarkAllNotificationsRead: () => Promise<void>;
   onDeleteNotification: (notificationId: string) => Promise<void>;
