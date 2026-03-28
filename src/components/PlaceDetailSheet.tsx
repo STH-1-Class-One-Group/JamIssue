@@ -1,5 +1,9 @@
 ﻿import { useRef } from 'react';
 import { categoryInfo } from '../lib/categories';
+import { PlaceBadgeRow } from './place/PlaceBadgeRow';
+import { PlaceDetailHeader } from './place/PlaceDetailHeader';
+import { PlaceProofCard } from './place/PlaceProofCard';
+import { PlaceReviewPreviewList } from './review/PlaceReviewPreviewList';
 import { ReviewComposer } from './ReviewComposer';
 import type { ApiStatus, DrawerState, Place, Review, ReviewMood, StampLog } from '../types';
 
@@ -26,21 +30,6 @@ interface PlaceDetailSheetProps {
   onRequestLogin: () => void;
   onClaimStamp: (place: Place) => Promise<void>;
   onCreateReview: (payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) => Promise<void>;
-}
-
-function formatVisitedAt(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat('ko-KR', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(date);
 }
 
 export function PlaceDetailSheet({
@@ -120,16 +109,7 @@ export function PlaceDetailSheet({
       </button>
 
       <div className="place-drawer__content">
-        <div className="place-drawer__header">
-          <div>
-            <p className="eyebrow">PLACE</p>
-            <h2>{place.name}</h2>
-            <p className="place-drawer__summary">{place.summary}</p>
-          </div>
-          <button type="button" className="place-drawer__close" onClick={onClose} aria-label="닫기">
-            {'\u00D7'}
-          </button>
-        </div>
+        <PlaceDetailHeader name={place.name} summary={place.summary} onClose={onClose} />
 
         {place.imageUrl && (
           <div className="place-drawer__hero">
@@ -137,40 +117,26 @@ export function PlaceDetailSheet({
           </div>
         )}
 
-        <div className="place-drawer__badges">
-          <span className="counter-pill" style={{ background: categoryMeta.color, color: '#4a3140' }}>
-            {categoryMeta.icon} {categoryMeta.name}
-          </span>
-          <span className="counter-pill">{place.district}</span>
-          <span className="counter-pill">{visitLabel}</span>
-          <span className="counter-pill">누적 방문 {visitCount}회</span>
-        </div>
+        <PlaceBadgeRow
+          categoryLabel={categoryMeta.name}
+          categoryIcon={categoryMeta.icon}
+          categoryColor={categoryMeta.color}
+          district={place.district}
+          visitLabel={visitLabel}
+          visitCount={visitCount}
+        />
 
-        <div className="sheet-card place-drawer__proof-card">
-          <div className="place-drawer__proof-copy">
-            <strong>오늘 스탬프</strong>
-            <p>{stampActionMessage}</p>
-          </div>
-          <div className="place-drawer__proof-action">
-            {!loggedIn ? (
-              <>
-                <span className="place-drawer__proof-kicker">피드와 코스 시작</span>
-                <button type="button" className="primary-button place-drawer__proof-button" onClick={onRequestLogin}>
-                  로그인하고 시작
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                className={todayStamp ? 'secondary-button is-complete place-drawer__proof-button' : 'primary-button place-drawer__proof-button'}
-                onClick={() => void onClaimStamp(place)}
-                disabled={!canClaimStamp || stampActionStatus === 'loading'}
-              >
-                {todayStamp ? '오늘 스탬프 완료' : stampActionStatus === 'loading' ? '확인 중' : '오늘 스탬프 찍기'}
-              </button>
-            )}
-          </div>
-        </div>
+        <PlaceProofCard
+          loggedIn={loggedIn}
+          todayStampExists={Boolean(todayStamp)}
+          canClaimStamp={canClaimStamp}
+          stampActionStatus={stampActionStatus}
+          stampActionMessage={stampActionMessage}
+          onRequestLogin={onRequestLogin}
+          onClaimStamp={() => {
+            void onClaimStamp(place);
+          }}
+        />
 
         <div className="sheet-card route-hint-box">
           <strong>이동 힌트</strong>
@@ -213,27 +179,7 @@ export function PlaceDetailSheet({
           </button>
         </div>
 
-        {reviewPreview.length > 0 ? (
-          <div className="review-stack place-drawer__feed-preview">
-            {reviewPreview.map((review) => (
-              <article key={review.id} className="sheet-card place-drawer__preview-card">
-                <div className="review-card__top place-drawer__preview-top">
-                  <strong>{review.author}</strong>
-                  <span className="counter-pill counter-pill--muted">{review.badge}</span>
-                </div>
-                <p className="review-card__meta-line">
-                  {review.visitLabel} / {formatVisitedAt(review.visitedAt)}
-                </p>
-                <p className="review-card__body place-drawer__preview-body">{review.body}</p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="sheet-card stack-gap place-drawer__preview-empty">
-            <strong>아직 등록된 피드가 없어요.</strong>
-            <p className="section-copy">오늘 방문 인증을 마친 뒤 첫 피드를 남겨 보세요.</p>
-          </div>
-        )}
+        <PlaceReviewPreviewList reviews={reviewPreview} />
       </div>
     </section>
   );
