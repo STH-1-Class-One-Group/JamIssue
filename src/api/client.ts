@@ -373,9 +373,12 @@ export async function deleteReview(reviewId: string) {
 }
 
 export async function uploadReviewImage(file: File) {
-  const preparedFile = await prepareReviewImageUpload(file);
+  const preparedUpload = await prepareReviewImageUpload(file);
   const body = new FormData();
-  body.append('file', preparedFile);
+  body.append('file', preparedUpload.file);
+  if (preparedUpload.thumbnailFile) {
+    body.append('thumbnail', preparedUpload.thumbnailFile);
+  }
   return fetchJson<UploadResponse>('/api/reviews/upload', {
     method: 'POST',
     body,

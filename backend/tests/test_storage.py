@@ -8,6 +8,7 @@ from app.storage import (
     LocalStorageAdapter,
     ReviewImageUploadService,
     SupabaseStorageAdapter,
+    derive_review_thumbnail_url,
     get_storage_adapter,
 )
 
@@ -117,3 +118,24 @@ def test_review_image_upload_service_generates_unique_filename(tmp_path: Path):
 
     assert stored.file_name.startswith('naver_tester-')
     assert stored.file_name.endswith('.png')
+
+
+def test_review_image_upload_service_saves_thumbnail_variant(tmp_path: Path):
+    settings = Settings(storage_backend='local', upload_dir=str(tmp_path / 'uploads'))
+    service = ReviewImageUploadService(settings)
+
+    stored = service.save_review_image(
+        owner_id='naver:tester',
+        original_file_name='sample.jpg',
+        content_type='image/jpeg',
+        raw_bytes=b'original-bytes',
+        thumbnail_content_type='image/jpeg',
+        thumbnail_raw_bytes=b'thumb-bytes',
+    )
+
+    assert stored.file_name.endswith('-orig.jpg')
+    assert stored.thumbnail_file_name is not None
+    assert stored.thumbnail_file_name.endswith('-thumb.jpg')
+    assert stored.thumbnail_url == derive_review_thumbnail_url(stored.url)
+    assert (tmp_path / 'uploads' / stored.file_name).read_bytes() == b'original-bytes'
+    assert (tmp_path / 'uploads' / stored.thumbnail_file_name).read_bytes() == b'thumb-bytes'

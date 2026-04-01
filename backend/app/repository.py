@@ -49,6 +49,7 @@ from .models import (
 from .naver_oauth import NaverProfile
 from .public_data import import_public_bundle as sync_public_bundle
 from .public_data import load_public_bundle as load_public_bundle_payload
+from .storage import derive_review_thumbnail_url
 
 LEGACY_PROVIDERS = ("demo", "seed")
 BADGE_BY_MOOD = {
@@ -175,6 +176,7 @@ def to_review_out(feed: Feed, current_user_id: str | None = None) -> ReviewOut:
         badge=feed.badge,
         visitedAt=format_datetime(feed.created_at),
         imageUrl=feed.image_url,
+        thumbnailUrl=derive_review_thumbnail_url(feed.image_url),
         commentCount=len(comments),
         likeCount=len(likes),
         likedByMe=liked_by_me,

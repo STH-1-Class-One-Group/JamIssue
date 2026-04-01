@@ -85,6 +85,7 @@ class ReviewOut(ApiModel):
     badge: str
     visited_at: str = Field(alias='visitedAt')
     image_url: str | None = Field(default=None, alias='imageUrl')
+    thumbnail_url: str | None = Field(default=None, alias='thumbnailUrl')
     comment_count: int = Field(alias='commentCount')
     like_count: int = Field(default=0, alias='likeCount')
     liked_by_me: bool = Field(default=False, alias='likedByMe')
@@ -292,6 +293,7 @@ class UploadResponse(ApiModel):
     url: str
     file_name: str = Field(alias='fileName')
     content_type: str = Field(alias='contentType')
+    thumbnail_url: str | None = Field(default=None, alias='thumbnailUrl')
 
 
 class PublicImportResponse(ApiModel):

@@ -76,6 +76,7 @@ export interface Review {
   badge: string;
   visitedAt: string;
   imageUrl: string | null;
+  thumbnailUrl?: string | null;
   commentCount: number;
   likeCount: number;
   likedByMe: boolean;
@@ -344,6 +345,7 @@ export interface UploadResponse {
   url: string;
   fileName: string;
   contentType: string;
+  thumbnailUrl?: string | null;
 }
 
 export interface PublicImportResponse {

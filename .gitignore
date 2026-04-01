@@ -52,6 +52,8 @@ sample/
 .tmp/
 .pytest-tmp/
 backend/.pytest-tmp/
+backend/.pytest-run-cache/
+backend/.pytest-run-temp/
 backend/pytest-*/
 preview/local-preview*
 .pytest_cache/

@@ -2,13 +2,20 @@ import { useEffect, useRef, useState } from 'react';
 
 interface ReviewImageFrameProps {
   src: string;
+  thumbnailSrc?: string | null;
   alt: string;
 }
 
-export function ReviewImageFrame({ src, alt }: ReviewImageFrameProps) {
+export function ReviewImageFrame({ src, thumbnailSrc = null, alt }: ReviewImageFrameProps) {
   const frameRef = useRef<HTMLDivElement | null>(null);
   const [isTall, setIsTall] = useState(false);
   const [frameSize, setFrameSize] = useState({ width: 0, height: 0 });
+  const [resolvedSrc, setResolvedSrc] = useState(thumbnailSrc || src);
+
+  useEffect(() => {
+    setResolvedSrc(thumbnailSrc || src);
+    setIsTall(false);
+  }, [src, thumbnailSrc]);
 
   useEffect(() => {
     const updateFrameSize = () => {
@@ -59,10 +66,15 @@ export function ReviewImageFrame({ src, alt }: ReviewImageFrameProps) {
         >
           <img
             className="review-card__image"
-            src={src}
+            src={resolvedSrc}
             alt={alt}
             loading="lazy"
             decoding="async"
+            onError={() => {
+              if (thumbnailSrc && resolvedSrc !== src) {
+                setResolvedSrc(src);
+              }
+            }}
             onLoad={(event) => {
               const target = event.currentTarget;
               setIsTall(target.naturalHeight > target.naturalWidth * 1.12);
@@ -86,10 +98,15 @@ export function ReviewImageFrame({ src, alt }: ReviewImageFrameProps) {
       ) : (
         <img
           className="review-card__image"
-          src={src}
+          src={resolvedSrc}
           alt={alt}
           loading="lazy"
           decoding="async"
+          onError={() => {
+            if (thumbnailSrc && resolvedSrc !== src) {
+              setResolvedSrc(src);
+            }
+          }}
           onLoad={(event) => {
             const target = event.currentTarget;
             setIsTall(target.naturalHeight > target.naturalWidth * 1.12);

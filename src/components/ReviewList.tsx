@@ -103,7 +103,13 @@ export function ReviewList({
 
           <ReviewTagRow visitLabel={review.visitLabel} badge={review.badge} hasPublishedRoute={review.hasPublishedRoute} />
 
-          {review.imageUrl && <ReviewImageFrame src={review.imageUrl} alt={`${review.placeName} 후기 이미지`} />}
+          {review.imageUrl && (
+            <ReviewImageFrame
+              src={review.imageUrl}
+              thumbnailSrc={review.thumbnailUrl ?? null}
+              alt={`${review.placeName} 후기 이미지`}
+            />
+          )}
 
           <p className="review-card__body">{review.body}</p>
 
@@ -126,7 +132,7 @@ export function ReviewList({
                   type="button"
                   className="review-action-button"
                   onClick={() => onOpenComments(review.id)}
-                  aria-label={`댓글 ${review.commentCount}개`}
+                  aria-label={`댓글 ${review.commentCount}개 보기`}
                 >
                   <span className="review-action-button__icon" aria-hidden="true">
                     <CommentIcon />
@@ -144,7 +150,7 @@ export function ReviewList({
             </div>
             {onOpenPlace && (
               <button type="button" className="review-link-button" onClick={() => onOpenPlace(review.placeId)}>
-                이 장소 보기
+                장소 보기
               </button>
             )}
           </div>

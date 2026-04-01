@@ -41,10 +41,10 @@ describe('ReviewList regression', () => {
     fireEvent.click(getByRole('button', { name: String(review.likeCount) }));
     expect(onToggleLike).toHaveBeenCalledWith(review.id);
 
-    fireEvent.click(getByRole('button', { name: '댓글 4개' }));
+    fireEvent.click(getByRole('button', { name: /댓글 4개/ }));
     expect(onOpenComments).toHaveBeenCalledWith(review.id);
 
-    fireEvent.click(getByRole('button', { name: '이 장소 보기' }));
+    fireEvent.click(getByRole('button', { name: /장소 보기/ }));
     expect(onOpenPlace).toHaveBeenCalledWith(review.placeId);
   });
 });

@@ -1,4 +1,4 @@
-﻿"""Storage adapters and review image upload validation."""
+"""Storage adapters and review image upload validation."""
 
 from __future__ import annotations
 
@@ -37,6 +37,23 @@ class StoredFile:
     url: str
     file_name: str
     content_type: str
+    thumbnail_url: str | None = None
+    thumbnail_file_name: str | None = None
+    thumbnail_content_type: str | None = None
+
+
+def build_review_thumbnail_file_name(file_name: str) -> str:
+    path = Path(file_name)
+    suffix = path.suffix.lower() or ".jpg"
+    stem = path.stem.removesuffix("-orig")
+    return f"{stem}-thumb{suffix}"
+
+
+def derive_review_thumbnail_url(image_url: str | None) -> str | None:
+    if not image_url or "-orig." not in image_url:
+        return None
+    head, tail = image_url.rsplit("-orig.", 1)
+    return f"{head}-thumb.{tail}"
 
 
 class ImageValidator:
@@ -55,13 +72,33 @@ class LocalStorageAdapter:
         self.settings = settings
         self.settings.upload_path.mkdir(parents=True, exist_ok=True)
 
-    def save_review_image(self, *, owner_id: str, file_name: str, content_type: str, raw_bytes: bytes) -> StoredFile:
+    def save_review_image(
+        self,
+        *,
+        owner_id: str,
+        file_name: str,
+        content_type: str,
+        raw_bytes: bytes,
+        thumbnail_file_name: str | None = None,
+        thumbnail_content_type: str | None = None,
+        thumbnail_raw_bytes: bytes | None = None,
+    ) -> StoredFile:
         target_path = self.settings.upload_path / file_name
         target_path.write_bytes(raw_bytes)
+
+        thumbnail_url: str | None = None
+        if thumbnail_file_name and thumbnail_raw_bytes is not None:
+            thumbnail_path = self.settings.upload_path / thumbnail_file_name
+            thumbnail_path.write_bytes(thumbnail_raw_bytes)
+            thumbnail_url = f"{self.settings.upload_base_url}/{thumbnail_file_name}"
+
         return StoredFile(
             url=f"{self.settings.upload_base_url}/{file_name}",
             file_name=file_name,
             content_type=content_type,
+            thumbnail_url=thumbnail_url,
+            thumbnail_file_name=thumbnail_file_name,
+            thumbnail_content_type=thumbnail_content_type,
         )
 
 
@@ -91,8 +128,7 @@ class SupabaseStorageAdapter:
             f"/storage/v1/object/public/{self.settings.supabase_storage_bucket}/{quote(object_path)}"
         )
 
-    def save_review_image(self, *, owner_id: str, file_name: str, content_type: str, raw_bytes: bytes) -> StoredFile:
-        object_path = self.build_object_path(owner_id, file_name)
+    def upload_object(self, *, object_path: str, content_type: str, raw_bytes: bytes) -> None:
         upload_url = (
             f"{self.settings.supabase_url.rstrip('/')}"
             f"/storage/v1/object/{self.settings.supabase_storage_bucket}/{quote(object_path)}"
@@ -118,10 +154,37 @@ class SupabaseStorageAdapter:
         except URLError as error:
             raise StorageUploadError("Supabase Storage에 연결하지 못했어요.") from error
 
+    def save_review_image(
+        self,
+        *,
+        owner_id: str,
+        file_name: str,
+        content_type: str,
+        raw_bytes: bytes,
+        thumbnail_file_name: str | None = None,
+        thumbnail_content_type: str | None = None,
+        thumbnail_raw_bytes: bytes | None = None,
+    ) -> StoredFile:
+        object_path = self.build_object_path(owner_id, file_name)
+        self.upload_object(object_path=object_path, content_type=content_type, raw_bytes=raw_bytes)
+
+        thumbnail_url: str | None = None
+        if thumbnail_file_name and thumbnail_content_type and thumbnail_raw_bytes is not None:
+            thumbnail_object_path = self.build_object_path(owner_id, thumbnail_file_name)
+            self.upload_object(
+                object_path=thumbnail_object_path,
+                content_type=thumbnail_content_type,
+                raw_bytes=thumbnail_raw_bytes,
+            )
+            thumbnail_url = self.build_public_url(thumbnail_object_path)
+
         return StoredFile(
             url=self.build_public_url(object_path),
             file_name=file_name,
             content_type=content_type,
+            thumbnail_url=thumbnail_url,
+            thumbnail_file_name=thumbnail_file_name,
+            thumbnail_content_type=thumbnail_content_type,
         )
 
 
@@ -132,19 +195,44 @@ class ReviewImageUploadService:
         self.storage = get_storage_adapter(settings)
 
     @staticmethod
-    def build_review_file_name(owner_id: str, original_file_name: str | None) -> str:
+    def build_review_file_names(owner_id: str, original_file_name: str | None, *, has_thumbnail: bool) -> tuple[str, str | None]:
         extension = Path(original_file_name or "upload.jpg").suffix.lower() or ".jpg"
-        return f"{owner_id.replace(':', '_')}-{uuid4().hex}{extension}"
+        prefix = f"{owner_id.replace(':', '_')}-{uuid4().hex}"
+        if not has_thumbnail:
+            return f"{prefix}{extension}", None
+        original_name = f"{prefix}-orig{extension}"
+        return original_name, build_review_thumbnail_file_name(original_name)
 
-    def save_review_image(self, *, owner_id: str, original_file_name: str | None, content_type: str | None, raw_bytes: bytes) -> StoredFile:
+    def save_review_image(
+        self,
+        *,
+        owner_id: str,
+        original_file_name: str | None,
+        content_type: str | None,
+        raw_bytes: bytes,
+        thumbnail_content_type: str | None = None,
+        thumbnail_raw_bytes: bytes | None = None,
+    ) -> StoredFile:
         normalized_content_type = content_type or "application/octet-stream"
         self.validator.validate(content_type=normalized_content_type, raw_bytes=raw_bytes)
-        file_name = self.build_review_file_name(owner_id, original_file_name)
+
+        normalized_thumbnail_content_type = thumbnail_content_type or normalized_content_type
+        if thumbnail_raw_bytes is not None:
+            self.validator.validate(content_type=normalized_thumbnail_content_type, raw_bytes=thumbnail_raw_bytes)
+
+        file_name, thumbnail_file_name = self.build_review_file_names(
+            owner_id,
+            original_file_name,
+            has_thumbnail=thumbnail_raw_bytes is not None,
+        )
         return self.storage.save_review_image(
             owner_id=owner_id,
             file_name=file_name,
             content_type=normalized_content_type,
             raw_bytes=raw_bytes,
+            thumbnail_file_name=thumbnail_file_name,
+            thumbnail_content_type=normalized_thumbnail_content_type if thumbnail_file_name else None,
+            thumbnail_raw_bytes=thumbnail_raw_bytes,
         )
 
 

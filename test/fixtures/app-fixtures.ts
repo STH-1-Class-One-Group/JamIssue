@@ -64,6 +64,7 @@ export function createReviewFixture(overrides: Partial<Review> = {}): Review {
     badge: '친구 추천',
     visitedAt: '03. 27. 12:31',
     imageUrl: 'https://example.com/review.jpg',
+    thumbnailUrl: 'https://example.com/review-thumb.jpg',
     commentCount: 1,
     likeCount: 2,
     likedByMe: true,

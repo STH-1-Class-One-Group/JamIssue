@@ -84,6 +84,28 @@ def test_review_comment_and_my_page_flow(tmp_path: Path):
     assert my_page.stamp_logs[0].place_id == 'hanbat-forest'
 
 
+def test_create_review_derives_thumbnail_url_from_original_image_path(tmp_path: Path):
+    session = build_session(tmp_path)
+    load_seed_data(session)
+
+    stamp_state = claim_stamp_for(session, 'user-thumb', 'hanbat-forest')
+    review = create_review(
+        session,
+        ReviewCreate(
+            placeId='hanbat-forest',
+            stampId=stamp_id_for_place(stamp_state, 'hanbat-forest'),
+            body='썸네일 경로도 같이 확인해요.',
+            mood='설렘',
+            imageUrl='/uploads/user-thumb-demo-orig.jpg',
+        ),
+        'user-thumb',
+        '서윤',
+    )
+
+    assert review.image_url == '/uploads/user-thumb-demo-orig.jpg'
+    assert review.thumbnail_url == '/uploads/user-thumb-demo-thumb.jpg'
+
+
 def test_list_reviews_omits_comment_tree_by_default(tmp_path: Path):
     session = build_session(tmp_path)
     load_seed_data(session)

@@ -490,10 +490,11 @@ def remove_review_comment(
 @app.post("/api/reviews/upload", response_model=UploadResponse, tags=["reviews"])
 async def upload_review_image(
     file: UploadFile = File(...),
+    thumbnail: UploadFile | None = File(default=None),
     session_user: SessionUser = Depends(require_session_user),
     app_settings: Settings = Depends(get_settings),
 ) -> UploadResponse:
-    return await upload_review_image_service(file, session_user, app_settings)
+    return await upload_review_image_service(file, thumbnail, session_user, app_settings)
 
 
 @app.get("/api/my/summary", response_model=MyPageResponse, tags=["my"])
