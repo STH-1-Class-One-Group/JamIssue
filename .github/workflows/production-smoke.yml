@@ -90,7 +90,9 @@ jobs:
       - deploy-worker
     runs-on: ubuntu-latest
     env:
-      SMOKE_BASE_URL: https://daejeon.jamissue.com
+      SMOKE_BASE_URL: https://daejeon-jamissue-pages.pages.dev
+      SMOKE_API_BASE_URL: https://daejeon-jamissue-api.yhh4433.workers.dev
+      SMOKE_FORCE_API_BASE_URL: 1
       SMOKE_DEPLOY_WAIT_MS: 0
       SMOKE_RETRY_ATTEMPTS: 5
       SMOKE_RETRY_DELAY_MS: 15000

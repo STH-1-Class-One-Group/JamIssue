@@ -91,6 +91,9 @@ function normalizeUrl(url) {
 export function resolveApiBaseUrl({ runtimeConfig, configuredApiBaseUrl: configuredUrl, defaultApiBaseUrl = DEFAULT_API_BASE_URL }) {
   const runtimeApiBaseUrl = normalizeUrl(runtimeConfig?.apiBaseUrl);
   const overrideApiBaseUrl = normalizeUrl(configuredUrl);
+  if (process.env.SMOKE_FORCE_API_BASE_URL === "1" && overrideApiBaseUrl) {
+    return overrideApiBaseUrl;
+  }
   if (runtimeApiBaseUrl) {
     return runtimeApiBaseUrl;
   }

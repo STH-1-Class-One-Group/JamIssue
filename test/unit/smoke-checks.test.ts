@@ -37,6 +37,19 @@ describe('run-smoke-checks helpers', () => {
     ).toBe('https://api.workflow.example');
   });
 
+  it('can force the configured apiBaseUrl over runtime config for smoke-only origins', () => {
+    process.env.SMOKE_FORCE_API_BASE_URL = '1';
+
+    expect(
+      resolveApiBaseUrl({
+        runtimeConfig: { apiBaseUrl: 'https://api.runtime.example/' },
+        configuredApiBaseUrl: 'https://api.workflow.example/',
+      }),
+    ).toBe('https://api.workflow.example');
+
+    delete process.env.SMOKE_FORCE_API_BASE_URL;
+  });
+
   it('builds browser-like headers for smoke requests', () => {
     const headers = buildRequestHeaders('application/json,text/plain,*/*');
 
