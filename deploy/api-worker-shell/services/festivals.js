@@ -635,11 +635,18 @@ export async function handleFestivalImport(request, env) {
     return jsonResponse(400, { detail: 'items 배열이 필요해요.' }, env, request);
   }
 
-  const importedItems = await upsertImportedFestivalItems(env, payload.items, {
-    sourceName: payload.sourceName,
-    sourceUrl: payload.sourceUrl,
-    importedAt: payload.importedAt,
-  });
+  let importedItems;
+  try {
+    importedItems = await upsertImportedFestivalItems(env, payload.items, {
+      sourceName: payload.sourceName,
+      sourceUrl: payload.sourceUrl,
+      importedAt: payload.importedAt,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return jsonResponse(422, { detail: message }, env, request);
+  }
+
   festivalsCache = {
     expiresAt: 0,
     syncAt: Date.now(),
