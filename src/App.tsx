@@ -32,6 +32,7 @@ import { useActiveReviewComments } from './hooks/useActiveReviewComments';
 import { useNotificationActions } from './hooks/useNotificationActions';
 import { useAppStageActions } from './hooks/useAppStageActions';
 import { useAppPagePaginationActions } from './hooks/useAppPagePaginationActions';
+import { useAppPageStageActions } from './hooks/useAppPageStageActions';
 import { useAppUIStore } from './store/app-ui-store';
 import { useNotificationStore } from './store/notification-store';
 import type {
@@ -529,10 +530,6 @@ export default function App() {
     handleCollapseFestivalDrawer,
     handleRequestLogin,
     handleLocateCurrentPosition,
-    handleClearPlaceFilter,
-    handleChangeRouteSort,
-    handleRetryMyPage,
-    handleOpenCommentFromMyPage,
   } = useAppStageActions({
     selectedPlace,
     selectedFestival,
@@ -540,15 +537,23 @@ export default function App() {
     selectedFestivalId,
     drawerState,
     selectedRoutePreview,
-    sessionUser,
     setSelectedRoutePreview,
-    setFeedPlaceFilterId,
-    setCommunityRouteSort,
     commitRouteState,
     goToTab,
     handleOpenPlaceFeedWithReturn,
-    handleOpenCommentWithReturn,
     refreshCurrentPosition,
+  });
+
+  const {
+    handleClearPlaceFilter,
+    handleChangeRouteSort,
+    handleRetryMyPage,
+    handleOpenCommentFromMyPage,
+  } = useAppPageStageActions({
+    sessionUser,
+    setFeedPlaceFilterId,
+    setCommunityRouteSort,
+    handleOpenCommentWithReturn,
     fetchCommunityRoutes,
     refreshMyPageForUser,
     reportBackgroundError,

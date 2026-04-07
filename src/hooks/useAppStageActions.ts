@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import type { RouteStateCommitOptions } from './useAppRouteState';
-import type { DrawerState, Place, RoutePreview, SessionUser } from '../types';
+import type { DrawerState, Place, RoutePreview } from '../types';
 
 interface UseAppStageActionsParams {
   selectedPlace: Place | null;
@@ -9,10 +9,7 @@ interface UseAppStageActionsParams {
   selectedFestivalId: string | null;
   drawerState: DrawerState;
   selectedRoutePreview: RoutePreview | null;
-  sessionUser: SessionUser | null;
   setSelectedRoutePreview: (preview: RoutePreview | null) => void;
-  setFeedPlaceFilterId: (placeId: string | null) => void;
-  setCommunityRouteSort: (sort: 'popular' | 'latest') => void;
   commitRouteState: (
     nextState: { tab: 'map'; placeId: string | null; festivalId: string | null; drawerState: DrawerState },
     historyMode?: 'push' | 'replace',
@@ -20,11 +17,7 @@ interface UseAppStageActionsParams {
   ) => void;
   goToTab: (tab: 'my') => void;
   handleOpenPlaceFeedWithReturn: (placeId: string) => void;
-  handleOpenCommentWithReturn: (reviewId: string, commentId: string) => void;
   refreshCurrentPosition: (shouldFocusMap: boolean) => Promise<void>;
-  fetchCommunityRoutes: (sort: 'popular' | 'latest') => Promise<unknown>;
-  refreshMyPageForUser: (user: SessionUser | null, force?: boolean) => Promise<unknown>;
-  reportBackgroundError: (error: unknown) => void;
 }
 
 export function useAppStageActions({
@@ -34,18 +27,11 @@ export function useAppStageActions({
   selectedFestivalId,
   drawerState,
   selectedRoutePreview,
-  sessionUser,
   setSelectedRoutePreview,
-  setFeedPlaceFilterId,
-  setCommunityRouteSort,
   commitRouteState,
   goToTab,
   handleOpenPlaceFeedWithReturn,
-  handleOpenCommentWithReturn,
   refreshCurrentPosition,
-  fetchCommunityRoutes,
-  refreshMyPageForUser,
-  reportBackgroundError,
 }: UseAppStageActionsParams) {
   const handleMapOpenPlaceFeed = useCallback(() => {
     if (!selectedPlace) {
@@ -117,26 +103,6 @@ export function useAppStageActions({
     void refreshCurrentPosition(true);
   }, [refreshCurrentPosition]);
 
-  const handleClearPlaceFilter = useCallback(() => {
-    setFeedPlaceFilterId(null);
-  }, [setFeedPlaceFilterId]);
-
-  const handleChangeRouteSort = useCallback((sort: 'popular' | 'latest') => {
-    setCommunityRouteSort(sort);
-    void fetchCommunityRoutes(sort).catch(reportBackgroundError);
-  }, [fetchCommunityRoutes, reportBackgroundError, setCommunityRouteSort]);
-
-  const handleRetryMyPage = useCallback(async () => {
-    if (!sessionUser) {
-      return;
-    }
-    await refreshMyPageForUser(sessionUser, true);
-  }, [refreshMyPageForUser, sessionUser]);
-
-  const handleOpenCommentFromMyPage = useCallback((reviewId: string, commentId: string) => {
-    handleOpenCommentWithReturn(reviewId, commentId);
-  }, [handleOpenCommentWithReturn]);
-
   return {
     handleMapOpenPlaceFeed,
     handleMapOpenPlace,
@@ -149,9 +115,5 @@ export function useAppStageActions({
     handleCollapseFestivalDrawer,
     handleRequestLogin,
     handleLocateCurrentPosition,
-    handleClearPlaceFilter,
-    handleChangeRouteSort,
-    handleRetryMyPage,
-    handleOpenCommentFromMyPage,
   };
 }
