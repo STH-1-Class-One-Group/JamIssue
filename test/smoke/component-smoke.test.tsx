@@ -63,39 +63,53 @@ describe('component smoke', () => {
 
     const myPage = render(
       <MyPagePanel
-        sessionUser={sessionUserFixture}
-        myPage={myPageFixture}
-        providers={[]}
-        myPageError={null}
-        activeTab="feeds"
-        isLoggingOut={false}
-        profileSaving={false}
-        profileError={null}
-        routeSubmitting={false}
-        routeError={null}
-        adminSummary={null}
-        adminBusyPlaceId={null}
-        adminLoading={false}
-        onChangeTab={vi.fn()}
-        onLogin={vi.fn()}
-        onRetry={vi.fn().mockResolvedValue(undefined)}
-        onLogout={vi.fn().mockResolvedValue(undefined)}
-        onSaveNickname={vi.fn().mockResolvedValue(undefined)}
-        onPublishRoute={vi.fn().mockResolvedValue(undefined)}
-        onOpenPlace={vi.fn()}
-        onOpenComment={vi.fn()}
-        onOpenReview={vi.fn()}
-        onUpdateReview={vi.fn().mockResolvedValue(undefined)}
-        onDeleteReview={vi.fn().mockResolvedValue(undefined)}
-        onMarkNotificationRead={vi.fn().mockResolvedValue(undefined)}
-        onMarkAllNotificationsRead={vi.fn().mockResolvedValue(undefined)}
-        onDeleteNotification={vi.fn().mockResolvedValue(undefined)}
-        commentsHasMore={false}
-        commentsLoadingMore={false}
-        onLoadMoreComments={vi.fn().mockResolvedValue(undefined)}
-        onRefreshAdmin={vi.fn().mockResolvedValue(undefined)}
-        onToggleAdminPlace={vi.fn().mockResolvedValue(undefined)}
-        onToggleAdminManualOverride={vi.fn().mockResolvedValue(undefined)}
+        sessionData={{
+          sessionUser: sessionUserFixture,
+          myPage: myPageFixture,
+          providers: [],
+          myPageError: null,
+        }}
+        panelState={{
+          activeTab: 'feeds',
+          isLoggingOut: false,
+          profileSaving: false,
+          profileError: null,
+          routeSubmitting: false,
+          routeError: null,
+          commentsHasMore: false,
+          commentsLoadingMore: false,
+        }}
+        reviewActions={{
+          onOpenPlace: vi.fn(),
+          onOpenComment: vi.fn(),
+          onOpenReview: vi.fn(),
+          onUpdateReview: vi.fn().mockResolvedValue(undefined),
+          onDeleteReview: vi.fn().mockResolvedValue(undefined),
+          onLoadMoreComments: vi.fn().mockResolvedValue(undefined),
+        }}
+        panelActions={{
+          onChangeTab: vi.fn(),
+          onLogin: vi.fn(),
+          onRetry: vi.fn().mockResolvedValue(undefined),
+          onLogout: vi.fn().mockResolvedValue(undefined),
+          onSaveNickname: vi.fn().mockResolvedValue(undefined),
+          onPublishRoute: vi.fn().mockResolvedValue(undefined),
+        }}
+        notificationActions={{
+          onMarkNotificationRead: vi.fn().mockResolvedValue(undefined),
+          onMarkAllNotificationsRead: vi.fn().mockResolvedValue(undefined),
+          onDeleteNotification: vi.fn().mockResolvedValue(undefined),
+        }}
+        adminData={{
+          adminSummary: null,
+          adminBusyPlaceId: null,
+          adminLoading: false,
+        }}
+        adminActions={{
+          onRefreshAdmin: vi.fn().mockResolvedValue(undefined),
+          onToggleAdminPlace: vi.fn().mockResolvedValue(undefined),
+          onToggleAdminManualOverride: vi.fn().mockResolvedValue(undefined),
+        }}
       />,
     );
 

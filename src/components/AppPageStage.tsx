@@ -121,32 +121,42 @@ export const AppPageStage = memo(function AppPageStage({
     <div className="page-stage">
       {activeTab === 'feed' && (
         <FeedTab
-          reviews={feedData.reviews}
-          sessionUser={sharedData.sessionUser}
-          reviewLikeUpdatingId={feedData.reviewLikeUpdatingId}
-          placeFilterId={feedData.feedPlaceFilterId}
-          placeFilterName={feedData.feedPlaceFilterId ? sharedData.placeNameById[feedData.feedPlaceFilterId] ?? null : null}
-          commentSubmittingReviewId={feedData.commentSubmittingReviewId}
-          commentMutatingId={feedData.commentMutatingId}
-          deletingReviewId={feedData.deletingReviewId}
-          activeCommentReviewId={feedData.activeCommentReviewId}
-          activeCommentReviewComments={feedData.activeCommentReviewComments}
-          activeCommentReviewStatus={feedData.activeCommentReviewStatus}
-          highlightedCommentId={feedData.highlightedCommentId}
-          highlightedReviewId={feedData.highlightedReviewId}
-          hasMore={feedData.feedHasMore && !feedData.feedPlaceFilterId}
-          loadingMore={feedData.feedLoadingMore}
-          onLoadMore={feedActions.onLoadMoreFeed}
-          onToggleReviewLike={feedActions.onToggleReviewLike}
-          onCreateComment={feedActions.onCreateComment}
-          onUpdateComment={feedActions.onUpdateComment}
-          onDeleteComment={feedActions.onDeleteComment}
-          onDeleteReview={feedActions.onDeleteReview}
-          onRequestLogin={sharedActions.onRequestLogin}
-          onClearPlaceFilter={feedActions.onClearPlaceFilter}
-          onOpenPlace={sharedActions.onOpenPlace}
-          onOpenComments={feedActions.onOpenComments}
-          onCloseComments={feedActions.onCloseComments}
+          feedData={{
+            reviews: feedData.reviews,
+            placeFilterId: feedData.feedPlaceFilterId,
+            placeFilterName: feedData.feedPlaceFilterId ? sharedData.placeNameById[feedData.feedPlaceFilterId] ?? null : null,
+            highlightedReviewId: feedData.highlightedReviewId,
+            reviewLikeUpdatingId: feedData.reviewLikeUpdatingId,
+            hasMore: feedData.feedHasMore && !feedData.feedPlaceFilterId,
+            loadingMore: feedData.feedLoadingMore,
+          }}
+          commentSheetData={{
+            activeCommentReviewId: feedData.activeCommentReviewId,
+            activeCommentReviewComments: feedData.activeCommentReviewComments,
+            activeCommentReviewStatus: feedData.activeCommentReviewStatus,
+            highlightedCommentId: feedData.highlightedCommentId,
+            commentSubmittingReviewId: feedData.commentSubmittingReviewId,
+            commentMutatingId: feedData.commentMutatingId,
+            deletingReviewId: feedData.deletingReviewId,
+          }}
+          sharedData={{
+            sessionUser: sharedData.sessionUser,
+          }}
+          feedActions={{
+            onLoadMore: feedActions.onLoadMoreFeed,
+            onToggleReviewLike: feedActions.onToggleReviewLike,
+            onCreateComment: feedActions.onCreateComment,
+            onUpdateComment: feedActions.onUpdateComment,
+            onDeleteComment: feedActions.onDeleteComment,
+            onDeleteReview: feedActions.onDeleteReview,
+            onClearPlaceFilter: feedActions.onClearPlaceFilter,
+            onOpenComments: feedActions.onOpenComments,
+            onCloseComments: feedActions.onCloseComments,
+          }}
+          sharedActions={{
+            onRequestLogin: sharedActions.onRequestLogin,
+            onOpenPlace: sharedActions.onOpenPlace,
+          }}
         />
       )}
 
@@ -170,39 +180,53 @@ export const AppPageStage = memo(function AppPageStage({
 
       {activeTab === 'my' && (
         <MyPagePanel
-          sessionUser={sharedData.sessionUser}
-          myPage={myPageData.myPage}
-          providers={myPageData.providers}
-          myPageError={myPageData.myPageError}
-          activeTab={myPageData.myPageTab}
-          isLoggingOut={myPageData.isLoggingOut}
-          profileSaving={myPageData.profileSaving}
-          profileError={myPageData.profileError}
-          routeSubmitting={myPageData.routeSubmitting}
-          routeError={myPageData.routeError}
-          adminSummary={myPageData.adminSummary}
-          adminBusyPlaceId={myPageData.adminBusyPlaceId}
-          adminLoading={myPageData.adminLoading}
-          onChangeTab={myPageActions.onChangeMyPageTab}
-          onLogin={myPageActions.onLogin}
-          onRetry={myPageActions.onRetryMyPage}
-          onLogout={myPageActions.onLogout}
-          onSaveNickname={myPageActions.onSaveNickname}
-          onPublishRoute={myPageActions.onPublishRoute}
-          onOpenPlace={sharedActions.onOpenPlace}
-          onOpenComment={myPageActions.onOpenCommentFromMyPage}
-          onOpenReview={myPageActions.onOpenReview}
-          onUpdateReview={myPageActions.onUpdateReview}
-          onDeleteReview={myPageActions.onDeleteReview}
-          onMarkNotificationRead={myPageActions.onMarkNotificationRead}
-          onMarkAllNotificationsRead={myPageActions.onMarkAllNotificationsRead}
-          onDeleteNotification={myPageActions.onDeleteNotification}
-          commentsHasMore={myPageData.commentsHasMore}
-          commentsLoadingMore={myPageData.commentsLoadingMore}
-          onLoadMoreComments={myPageActions.onLoadMoreComments}
-          onRefreshAdmin={myPageActions.onRefreshAdmin}
-          onToggleAdminPlace={myPageActions.onToggleAdminPlace}
-          onToggleAdminManualOverride={myPageActions.onToggleAdminManualOverride}
+          sessionData={{
+            sessionUser: sharedData.sessionUser,
+            myPage: myPageData.myPage,
+            providers: myPageData.providers,
+            myPageError: myPageData.myPageError,
+          }}
+          panelState={{
+            activeTab: myPageData.myPageTab,
+            isLoggingOut: myPageData.isLoggingOut,
+            profileSaving: myPageData.profileSaving,
+            profileError: myPageData.profileError,
+            routeSubmitting: myPageData.routeSubmitting,
+            routeError: myPageData.routeError,
+            commentsHasMore: myPageData.commentsHasMore,
+            commentsLoadingMore: myPageData.commentsLoadingMore,
+          }}
+          reviewActions={{
+            onOpenPlace: sharedActions.onOpenPlace,
+            onOpenComment: myPageActions.onOpenCommentFromMyPage,
+            onOpenReview: myPageActions.onOpenReview,
+            onUpdateReview: myPageActions.onUpdateReview,
+            onDeleteReview: myPageActions.onDeleteReview,
+            onLoadMoreComments: myPageActions.onLoadMoreComments,
+          }}
+          panelActions={{
+            onChangeTab: myPageActions.onChangeMyPageTab,
+            onLogin: myPageActions.onLogin,
+            onRetry: myPageActions.onRetryMyPage,
+            onLogout: myPageActions.onLogout,
+            onSaveNickname: myPageActions.onSaveNickname,
+            onPublishRoute: myPageActions.onPublishRoute,
+          }}
+          notificationActions={{
+            onMarkNotificationRead: myPageActions.onMarkNotificationRead,
+            onMarkAllNotificationsRead: myPageActions.onMarkAllNotificationsRead,
+            onDeleteNotification: myPageActions.onDeleteNotification,
+          }}
+          adminData={{
+            adminSummary: myPageData.adminSummary,
+            adminBusyPlaceId: myPageData.adminBusyPlaceId,
+            adminLoading: myPageData.adminLoading,
+          }}
+          adminActions={{
+            onRefreshAdmin: myPageActions.onRefreshAdmin,
+            onToggleAdminPlace: myPageActions.onToggleAdminPlace,
+            onToggleAdminManualOverride: myPageActions.onToggleAdminManualOverride,
+          }}
         />
       )}
     </div>

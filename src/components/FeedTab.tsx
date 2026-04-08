@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { FeedCommentSheet } from './FeedCommentSheet';
@@ -6,62 +6,83 @@ import { ReviewList } from './ReviewList';
 import type { ApiStatus, Comment, Review, SessionUser } from '../types';
 
 interface FeedTabProps {
-  reviews: Review[];
-  sessionUser: SessionUser | null;
-  reviewLikeUpdatingId: string | null;
-  placeFilterId: string | null;
-  placeFilterName: string | null;
-  commentSubmittingReviewId: string | null;
-  commentMutatingId: string | null;
-  deletingReviewId: string | null;
-  activeCommentReviewId: string | null;
-  activeCommentReviewComments: Comment[];
-  activeCommentReviewStatus: ApiStatus;
-  highlightedCommentId: string | null;
-  highlightedReviewId: string | null;
-  hasMore: boolean;
-  loadingMore: boolean;
-  onLoadMore: () => Promise<void>;
-  onToggleReviewLike: (reviewId: string) => Promise<void>;
-  onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
-  onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
-  onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;
-  onDeleteReview: (reviewId: string) => Promise<void>;
-  onRequestLogin: () => void;
-  onClearPlaceFilter: () => void;
-  onOpenPlace: (placeId: string) => void;
-  onOpenComments: (reviewId: string, commentId?: string | null) => void;
-  onCloseComments: () => void;
+  feedData: {
+    reviews: Review[];
+    placeFilterId: string | null;
+    placeFilterName: string | null;
+    highlightedReviewId: string | null;
+    reviewLikeUpdatingId: string | null;
+    hasMore: boolean;
+    loadingMore: boolean;
+  };
+  commentSheetData: {
+    activeCommentReviewId: string | null;
+    activeCommentReviewComments: Comment[];
+    activeCommentReviewStatus: ApiStatus;
+    highlightedCommentId: string | null;
+    commentSubmittingReviewId: string | null;
+    commentMutatingId: string | null;
+    deletingReviewId: string | null;
+  };
+  sharedData: {
+    sessionUser: SessionUser | null;
+  };
+  feedActions: {
+    onLoadMore: () => Promise<void>;
+    onToggleReviewLike: (reviewId: string) => Promise<void>;
+    onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
+    onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
+    onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;
+    onDeleteReview: (reviewId: string) => Promise<void>;
+    onClearPlaceFilter: () => void;
+    onOpenComments: (reviewId: string, commentId?: string | null) => void;
+    onCloseComments: () => void;
+  };
+  sharedActions: {
+    onRequestLogin: () => void;
+    onOpenPlace: (placeId: string) => void;
+  };
 }
 
 export function FeedTab({
-  reviews,
-  sessionUser,
-  reviewLikeUpdatingId,
-  placeFilterId,
-  placeFilterName,
-  commentSubmittingReviewId,
-  commentMutatingId,
-  deletingReviewId,
-  activeCommentReviewId,
-  activeCommentReviewComments,
-  activeCommentReviewStatus,
-  highlightedCommentId,
-  highlightedReviewId,
-  hasMore,
-  loadingMore,
-  onLoadMore,
-  onToggleReviewLike,
-  onCreateComment,
-  onUpdateComment,
-  onDeleteComment,
-  onDeleteReview,
-  onRequestLogin,
-  onClearPlaceFilter,
-  onOpenPlace,
-  onOpenComments,
-  onCloseComments,
+  feedData,
+  commentSheetData,
+  sharedData,
+  feedActions,
+  sharedActions,
 }: FeedTabProps) {
+  const {
+    reviews,
+    placeFilterId,
+    placeFilterName,
+    highlightedReviewId,
+    reviewLikeUpdatingId,
+    hasMore,
+    loadingMore,
+  } = feedData;
+  const {
+    activeCommentReviewId,
+    activeCommentReviewComments,
+    activeCommentReviewStatus,
+    highlightedCommentId,
+    commentSubmittingReviewId,
+    commentMutatingId,
+    deletingReviewId,
+  } = commentSheetData;
+  const { sessionUser } = sharedData;
+  const {
+    onLoadMore,
+    onToggleReviewLike,
+    onCreateComment,
+    onUpdateComment,
+    onDeleteComment,
+    onDeleteReview,
+    onClearPlaceFilter,
+    onOpenComments,
+    onCloseComments,
+  } = feedActions;
+  const { onRequestLogin, onOpenPlace } = sharedActions;
+
   const skipFeedScrollRestore = Boolean(highlightedReviewId || activeCommentReviewId || highlightedCommentId);
   const scrollRef = useScrollRestoration<HTMLElement>(`feed:${placeFilterId ?? 'all'}`, { skipRestore: skipFeedScrollRestore });
   const loadMoreRef = useAutoLoadMore({

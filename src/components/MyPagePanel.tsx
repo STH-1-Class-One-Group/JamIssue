@@ -9,39 +9,53 @@ import { ProviderButtons } from './ProviderButtons';
 import type { AdminSummaryResponse, AuthProvider, MyPageResponse, MyPageTabKey, ReviewMood, SessionUser } from '../types';
 
 interface MyPagePanelProps {
-  sessionUser: SessionUser | null;
-  myPage: MyPageResponse | null;
-  providers: AuthProvider[];
-  myPageError: string | null;
-  activeTab: MyPageTabKey;
-  isLoggingOut: boolean;
-  profileSaving: boolean;
-  profileError: string | null;
-  routeSubmitting: boolean;
-  routeError: string | null;
-  adminSummary: AdminSummaryResponse | null;
-  adminBusyPlaceId: string | null;
-  adminLoading: boolean;
-  onChangeTab: (nextTab: MyPageTabKey) => void;
-  onLogin: (provider: 'naver' | 'kakao') => void;
-  onRetry: () => Promise<void>;
-  onLogout: () => Promise<void>;
-  onSaveNickname: (nickname: string) => Promise<void>;
-  onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
-  onOpenPlace: (placeId: string) => void;
-  onOpenComment: (reviewId: string, commentId: string) => void;
-  onOpenReview: (reviewId: string) => void;
-  onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean }) => Promise<void>;
-  onDeleteReview: (reviewId: string) => Promise<void>;
-  onMarkNotificationRead: (notificationId: string) => Promise<void>;
-  onMarkAllNotificationsRead: () => Promise<void>;
-  onDeleteNotification: (notificationId: string) => Promise<void>;
-  commentsHasMore: boolean;
-  commentsLoadingMore: boolean;
-  onLoadMoreComments: (initial?: boolean) => Promise<void>;
-  onRefreshAdmin: () => Promise<void>;
-  onToggleAdminPlace: (placeId: string, nextValue: boolean) => Promise<void>;
-  onToggleAdminManualOverride: (placeId: string, nextValue: boolean) => Promise<void>;
+  sessionData: {
+    sessionUser: SessionUser | null;
+    myPage: MyPageResponse | null;
+    providers: AuthProvider[];
+    myPageError: string | null;
+  };
+  panelState: {
+    activeTab: MyPageTabKey;
+    isLoggingOut: boolean;
+    profileSaving: boolean;
+    profileError: string | null;
+    routeSubmitting: boolean;
+    routeError: string | null;
+    commentsHasMore: boolean;
+    commentsLoadingMore: boolean;
+  };
+  reviewActions: {
+    onOpenPlace: (placeId: string) => void;
+    onOpenComment: (reviewId: string, commentId: string) => void;
+    onOpenReview: (reviewId: string) => void;
+    onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean }) => Promise<void>;
+    onDeleteReview: (reviewId: string) => Promise<void>;
+    onLoadMoreComments: (initial?: boolean) => Promise<void>;
+  };
+  panelActions: {
+    onChangeTab: (nextTab: MyPageTabKey) => void;
+    onLogin: (provider: 'naver' | 'kakao') => void;
+    onRetry: () => Promise<void>;
+    onLogout: () => Promise<void>;
+    onSaveNickname: (nickname: string) => Promise<void>;
+    onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
+  };
+  notificationActions: {
+    onMarkNotificationRead: (notificationId: string) => Promise<void>;
+    onMarkAllNotificationsRead: () => Promise<void>;
+    onDeleteNotification: (notificationId: string) => Promise<void>;
+  };
+  adminData: {
+    adminSummary: AdminSummaryResponse | null;
+    adminBusyPlaceId: string | null;
+    adminLoading: boolean;
+  };
+  adminActions: {
+    onRefreshAdmin: () => Promise<void>;
+    onToggleAdminPlace: (placeId: string, nextValue: boolean) => Promise<void>;
+    onToggleAdminManualOverride: (placeId: string, nextValue: boolean) => Promise<void>;
+  };
 }
 
 const AdminPanel = lazy(() => import('./AdminPanel').then((module) => ({ default: module.AdminPanel })));
@@ -64,40 +78,48 @@ function getNotificationLabel(notification: NotificationItem) {
 }
 
 export function MyPagePanel({
-  sessionUser,
-  myPage,
-  providers,
-  myPageError,
-  activeTab,
-  isLoggingOut,
-  profileSaving,
-  profileError,
-  routeSubmitting,
-  routeError,
-  adminSummary,
-  adminBusyPlaceId,
-  adminLoading,
-  onChangeTab,
-  onLogin,
-  onRetry,
-  onLogout,
-  onSaveNickname,
-  onPublishRoute,
-  onOpenPlace,
-  onOpenComment,
-  onOpenReview,
-  onUpdateReview,
-  onDeleteReview,
-  onMarkNotificationRead,
-  onMarkAllNotificationsRead,
-  onDeleteNotification,
-  commentsHasMore,
-  commentsLoadingMore,
-  onLoadMoreComments,
-  onRefreshAdmin,
-  onToggleAdminPlace,
-  onToggleAdminManualOverride,
+  sessionData,
+  panelState,
+  reviewActions,
+  panelActions,
+  notificationActions,
+  adminData,
+  adminActions,
 }: MyPagePanelProps) {
+  const { sessionUser, myPage, providers, myPageError } = sessionData;
+  const {
+    activeTab,
+    isLoggingOut,
+    profileSaving,
+    profileError,
+    routeSubmitting,
+    routeError,
+    commentsHasMore,
+    commentsLoadingMore,
+  } = panelState;
+  const {
+    onOpenPlace,
+    onOpenComment,
+    onOpenReview,
+    onUpdateReview,
+    onDeleteReview,
+    onLoadMoreComments,
+  } = reviewActions;
+  const {
+    onChangeTab,
+    onLogin,
+    onRetry,
+    onLogout,
+    onSaveNickname,
+    onPublishRoute,
+  } = panelActions;
+  const {
+    onMarkNotificationRead,
+    onMarkAllNotificationsRead,
+    onDeleteNotification,
+  } = notificationActions;
+  const { adminSummary, adminBusyPlaceId, adminLoading } = adminData;
+  const { onRefreshAdmin, onToggleAdminPlace, onToggleAdminManualOverride } = adminActions;
   const [nickname, setNickname] = useState(sessionUser?.nickname ?? '');
   const [showVisitedDetail, setShowVisitedDetail] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
