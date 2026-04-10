@@ -79,10 +79,10 @@ from .services.auth_service import (
     get_redirect_target,
     update_profile_session_payload,
 )
+from .services.my_page_service import read_my_page_service
 from .services.page_service import (
     read_bootstrap_service,
     read_courses_service,
-    read_my_page_service,
     read_place_service,
     read_places_service,
     read_reviews_service,

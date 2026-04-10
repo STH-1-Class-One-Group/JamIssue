@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from ..models import CategoryFilter, CourseMood
 from ..repository_normalized import (
     get_bootstrap,
-    get_my_page,
     get_place,
     get_stamps,
     list_courses,
@@ -26,10 +25,6 @@ def read_place_entry(db: Session, place_id: str):
 
 def list_course_entries(db: Session, mood: CourseMood | None):
     return list_courses(db, mood)
-
-
-def read_my_page_entry(db: Session, user_id: str, is_admin: bool):
-    return get_my_page(db, user_id, is_admin)
 
 
 def read_stamp_state(db: Session, user_id: str | None):
