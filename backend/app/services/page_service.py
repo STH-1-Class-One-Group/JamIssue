@@ -9,7 +9,6 @@ from ..repositories.page_repository import (
     list_course_entries,
     list_place_entries,
     read_bootstrap_bundle,
-    read_my_page_entry,
     read_place_entry,
     read_stamp_state,
     toggle_stamp_entry,
@@ -59,10 +58,6 @@ def read_courses_service(db: Session, mood: CourseMood | None):
 
 def read_reviews_service(db: Session, place_id: str | None, user_id: str | None, session_user: SessionUser | None):
     return list_review_entries(db, place_id=place_id, user_id=user_id, current_user_id=session_user.id if session_user else None)
-
-
-def read_my_page_service(db: Session, session_user: SessionUser, app_settings: Settings):
-    return _run_not_found_policy(lambda: read_my_page_entry(db, session_user.id, app_settings.is_admin(session_user.id)))
 
 
 def read_stamps_service(db: Session, session_user: SessionUser | None):
