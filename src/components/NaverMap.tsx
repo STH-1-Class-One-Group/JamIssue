@@ -9,8 +9,10 @@ import {
   hasFestivalCoordinates,
   loadNaverMaps,
   placeMarkerContent,
-  routeStepMarkerContent,
 } from './naver-map/naverMapHelpers';
+import { useNaverCurrentLocationFocus } from './naver-map/useNaverCurrentLocationFocus';
+import { useNaverRoutePreviewOverlay } from './naver-map/useNaverRoutePreviewOverlay';
+import { useNaverSelectionSync } from './naver-map/useNaverSelectionSync';
 
 interface NaverMapProps {
   places: Place[];
@@ -296,118 +298,38 @@ export function NaverMap({
     currentMarkerRef.current.setMap(mapRef.current);
   }, [currentPosition, status]);
 
-  useEffect(() => {
-    if (status !== 'ready' || !window.naver?.maps || !mapRef.current) {
-      return;
-    }
+  useNaverSelectionSync({
+    status,
+    mapsApi: window.naver?.maps,
+    mapRef,
+    mapElementRef,
+    places,
+    festivals,
+    selectedPlaceId,
+    selectedFestivalId,
+  });
 
-    const selectedPlace = selectedPlaceId ? places.find((place) => place.id === selectedPlaceId) : null;
-    const selectedFestival = selectedFestivalId ? festivals.find((festival) => festival.id === selectedFestivalId) : null;
-    const targetType = selectedPlace ? 'place' : selectedFestival ? 'festival' : null;
-    const target = selectedPlace
-      ? { latitude: selectedPlace.latitude, longitude: selectedPlace.longitude }
-      : selectedFestival && hasFestivalCoordinates(selectedFestival)
-        ? { latitude: selectedFestival.latitude, longitude: selectedFestival.longitude }
-        : null;
+  useNaverCurrentLocationFocus({
+    status,
+    mapsApi: window.naver?.maps,
+    mapRef,
+    currentPosition,
+    focusCurrentLocationKey,
+    selectedPlaceId,
+    selectedFestivalId,
+    lastHandledCurrentLocationFocusKeyRef,
+  });
 
-    if (!target || !targetType) {
-      return;
-    }
-
-    const map = mapRef.current;
-    const targetLatLng = new window.naver.maps.LatLng(target.latitude, target.longitude);
-    const currentZoom = typeof map.getZoom === 'function' ? Number(map.getZoom()) : 13;
-    const nextZoom = Number.isFinite(currentZoom) ? Math.max(currentZoom, 15) : 15;
-
-    if (typeof map.setZoom === 'function' && currentZoom < nextZoom) {
-      map.setZoom(nextZoom, false);
-    }
-
-    if (typeof map.panTo === 'function') {
-      map.panTo(targetLatLng);
-    } else if (typeof map.setCenter === 'function') {
-      map.setCenter(targetLatLng);
-    }
-
-    if (typeof map.panBy === 'function') {
-      const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 640;
-      const panDelayMs = isMobileViewport && targetType === 'place' ? 260 : 180;
-      window.setTimeout(() => {
-        if (mapRef.current === map) {
-          map.panBy(0, -getSelectionVerticalOffset(mapElementRef.current, targetType));
-        }
-      }, panDelayMs);
-    }
-  }, [festivals, places, selectedFestivalId, selectedPlaceId, status]);
-
-  useEffect(() => {
-    if (status !== 'ready' || !window.naver?.maps || !mapRef.current || !currentPosition || focusCurrentLocationKey === 0) {
-      return;
-    }
-
-    if (focusCurrentLocationKey === lastHandledCurrentLocationFocusKeyRef.current) {
-      return;
-    }
-
-    // A direct place/festival selection is a newer intent than an old
-    // "show my location" focus request, so consume and discard it here.
-    if (selectedPlaceId || selectedFestivalId) {
-      lastHandledCurrentLocationFocusKeyRef.current = focusCurrentLocationKey;
-      return;
-    }
-
-    lastHandledCurrentLocationFocusKeyRef.current = focusCurrentLocationKey;
-    mapRef.current.panTo(new window.naver.maps.LatLng(currentPosition.latitude, currentPosition.longitude));
-  }, [currentPosition, focusCurrentLocationKey, selectedFestivalId, selectedPlaceId, status]);
-
-  useEffect(() => {
-    if (status !== 'ready' || !window.naver?.maps || !mapRef.current) {
-      return;
-    }
-
-    const maps = window.naver.maps;
-    if (routeLineRef.current) {
-      routeLineRef.current.setMap(null);
-      routeLineRef.current = null;
-    }
-    routeStepMarkersRef.current.forEach((marker) => marker.setMap(null));
-    routeStepMarkersRef.current = [];
-
-    if (!routePreviewPlaces || routePreviewPlaces.length === 0) {
-      return;
-    }
-
-    const path = routePreviewPlaces.map((place) => new maps.LatLng(place.latitude, place.longitude));
-    routeLineRef.current = new maps.Polyline({
-      map: mapRef.current,
-      path,
-      strokeColor: '#ff6b9d',
-      strokeOpacity: 0.82,
-      strokeWeight: 4,
-      strokeLineCap: 'round',
-      strokeLineJoin: 'round',
-      zIndex: 120,
-    });
-
-    routeStepMarkersRef.current = routePreviewPlaces.map((place, index) => new maps.Marker({
-      map: mapRef.current,
-      position: new maps.LatLng(place.latitude, place.longitude),
-      title: '',
-      zIndex: 165,
-      icon: {
-        content: routeStepMarkerContent(index + 1),
-        anchor: new maps.Point(13, 13),
-      },
-    }));
-
-    if (routePreviewPlaces.length >= 2 && !selectedPlaceId && !selectedFestivalId) {
-      const bounds = new maps.LatLngBounds();
-      routePreviewPlaces.forEach((place) => bounds.extend(new maps.LatLng(place.latitude, place.longitude)));
-      mapRef.current.fitBounds(bounds, { top: 72, right: 40, bottom: 120, left: 40 });
-    } else if (routePreviewPlaces.length === 1 && !selectedPlaceId && !selectedFestivalId) {
-      mapRef.current.panTo(new maps.LatLng(routePreviewPlaces[0].latitude, routePreviewPlaces[0].longitude));
-    }
-  }, [routePreviewPlaces, selectedFestivalId, selectedPlaceId, status]);
+  useNaverRoutePreviewOverlay({
+    status,
+    mapsApi: window.naver?.maps,
+    mapRef,
+    routeLineRef,
+    routeStepMarkersRef,
+    routePreviewPlaces,
+    selectedPlaceId,
+    selectedFestivalId,
+  });
 
 
   if (!clientId || status === 'error') {
