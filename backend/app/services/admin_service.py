@@ -1,18 +1,22 @@
-﻿from fastapi import HTTPException, status
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from ..config import Settings
 from ..models import AdminPlaceOut, AdminSummaryResponse, PlaceVisibilityUpdate, PublicImportResponse
-from ..repository_normalized import get_admin_summary, import_public_bundle, update_place_visibility
+from ..repositories.admin_repository import (
+    import_public_bundle_entry,
+    read_admin_summary_entry,
+    update_admin_place_visibility_entry,
+)
 
 
 def read_admin_summary_service(db: Session, app_settings: Settings) -> AdminSummaryResponse:
-    return get_admin_summary(db, app_settings)
+    return read_admin_summary_entry(db, app_settings)
 
 
 def patch_admin_place_service(db: Session, place_id: str, payload: PlaceVisibilityUpdate) -> AdminPlaceOut:
     try:
-        return update_place_visibility(
+        return update_admin_place_visibility_entry(
             db,
             place_id,
             is_active=payload.is_active,
@@ -23,4 +27,4 @@ def patch_admin_place_service(db: Session, place_id: str, payload: PlaceVisibili
 
 
 def import_public_data_service(db: Session, app_settings: Settings) -> PublicImportResponse:
-    return import_public_bundle(db, app_settings)
+    return import_public_bundle_entry(db, app_settings)

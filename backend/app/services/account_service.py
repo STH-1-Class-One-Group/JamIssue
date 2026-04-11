@@ -1,12 +1,12 @@
-﻿from fastapi import HTTPException, status
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from ..repository_normalized import delete_account
+from ..repositories.account_repository import delete_account_entry
 
 
 def delete_my_account_service(db: Session, user_id: str) -> None:
     try:
-        delete_account(db, user_id)
+        delete_account_entry(db, user_id)
     except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
