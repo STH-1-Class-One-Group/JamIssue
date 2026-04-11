@@ -1,8 +1,6 @@
 import { useReviewUIStore } from '../store/review-ui-store';
 
-export function useReviewDomainState() {
-  const feedPlaceFilterId = useReviewUIStore((state) => state.feedPlaceFilterId);
-  const setFeedPlaceFilterId = useReviewUIStore((state) => state.setFeedPlaceFilterId);
+export function useReviewHighlightState() {
   const activeCommentReviewId = useReviewUIStore((state) => state.activeCommentReviewId);
   const setActiveCommentReviewId = useReviewUIStore((state) => state.setActiveCommentReviewId);
   const highlightedCommentId = useReviewUIStore((state) => state.highlightedCommentId);
@@ -13,8 +11,6 @@ export function useReviewDomainState() {
   const setHighlightedRouteId = useReviewUIStore((state) => state.setHighlightedRouteId);
 
   return {
-    feedPlaceFilterId,
-    setFeedPlaceFilterId,
     activeCommentReviewId,
     setActiveCommentReviewId,
     highlightedCommentId,
