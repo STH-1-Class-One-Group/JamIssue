@@ -48,7 +48,18 @@
 ### 남은 후속
 - [x] 인증 없는 public smoke와 인증 필요한 protected smoke 분리
 - [ ] 브라우저 수준 smoke 시나리오 확장
-- [ ] protected smoke 토큰/엔드포인트 계약 테스트와 운영 문서 보강
+- [x] protected smoke 토큰 유무에 따른 skip 계약 명시
+- [x] protected smoke 엔드포인트 목록 계약 테스트 보강
+- [ ] protected smoke 운영 토큰 발급/로테이션 절차 문서화
+- [ ] protected smoke 대상 엔드포인트 추가 여부 주기적 점검
+
+### 현재 protected smoke 계약
+- `SMOKE_AUTH_BEARER_TOKEN`가 없으면 protected smoke는 실패하지 않고 skip으로 종료한다.
+- `SMOKE_AUTH_BEARER_TOKEN`가 있으면 아래 엔드포인트를 인증 상태로 검사한다.
+  - `/api/auth/me`
+  - `/api/my/summary`
+  - `/api/my/notifications`
+- public smoke와 protected smoke는 서로 독립적으로 결과를 남긴다.
 
 ### 완료 조건
 - 배포 후 최소 1개의 자동 스모크가 실행된다.

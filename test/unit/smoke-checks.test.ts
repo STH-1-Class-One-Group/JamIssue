@@ -1,11 +1,18 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   buildRequestHeaders,
   parseRuntimeConfig,
   resolveApiBaseUrl,
 } from '../../scripts/run-smoke-checks.mjs';
-import { createProtectedSmokeChecks, getProtectedAuthHeaders } from '../../scripts/run-protected-smoke-checks.mjs';
+import {
+  createProtectedSmokeChecks,
+  getProtectedAuthHeaders,
+  getProtectedSmokeSkipReason,
+  isProtectedSmokeEnabled,
+  PROTECTED_SMOKE_ENDPOINTS,
+  runProtectedSmokeSuite,
+} from '../../scripts/run-protected-smoke-checks.mjs';
 
 describe('run-smoke-checks helpers', () => {
   it('parses runtime app config from the bootstrap script', () => {
@@ -86,5 +93,35 @@ describe('run-smoke-checks helpers', () => {
     ]);
 
     delete process.env.SMOKE_AUTH_BEARER_TOKEN;
+  });
+
+  it('reports whether protected smoke is enabled from the token env', () => {
+    expect(isProtectedSmokeEnabled({ SMOKE_AUTH_BEARER_TOKEN: 'token-123' })).toBe(true);
+    expect(isProtectedSmokeEnabled({ SMOKE_AUTH_BEARER_TOKEN: '' })).toBe(false);
+  });
+
+  it('describes why protected smoke is skipped when the token is missing', () => {
+    expect(getProtectedSmokeSkipReason({ SMOKE_AUTH_BEARER_TOKEN: '' })).toBe('SMOKE_AUTH_BEARER_TOKEN is not configured');
+    expect(getProtectedSmokeSkipReason({ SMOKE_AUTH_BEARER_TOKEN: 'token-123' })).toBeNull();
+  });
+
+  it('skips protected smoke without trying to load runtime config when the token is missing', async () => {
+    const loadRuntimeConfigImpl = vi.fn();
+    const runSmokeSuiteImpl = vi.fn();
+
+    const result = await runProtectedSmokeSuite({
+      env: { SMOKE_AUTH_BEARER_TOKEN: '' },
+      loadRuntimeConfigImpl,
+      runSmokeSuiteImpl,
+    });
+
+    expect(result).toMatchObject({
+      suite: 'protected',
+      skipped: true,
+      reason: 'SMOKE_AUTH_BEARER_TOKEN is not configured',
+      endpoints: PROTECTED_SMOKE_ENDPOINTS.map((endpoint) => endpoint.name),
+    });
+    expect(loadRuntimeConfigImpl).not.toHaveBeenCalled();
+    expect(runSmokeSuiteImpl).not.toHaveBeenCalled();
   });
 });

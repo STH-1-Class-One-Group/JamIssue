@@ -118,21 +118,9 @@ jobs:
       SMOKE_RETRY_DELAY_MS: 15000
       SMOKE_AUTH_BEARER_TOKEN: ${{ secrets.SMOKE_AUTH_BEARER_TOKEN || '' }}
     steps:
-      - name: Check protected smoke token
-        id: guard
-        run: |
-          if [ -z "${SMOKE_AUTH_BEARER_TOKEN}" ]; then
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "Protected smoke skipped: SMOKE_AUTH_BEARER_TOKEN is not configured."
-          else
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          fi
       - uses: actions/checkout@v4
-        if: steps.guard.outputs.enabled == 'true'
       - uses: actions/setup-node@v4
-        if: steps.guard.outputs.enabled == 'true'
         with:
           node-version: "20"
       - name: Run protected production smoke checks
-        if: steps.guard.outputs.enabled == 'true'
         run: node scripts/run-protected-smoke-checks.mjs
