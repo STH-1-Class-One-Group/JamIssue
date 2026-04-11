@@ -1,4 +1,4 @@
-﻿from fastapi import HTTPException, status
+from fastapi import HTTPException, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from starlette.requests import Request
@@ -7,7 +7,12 @@ from ..config import Settings
 from ..jwt_auth import issue_access_token
 from ..models import AuthProviderOut, AuthSessionResponse, ProfileUpdateRequest, SessionUser
 from ..naver_oauth import build_redirect_url, exchange_code_for_token, fetch_naver_profile
-from ..repository_normalized import link_naver_identity, to_session_user, update_user_profile, upsert_naver_user
+from ..repositories.auth_repository import (
+    build_session_user,
+    link_naver_identity_entry,
+    update_user_profile_entry,
+    upsert_naver_user_entry,
+)
 
 PROVIDER_LABELS = {
     "naver": "네이버",
@@ -49,11 +54,15 @@ def update_profile_session_payload(
     app_settings: Settings,
 ) -> tuple[AuthSessionResponse, str]:
     try:
-        user = update_user_profile(db, user_id, payload)
+        user = update_user_profile_entry(db, user_id, payload)
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error)) from error
 
-    next_session_user = to_session_user(user, app_settings.is_admin(user.user_id), provider=user.provider)
+    next_session_user = build_session_user(
+        user,
+        is_admin=app_settings.is_admin(user.user_id),
+        provider=user.provider,
+    )
     access_token = issue_access_token(app_settings, next_session_user)
     return build_auth_response(next_session_user, app_settings), access_token
 
@@ -95,10 +104,10 @@ def complete_naver_login(
         token_payload = exchange_code_for_token(app_settings, code, state)
         profile = fetch_naver_profile(token_payload["access_token"])
         if link_user_id and link_provider == "naver":
-            user = link_naver_identity(db, link_user_id, profile)
+            user = link_naver_identity_entry(db, link_user_id, profile)
             success_code = "naver-linked"
         else:
-            user = upsert_naver_user(db, profile)
+            user = upsert_naver_user_entry(db, profile)
             success_code = "naver-success"
     except (HTTPException, ValueError) as oauth_error:
         detail = oauth_error.detail if isinstance(oauth_error, HTTPException) else str(oauth_error)
@@ -110,10 +119,10 @@ def complete_naver_login(
             None,
         )
 
-    session_user = to_session_user(
+    session_user = build_session_user(
         user,
-        app_settings.is_admin(user.user_id),
-        profile.profile_image,
+        is_admin=app_settings.is_admin(user.user_id),
+        profile_image=profile.profile_image,
         provider="naver",
     )
     access_token = issue_access_token(app_settings, session_user)
