@@ -5,6 +5,7 @@ import {
   parseRuntimeConfig,
   resolveApiBaseUrl,
 } from '../../scripts/run-smoke-checks.mjs';
+import { getProtectedAuthHeaders } from '../../scripts/run-protected-smoke-checks.mjs';
 
 describe('run-smoke-checks helpers', () => {
   it('parses runtime app config from the bootstrap script', () => {
@@ -57,5 +58,15 @@ describe('run-smoke-checks helpers', () => {
     expect(headers['accept-language']).toContain('en-US');
     expect(headers['cache-control']).toBe('no-cache');
     expect(headers['user-agent']).toContain('Mozilla/5.0');
+  });
+
+  it('builds protected auth headers from the smoke token', () => {
+    process.env.SMOKE_AUTH_BEARER_TOKEN = 'token-123';
+
+    expect(getProtectedAuthHeaders()).toEqual({
+      Authorization: 'Bearer token-123',
+    });
+
+    delete process.env.SMOKE_AUTH_BEARER_TOKEN;
   });
 });

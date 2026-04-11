@@ -101,5 +101,38 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Run production smoke checks
-        run: node scripts/run-smoke-checks.mjs
+      - name: Run public production smoke checks
+        run: node scripts/run-public-smoke-checks.mjs
+
+  protected-smoke:
+    needs:
+      - deploy-pages
+      - deploy-worker
+    runs-on: ubuntu-latest
+    env:
+      SMOKE_BASE_URL: https://daejeon-jamissue-pages.pages.dev
+      SMOKE_API_BASE_URL: https://daejeon-jamissue-api.yhh4433.workers.dev
+      SMOKE_FORCE_API_BASE_URL: 1
+      SMOKE_DEPLOY_WAIT_MS: 0
+      SMOKE_RETRY_ATTEMPTS: 5
+      SMOKE_RETRY_DELAY_MS: 15000
+      SMOKE_AUTH_BEARER_TOKEN: ${{ secrets.SMOKE_AUTH_BEARER_TOKEN || '' }}
+    steps:
+      - name: Check protected smoke token
+        id: guard
+        run: |
+          if [ -z "${SMOKE_AUTH_BEARER_TOKEN}" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Protected smoke skipped: SMOKE_AUTH_BEARER_TOKEN is not configured."
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.enabled == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.enabled == 'true'
+        with:
+          node-version: "20"
+      - name: Run protected production smoke checks
+        if: steps.guard.outputs.enabled == 'true'
+        run: node scripts/run-protected-smoke-checks.mjs

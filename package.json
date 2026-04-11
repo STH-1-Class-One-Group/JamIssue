@@ -11,7 +11,9 @@
     "test:smoke:ui": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run test/smoke",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:regression && npm run test:smoke:ui",
     "typecheck": "tsc --noEmit",
-    "smoke": "node scripts/run-smoke-checks.mjs"
+    "smoke": "node scripts/run-public-smoke-checks.mjs",
+    "smoke:public": "node scripts/run-public-smoke-checks.mjs",
+    "smoke:protected": "node scripts/run-protected-smoke-checks.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
