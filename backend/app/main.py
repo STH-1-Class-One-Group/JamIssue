@@ -2,7 +2,6 @@
 
 import asyncio
 import json
-from pathlib import Path
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, Response, UploadFile, status

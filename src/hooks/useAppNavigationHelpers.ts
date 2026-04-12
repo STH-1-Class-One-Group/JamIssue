@@ -36,8 +36,6 @@ interface UseAppNavigationHelpersParams {
     historyMode?: 'push' | 'replace',
     options?: RouteStateCommitOptions,
   ) => void;
-  openPlace: (placeId: string) => void;
-  openFestival: (festivalId: string) => void;
   upsertReviewCollections: (review: Review) => void;
 }
 
@@ -75,8 +73,6 @@ export function useAppNavigationHelpers({
   setNotice,
   goToTab,
   commitRouteState,
-  openPlace,
-  openFestival,
   upsertReviewCollections,
 }: UseAppNavigationHelpersParams) {
   function snapshotReturnView(overrides: Partial<ReturnViewState> = {}) {

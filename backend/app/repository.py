@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
 from datetime import UTC, date, datetime
 from math import asin, cos, radians, sin, sqrt
 from uuid import uuid4

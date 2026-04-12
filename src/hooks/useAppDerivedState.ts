@@ -1,7 +1,7 @@
 ﻿import { useMemo } from 'react';
 import { calculateDistanceMeters, getLatestPlaceStamp, getTodayStampLog } from '../lib/visits';
 import { filterPlacesByCategory } from '../lib/filterPlaces';
-import type { Category, FestivalItem, MyPageResponse, Place, Review, SessionUser, StampState, UserRoute } from '../types';
+import type { Category, FestivalItem, Place, Review, SessionUser, StampState } from '../types';
 
 interface UseAppDerivedStateParams {
   places: Place[];

@@ -59,7 +59,7 @@ export function placeMarkerContent(place: Place, isActive: boolean) {
   `;
 }
 
-export function festivalMarkerContent(festival: FestivalItem, isActive: boolean) {
+export function festivalMarkerContent(_festival: FestivalItem, isActive: boolean) {
   const ring = isActive ? '#ff4f93' : 'rgba(255, 79, 147, 0.22)';
   const scale = isActive ? 'scale(1.06)' : 'scale(1)';
   const label = '';

@@ -216,11 +216,6 @@ export const AppPageStage = memo(function AppPageStage({
             onSaveNickname: myPageActions.onSaveNickname,
             onPublishRoute: myPageActions.onPublishRoute,
           }}
-          notificationActions={{
-            onMarkNotificationRead: myPageActions.onMarkNotificationRead,
-            onMarkAllNotificationsRead: myPageActions.onMarkAllNotificationsRead,
-            onDeleteNotification: myPageActions.onDeleteNotification,
-          }}
           adminData={{
             adminSummary: myPageData.adminSummary,
             adminBusyPlaceId: myPageData.adminBusyPlaceId,

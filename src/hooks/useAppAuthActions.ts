@@ -4,16 +4,9 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useAuthStore } from '../store/auth-store';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import type { MyPageResponse, SessionUser } from '../types';
+import type { MyPageResponse } from '../types';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
-
-interface ProviderOption {
-  key: 'naver' | 'kakao';
-  label: string;
-  isEnabled: boolean;
-  loginUrl: string | null;
-}
 
 interface UseAppAuthActionsParams {
   setMyPage: SetState<MyPageResponse | null>;

@@ -42,11 +42,6 @@ interface MyPagePanelProps {
     onSaveNickname: (nickname: string) => Promise<void>;
     onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
   };
-  notificationActions: {
-    onMarkNotificationRead: (notificationId: string) => Promise<void>;
-    onMarkAllNotificationsRead: () => Promise<void>;
-    onDeleteNotification: (notificationId: string) => Promise<void>;
-  };
   adminData: {
     adminSummary: AdminSummaryResponse | null;
     adminBusyPlaceId: string | null;
@@ -61,29 +56,11 @@ interface MyPagePanelProps {
 
 const AdminPanel = lazy(() => import('./AdminPanel').then((module) => ({ default: module.AdminPanel })));
 
-type NotificationItem = NonNullable<MyPageResponse>['notifications'][number];
-
-function getNotificationLabel(notification: NotificationItem) {
-  switch (notification.type) {
-    case 'review-created':
-      return '피드';
-    case 'route-published':
-      return '코스';
-    case 'review-comment':
-      return '댓글';
-    case 'comment-reply':
-      return '답글';
-    default:
-      return '알림';
-  }
-}
-
 export function MyPagePanel({
   sessionData,
   panelState,
   reviewActions,
   panelActions,
-  notificationActions,
   adminData,
   adminActions,
 }: MyPagePanelProps) {
@@ -115,20 +92,11 @@ export function MyPagePanel({
     onSaveNickname,
     onPublishRoute,
   } = panelActions;
-  const {
-    onMarkNotificationRead,
-    onMarkAllNotificationsRead,
-    onDeleteNotification,
-  } = notificationActions;
   const { adminSummary, adminBusyPlaceId, adminLoading } = adminData;
   const { onRefreshAdmin, onToggleAdminPlace, onToggleAdminManualOverride } = adminActions;
   const [nickname, setNickname] = useState(sessionUser?.nickname ?? '');
   const [showVisitedDetail, setShowVisitedDetail] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationBusyId, setNotificationBusyId] = useState<string | null>(null);
-  const [notificationsBusy, setNotificationsBusy] = useState(false);
-  const [notificationError, setNotificationError] = useState<string | null>(null);
   const scrollRef = useScrollRestoration<HTMLElement>('my');
   const commentsLoadMoreRef = useAutoLoadMore({
     enabled: activeTab === 'comments' && commentsHasMore,
@@ -144,78 +112,16 @@ export function MyPagePanel({
     }
   }, [sessionUser?.nickname, sessionUser?.profileCompletedAt]);
 
-  useEffect(() => {
-    if (!myPage) {
-      setShowNotifications(false);
-    }
-  }, [myPage]);
-
   const visitPct = useMemo(
     () => (myPage && myPage.stats.totalPlaceCount > 0
       ? Math.round((myPage.stats.uniquePlaceCount / myPage.stats.totalPlaceCount) * 100)
       : 0),
     [myPage],
   );
-  const unreadNotificationCount = myPage?.unreadNotificationCount ?? 0;
-
   async function handleNicknameSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await onSaveNickname(nickname.trim());
     setShowSettings(false);
-  }
-
-  async function handleOpenNotification(notification: NotificationItem) {
-    try {
-      setNotificationBusyId(notification.id);
-      setNotificationError(null);
-      if (!notification.isRead) {
-        await onMarkNotificationRead(notification.id);
-      }
-
-      if (notification.reviewId && notification.commentId) {
-        onOpenComment(notification.reviewId, notification.commentId);
-        setShowNotifications(false);
-        return;
-      }
-      if (notification.reviewId) {
-        onOpenReview(notification.reviewId);
-        setShowNotifications(false);
-        return;
-      }
-      if (notification.routeId) {
-        onChangeTab('routes');
-        setShowNotifications(false);
-      }
-    } catch (error) {
-      setNotificationError(error instanceof Error ? error.message : '알림을 열지 못했어요.');
-    } finally {
-      setNotificationBusyId(null);
-    }
-  }
-
-  async function handleDeleteNotificationClick(event: React.MouseEvent<HTMLButtonElement>, notificationId: string) {
-    event.stopPropagation();
-    try {
-      setNotificationBusyId(notificationId);
-      setNotificationError(null);
-      await onDeleteNotification(notificationId);
-    } catch (error) {
-      setNotificationError(error instanceof Error ? error.message : '알림을 삭제하지 못했어요.');
-    } finally {
-      setNotificationBusyId(null);
-    }
-  }
-
-  async function handleMarkAllNotifications() {
-    try {
-      setNotificationsBusy(true);
-      setNotificationError(null);
-      await onMarkAllNotificationsRead();
-    } catch (error) {
-      setNotificationError(error instanceof Error ? error.message : '알림 상태를 바꾸지 못했어요.');
-    } finally {
-      setNotificationsBusy(false);
-    }
   }
 
   if (!sessionUser) {
@@ -422,14 +328,16 @@ export function MyPagePanel({
               />
             )}
             {activeTab === 'admin' && sessionUser.isAdmin && (
-              <AdminPanel
-                summary={adminSummary}
-                busyPlaceId={adminBusyPlaceId}
-                isImporting={adminLoading}
-                onRefreshImport={onRefreshAdmin}
-                onTogglePlace={onToggleAdminPlace}
-                onToggleManualOverride={onToggleAdminManualOverride}
-              />
+              <Suspense fallback={null}>
+                <AdminPanel
+                  summary={adminSummary}
+                  busyPlaceId={adminBusyPlaceId}
+                  isImporting={adminLoading}
+                  onRefreshImport={onRefreshAdmin}
+                  onTogglePlace={onToggleAdminPlace}
+                  onToggleManualOverride={onToggleAdminManualOverride}
+                />
+              </Suspense>
             )}
           </section>
         </>

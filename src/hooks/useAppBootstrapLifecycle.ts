@@ -38,7 +38,6 @@ interface UseAppBootstrapLifecycleParams {
   resetReviewCaches: () => void;
   refreshMyPageForUser: (user: SessionUser | null, force?: boolean) => Promise<MyPageResponse | null>;
   ensureFeedReviews: (force?: boolean) => Promise<void>;
-  ensureCuratedCourses: (force?: boolean) => Promise<void>;
   fetchCommunityRoutes: (sort: 'popular' | 'latest', force?: boolean) => Promise<unknown>;
   refreshAdminSummary: (force?: boolean) => Promise<AdminSummaryResponse | null>;
   loadMoreMyComments: (initial?: boolean) => Promise<void>;
@@ -66,7 +65,6 @@ export function useAppBootstrapLifecycle({
   resetReviewCaches,
   refreshMyPageForUser,
   ensureFeedReviews,
-  ensureCuratedCourses,
   fetchCommunityRoutes,
   refreshAdminSummary,
   loadMoreMyComments,

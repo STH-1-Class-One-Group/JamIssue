@@ -38,7 +38,7 @@ export function ReviewList({
   onSubmitComment,
   onUpdateComment,
   onDeleteComment,
-  onDeleteReview,
+  onDeleteReview: _onDeleteReview,
   onRequestLogin,
   onOpenPlace,
   onOpenComments,

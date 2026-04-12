@@ -53,8 +53,6 @@ export function useAppCoordinatorActions({
   const { setNotice } = shellRuntimeState;
   const {
     communityRoutesCacheRef,
-    communityRouteSort,
-    adminSummary,
     patchCommunityRoutes,
     patchReviewCollections,
     placeReviewsCacheRef,

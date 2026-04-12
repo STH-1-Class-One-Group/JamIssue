@@ -9,7 +9,6 @@ import { GlobalStatusBanner } from './components/GlobalStatusBanner';
 import {
   useAppRouteState,
   getInitialMapViewport,
-  updateMapViewportInUrl,
 } from './hooks/useAppRouteState';
 import { useAppDataState } from './hooks/useAppDataState';
 import { useAppPageRuntimeState } from './hooks/useAppPageRuntimeState';
@@ -21,7 +20,6 @@ import { useMapDomainState } from './hooks/useMapDomainState';
 import { useMyPageDomainState } from './hooks/useMyPageDomainState';
 import { useReturnViewDomainState } from './hooks/useReturnViewDomainState';
 import { useReviewDomainState } from './hooks/useReviewDomainState';
-import type { Tab } from './types';
 
 export default function App() {
   const routeState = useAppRouteState();

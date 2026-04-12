@@ -53,7 +53,6 @@ export function useAppCoordinatorEffects({
   } = dataState;
   const {
     dataLoaders: {
-      ensureCuratedCourses,
       ensureFeedReviews,
       fetchCommunityRoutes,
       refreshAdminSummary,
@@ -101,7 +100,6 @@ export function useAppCoordinatorEffects({
     resetReviewCaches,
     refreshMyPageForUser,
     ensureFeedReviews,
-    ensureCuratedCourses,
     fetchCommunityRoutes,
     refreshAdminSummary,
     loadMoreMyComments,

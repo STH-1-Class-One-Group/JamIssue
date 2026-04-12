@@ -44,7 +44,6 @@ from .models import (
     ReviewCreate,
     ReviewLikeResponse,
     ReviewOut,
-    SessionUser,
     StampLogOut,
     StampState,
     TravelSessionOut,

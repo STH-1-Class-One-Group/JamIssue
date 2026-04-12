@@ -35,8 +35,6 @@ export function useAppCoordinatorServices({
     selectedFestivalId,
     commitRouteState,
     goToTab,
-    openPlace,
-    openFestival,
   } = routeState;
   const {
     auth: { sessionUser },
@@ -129,8 +127,6 @@ export function useAppCoordinatorServices({
     setNotice,
     goToTab,
     commitRouteState,
-    openPlace,
-    openFestival,
     upsertReviewCollections: dataState.upsertReviewCollections,
   });
 
