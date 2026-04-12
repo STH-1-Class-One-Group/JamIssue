@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from ..config import Settings
 from ..models import AdminPlaceOut, AdminSummaryResponse, PublicImportResponse
-from ..repository_normalized import get_admin_summary, import_public_bundle, update_place_visibility
+from .admin_data_repository import get_admin_summary, import_public_bundle, update_place_visibility
 
 
 def read_admin_summary_entry(db: Session, app_settings: Settings) -> AdminSummaryResponse:
