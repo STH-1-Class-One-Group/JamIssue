@@ -1,4 +1,4 @@
-import { getReviewDetail } from '../api/client';
+import { getReviewDetail } from '../api/reviewsClient';
 import type { ReturnViewState } from '../store/app-ui-store';
 import type {
   DrawerState,

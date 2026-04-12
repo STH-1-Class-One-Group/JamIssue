@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react';
-import { getPublicEventBanner } from '../api/client';
+import { getPublicEventBanner } from '../api/bootstrapClient';
 import type { PublicEventBannerResponse } from '../publicEventTypes';
 
 const INITIAL_DATA: PublicEventBannerResponse = {

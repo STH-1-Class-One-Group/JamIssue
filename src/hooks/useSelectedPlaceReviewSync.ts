@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { getReviews } from '../api/client';
+import { getReviews } from '../api/reviewsClient';
 import { toReviewSummaryList } from '../lib/reviews';
 import type { Review, Tab } from '../types';
 

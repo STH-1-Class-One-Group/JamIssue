@@ -7,7 +7,7 @@ import { useAppPageRuntimeStore } from '../../src/store/app-page-runtime-store';
 import { useReviewUIStore } from '../../src/store/review-ui-store';
 import { createReviewFixture, myPageFixture, placeFixture, sessionUserFixture } from '../fixtures/app-fixtures';
 
-vi.mock('../../src/api/client', () => ({
+vi.mock('../../src/api/reviewsClient', () => ({
   createComment: vi.fn(),
   createReview: vi.fn(),
   deleteComment: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock('../../src/api/client', () => ({
   uploadReviewImage: vi.fn(),
 }));
 
-import { getReviewComments, updateReview } from '../../src/api/client';
+import { getReviewComments, updateReview } from '../../src/api/reviewsClient';
 
 describe('useAppReviewActions', () => {
   beforeEach(() => {

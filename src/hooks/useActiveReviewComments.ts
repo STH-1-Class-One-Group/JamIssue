@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getReviewComments } from '../api/client';
+import { getReviewComments } from '../api/reviewsClient';
 import type { ApiStatus, Comment } from '../types';
 
 interface UseActiveReviewCommentsParams {

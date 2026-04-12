@@ -1,5 +1,6 @@
 ﻿import type { Dispatch, SetStateAction } from 'react';
-import { getFestivals, getMapBootstrap, importPublicData, updatePlaceVisibility } from '../api/client';
+import { importPublicData, updatePlaceVisibility } from '../api/adminClient';
+import { getFestivals, getMapBootstrap } from '../api/bootstrapClient';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
 import type {
   AdminSummaryResponse,

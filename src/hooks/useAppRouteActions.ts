@@ -1,5 +1,5 @@
 ﻿import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { createUserRoute, toggleCommunityRouteLike } from '../api/client';
+import { createUserRoute, toggleCommunityRouteLike } from '../api/routesClient';
 import { useAuthStore } from '../store/auth-store';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';

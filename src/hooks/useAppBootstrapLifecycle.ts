@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { getFestivals, getMapBootstrap } from '../api/client';
+import { getFestivals, getMapBootstrap } from '../api/bootstrapClient';
 import { useAuthStore } from '../store/auth-store';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';

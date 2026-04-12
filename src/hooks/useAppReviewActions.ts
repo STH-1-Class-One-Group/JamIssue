@@ -8,7 +8,7 @@ import {
   updateComment,
   updateReview,
   uploadReviewImage,
-} from '../api/client';
+} from '../api/reviewsClient';
 import { countCommentsInThread, toReviewSummary } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useReviewUIStore } from '../store/review-ui-store';

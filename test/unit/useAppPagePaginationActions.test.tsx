@@ -5,12 +5,15 @@ import { useAppPageRuntimeStore } from '../../src/store/app-page-runtime-store';
 import { createReviewFixture, myCommentFixture, myPageFixture, sessionUserFixture } from '../fixtures/app-fixtures';
 import type { MyPageResponse, Review } from '../../src/types';
 
-vi.mock('../../src/api/client', () => ({
+vi.mock('../../src/api/myClient', () => ({
   getMyCommentsPage: vi.fn(),
+}));
+vi.mock('../../src/api/reviewsClient', () => ({
   getReviewFeedPage: vi.fn(),
 }));
 
-import { getMyCommentsPage, getReviewFeedPage } from '../../src/api/client';
+import { getMyCommentsPage } from '../../src/api/myClient';
+import { getReviewFeedPage } from '../../src/api/reviewsClient';
 
 describe('useAppPagePaginationActions', () => {
   beforeEach(() => {

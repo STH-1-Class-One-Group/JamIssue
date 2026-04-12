@@ -1,4 +1,4 @@
-﻿import { logout, updateProfile, getProviderLoginUrl } from '../api/client';
+import { getProviderLoginUrl, logout, updateProfile } from '../api/authClient';
 import { getLoginReturnUrl } from './useAppRouteState';
 import type { Dispatch, SetStateAction } from 'react';
 import { useAuthStore } from '../store/auth-store';

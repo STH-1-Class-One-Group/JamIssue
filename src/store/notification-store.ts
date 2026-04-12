@@ -6,7 +6,7 @@ import {
   getMyNotificationsRealtimeChannel,
   markAllNotificationsRead as markAllNotificationsReadRequest,
   markNotificationRead as markNotificationReadRequest,
-} from '../api/client';
+} from '../api/myClient';
 import { getSupabaseClient, removeRealtimeChannel } from '../lib/supabase';
 import type { SessionUser, UserNotification } from '../types';
 
