@@ -14,7 +14,7 @@ from ..repositories.review_repository import (
     list_review_entries,
     toggle_review_like_entry,
 )
-from ..repository_normalized import get_unread_notification_counts
+from ..repositories.notification_repository import read_unread_notification_counts as get_unread_notification_counts
 
 _PLACE_NOT_FOUND_TOKEN = "장소"
 _ENTITY_NOT_FOUND_TOKEN = "찾을 수"

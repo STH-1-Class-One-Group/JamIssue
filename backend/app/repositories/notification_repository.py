@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
 from ..models import NotificationDeleteResponse, NotificationReadResponse, UserNotificationOut
-from ..repository_normalized import (
+from .notification_data_repository import (
+    get_unread_notification_counts,
     delete_notification,
     get_unread_notification_count,
     list_user_notifications,
@@ -28,3 +29,7 @@ def delete_notification_entry(db: Session, notification_id: str, user_id: str) -
 
 def read_unread_notification_count(db: Session, user_id: str) -> int:
     return get_unread_notification_count(db, user_id)
+
+
+def read_unread_notification_counts(db: Session, user_ids: list[str]) -> dict[str, int]:
+    return get_unread_notification_counts(db, user_ids)
