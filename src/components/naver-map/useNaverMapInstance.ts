@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { loadNaverMaps } from './naverMapHelpers';
-
-type ViewportChangeHandler = ((lat: number, lng: number, zoom: number) => void) | undefined;
+import { DAEJEON_CENTER, loadNaverMaps } from './naverMapHelpers';
 
 type MapInstanceArgs = {
   clientId: string;
   mapElementRef: React.MutableRefObject<HTMLDivElement | null>;
   initialCenter?: { lat: number; lng: number };
   initialZoom?: number;
-  onViewportChangeRef: React.MutableRefObject<ViewportChangeHandler>;
 };
 
 export function useNaverMapInstance({
@@ -16,11 +13,8 @@ export function useNaverMapInstance({
   mapElementRef,
   initialCenter,
   initialZoom,
-  onViewportChangeRef,
 }: MapInstanceArgs) {
   const mapRef = useRef<any>(null);
-  const idleListenerRef = useRef<any>(null);
-  const viewportDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -44,7 +38,7 @@ export function useNaverMapInstance({
         }
 
         mapRef.current = new maps.Map(mapElementRef.current, {
-          center: new maps.LatLng(initialCenter?.lat ?? 36.3504, initialCenter?.lng ?? 127.3845),
+          center: new maps.LatLng(initialCenter?.lat ?? DAEJEON_CENTER.latitude, initialCenter?.lng ?? DAEJEON_CENTER.longitude),
           zoom: initialZoom ?? 13,
           minZoom: 11,
           scaleControl: false,
@@ -53,22 +47,6 @@ export function useNaverMapInstance({
           zoomControl: true,
         });
 
-        const idleListener = maps.Event.addListener(mapRef.current, 'idle', () => {
-          if (!mapRef.current) {
-            return;
-          }
-          const center = mapRef.current.getCenter();
-          const zoom = mapRef.current.getZoom();
-          if (viewportDebounceTimerRef.current !== null) {
-            clearTimeout(viewportDebounceTimerRef.current);
-          }
-          viewportDebounceTimerRef.current = setTimeout(() => {
-            onViewportChangeRef.current?.(center.lat(), center.lng(), zoom);
-            viewportDebounceTimerRef.current = null;
-          }, 300);
-        });
-
-        idleListenerRef.current = idleListener;
         setStatus('ready');
       })
       .catch((error: Error) => {
@@ -81,16 +59,8 @@ export function useNaverMapInstance({
 
     return () => {
       isMounted = false;
-      if (viewportDebounceTimerRef.current !== null) {
-        clearTimeout(viewportDebounceTimerRef.current);
-        viewportDebounceTimerRef.current = null;
-      }
-      if (idleListenerRef.current && window.naver?.maps) {
-        window.naver.maps.Event.removeListener(idleListenerRef.current);
-        idleListenerRef.current = null;
-      }
     };
-  }, [clientId, initialCenter?.lat, initialCenter?.lng, initialZoom, mapElementRef, onViewportChangeRef]);
+  }, [clientId, initialCenter?.lat, initialCenter?.lng, initialZoom, mapElementRef]);
 
   return { mapRef, status, errorMessage };
 }
