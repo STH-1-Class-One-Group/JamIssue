@@ -1,6 +1,9 @@
 ﻿import { useCallback } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { getAdminSummary, getCommunityRoutes, getMySummary, getReviewFeedPage } from '../api/client';
+import { getAdminSummary } from '../api/adminClient';
+import { getMySummary } from '../api/myClient';
+import { getCommunityRoutes } from '../api/routesClient';
+import { getReviewFeedPage } from '../api/reviewsClient';
 import { toReviewSummaryList } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import type {

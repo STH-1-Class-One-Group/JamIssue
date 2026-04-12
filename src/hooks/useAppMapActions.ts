@@ -1,5 +1,5 @@
 ﻿import type { Dispatch, SetStateAction } from 'react';
-import { claimStamp } from '../api/client';
+import { claimStamp } from '../api/stampClient';
 import { getCurrentDevicePosition } from '../lib/geolocation';
 import { formatDistanceMeters } from '../lib/visits';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';

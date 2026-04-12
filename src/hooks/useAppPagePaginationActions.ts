@@ -1,5 +1,6 @@
 import { useCallback, type Dispatch, type SetStateAction } from 'react';
-import { getMyCommentsPage, getReviewFeedPage } from '../api/client';
+import { getMyCommentsPage } from '../api/myClient';
+import { getReviewFeedPage } from '../api/reviewsClient';
 import { toReviewSummaryList } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import type { MyPageResponse, Review, SessionUser } from '../types';
