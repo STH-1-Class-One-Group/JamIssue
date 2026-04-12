@@ -10,6 +10,10 @@ from ..repositories.admin_repository import (
 )
 
 
+def _map_admin_not_found(error: ValueError) -> HTTPException:
+    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error))
+
+
 def read_admin_summary_service(db: Session, app_settings: Settings) -> AdminSummaryResponse:
     return read_admin_summary_entry(db, app_settings)
 
@@ -23,7 +27,7 @@ def patch_admin_place_service(db: Session, place_id: str, payload: PlaceVisibili
             is_manual_override=payload.is_manual_override,
         )
     except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
+        raise _map_admin_not_found(error) from error
 
 
 def import_public_data_service(db: Session, app_settings: Settings) -> PublicImportResponse:

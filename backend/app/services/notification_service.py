@@ -14,6 +14,14 @@ from ..repositories.notification_repository import (
 )
 
 
+def _map_notification_not_found(error: ValueError) -> HTTPException:
+    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error))
+
+
+def _publish_notification_event(user_id: str, payload: dict[str, object]) -> None:
+    notification_broker.publish(user_id, payload)
+
+
 def read_notifications_service(db: Session, session_user: SessionUser) -> list[UserNotificationOut]:
     return list_user_notification_entries(db, session_user.id)
 
@@ -22,9 +30,9 @@ def mark_notification_read_service(db: Session, notification_id: str, session_us
     try:
         response = mark_notification_read_entry(db, notification_id, session_user.id)
     except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
+        raise _map_notification_not_found(error) from error
     unread_count = read_unread_notification_count(db, session_user.id)
-    notification_broker.publish(
+    _publish_notification_event(
         session_user.id,
         {
             "event": "notification.read",
@@ -37,7 +45,7 @@ def mark_notification_read_service(db: Session, notification_id: str, session_us
 
 def mark_all_notifications_read_service(db: Session, session_user: SessionUser) -> dict[str, int]:
     updated = mark_all_notifications_read_entry(db, session_user.id)
-    notification_broker.publish(
+    _publish_notification_event(
         session_user.id,
         {
             "event": "notification.all-read",
@@ -52,9 +60,9 @@ def delete_notification_service(db: Session, notification_id: str, session_user:
     try:
         response = delete_notification_entry(db, notification_id, session_user.id)
     except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error)) from error
+        raise _map_notification_not_found(error) from error
     unread_count = read_unread_notification_count(db, session_user.id)
-    notification_broker.publish(
+    _publish_notification_event(
         session_user.id,
         {
             "event": "notification.deleted",
