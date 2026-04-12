@@ -53,3 +53,17 @@ def test_auth_cookie_settings_disable_secure_in_local_env():
     cookie_settings = auth_cookie_settings(settings)
 
     assert cookie_settings['secure'] is False
+
+
+def test_access_token_with_unknown_crit_header_is_rejected():
+    import jwt
+
+    settings = Settings(jwt_secret='unit-test-secret', jwt_access_token_minutes=10)
+    token = jwt.encode(
+        {"sub": "user-crit", "nickname": "tester", "provider": "naver"},
+        settings.jwt_secret,
+        algorithm=settings.jwt_algorithm,
+        headers={"crit": ["unknown-extension"], "unknown-extension": "enabled"},
+    )
+
+    assert read_access_token(settings, token) is None
