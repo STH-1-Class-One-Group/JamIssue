@@ -1,0 +1,171 @@
+import { memo, useEffect, useRef, useState } from 'react';
+import { CommentComposer } from './CommentComposer';
+import type { CommentItemProps } from './types';
+
+export const CommentThreadItem = memo(function CommentThreadItem({
+  comment,
+  reviewId,
+  canWriteComment,
+  currentUserId,
+  submittingReviewId,
+  mutatingCommentId,
+  highlightedCommentId,
+  onSubmitComment,
+  onUpdateComment,
+  onDeleteComment,
+  onRequestLogin,
+  isReply = false,
+}: CommentItemProps) {
+  const itemRef = useRef<HTMLLIElement | null>(null);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editingBody, setEditingBody] = useState(comment.body);
+
+  const isMine = currentUserId === comment.userId;
+  const isMutating = mutatingCommentId === comment.id;
+  const isHighlighted = highlightedCommentId === comment.id;
+
+  useEffect(() => {
+    setEditingBody(comment.body);
+  }, [comment.body]);
+
+  useEffect(() => {
+    if (!isHighlighted) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      itemRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [isHighlighted]);
+
+  async function handleEditSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmedBody = editingBody.trim();
+    if (trimmedBody.length < 2) {
+      return;
+    }
+
+    await onUpdateComment(reviewId, comment.id, trimmedBody);
+    setEditing(false);
+  }
+
+  async function handleDelete() {
+    if (!window.confirm('?볤?????젣?좉퉴??')) {
+      return;
+    }
+
+    await onDeleteComment(reviewId, comment.id);
+  }
+
+  function handleReplyToggle() {
+    if (!canWriteComment) {
+      onRequestLogin();
+      return;
+    }
+
+    setReplyOpen((current) => !current);
+  }
+
+  return (
+    <li ref={itemRef} className={isReply ? 'comment-thread__item comment-thread__item--reply' : 'comment-thread__item'}>
+      {isReply && (
+        <span className="comment-thread__reply-indent" aria-hidden="true">
+          ??
+        </span>
+      )}
+
+      <div className="comment-thread__main">
+        <div className={isHighlighted ? 'comment-thread__bubble is-highlighted' : 'comment-thread__bubble'}>
+          <div className="comment-thread__meta">
+            <strong>{comment.author}</strong>
+            <span>{comment.createdAt}</span>
+          </div>
+
+          {editing && !comment.isDeleted ? (
+            <form className="comment-thread__reply-form" onSubmit={handleEditSubmit}>
+              <input
+                value={editingBody}
+                onChange={(event) => setEditingBody(event.target.value)}
+                placeholder="?볤? ?댁슜???섏젙??蹂댁꽭??"
+              />
+              <button type="submit" className="comment-thread__submit" disabled={isMutating || editingBody.trim().length < 2}>
+                {isMutating ? "?섏젙 以?" : "?섏젙"}
+              </button>
+            </form>
+          ) : (
+            <p>{comment.isDeleted ? '??젣???볤??낅땲??' : comment.body}</p>
+          )}
+
+          {!comment.isDeleted && (
+            <div className="comment-thread__actions">
+              {canWriteComment && (
+                <button type="button" className="comment-thread__reply-toggle" onClick={handleReplyToggle}>
+                  ?듦? ?ш린
+                </button>
+              )}
+              {isMine && !editing && (
+                <>
+                  <button type="button" className="comment-thread__reply-toggle" onClick={() => setEditing(true)}>
+                    ?섏젙
+                  </button>
+                  <button type="button" className="comment-thread__reply-toggle" onClick={() => void handleDelete()} disabled={isMutating}>
+                    ??젣
+                  </button>
+                </>
+              )}
+              {isMine && editing && (
+                <button
+                  type="button"
+                  className="comment-thread__reply-toggle"
+                  onClick={() => {
+                    setEditing(false);
+                    setEditingBody(comment.body);
+                  }}
+                >
+                  痍⑥냼
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {!isReply && replyOpen && (
+          <CommentComposer
+            canWriteComment={canWriteComment}
+            placeholder="?듦? ?댁슜???곸뼱 蹂댁꽭??"
+            reviewId={reviewId}
+            submittingReviewId={submittingReviewId}
+            onRequestLogin={onRequestLogin}
+            onSubmitComment={onSubmitComment}
+            parentId={comment.id}
+            onSubmitted={() => setReplyOpen(false)}
+          />
+        )}
+
+        {!isReply && comment.replies.length > 0 && (
+          <ul className="comment-thread__children">
+            {comment.replies.map((reply) => (
+              <CommentThreadItem
+                key={reply.id}
+                comment={reply}
+                reviewId={reviewId}
+                canWriteComment={canWriteComment}
+                currentUserId={currentUserId}
+                submittingReviewId={submittingReviewId}
+                mutatingCommentId={mutatingCommentId}
+                highlightedCommentId={highlightedCommentId}
+                onSubmitComment={onSubmitComment}
+                onUpdateComment={onUpdateComment}
+                onDeleteComment={onDeleteComment}
+                onRequestLogin={onRequestLogin}
+                isReply={true}
+              />
+            ))}
+          </ul>
+        )}
+      </div>
+    </li>
+  );
+});
