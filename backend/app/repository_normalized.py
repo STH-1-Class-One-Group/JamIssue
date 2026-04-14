@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 from datetime import datetime, time, timedelta
 
 from sqlalchemy import func, select
