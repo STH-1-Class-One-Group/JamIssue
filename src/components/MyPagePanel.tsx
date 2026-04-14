@@ -1,63 +1,12 @@
-﻿import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
-import { useScrollRestoration } from '../hooks/useScrollRestoration';
+import { useEffect, useMemo, useState } from 'react';
 import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
-import { MyCommentsTabSection } from './my-page/MyCommentsTabSection';
-import { MyFeedTabSection } from './my-page/MyFeedTabSection';
+import { useScrollRestoration } from '../hooks/useScrollRestoration';
+import { ProviderButtons } from './ProviderButtons';
 import { MyPageAccountSection } from './my-page/MyPageAccountSection';
 import { MyPageOverviewSection } from './my-page/MyPageOverviewSection';
-import { MyPagePrimaryTabs } from './my-page/MyPagePrimaryTabs';
-import { MyRoutesTabSection } from './my-page/MyRoutesTabSection';
-import { MyStampTabSection } from './my-page/MyStampTabSection';
-import { ProviderButtons } from './ProviderButtons';
-import type { AdminSummaryResponse, AuthProvider, MyPageResponse, MyPageTabKey, ReviewMood, SessionUser } from '../types';
-
-interface MyPagePanelProps {
-  sessionData: {
-    sessionUser: SessionUser | null;
-    myPage: MyPageResponse | null;
-    providers: AuthProvider[];
-    myPageError: string | null;
-  };
-  panelState: {
-    activeTab: MyPageTabKey;
-    isLoggingOut: boolean;
-    profileSaving: boolean;
-    profileError: string | null;
-    routeSubmitting: boolean;
-    routeError: string | null;
-    commentsHasMore: boolean;
-    commentsLoadingMore: boolean;
-  };
-  reviewActions: {
-    onOpenPlace: (placeId: string) => void;
-    onOpenComment: (reviewId: string, commentId: string) => void;
-    onOpenRoute: (routeId: string) => Promise<void>;
-    onOpenReview: (reviewId: string) => void;
-    onUpdateReview: (reviewId: string, payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean }) => Promise<void>;
-    onDeleteReview: (reviewId: string) => Promise<void>;
-    onLoadMoreComments: (initial?: boolean) => Promise<void>;
-  };
-  panelActions: {
-    onChangeTab: (nextTab: MyPageTabKey) => void;
-    onLogin: (provider: 'naver' | 'kakao') => void;
-    onRetry: () => Promise<void>;
-    onLogout: () => Promise<void>;
-    onSaveNickname: (nickname: string) => Promise<void>;
-    onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
-  };
-  adminData: {
-    adminSummary: AdminSummaryResponse | null;
-    adminBusyPlaceId: string | null;
-    adminLoading: boolean;
-  };
-  adminActions: {
-    onRefreshAdmin: () => Promise<void>;
-    onToggleAdminPlace: (placeId: string, nextValue: boolean) => Promise<void>;
-    onToggleAdminManualOverride: (placeId: string, nextValue: boolean) => Promise<void>;
-  };
-}
-
-const AdminPanel = lazy(() => import('./AdminPanel').then((module) => ({ default: module.AdminPanel })));
+import { MyPageSettingsSection } from './my-page/MyPageSettingsSection';
+import { MyPageTabContent } from './my-page/MyPageTabContent';
+import type { MyPagePanelProps } from './my-page/myPagePanelTypes';
 
 export function MyPagePanel({
   sessionData,
@@ -114,12 +63,14 @@ export function MyPagePanel({
       setShowSettings(true);
     }
   }, [sessionUser?.nickname, sessionUser?.profileCompletedAt]);
+
   const visitPct = useMemo(
     () => (myPage && myPage.stats.totalPlaceCount > 0
       ? Math.round((myPage.stats.uniquePlaceCount / myPage.stats.totalPlaceCount) * 100)
       : 0),
     [myPage],
   );
+
   async function handleNicknameSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await onSaveNickname(nickname.trim());
@@ -167,6 +118,7 @@ export function MyPagePanel({
           </button>
         </section>
       )}
+
       <MyPageAccountSection
         sessionUser={sessionUser}
         isLoggingOut={isLoggingOut}
@@ -174,32 +126,17 @@ export function MyPagePanel({
         onToggleSettings={() => setShowSettings((current) => !current)}
         onLogout={() => void onLogout()}
       />
-      {(showSettings || !sessionUser.profileCompletedAt) && (
-        <section className="sheet-card stack-gap settings-card">
-          <div className="settings-card__header">
-            <div>
-              <p className="eyebrow">SETTINGS</p>
-              <h3>{sessionUser.profileCompletedAt ? '닉네임 수정' : '닉네임을 먼저 정해 주세요'}</h3>
-              <p className="section-copy">닉네임은 서비스 전체에서 하나만 사용할 수 있어요.</p>
-            </div>
-            {sessionUser.profileCompletedAt && (
-              <button type="button" className="settings-card__close" onClick={() => setShowSettings(false)} aria-label="설정 닫기">
-                <span aria-hidden="true">×</span>
-              </button>
-            )}
-          </div>
-          <form className="route-builder-form" onSubmit={handleNicknameSubmit}>
-            <label className="route-builder-field">
-              <span>닉네임</span>
-              <input value={nickname} onChange={(event) => setNickname(event.target.value)} placeholder="예: 대전산책러" maxLength={40} />
-            </label>
-            {profileError && <p className="form-error-copy">{profileError}</p>}
-            <button type="submit" className="primary-button route-submit-button" disabled={profileSaving || nickname.trim().length < 2}>
-              {profileSaving ? '저장 중' : '닉네임 저장'}
-            </button>
-          </form>
-        </section>
-      )}
+
+      <MyPageSettingsSection
+        nickname={nickname}
+        showSettings={showSettings}
+        profileCompletedAt={sessionUser.profileCompletedAt}
+        profileSaving={profileSaving}
+        profileError={profileError}
+        onNicknameChange={setNickname}
+        onClose={() => setShowSettings(false)}
+        onSubmit={handleNicknameSubmit}
+      />
 
       {myPage && (
         <>
@@ -216,87 +153,32 @@ export function MyPagePanel({
             travelSessions={myPage.travelSessions}
           />
 
-          <section className="sheet-card stack-gap">
-            <MyPagePrimaryTabs activeTab={activeTab} isAdmin={sessionUser.isAdmin} onChangeTab={onChangeTab} />
-
-            {activeTab === 'stamps' && (
-              <MyStampTabSection
-                stampLogs={myPage.stampLogs}
-                travelSessions={myPage.travelSessions}
-                onOpenPlace={onOpenPlace}
-                onOpenRoutes={() => onChangeTab('routes')}
-              />
-            )}
-
-            {activeTab === 'feeds' && (
-              <MyFeedTabSection
-                reviews={myPage.reviews}
-                onOpenPlace={onOpenPlace}
-                onOpenReview={onOpenReview}
-                onUpdateReview={onUpdateReview}
-                onDeleteReview={onDeleteReview}
-              />
-            )}
-
-            {activeTab === 'comments' && (
-              <MyCommentsTabSection
-                comments={myPage.comments}
-                commentsHasMore={commentsHasMore}
-                commentsLoadingMore={commentsLoadingMore}
-                commentsLoadMoreRef={commentsLoadMoreRef}
-                onOpenPlace={onOpenPlace}
-                onOpenComment={onOpenComment}
-              />
-            )}
-
-            {activeTab === 'routes' && (
-              <MyRoutesTabSection
-                travelSessions={myPage.travelSessions}
-                routes={myPage.routes}
-                routeSubmitting={routeSubmitting}
-                routeError={routeError}
-                onOpenPlace={onOpenPlace}
-                onOpenRoute={onOpenRoute}
-                onPublishRoute={onPublishRoute}
-              />
-            )}
-            {activeTab === 'admin' && sessionUser.isAdmin && (
-              <Suspense fallback={null}>
-                <AdminPanel
-                  summary={adminSummary}
-                  busyPlaceId={adminBusyPlaceId}
-                  isImporting={adminLoading}
-                  onRefreshImport={onRefreshAdmin}
-                  onTogglePlace={onToggleAdminPlace}
-                  onToggleManualOverride={onToggleAdminManualOverride}
-                />
-              </Suspense>
-            )}
-          </section>
+          <MyPageTabContent
+            activeTab={activeTab}
+            sessionUser={sessionUser}
+            myPage={myPage}
+            commentsHasMore={commentsHasMore}
+            commentsLoadingMore={commentsLoadingMore}
+            commentsLoadMoreRef={commentsLoadMoreRef}
+            routeSubmitting={routeSubmitting}
+            routeError={routeError}
+            adminSummary={adminSummary}
+            adminBusyPlaceId={adminBusyPlaceId}
+            adminLoading={adminLoading}
+            onChangeTab={onChangeTab}
+            onOpenPlace={onOpenPlace}
+            onOpenComment={onOpenComment}
+            onOpenRoute={onOpenRoute}
+            onOpenReview={onOpenReview}
+            onUpdateReview={onUpdateReview}
+            onDeleteReview={onDeleteReview}
+            onPublishRoute={onPublishRoute}
+            onRefreshAdmin={onRefreshAdmin}
+            onToggleAdminPlace={onToggleAdminPlace}
+            onToggleAdminManualOverride={onToggleAdminManualOverride}
+          />
         </>
       )}
     </section>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
