@@ -10,11 +10,11 @@ export const deployWaitMs = Number(process.env.SMOKE_DEPLOY_WAIT_MS || 0);
 export const retryAttempts = Math.max(1, Number(process.env.SMOKE_RETRY_ATTEMPTS || 4));
 export const retryDelayMs = Number(process.env.SMOKE_RETRY_DELAY_MS || 15000);
 
-export function sleep(ms) {
+export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function withTimeout(promise, label) {
+export function withTimeout<T>(promise: (signal: AbortSignal) => Promise<T>, label: string) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(`${label} timed out after ${timeoutMs}ms`), timeoutMs);
   return Promise.resolve()
@@ -22,7 +22,7 @@ export function withTimeout(promise, label) {
     .finally(() => clearTimeout(timer));
 }
 
-export function buildRequestHeaders(accept) {
+export function buildRequestHeaders(accept: string): HeadersInit {
   return {
     accept,
     "accept-language": "en-US,en;q=0.9",
@@ -32,7 +32,7 @@ export function buildRequestHeaders(accept) {
   };
 }
 
-export async function fetchText(url, init = {}) {
+export async function fetchText(url: string, init: RequestInit = {}) {
   const headers = {
     ...buildRequestHeaders("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
     ...(init.headers || {}),
@@ -52,7 +52,7 @@ export async function fetchText(url, init = {}) {
   );
 }
 
-export async function fetchJson(url, init = {}) {
+export async function fetchJson(url: string, init: RequestInit = {}) {
   const { response, text } = await fetchText(url, {
     ...init,
     headers: {
@@ -77,7 +77,7 @@ export async function fetchJson(url, init = {}) {
   return { response, json, text };
 }
 
-export function parseRuntimeConfig(scriptText) {
+export function parseRuntimeConfig(scriptText: string) {
   const match = scriptText.match(/window\.__JAMISSUE_CONFIG__\s*=\s*(\{[\s\S]*?\})\s*;?\s*$/);
   if (!match) {
     throw new Error("runtime config bootstrap is missing");
@@ -85,7 +85,7 @@ export function parseRuntimeConfig(scriptText) {
   return JSON.parse(match[1]);
 }
 
-function normalizeUrl(url) {
+function normalizeUrl(url: unknown) {
   return String(url || "").replace(/\/$/, "");
 }
 

@@ -102,7 +102,7 @@ jobs:
         with:
           node-version: "22"
       - name: Run public production smoke checks
-        run: node scripts/run-public-smoke-checks.mjs
+        run: npx tsx scripts/run-public-smoke-checks.ts
 
   protected-smoke:
     needs:
@@ -123,4 +123,4 @@ jobs:
         with:
           node-version: "22"
       - name: Run protected production smoke checks
-        run: node scripts/run-protected-smoke-checks.mjs
+        run: npx tsx scripts/run-protected-smoke-checks.ts

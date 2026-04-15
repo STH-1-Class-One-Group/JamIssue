@@ -7,9 +7,9 @@ import {
   runCheck,
   runSmokeSuite,
   scriptEntryMatches,
-} from "./smoke/shared.mjs";
+} from "./smoke/shared";
 
-export { buildRequestHeaders, parseRuntimeConfig, resolveApiBaseUrl } from "./smoke/shared.mjs";
+export { buildRequestHeaders, parseRuntimeConfig, resolveApiBaseUrl } from "./smoke/shared";
 
 export function createPublicSmokeChecks({ appConfigResult, apiBaseUrl }) {
   return [

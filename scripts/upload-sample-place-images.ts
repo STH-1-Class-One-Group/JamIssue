@@ -88,16 +88,23 @@ async function uploadImage(place) {
   await patchPlaceImage(place);
 }
 
-const payload = JSON.parse(fs.readFileSync(placesJsonPath, 'utf8'));
-const places = payload.places ?? [];
-if (!Array.isArray(places) || places.length === 0) {
-  throw new Error('places.generated.json 에 업로드할 장소 정보가 없습니다.');
+async function main() {
+  const payload = JSON.parse(fs.readFileSync(placesJsonPath, 'utf8'));
+  const places = payload.places ?? [];
+  if (!Array.isArray(places) || places.length === 0) {
+    throw new Error('places.generated.json 에 업로드할 장소 정보가 없습니다.');
+  }
+
+  for (const place of places) {
+    place.imageStoragePath = `places/${String(place.number).padStart(3, '0')}/hero.png`;
+    await uploadImage(place);
+    console.log(`uploaded ${place.slug}`);
+  }
+
+  console.log(`uploaded ${places.length} place images to ${BUCKET}`);
 }
 
-for (const place of places) {
-  place.imageStoragePath = `places/${String(place.number).padStart(3, '0')}/hero.png`;
-  await uploadImage(place);
-  console.log(`uploaded ${place.slug}`);
-}
-
-console.log(`uploaded ${places.length} place images to ${BUCKET}`);
+void main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

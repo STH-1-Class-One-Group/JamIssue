@@ -3,17 +3,17 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "node scripts/build-frontend.mjs",
+    "build": "tsx scripts/build-frontend.ts",
     "test": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run",
-    "test:unit": "node scripts/run-unit-tests.mjs",
+    "test:unit": "tsx scripts/run-unit-tests.ts",
     "test:integration": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run test/integration",
     "test:regression": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run test/regression",
     "test:smoke:ui": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run test/smoke",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:regression && npm run test:smoke:ui",
-    "typecheck": "tsc --noEmit",
-    "smoke": "node scripts/run-public-smoke-checks.mjs",
-    "smoke:public": "node scripts/run-public-smoke-checks.mjs",
-    "smoke:protected": "node scripts/run-protected-smoke-checks.mjs"
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.scripts.json --noEmit && tsc -p tsconfig.worker.json --noEmit",
+    "smoke": "tsx scripts/run-public-smoke-checks.ts",
+    "smoke:public": "tsx scripts/run-public-smoke-checks.ts",
+    "smoke:protected": "tsx scripts/run-protected-smoke-checks.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
@@ -32,6 +32,7 @@
     "@types/react-dom": "18.3.1",
     "esbuild": "^0.27.4",
     "jsdom": "^29.0.1",
+    "tsx": "^4.21.0",
     "typescript": "5.6.3",
     "vitest": "^4.1.4"
   }

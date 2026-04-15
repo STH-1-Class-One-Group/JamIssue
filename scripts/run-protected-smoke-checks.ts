@@ -5,12 +5,12 @@ import {
   runCheck,
   runSmokeSuite,
   scriptEntryMatches,
-} from "./smoke/shared.mjs";
+} from "./smoke/shared";
 import {
   getProtectedAuthHeaders,
   getProtectedSmokeSkipReason,
   PROTECTED_SMOKE_ENDPOINTS,
-} from "./smoke/protected.mjs";
+} from "./smoke/protected";
 
 export function createProtectedSmokeChecks({ apiBaseUrl }) {
   const authHeaders = getProtectedAuthHeaders();
@@ -47,7 +47,7 @@ export async function runProtectedSmokeSuite({
   const { appConfigResult, runtimeConfig, apiBaseUrl } = await loadRuntimeConfigImpl();
   return runSmokeSuiteImpl({
     suiteName: "protected",
-    checks: createProtectedSmokeChecks({ apiBaseUrl, appConfigResult }),
+    checks: createProtectedSmokeChecks({ apiBaseUrl }),
     runtimeConfig,
     appConfigResult,
     apiBaseUrl,

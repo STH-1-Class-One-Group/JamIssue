@@ -4,17 +4,17 @@ import {
   buildRequestHeaders,
   parseRuntimeConfig,
   resolveApiBaseUrl,
-} from '../../scripts/run-smoke-checks.mjs';
+} from '../../scripts/run-smoke-checks';
 import {
   getProtectedAuthHeaders,
   getProtectedSmokeSkipReason,
   isProtectedSmokeEnabled,
   PROTECTED_SMOKE_ENDPOINTS,
-} from '../../scripts/smoke/protected.mjs';
+} from '../../scripts/smoke/protected';
 import {
   createProtectedSmokeChecks,
   runProtectedSmokeSuite,
-} from '../../scripts/run-protected-smoke-checks.mjs';
+} from '../../scripts/run-protected-smoke-checks';
 
 describe('run-smoke-checks helpers', () => {
   it('parses runtime app config from the bootstrap script', () => {
