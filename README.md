@@ -176,4 +176,4 @@ APP_EVENT_IMPORT_TOKEN=<same value as GitHub EVENT_IMPORT_TOKEN>
 
 ## CI 메모
 
-문서만 수정해서 Actions를 돌릴 필요가 없을 때는 커밋 메시지에 `[skip ci]`를 포함하면 됩니다.
+문서만 수정한 `main` 커밋에서 Actions와 배포를 함께 건너뛰고 싶을 때는 커밋 메시지에 `[skip ci]`를 포함하면 됩니다.
