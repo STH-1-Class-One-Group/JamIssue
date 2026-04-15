@@ -3,7 +3,6 @@
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from .config import get_settings
@@ -15,7 +14,13 @@ from .routers.content import router as content_router
 from .routers.my import router as my_router
 from .routers.reviews import router as reviews_router
 from .seed import seed_database
-from .storage import FileTooLargeError, InvalidFileTypeError, StorageConfigurationError, StorageUploadError
+from .storage import (
+    FileTooLargeError,
+    InvalidFileTypeError,
+    StorageConfigurationError,
+    StorageUploadError,
+    mount_storage_backend,
+)
 
 settings = get_settings()
 app = FastAPI(
@@ -39,9 +44,7 @@ app.add_middleware(
     max_age=60 * 60,
 )
 
-if settings.storage_backend == "local":
-    settings.upload_path.mkdir(parents=True, exist_ok=True)
-    app.mount(settings.upload_base_url, StaticFiles(directory=settings.upload_path), name="uploads")
+mount_storage_backend(app, settings)
 
 app.include_router(public_event_router)
 app.include_router(auth_router)
@@ -70,9 +73,6 @@ async def handle_storage_errors(_: Request, exc: ValueError) -> JSONResponse:
 @app.on_event("startup")
 def on_startup() -> None:
     """로컬 개발 환경에서는 업로드 경로와 데이터베이스를 준비합니다."""
-
-    if settings.storage_backend == "local":
-        settings.upload_path.mkdir(parents=True, exist_ok=True)
 
     if settings.env == "worker":
         return

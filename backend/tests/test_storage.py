@@ -1,4 +1,6 @@
-﻿from pathlib import Path
+from pathlib import Path
+
+from fastapi import FastAPI
 
 from app import storage as storage_module
 from app.config import Settings
@@ -10,6 +12,8 @@ from app.storage import (
     SupabaseStorageAdapter,
     derive_review_thumbnail_url,
     get_storage_adapter,
+    mount_storage_backend,
+    prepare_storage_backend,
 )
 
 
@@ -139,3 +143,37 @@ def test_review_image_upload_service_saves_thumbnail_variant(tmp_path: Path):
     assert stored.thumbnail_url == derive_review_thumbnail_url(stored.url)
     assert (tmp_path / 'uploads' / stored.file_name).read_bytes() == b'original-bytes'
     assert (tmp_path / 'uploads' / stored.thumbnail_file_name).read_bytes() == b'thumb-bytes'
+
+
+def test_prepare_storage_backend_creates_local_upload_dir(tmp_path: Path):
+    settings = Settings(storage_backend='local', upload_dir=str(tmp_path / 'uploads'))
+
+    prepare_storage_backend(settings)
+
+    assert settings.upload_path.exists()
+    assert settings.upload_path.is_dir()
+
+
+def test_mount_storage_backend_mounts_uploads_for_local_storage(tmp_path: Path):
+    app = FastAPI()
+    settings = Settings(storage_backend='local', upload_dir=str(tmp_path / 'uploads'))
+
+    mounted = mount_storage_backend(app, settings)
+
+    assert mounted is True
+    assert settings.upload_path.exists()
+    assert any(getattr(route, 'name', None) == 'uploads' for route in app.routes)
+
+
+def test_mount_storage_backend_skips_non_local_storage():
+    app = FastAPI()
+    settings = Settings(
+        storage_backend='supabase',
+        supabase_url='https://project.supabase.co',
+        supabase_service_role_key='service-role-key',
+    )
+
+    mounted = mount_storage_backend(app, settings)
+
+    assert mounted is False
+    assert not any(getattr(route, 'name', None) == 'uploads' for route in app.routes)
