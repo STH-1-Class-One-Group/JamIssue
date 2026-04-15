@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from ..db_models import UserNotification
 from ..models import NotificationDeleteResponse, NotificationReadResponse, UserNotificationOut
 from ..repository_support import format_datetime, utcnow_naive
+from .errors import RepositoryNotFoundError, RepositoryValidationError
 
 
 def to_notification_out(notification: UserNotification) -> UserNotificationOut:
@@ -104,7 +105,7 @@ def mark_notification_read(db: Session, notification_id: str, user_id: str) -> N
     try:
         notification_key = int(notification_id)
     except ValueError as error:
-        raise ValueError("알림 ID 형식이 올바르지 않아요.") from error
+        raise RepositoryValidationError("알림 ID 형식이 올바르지 않아요.") from error
 
     notification = db.scalars(
         select(UserNotification).where(
@@ -113,7 +114,7 @@ def mark_notification_read(db: Session, notification_id: str, user_id: str) -> N
         )
     ).first()
     if not notification:
-        raise ValueError("알림을 찾지 못했어요.")
+        raise RepositoryNotFoundError("알림을 찾지 못했어요.")
     if not notification.is_read:
         notification.is_read = True
         notification.read_at = utcnow_naive()
@@ -141,7 +142,7 @@ def delete_notification(db: Session, notification_id: str, user_id: str) -> Noti
     try:
         notification_key = int(notification_id)
     except ValueError as error:
-        raise ValueError("알림 ID 형식이 올바르지 않아요.") from error
+        raise RepositoryValidationError("알림 ID 형식이 올바르지 않아요.") from error
 
     notification = db.scalars(
         select(UserNotification).where(
@@ -150,7 +151,7 @@ def delete_notification(db: Session, notification_id: str, user_id: str) -> Noti
         )
     ).first()
     if not notification:
-        raise ValueError("알림을 찾지 못했어요.")
+        raise RepositoryNotFoundError("알림을 찾지 못했어요.")
     db.delete(notification)
     db.commit()
     return NotificationDeleteResponse(notificationId=str(notification_key), deleted=True)

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..models import NotificationDeleteResponse, NotificationReadResponse, SessionUser, UserNotificationOut
 from ..notification_broker import notification_broker
+from ..repositories.errors import RepositoryNotFoundError, RepositoryValidationError
 from ..repositories.notification_repository import (
     delete_notification_entry,
     list_user_notification_entries,
@@ -14,8 +15,12 @@ from ..repositories.notification_repository import (
 )
 
 
-def _map_notification_not_found(error: ValueError) -> HTTPException:
+def _map_notification_not_found(error: RepositoryNotFoundError) -> HTTPException:
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error))
+
+
+def _map_notification_validation_error(error: RepositoryValidationError) -> HTTPException:
+    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(error))
 
 
 def _publish_notification_event(user_id: str, payload: dict[str, object]) -> None:
@@ -29,7 +34,9 @@ def read_notifications_service(db: Session, session_user: SessionUser) -> list[U
 def mark_notification_read_service(db: Session, notification_id: str, session_user: SessionUser) -> NotificationReadResponse:
     try:
         response = mark_notification_read_entry(db, notification_id, session_user.id)
-    except ValueError as error:
+    except RepositoryValidationError as error:
+        raise _map_notification_validation_error(error) from error
+    except RepositoryNotFoundError as error:
         raise _map_notification_not_found(error) from error
     unread_count = read_unread_notification_count(db, session_user.id)
     _publish_notification_event(
@@ -59,7 +66,9 @@ def mark_all_notifications_read_service(db: Session, session_user: SessionUser) 
 def delete_notification_service(db: Session, notification_id: str, session_user: SessionUser) -> NotificationDeleteResponse:
     try:
         response = delete_notification_entry(db, notification_id, session_user.id)
-    except ValueError as error:
+    except RepositoryValidationError as error:
+        raise _map_notification_validation_error(error) from error
+    except RepositoryNotFoundError as error:
         raise _map_notification_not_found(error) from error
     unread_count = read_unread_notification_count(db, session_user.id)
     _publish_notification_event(

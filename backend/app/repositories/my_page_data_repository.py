@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 from ..db_models import Feed, MapPlace, User, UserComment
 from ..models import MyCommentOut, MyPageResponse, MyStatsOut
 from ..repository_support import format_datetime, to_place_out, to_session_user
+from .errors import RepositoryNotFoundError
 from .notification_data_repository import get_unread_notification_count, list_user_notifications
 from .review_query_repository import list_reviews
 from .stamp_data_repository import get_stamps
@@ -38,7 +39,7 @@ def build_my_comments(db: Session, user_id: str) -> list[MyCommentOut]:
 def get_my_page(db: Session, user_id: str, is_admin: bool) -> MyPageResponse:
     user = db.get(User, user_id)
     if not user:
-        raise ValueError("사용자 정보를 찾을 수 없어요.")
+        raise RepositoryNotFoundError("사용자 정보를 찾을 수 없어요.")
 
     reviews = list_reviews(db, user_id=user_id, current_user_id=user_id, include_comments=False)
     stamp_state = get_stamps(db, user_id)

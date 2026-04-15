@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 
+from app.repositories.errors import RepositoryNotFoundError
 from app.services import account_service
 
 
@@ -16,7 +17,7 @@ def test_delete_my_account_service_maps_value_error(monkeypatch):
     monkeypatch.setattr(
         account_service,
         "delete_account_entry",
-        lambda *_args, **_kwargs: (_ for _ in ()).throw(ValueError("missing")),
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(RepositoryNotFoundError("missing")),
     )
 
     try:

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..config import Settings
 from ..models import SessionUser
+from ..repositories.errors import RepositoryNotFoundError
 from ..repositories.my_page_data_repository import get_my_page as read_my_page_entry
 
 
@@ -15,7 +16,7 @@ def _raise_not_found(detail: str) -> None:
 def _run_not_found_policy(action: Callable[[], object]):
     try:
         return action()
-    except ValueError as error:
+    except RepositoryNotFoundError as error:
         _raise_not_found(str(error))
 
 
