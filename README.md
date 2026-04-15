@@ -169,10 +169,10 @@ APP_EVENT_IMPORT_TOKEN=<same value as GitHub EVENT_IMPORT_TOKEN>
 
 ## 참고 문서
 
-- [문서 안내](/D:/JamIssue/docs/README.md)
-- [배포 런북](/D:/JamIssue/docs/growgardens-deploy-runbook.md)
-- [운영 리팩토링 로드맵](/D:/JamIssue/docs/operations-refactor-roadmap.md)
-- [백엔드 README](/D:/JamIssue/backend/README.md)
+- [docs/README.md](docs/README.md)
+- [docs/growgardens-deploy-runbook.md](docs/growgardens-deploy-runbook.md)
+- [docs/operations-refactor-roadmap.md](docs/operations-refactor-roadmap.md)
+- [backend/README.md](backend/README.md)
 
 ## CI 메모
 
