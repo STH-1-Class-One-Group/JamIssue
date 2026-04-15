@@ -40,6 +40,7 @@ async function readPublicEnv() {
         values[key] = value;
       }
     } catch {
+      // Ignore missing local env files and fall back to process.env values.
     }
   }
 

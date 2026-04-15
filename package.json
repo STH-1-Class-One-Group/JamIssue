@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsx scripts/build-frontend.ts",
+    "lint": "eslint src scripts deploy/api-worker-shell test",
     "test": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run",
     "test:unit": "tsx scripts/run-unit-tests.ts",
     "test:integration": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run test/integration",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@emnapi/core": "^1.9.2",
     "@emnapi/runtime": "^1.9.2",
+    "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -31,9 +33,12 @@
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "esbuild": "^0.27.4",
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0",
     "jsdom": "^29.0.1",
     "tsx": "^4.21.0",
     "typescript": "5.6.3",
+    "typescript-eslint": "^8.58.2",
     "vitest": "^4.1.4"
   }
 }

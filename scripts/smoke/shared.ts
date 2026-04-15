@@ -71,6 +71,7 @@ export async function fetchJson(url: string, init: RequestInit = {}) {
         `${url} returned invalid JSON (status ${response.status}, content-type ${contentType}): ${
           error instanceof Error ? error.message : String(error)
         }${snippet ? `; body starts with "${snippet}"` : ""}`,
+        { cause: error },
       );
     }
   }
@@ -177,31 +178,36 @@ export async function runChecksWithRetries(checks) {
 }
 
 export async function loadRuntimeConfig() {
-  let runtimeConfig = null;
-  let appConfigResult = null;
   try {
-    appConfigResult = await fetchText(`${baseUrl}/app-config.js`, {
+    const appConfigResult = await fetchText(`${baseUrl}/app-config.js`, {
       headers: buildRequestHeaders("application/javascript,text/javascript,text/plain,*/*"),
     });
-    if (appConfigResult.response.status === 200) {
-      runtimeConfig = parseRuntimeConfig(appConfigResult.text);
-    }
+    const runtimeConfig = appConfigResult.response.status === 200
+      ? parseRuntimeConfig(appConfigResult.text)
+      : null;
+    return {
+      appConfigResult,
+      runtimeConfig,
+      apiBaseUrl: resolveApiBaseUrl({
+        runtimeConfig,
+        configuredApiBaseUrl,
+      }),
+    };
   } catch (error) {
-    appConfigResult = {
+    const appConfigResult = {
       response: null,
       text: "",
       error: error instanceof Error ? error.message : String(error),
     };
+    return {
+      appConfigResult,
+      runtimeConfig: null,
+      apiBaseUrl: resolveApiBaseUrl({
+        runtimeConfig: null,
+        configuredApiBaseUrl,
+      }),
+    };
   }
-
-  return {
-    appConfigResult,
-    runtimeConfig,
-    apiBaseUrl: resolveApiBaseUrl({
-      runtimeConfig,
-      configuredApiBaseUrl,
-    }),
-  };
 }
 
 export async function runSmokeSuite({ suiteName, checks, runtimeConfig, appConfigResult, apiBaseUrl }) {

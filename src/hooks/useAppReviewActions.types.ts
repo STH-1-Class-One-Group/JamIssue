@@ -6,7 +6,6 @@ import type {
   MyPageResponse,
   Place,
   Review,
-  ReviewMood,
   SessionUser,
   Tab,
 } from '../types';
