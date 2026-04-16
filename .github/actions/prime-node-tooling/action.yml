@@ -1,0 +1,56 @@
+name: Prime Node Tooling
+description: Prepare Node and hydrate npm cache from a GHCR image when available.
+
+inputs:
+  node-version:
+    description: Node.js version to install.
+    required: false
+    default: "22"
+  ghcr-image:
+    description: GHCR image containing a warmed npm cache.
+    required: true
+  registry-username:
+    description: Username for GHCR login.
+    required: true
+  registry-password:
+    description: Token for GHCR login.
+    required: true
+
+outputs:
+  cache-source:
+    description: Cache source used for this run.
+    value: ${{ steps.prime-cache.outputs.cache_source }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.registry-username }}
+        password: ${{ inputs.registry-password }}
+
+    - id: prime-cache
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        cache_dir="${RUNNER_TEMP}/jamissue-npm-cache"
+        rm -rf "${cache_dir}"
+        mkdir -p "${cache_dir}"
+
+        if docker pull "${{ inputs.ghcr-image }}" >/tmp/jamissue-node-cache-pull.log 2>&1; then
+          cid="$(docker create "${{ inputs.ghcr-image }}")"
+          docker cp "${cid}:/opt/jamissue-npm-cache/." "${cache_dir}"
+          docker rm "${cid}" >/dev/null
+          echo "npm_config_cache=${cache_dir}" >> "${GITHUB_ENV}"
+          echo "cache_source=ghcr" >> "${GITHUB_OUTPUT}"
+        else
+          cat /tmp/jamissue-node-cache-pull.log
+          echo "cache_source=setup-node" >> "${GITHUB_OUTPUT}"
+        fi

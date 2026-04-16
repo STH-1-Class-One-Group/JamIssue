@@ -9,16 +9,22 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/prime-node-tooling
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
+          node-version: "22"
+          ghcr-image: ghcr.io/${{ github.repository_owner }}/jamissue-node-cache:node22-latest
+          registry-username: ${{ github.actor }}
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm ci --prefer-offline --no-audit
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
