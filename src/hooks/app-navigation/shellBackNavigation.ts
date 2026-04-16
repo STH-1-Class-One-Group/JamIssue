@@ -1,0 +1,119 @@
+import type { DrawerState, MyPageTabKey, RoutePreview, SessionUser, Tab } from '../../types';
+import type { ReturnViewState } from '../../store/app-ui-store';
+import type { RouteStateCommitOptions } from '../useAppRouteState';
+
+interface CreateNavigateBackHandlerParams {
+  sessionUser: SessionUser | null;
+  returnView: ReturnViewState | null;
+  activeCommentReviewId: string | null;
+  activeTab: Tab;
+  selectedPlaceId: string | null;
+  selectedFestivalId: string | null;
+  drawerState: DrawerState;
+  selectedRoutePreview: RoutePreview | null;
+  setMyPageTab: (value: MyPageTabKey) => void;
+  setActiveCommentReviewId: (value: string | null) => void;
+  setHighlightedCommentId: (value: string | null) => void;
+  setHighlightedReviewId: (value: string | null) => void;
+  setFeedPlaceFilterId: (value: string | null) => void;
+  setSelectedRoutePreview: (value: RoutePreview | null) => void;
+  setReturnView: (value: ReturnViewState | null) => void;
+  handleCloseReviewComments: () => void;
+  goToTab: (tab: Tab, historyMode?: 'push' | 'replace') => void;
+  commitRouteState: (
+    nextState: { tab: Tab; placeId: string | null; festivalId: string | null; drawerState: DrawerState },
+    historyMode?: 'push' | 'replace',
+    options?: RouteStateCommitOptions,
+  ) => void;
+}
+
+export function createNavigateBackHandler({
+  sessionUser,
+  returnView,
+  activeCommentReviewId,
+  activeTab,
+  selectedPlaceId,
+  selectedFestivalId,
+  drawerState,
+  selectedRoutePreview,
+  setMyPageTab,
+  setActiveCommentReviewId,
+  setHighlightedCommentId,
+  setHighlightedReviewId,
+  setFeedPlaceFilterId,
+  setSelectedRoutePreview,
+  setReturnView,
+  handleCloseReviewComments,
+  goToTab,
+  commitRouteState,
+}: CreateNavigateBackHandlerParams) {
+  return function handleNavigateBack() {
+    const hasBrowserBackStepOnMap =
+      activeTab === 'map'
+      && (selectedPlaceId !== null || selectedFestivalId !== null || drawerState !== 'closed' || selectedRoutePreview !== null)
+      && typeof window !== 'undefined'
+      && window.history.length > 1;
+    const shouldClampAuthenticatedMyPageBack =
+      sessionUser !== null
+      && activeTab === 'my'
+      && returnView === null
+      && activeCommentReviewId === null
+      && selectedPlaceId === null
+      && selectedFestivalId === null
+      && drawerState === 'closed'
+      && selectedRoutePreview === null;
+
+    if (hasBrowserBackStepOnMap) {
+      window.history.back();
+      return;
+    }
+
+    if (returnView) {
+      setMyPageTab(returnView.myPageTab);
+      setActiveCommentReviewId(returnView.activeCommentReviewId);
+      setHighlightedCommentId(returnView.highlightedCommentId);
+      setHighlightedReviewId(returnView.highlightedReviewId);
+      setFeedPlaceFilterId(returnView.feedPlaceFilterId);
+      setSelectedRoutePreview(null);
+      const nextTab = returnView.tab;
+      setReturnView(null);
+      commitRouteState(
+        {
+          tab: nextTab,
+          placeId: nextTab === 'map' ? returnView.placeId : null,
+          festivalId: nextTab === 'map' ? returnView.festivalId : null,
+          drawerState: nextTab === 'map' ? returnView.drawerState : 'closed',
+        },
+        'replace',
+      );
+      return;
+    }
+
+    if (activeCommentReviewId !== null) {
+      handleCloseReviewComments();
+      return;
+    }
+
+    if (selectedRoutePreview) {
+      setSelectedRoutePreview(null);
+      return;
+    }
+
+    if (shouldClampAuthenticatedMyPageBack) {
+      setHighlightedCommentId(null);
+      setHighlightedReviewId(null);
+      setFeedPlaceFilterId(null);
+      setReturnView(null);
+      goToTab('map', 'replace');
+      return;
+    }
+
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+
+    handleCloseReviewComments();
+    goToTab('map', 'replace');
+  };
+}

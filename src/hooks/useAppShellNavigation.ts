@@ -1,6 +1,8 @@
 import type { DrawerState, MyPageTabKey, RoutePreview, SessionUser, Tab } from '../types';
 import type { ReturnViewState } from '../store/app-ui-store';
 import type { RouteStateCommitOptions } from './useAppRouteState';
+import { createNavigateBackHandler } from './app-navigation/shellBackNavigation';
+import { createBottomNavChangeHandler } from './app-navigation/shellBottomNav';
 
 interface UseAppShellNavigationParams {
   sessionUser: SessionUser | null;
@@ -57,108 +59,37 @@ export function useAppShellNavigation({
     selectedRoutePreview !== null ||
     (typeof window !== 'undefined' && window.history.length > 1);
 
-  function handleNavigateBack() {
-    const hasBrowserBackStepOnMap = activeTab === 'map'
-      && (selectedPlaceId !== null || selectedFestivalId !== null || drawerState !== 'closed' || selectedRoutePreview !== null)
-      && typeof window !== 'undefined'
-      && window.history.length > 1;
-    const shouldClampAuthenticatedMyPageBack =
-      sessionUser !== null
-      && activeTab === 'my'
-      && returnView === null
-      && activeCommentReviewId === null
-      && selectedPlaceId === null
-      && selectedFestivalId === null
-      && drawerState === 'closed'
-      && selectedRoutePreview === null;
+  const handleNavigateBack = createNavigateBackHandler({
+    sessionUser,
+    returnView,
+    activeCommentReviewId,
+    activeTab,
+    selectedPlaceId,
+    selectedFestivalId,
+    drawerState,
+    selectedRoutePreview,
+    setMyPageTab,
+    setActiveCommentReviewId,
+    setHighlightedCommentId,
+    setHighlightedReviewId,
+    setFeedPlaceFilterId,
+    setSelectedRoutePreview,
+    setReturnView,
+    handleCloseReviewComments,
+    goToTab,
+    commitRouteState,
+  });
 
-    if (hasBrowserBackStepOnMap) {
-      window.history.back();
-      return;
-    }
-
-    if (returnView) {
-      setMyPageTab(returnView.myPageTab);
-      setActiveCommentReviewId(returnView.activeCommentReviewId);
-      setHighlightedCommentId(returnView.highlightedCommentId);
-      setHighlightedReviewId(returnView.highlightedReviewId);
-      setFeedPlaceFilterId(returnView.feedPlaceFilterId);
-      setSelectedRoutePreview(null);
-      const nextTab = returnView.tab;
-      setReturnView(null);
-      commitRouteState(
-        {
-          tab: nextTab,
-          placeId: nextTab === 'map' ? returnView.placeId : null,
-          festivalId: nextTab === 'map' ? returnView.festivalId : null,
-          drawerState: nextTab === 'map' ? returnView.drawerState : 'closed',
-        },
-        'replace',
-      );
-      return;
-    }
-
-    if (activeCommentReviewId !== null) {
-      handleCloseReviewComments();
-      return;
-    }
-
-    if (selectedRoutePreview) {
-      setSelectedRoutePreview(null);
-      return;
-    }
-
-    if (shouldClampAuthenticatedMyPageBack) {
-      setHighlightedCommentId(null);
-      setHighlightedReviewId(null);
-      setFeedPlaceFilterId(null);
-      setReturnView(null);
-      goToTab('map', 'replace');
-      return;
-    }
-
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      window.history.back();
-      return;
-    }
-
-    handleCloseReviewComments();
-    goToTab('map', 'replace');
-  }
-
-  function handleBottomNavChange(nextTab: Tab) {
-    setSelectedRoutePreview(null);
-    handleCloseReviewComments();
-
-    if (nextTab !== 'feed') {
-      setFeedPlaceFilterId(null);
-      setHighlightedReviewId(null);
-    }
-
-    if (nextTab === 'map') {
-      commitRouteState(
-        {
-          tab: 'map',
-          placeId: selectedPlaceId,
-          festivalId: selectedFestivalId,
-          drawerState,
-        },
-        'replace',
-        { routePreview: null },
-      );
-      return;
-    }
-
-    commitRouteState(
-      {
-        tab: nextTab,
-        placeId: null,
-        festivalId: null,
-        drawerState: 'closed',
-      },
-      'push',
-    );
-  }
+  const handleBottomNavChange = createBottomNavChangeHandler({
+    selectedPlaceId,
+    selectedFestivalId,
+    drawerState,
+    setSelectedRoutePreview,
+    handleCloseReviewComments,
+    setFeedPlaceFilterId,
+    setHighlightedReviewId,
+    commitRouteState,
+  });
 
   return {
     canNavigateBack,
