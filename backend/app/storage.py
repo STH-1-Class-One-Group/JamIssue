@@ -1,73 +1,46 @@
-"""Storage adapters and review image upload validation."""
+"""Storage adapters and review image upload services."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-
 from .config import Settings
+from .storage_core import (
+    FileTooLargeError,
+    InvalidFileTypeError,
+    StorageConfigurationError,
+    StorageUploadError,
+    StoredFile,
+    UploadValidationError,
+    build_review_thumbnail_file_name,
+    derive_review_thumbnail_url,
+)
+from .storage_mounting import mount_storage_backend, prepare_storage_backend, uses_local_storage
+from .storage_validation import ImageValidator
 
-
-class UploadValidationError(ValueError):
-    """Base class for upload validation failures."""
-
-
-class InvalidFileTypeError(UploadValidationError):
-    pass
-
-
-class FileTooLargeError(UploadValidationError):
-    pass
-
-
-class StorageConfigurationError(ValueError):
-    pass
-
-
-class StorageUploadError(ValueError):
-    pass
-
-
-@dataclass(slots=True)
-class StoredFile:
-    url: str
-    file_name: str
-    content_type: str
-    thumbnail_url: str | None = None
-    thumbnail_file_name: str | None = None
-    thumbnail_content_type: str | None = None
-
-
-def build_review_thumbnail_file_name(file_name: str) -> str:
-    path = Path(file_name)
-    suffix = path.suffix.lower() or ".jpg"
-    stem = path.stem.removesuffix("-orig")
-    return f"{stem}-thumb{suffix}"
-
-
-def derive_review_thumbnail_url(image_url: str | None) -> str | None:
-    if not image_url or "-orig." not in image_url:
-        return None
-    head, tail = image_url.rsplit("-orig.", 1)
-    return f"{head}-thumb.{tail}"
-
-
-class ImageValidator:
-    def __init__(self, settings: Settings):
-        self.settings = settings
-
-    def validate(self, *, content_type: str, raw_bytes: bytes) -> None:
-        if not content_type.startswith("image/"):
-            raise InvalidFileTypeError("이미지 파일만 업로드할 수 있어요.")
-        if len(raw_bytes) > self.settings.max_upload_size_bytes:
-            raise FileTooLargeError("이미지는 5MB 이하로 올려 주세요.")
+__all__ = [
+    "FileTooLargeError",
+    "ImageValidator",
+    "InvalidFileTypeError",
+    "LocalStorageAdapter",
+    "ReviewImageUploadService",
+    "StorageConfigurationError",
+    "StorageUploadError",
+    "StoredFile",
+    "SupabaseStorageAdapter",
+    "UploadValidationError",
+    "build_review_thumbnail_file_name",
+    "derive_review_thumbnail_url",
+    "get_review_image_upload_service",
+    "get_storage_adapter",
+    "mount_storage_backend",
+    "prepare_storage_backend",
+    "uses_local_storage",
+]
 
 
 class LocalStorageAdapter:
@@ -109,13 +82,13 @@ class SupabaseStorageAdapter:
     def __init__(self, settings: Settings):
         self.settings = settings
         if not settings.supabase_configured:
-            raise StorageConfigurationError("Supabase Storage를 쓰려면 APP_SUPABASE_URL과 인증키가 필요해요.")
+            raise StorageConfigurationError("Supabase Storage를 쓰려면 APP_SUPABASE_URL과 인증 키가 필요해요.")
 
     @property
     def auth_token(self) -> str:
         token = self.settings.supabase_service_role_key or self.settings.supabase_anon_key
         if not token:
-            raise StorageConfigurationError("Supabase 인증키가 비어 있어요.")
+            raise StorageConfigurationError("Supabase 인증 키가 비어 있어요.")
         return token
 
     def build_object_path(self, owner_id: str, file_name: str) -> str:
@@ -237,23 +210,6 @@ class ReviewImageUploadService:
             thumbnail_content_type=normalized_thumbnail_content_type if thumbnail_file_name else None,
             thumbnail_raw_bytes=thumbnail_raw_bytes,
         )
-
-
-def uses_local_storage(settings: Settings) -> bool:
-    return settings.storage_backend == "local"
-
-
-def prepare_storage_backend(settings: Settings) -> None:
-    if uses_local_storage(settings):
-        settings.upload_path.mkdir(parents=True, exist_ok=True)
-
-
-def mount_storage_backend(app: FastAPI, settings: Settings) -> bool:
-    if not uses_local_storage(settings):
-        return False
-    prepare_storage_backend(settings)
-    app.mount(settings.upload_base_url, StaticFiles(directory=settings.upload_path), name="uploads")
-    return True
 
 
 def get_storage_adapter(settings: Settings):
