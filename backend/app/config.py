@@ -1,17 +1,34 @@
-"""JamIssue 백엔드 전역 설정입니다."""
+"""JamIssue backend settings."""
 
 from __future__ import annotations
 
+from datetime import timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlalchemy.engine import URL, make_url
+from sqlalchemy.engine import URL
+
+from .config_database import (
+    build_database_url_object,
+    database_connect_args,
+    database_display_url,
+    database_provider,
+    get_database_host,
+    is_mysql_database,
+    is_postgres_database,
+    is_sqlite_database,
+    is_supabase_database,
+    normalize_database_url,
+    prefer_sqlalchemy_null_pool,
+    uses_supabase_pooler,
+)
+from .config_paths import resolve_repo_relative_path, split_csv_set, split_csv_values
 
 
 class Settings(BaseSettings):
-    """FastAPI 서버에서 사용하는 환경 설정 집합입니다."""
+    """Environment-backed settings used by the backend."""
 
     env: str = "development"
     host: str = "127.0.0.1"
@@ -48,18 +65,12 @@ class Settings(BaseSettings):
     supabase_service_role_key: str = ""
     supabase_storage_bucket: str = "review-images"
     supabase_storage_public_base_url: str = ""
-
     naver_login_client_id: str = ""
     naver_login_client_secret: str = ""
     naver_login_callback_url: str = "http://localhost:8000/api/auth/naver/callback"
-
-
-
     kakao_login_client_id: str = ""
     kakao_login_client_secret: str = ""
     kakao_login_callback_url: str = "http://localhost:8000/api/auth/kakao/callback"
-
-
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -70,181 +81,114 @@ class Settings(BaseSettings):
 
     @property
     def backend_dir(self) -> Path:
-        """백엔드 루트 디렉터리를 반환합니다."""
-
         return Path(__file__).resolve().parents[1]
 
     @property
     def repo_dir(self) -> Path:
-        """저장소 루트 디렉터리를 반환합니다."""
-
         return self.backend_dir.parent
 
     @property
     def cors_origin_list(self) -> list[str]:
-        """CORS 허용 origin 목록을 정리합니다."""
-
-        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+        return split_csv_values(self.cors_origins)
 
     @property
     def admin_user_id_set(self) -> set[str]:
-        """관리자 권한을 가진 사용자 ID 집합입니다."""
-
-        return {user_id.strip() for user_id in self.admin_user_ids.split(",") if user_id.strip()}
+        return split_csv_set(self.admin_user_ids)
 
     @property
     def upload_path(self) -> Path:
-        """업로드 저장 경로를 절대경로로 돌려줍니다."""
-
-        raw_path = Path(self.upload_dir)
-        return raw_path if raw_path.is_absolute() else (self.backend_dir / raw_path).resolve()
+        return resolve_repo_relative_path(backend_dir=self.backend_dir, raw_path=self.upload_dir)
 
     @property
     def storage_target_label(self) -> str:
-        """헬스 체크에 노출할 저장소 식별 문자열입니다."""
-
         if self.storage_backend == "supabase":
             return f"supabase://{self.supabase_storage_bucket}"
         return str(self.upload_path)
 
     @property
     def public_data_file_path(self) -> Path:
-        """공공 장소 번들 파일 경로를 절대경로로 돌려줍니다."""
-
-        raw_path = Path(self.public_data_path)
-        return raw_path if raw_path.is_absolute() else (self.backend_dir / raw_path).resolve()
+        return resolve_repo_relative_path(backend_dir=self.backend_dir, raw_path=self.public_data_path)
 
     @property
     def public_event_file_path(self) -> Path:
-        """공공 행사 번들 파일 경로를 절대경로로 돌려줍니다."""
-
-        raw_path = Path(self.public_event_path)
-        return raw_path if raw_path.is_absolute() else (self.backend_dir / raw_path).resolve()
+        return resolve_repo_relative_path(backend_dir=self.backend_dir, raw_path=self.public_event_path)
 
     @property
     def normalized_database_url(self) -> str:
-        """SQLAlchemy 드라이버 접두사를 포함한 DB URL을 반환합니다."""
-
-        raw_url = self.database_url.strip()
-        lowered = raw_url.lower()
-        if lowered.startswith("postgres://"):
-            return f"postgresql+psycopg://{raw_url[len('postgres://') :]}"
-        if lowered.startswith("postgresql://"):
-            return f"postgresql+psycopg://{raw_url[len('postgresql://') :]}"
-        if lowered.startswith("mysql://"):
-            return f"mysql+pymysql://{raw_url[len('mysql://') :]}"
-        return raw_url
+        return normalize_database_url(self.database_url)
 
     @property
     def database_url_object(self) -> URL | None:
-        """정규화된 DB URL을 SQLAlchemy URL 객체로 파싱합니다."""
-
-        try:
-            return make_url(self.normalized_database_url)
-        except Exception:
-            return None
+        return build_database_url_object(self.normalized_database_url)
 
     @property
     def database_host(self) -> str:
-        """DB 호스트 이름을 반환합니다."""
-
-        url = self.database_url_object
-        return url.host or "" if url else ""
+        return get_database_host(self.database_url_object)
 
     @property
     def is_sqlite_database(self) -> bool:
-        """SQLite 사용 여부를 반환합니다."""
-
-        return self.normalized_database_url.lower().startswith("sqlite")
+        return is_sqlite_database(self.normalized_database_url)
 
     @property
     def is_postgres_database(self) -> bool:
-        """PostgreSQL 계열 사용 여부를 반환합니다."""
-
-        return self.normalized_database_url.lower().startswith("postgresql")
+        return is_postgres_database(self.normalized_database_url)
 
     @property
     def is_mysql_database(self) -> bool:
-        """MySQL 계열 사용 여부를 반환합니다."""
-
-        return self.normalized_database_url.lower().startswith("mysql")
+        return is_mysql_database(self.normalized_database_url)
 
     @property
     def is_supabase_database(self) -> bool:
-        """현재 DB 호스트가 Supabase인지 판단합니다."""
-
-        host = self.database_host.lower()
-        return "supabase.co" in host or "pooler.supabase.com" in host
+        return is_supabase_database(self.database_host)
 
     @property
     def uses_supabase_pooler(self) -> bool:
-        """Supabase 트랜잭션 풀러 주소 사용 여부를 반환합니다."""
-
-        host = self.database_host.lower()
-        url = self.database_url_object
-        return host.endswith("pooler.supabase.com") or (url.port == 6543 if url else False)
+        return uses_supabase_pooler(self.database_host, self.database_url_object)
 
     @property
     def prefer_sqlalchemy_null_pool(self) -> bool:
-        """서버리스/풀러 환경에서 NullPool 사용 여부를 반환합니다."""
-
-        return self.uses_supabase_pooler or (self.env == "worker" and self.is_postgres_database)
+        return prefer_sqlalchemy_null_pool(
+            env=self.env,
+            uses_pooler=self.uses_supabase_pooler,
+            is_postgres=self.is_postgres_database,
+        )
 
     @property
     def database_connect_args(self) -> dict[str, object]:
-        """DB 드라이버별 connect_args 기본값입니다."""
-
-        if self.is_sqlite_database:
-            return {"check_same_thread": False}
-        return {}
+        return database_connect_args(is_sqlite=self.is_sqlite_database)
 
     @property
     def database_provider(self) -> str:
-        """현재 DB 연결 문자열 기준 공급자를 식별합니다."""
-
-        if self.is_supabase_database:
-            return "supabase-postgres"
-        if self.is_postgres_database:
-            return "postgresql"
-        if self.is_mysql_database:
-            return "mysql"
-        if self.is_sqlite_database:
-            return "sqlite"
-        return "unknown"
+        return database_provider(
+            is_supabase=self.is_supabase_database,
+            is_postgres=self.is_postgres_database,
+            is_mysql=self.is_mysql_database,
+            is_sqlite=self.is_sqlite_database,
+        )
 
     @property
     def database_display_url(self) -> str:
-        """헬스 체크에 노출할 비밀번호 마스킹 DB URL입니다."""
-
-        url = self.database_url_object
-        if not url:
-            return self.database_provider
-        if self.is_sqlite_database:
-            return self.normalized_database_url
-        return url.render_as_string(hide_password=True)
+        return database_display_url(
+            url=self.database_url_object,
+            normalized_database_url=self.normalized_database_url,
+            provider=self.database_provider,
+            is_sqlite=self.is_sqlite_database,
+        )
 
     @property
     def storage_provider(self) -> str:
-        """현재 업로드 저장소 공급자를 식별합니다."""
-
         return self.storage_backend
 
     @property
     def supabase_configured(self) -> bool:
-        """Supabase URL과 인증키가 준비되어 있는지 확인합니다."""
-
         return bool(self.supabase_url and (self.supabase_service_role_key or self.supabase_anon_key))
 
     def is_admin(self, user_id: str | None) -> bool:
-        """관리자 사용자 여부를 확인합니다."""
-
         if not user_id:
             return False
         return user_id in self.admin_user_id_set
 
     def provider_enabled(self, provider: str) -> bool:
-        """소셜 로그인 제공자 설정 여부를 확인합니다."""
-
         mapping = {
             "naver": bool(self.naver_login_client_id and self.naver_login_client_secret),
             "kakao": bool(self.kakao_login_client_id and self.kakao_login_client_secret),
@@ -252,8 +196,7 @@ class Settings(BaseSettings):
         return mapping.get(provider, False)
 
     @property
-    def access_token_expires_delta(self):
-        from datetime import timedelta
+    def access_token_expires_delta(self) -> timedelta:
         return timedelta(minutes=self.jwt_access_token_minutes)
 
     @property
@@ -270,8 +213,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """환경 설정 객체를 캐싱해서 반환합니다."""
-
     return Settings()
-
-
