@@ -1,50 +1,10 @@
-import { useEffect, useState, type CSSProperties } from 'react';
-import { getPublicEventBanner } from '../api/bootstrapClient';
-import type { PublicEventBannerResponse } from '../publicEventTypes';
-
-const INITIAL_DATA: PublicEventBannerResponse = {
-  sourceReady: false,
-  sourceName: null,
-  importedAt: null,
-  items: [],
-};
+import type { CSSProperties } from 'react';
+import { buildRoadmapSummaryItems } from './roadmap-banner/roadmapBannerSummary';
+import { useRoadmapBannerPreviewData } from './roadmap-banner/useRoadmapBannerPreviewData';
 
 export function RoadmapBannerPreview() {
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [data, setData] = useState<PublicEventBannerResponse>(INITIAL_DATA);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadBanner() {
-      try {
-        const response = await getPublicEventBanner();
-        if (!active) {
-          return;
-        }
-        setData(response);
-        setStatus('ready');
-      } catch (error) {
-        if (!active) {
-          return;
-        }
-        setStatus('error');
-        setErrorMessage(error instanceof Error ? error.message : '행사 일정을 불러오지 못했어요.');
-      }
-    }
-
-    void loadBanner();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const summaryItems = [
-    { label: '현재 일정', value: `${data.items.length}건`, tone: 'pink' as const },
-    { label: '데이터 출처', value: data.sourceName ?? '미연결', tone: 'blue' as const },
-    { label: '가져온 시각', value: data.importedAt ?? '아직 없음', tone: 'mint' as const },
-  ];
+  const { status, data, errorMessage } = useRoadmapBannerPreviewData();
+  const summaryItems = buildRoadmapSummaryItems(data);
 
   return (
     <div className="app-shell preview-shell">
@@ -74,7 +34,7 @@ export function RoadmapBannerPreview() {
           <p className="roadmap-hero__helper">
             {data.sourceReady
               ? '행사 API가 연결되어 있으면 최신 일정만 여기로 들어옵니다.'
-              : '행사 API URL이 아직 연결되지 않았어요. 연결되면 이 배너가 실제 일정으로 채워집니다.'}
+              : '행사 API URL이 아직 연결되지 않았어요. 연결하면 이 배너가 실제 일정으로 채워집니다.'}
           </p>
         </section>
 
@@ -96,7 +56,7 @@ export function RoadmapBannerPreview() {
 
           {status === 'error' ? (
             <article className="roadmap-empty roadmap-empty--error">
-              <strong>행사 일정을 아직 읽지 못했어요.</strong>
+              <strong>행사 일정을 아직 읽어오지 못했어요.</strong>
               <p>{errorMessage}</p>
             </article>
           ) : null}
@@ -104,7 +64,7 @@ export function RoadmapBannerPreview() {
           {status === 'ready' && data.items.length === 0 ? (
             <article className="roadmap-empty">
               <strong>현재 보여줄 행사 일정이 없어요.</strong>
-              <p>행사 API URL이나 JSON을 연결하면 일정 카드가 여기에 들어옵니다.</p>
+              <p>행사 API URL이나 JSON이 연결되면 일정 카드가 여기에 들어옵니다.</p>
             </article>
           ) : null}
 
