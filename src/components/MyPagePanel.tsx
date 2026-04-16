@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
-import { ProviderButtons } from './ProviderButtons';
 import { MyPageAccountSection } from './my-page/MyPageAccountSection';
+import { MyPageGuestState } from './my-page/MyPageGuestState';
+import { MyPageHeader } from './my-page/MyPageHeader';
+import { MyPageLoadError } from './my-page/MyPageLoadError';
 import { MyPageOverviewSection } from './my-page/MyPageOverviewSection';
 import { MyPageSettingsSection } from './my-page/MyPageSettingsSection';
 import { MyPageTabContent } from './my-page/MyPageTabContent';
@@ -80,44 +82,16 @@ export function MyPagePanel({
   if (!sessionUser) {
     return (
       <section ref={scrollRef} className="page-panel page-panel--scrollable">
-        <header className="panel-header">
-          <p className="eyebrow">MY PAGE</p>
-          <h2>로그인하고 기록 이어보기</h2>
-          <p>스탬프, 피드, 코스를 계정 기준으로 이어보려면 먼저 로그인해 주세요.</p>
-        </header>
-        <section className="sheet-card stack-gap">
-          <ProviderButtons providers={providers} onLogin={onLogin} />
-        </section>
+        <MyPageGuestState providers={providers} onLogin={onLogin} />
       </section>
     );
   }
 
   return (
     <section ref={scrollRef} className="page-panel page-panel--scrollable">
-      <header className="panel-header panel-header--with-action">
-        <div>
-          <p className="eyebrow">MY PAGE</p>
-          <h2>{sessionUser.nickname}님의 기록</h2>
-          <p>
-            스탬프와 피드, 댓글을 확인할 수 있고,
-            <br />
-            하나의 여행 세션을 코스로 발행할 수 있어요.
-          </p>
-        </div>
-      </header>
+      <MyPageHeader sessionUser={sessionUser} />
 
-      {!myPage && myPageError && (
-        <section className="sheet-card stack-gap">
-          <div>
-            <p className="eyebrow">MY PAGE</p>
-            <h3>기록을 아직 불러오지 못했어요</h3>
-            <p className="section-copy">{myPageError}</p>
-          </div>
-          <button type="button" className="primary-button route-submit-button" onClick={() => void onRetry()}>
-            다시 불러오기
-          </button>
-        </section>
-      )}
+      {!myPage && myPageError && <MyPageLoadError myPageError={myPageError} onRetry={onRetry} />}
 
       <MyPageAccountSection
         sessionUser={sessionUser}
