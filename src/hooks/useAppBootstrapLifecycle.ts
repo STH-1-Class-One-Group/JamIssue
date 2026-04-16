@@ -1,13 +1,12 @@
-import { useEffect, useRef } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { getFestivals, getMapBootstrap } from '../api/bootstrapClient';
 import { useAuthStore } from '../store/auth-store';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
 import { useAppRouteStore } from '../store/app-route-store';
 import { useAppTabWarmup } from './useAppTabWarmup';
 import { useSelectedPlaceReviewSync } from './useSelectedPlaceReviewSync';
-import { clearAuthQueryParams } from './useAppRouteState';
+import { useAppBootstrapSharedRefs } from './useAppBootstrapSharedRefs';
+import { useFestivalBootstrapEffect, useMapBootstrapEffect } from './useAppBootstrapEffects';
 import type {
   AdminSummaryResponse,
   FestivalItem,
@@ -87,31 +86,13 @@ export function useAppBootstrapLifecycle({
   const setMyCommentsLoadingMore = useAppPageRuntimeStore((state) => state.setMyCommentsLoadingMore);
   const setMyCommentsLoadedOnce = useAppPageRuntimeStore((state) => state.setMyCommentsLoadedOnce);
 
-  const refreshMyPageForUserRef = useRef(refreshMyPageForUser);
-  const resetReviewCachesRef = useRef(resetReviewCaches);
-  const goToTabRef = useRef(goToTab);
-  const formatErrorMessageRef = useRef(formatErrorMessage);
-  const reportBackgroundErrorRef = useRef(reportBackgroundError);
-
-  useEffect(() => {
-    refreshMyPageForUserRef.current = refreshMyPageForUser;
-  }, [refreshMyPageForUser]);
-
-  useEffect(() => {
-    resetReviewCachesRef.current = resetReviewCaches;
-  }, [resetReviewCaches]);
-
-  useEffect(() => {
-    goToTabRef.current = goToTab;
-  }, [goToTab]);
-
-  useEffect(() => {
-    formatErrorMessageRef.current = formatErrorMessage;
-  }, [formatErrorMessage]);
-
-  useEffect(() => {
-    reportBackgroundErrorRef.current = reportBackgroundError;
-  }, [reportBackgroundError]);
+  const sharedRefs = useAppBootstrapSharedRefs({
+    refreshMyPageForUser,
+    resetReviewCaches,
+    goToTab,
+    formatErrorMessage,
+    reportBackgroundError,
+  });
 
   useSelectedPlaceReviewSync({
     activeTab,
@@ -137,92 +118,31 @@ export function useAppBootstrapLifecycle({
     reportBackgroundError,
   });
 
-  useEffect(() => {
-    let active = true;
-
-    void (async () => {
-      const authParams = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search);
-      const authState = authParams?.get('auth');
-
-      setBootstrapStatus('loading');
-      setBootstrapError(null);
-
-      try {
-        const bootstrap = await getMapBootstrap();
-        if (!active) {
-          return;
-        }
-
-        setPlaces(bootstrap.places);
-        setStampState(bootstrap.stamps);
-        setHasRealData(bootstrap.hasRealData);
-        setSessionUser(bootstrap.auth.user);
-        resetReviewCachesRef.current();
-        setFeedNextCursor(null);
-        setFeedHasMore(false);
-        setFeedLoadingMore(false);
-        setMyCommentsNextCursor(null);
-        setMyCommentsHasMore(false);
-        setMyCommentsLoadingMore(false);
-        setMyCommentsLoadedOnce(false);
-        setProviders(bootstrap.auth.providers);
-        setSelectedPlaceId((current) => (current && bootstrap.places.some((place) => place.id === current) ? current : null));
-        setSelectedFestivalId(null);
-
-        if (bootstrap.auth.user) {
-          await refreshMyPageForUserRef.current(bootstrap.auth.user, true);
-          if (!active) {
-            return;
-          }
-        } else {
-          setMyPage(null);
-        }
-
-        setBootstrapStatus('ready');
-        if ((authState === 'naver-success' || authState === 'kakao-success') && bootstrap.auth.user?.profileCompletedAt === null) {
-          goToTabRef.current('my');
-          setNotice('닉네임을 먼저 정하면 같은 계정으로 스탬프와 피드를 이어서 남길 수 있어요.');
-        }
-      } catch (error) {
-        setBootstrapError(formatErrorMessageRef.current(error));
-        setBootstrapStatus('error');
-      } finally {
-        clearAuthQueryParams();
-      }
-    })();
-
-    void getFestivals()
-      .then((festivalResult) => {
-        if (!active) {
-          return;
-        }
-        setFestivals(festivalResult);
-        setSelectedFestivalId((current) => (current && festivalResult.some((festival) => festival.id === current) ? current : null));
-      })
-      .catch((error) => reportBackgroundErrorRef.current(error));
-
-    return () => {
-      active = false;
-    };
-  }, [
-    setBootstrapError,
+  useMapBootstrapEffect({
+    ...sharedRefs,
     setBootstrapStatus,
+    setBootstrapError,
+    setPlaces,
+    setStampState,
+    setHasRealData,
+    setSessionUser,
+    setFeedNextCursor,
     setFeedHasMore,
     setFeedLoadingMore,
-    setFeedNextCursor,
-    setFestivals,
-    setHasRealData,
-    setMyCommentsHasMore,
-    setMyCommentsLoadedOnce,
-    setMyCommentsLoadingMore,
     setMyCommentsNextCursor,
+    setMyCommentsHasMore,
+    setMyCommentsLoadingMore,
+    setMyCommentsLoadedOnce,
+    setProviders,
+    setSelectedPlaceId,
+    setSelectedFestivalId,
     setMyPage,
     setNotice,
-    setPlaces,
-    setProviders,
+  });
+
+  useFestivalBootstrapEffect({
+    reportBackgroundErrorRef: sharedRefs.reportBackgroundErrorRef,
+    setFestivals,
     setSelectedFestivalId,
-    setSelectedPlaceId,
-    setSessionUser,
-    setStampState,
-  ]);
+  });
 }
