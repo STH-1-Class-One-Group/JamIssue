@@ -1,11 +1,5 @@
-﻿import { useCallback } from 'react';
+import { useCallback } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { getAdminSummary } from '../api/adminClient';
-import { getMySummary } from '../api/myClient';
-import { getCommunityRoutes } from '../api/routesClient';
-import { getReviewFeedPage } from '../api/reviewsClient';
-import { toReviewSummaryList } from '../lib/reviews';
-import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import type {
   AdminSummaryResponse,
   CommunityRouteSort,
@@ -16,6 +10,10 @@ import type {
   Tab,
   UserRoute,
 } from '../types';
+import { createCommunityRouteLoader } from './app-tab-loaders/communityRouteLoader';
+import { createFeedReviewLoader } from './app-tab-loaders/feedReviewLoader';
+import { createAdminSummaryLoader, createMyPageSummaryLoader } from './app-tab-loaders/summaryLoaders';
+import { useAppTabLoaderBindings } from './useAppTabLoaderBindings';
 
 type CommunityRoutesCache = Partial<Record<CommunityRouteSort, UserRoute[]>>;
 
@@ -52,33 +50,26 @@ export function useAppTabDataLoaders({
   setAdminSummary,
   setMyPage,
 }: UseAppTabDataLoadersParams) {
-  const setFeedHasMore = useAppPageRuntimeStore((state) => state.setFeedHasMore);
-  const setFeedNextCursor = useAppPageRuntimeStore((state) => state.setFeedNextCursor);
-  const setMyPageError = useAppPageRuntimeStore((state) => state.setMyPageError);
+  const bindings = useAppTabLoaderBindings();
 
-  const fetchCommunityRoutes = useCallback(async (sort: CommunityRouteSort, force = false) => {
-    const cached = communityRoutesCacheRef.current[sort];
-    if (!force && cached) {
-      setCommunityRoutes(cached);
-      return cached;
-    }
+  const fetchCommunityRoutes = useCallback(
+    createCommunityRouteLoader({
+      communityRoutesCacheRef,
+      replaceCommunityRoutes,
+      setCommunityRoutes,
+    }),
+    [communityRoutesCacheRef, replaceCommunityRoutes, setCommunityRoutes],
+  );
 
-    const nextRoutes = await getCommunityRoutes(sort);
-    replaceCommunityRoutes(nextRoutes, sort);
-    return nextRoutes;
-  }, [communityRoutesCacheRef, replaceCommunityRoutes, setCommunityRoutes]);
-
-  const ensureFeedReviews = useCallback(async (force = false) => {
-    if (!force && feedLoadedRef.current) {
-      return;
-    }
-
-    const page = await getReviewFeedPage({ limit: 10 });
-    setReviews(toReviewSummaryList(page.items));
-    setFeedNextCursor(page.nextCursor);
-    setFeedHasMore(Boolean(page.nextCursor));
-    feedLoadedRef.current = true;
-  }, [feedLoadedRef, setFeedHasMore, setFeedNextCursor, setReviews]);
+  const ensureFeedReviews = useCallback(
+    createFeedReviewLoader({
+      feedLoadedRef,
+      setReviews,
+      setFeedNextCursor: bindings.setFeedNextCursor,
+      setFeedHasMore: bindings.setFeedHasMore,
+    }),
+    [bindings.setFeedHasMore, bindings.setFeedNextCursor, feedLoadedRef, setReviews],
+  );
 
   const ensureCuratedCourses = useCallback(async (force = false) => {
     if (!force && coursesLoadedRef.current) {
@@ -89,55 +80,26 @@ export function useAppTabDataLoaders({
     coursesLoadedRef.current = true;
   }, [coursesLoadedRef, setCourses]);
 
-  const refreshAdminSummary = useCallback(async (force = false) => {
-    if (!sessionUser?.isAdmin) {
-      setAdminSummary(null);
-      return null;
-    }
+  const refreshAdminSummary = useCallback(
+    createAdminSummaryLoader({
+      activeTab,
+      adminSummary,
+      sessionUser,
+      setAdminLoading,
+      setAdminSummary,
+    }),
+    [activeTab, adminSummary, sessionUser, setAdminLoading, setAdminSummary],
+  );
 
-    if (!force && activeTab !== 'my' && adminSummary !== null) {
-      return adminSummary;
-    }
-
-    setAdminLoading(true);
-    try {
-      const nextSummary = await getAdminSummary();
-      setAdminSummary(nextSummary);
-      return nextSummary;
-    } finally {
-      setAdminLoading(false);
-    }
-  }, [activeTab, adminSummary, sessionUser, setAdminLoading, setAdminSummary]);
-
-  const refreshMyPageForUser = useCallback(async (user: SessionUser | null, force = false) => {
-    if (!user) {
-      setMyPage(null);
-      setMyPageError(null);
-      return null;
-    }
-
-    if (!force && activeTab !== 'my' && myPage === null) {
-      return null;
-    }
-
-    try {
-      const nextMyPage = await getMySummary();
-      const nextMyPageSummary = {
-        ...nextMyPage,
-        reviews: toReviewSummaryList(nextMyPage.reviews),
-      };
-      setMyPage(nextMyPageSummary);
-      setMyPageError(null);
-      return nextMyPageSummary;
-    } catch (error) {
-      setMyPage(null);
-      setMyPageError(error instanceof Error ? error.message : '마이페이지 정보를 불러오지 못했어요.');
-      if (activeTab !== 'my') {
-        return null;
-      }
-      throw error;
-    }
-  }, [activeTab, myPage, setMyPage, setMyPageError]);
+  const refreshMyPageForUser = useCallback(
+    createMyPageSummaryLoader({
+      activeTab,
+      myPage,
+      setMyPage,
+      setMyPageError: bindings.setMyPageError,
+    }),
+    [activeTab, bindings.setMyPageError, myPage, setMyPage],
+  );
 
   return {
     fetchCommunityRoutes,

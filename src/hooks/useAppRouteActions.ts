@@ -1,10 +1,8 @@
-﻿import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { createUserRoute, toggleCommunityRouteLike } from '../api/routesClient';
-import { useAuthStore } from '../store/auth-store';
-import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
-import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import { useMyPageStore } from '../store/my-page-store';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { MyPageResponse, SessionUser, Tab, UserRoute } from '../types';
+import { createPublishRouteHandler } from './app-route-actions/publishRouteAction';
+import { createToggleRouteLikeHandler } from './app-route-actions/routeLikeAction';
+import { useAppRouteActionStoreBindings } from './useAppRouteActionStoreBindings';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 type CommunityRoutesCache = Partial<Record<'popular' | 'latest', UserRoute[]>>;
@@ -27,101 +25,30 @@ export function useAppRouteActions({
   formatErrorMessage,
   goToTab,
 }: UseAppRouteActionsParams) {
-  const sessionUser = useAuthStore((state) => state.sessionUser);
-  const setRouteLikeUpdatingId = useAppPageRuntimeStore((state) => state.setRouteLikeUpdatingId);
-  const setRouteSubmitting = useAppPageRuntimeStore((state) => state.setRouteSubmitting);
-  const setRouteError = useAppPageRuntimeStore((state) => state.setRouteError);
-  const setNotice = useAppShellRuntimeStore((state) => state.setNotice);
-  const setMyPageTab = useMyPageStore((state) => state.setMyPageTab);
+  const bindings = useAppRouteActionStoreBindings();
 
-  async function handleToggleRouteLike(routeId: string) {
-    if (!sessionUser) {
-      goToTab('my');
-      setNotice('좋아요를 누르려면 먼저 로그인해 주세요.');
-      return;
-    }
+  const handleToggleRouteLike = createToggleRouteLikeHandler({
+    sessionUser: bindings.sessionUser,
+    setNotice: bindings.setNotice,
+    setRouteLikeUpdatingId: bindings.setRouteLikeUpdatingId,
+    setMyPage,
+    patchCommunityRoutes,
+    formatErrorMessage,
+    goToTab,
+  });
 
-    setRouteLikeUpdatingId(routeId);
-    try {
-      const result = await toggleCommunityRouteLike(routeId);
-      patchCommunityRoutes(routeId, (route) => ({
-        ...route,
-        likeCount: result.likeCount,
-        likedByMe: result.likedByMe,
-      }));
-      setMyPage((current) => {
-        if (!current) {
-          return current;
-        }
-        return {
-          ...current,
-          routes: current.routes.map((route) =>
-            route.id === routeId
-              ? {
-                  ...route,
-                  likeCount: result.likeCount,
-                  likedByMe: result.likedByMe,
-                }
-              : route,
-          ),
-        };
-      });
-    } catch (error) {
-      setNotice(formatErrorMessage(error));
-    } finally {
-      setRouteLikeUpdatingId(null);
-    }
-  }
-
-  async function handlePublishRoute(payload: { travelSessionId: string; title: string; description: string; mood: string }) {
-    if (!sessionUser) {
-      goToTab('my');
-      setRouteError('로그인하면 여행 세션을 코스로 발행할 수 있어요.');
-      return;
-    }
-
-    setRouteSubmitting(true);
-    setRouteError(null);
-    try {
-      const createdRoute = await createUserRoute({
-        travelSessionId: payload.travelSessionId,
-        title: payload.title,
-        description: payload.description,
-        mood: payload.mood,
-        isPublic: true,
-      });
-      // 발행 직후 공개 경로 목록이 최신 상태를 보도록 캐시를 갱신한다.
-      communityRoutesCacheRef.current = {
-        ...communityRoutesCacheRef.current,
-        latest: [createdRoute, ...(communityRoutesCacheRef.current.latest ?? []).filter((route) => route.id !== createdRoute.id)],
-      };
-      delete communityRoutesCacheRef.current.popular;
-      setMyPage((current) => {
-        if (!current) {
-          return current;
-        }
-        const routeExists = current.routes.some((route) => route.id === createdRoute.id);
-        return {
-          ...current,
-          routes: [createdRoute, ...current.routes.filter((route) => route.id !== createdRoute.id)],
-          travelSessions: current.travelSessions.map((session) =>
-            session.id === payload.travelSessionId ? { ...session, publishedRouteId: createdRoute.id } : session,
-          ),
-          stats: {
-            ...current.stats,
-            routeCount: routeExists ? current.stats.routeCount : current.stats.routeCount + 1,
-          },
-        };
-      });
-      setNotice('코스를 발행했어요. 공개 경로 탭에서 바로 확인할 수 있어요.');
-      setMyPageTab('routes');
-      await refreshMyPageForUser(sessionUser, true);
-    } catch (error) {
-      setRouteError(formatErrorMessage(error));
-    } finally {
-      setRouteSubmitting(false);
-    }
-  }
+  const handlePublishRoute = createPublishRouteHandler({
+    sessionUser: bindings.sessionUser,
+    setRouteSubmitting: bindings.setRouteSubmitting,
+    setRouteError: bindings.setRouteError,
+    setNotice: bindings.setNotice,
+    setMyPageTab: bindings.setMyPageTab,
+    setMyPage,
+    communityRoutesCacheRef,
+    refreshMyPageForUser,
+    formatErrorMessage,
+    goToTab,
+  });
 
   return {
     handleToggleRouteLike,
