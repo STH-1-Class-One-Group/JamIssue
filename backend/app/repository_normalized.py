@@ -77,7 +77,10 @@ from .repositories.review_write_repository import (
 )
 from .repositories.stamp_data_repository import get_stamps as get_stamps_entry, toggle_stamp as toggle_stamp_entry
 from .repositories.user_data_repository import get_or_create_user as get_or_create_user_entry
-from .repository_support import utcnow_naive
+from .repository_support import utcnow_naive as utcnow_naive_entry
+
+def utcnow_naive():
+    return utcnow_naive_entry()
 
 def get_or_create_user(
     db: Session,
