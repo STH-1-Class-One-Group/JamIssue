@@ -52,9 +52,9 @@ export function ReviewComposer({
   const actionLabel = !loggedIn
     ? '로그인하고 작성'
     : isDailyLimitReached
-      ? '오늘 피드 작성 완료'
+      ? '오늘 리뷰 작성 완료'
       : canSubmit
-        ? '피드 올리기'
+        ? '리뷰 올리기'
         : '오늘 스탬프 먼저 찍기';
   const actionHandler = !loggedIn ? onRequestLogin : canSubmit || isDailyLimitReached ? undefined : onRequestProof;
 
@@ -62,7 +62,7 @@ export function ReviewComposer({
     <section className="sheet-card stack-gap review-composer">
       <div>
         <p className="eyebrow">WRITE FEED</p>
-        <h3>{placeName} 피드 남기기</h3>
+        <h3>{placeName} 리뷰 남기기</h3>
         <p className="section-copy">{proofMessage}</p>
       </div>
 
