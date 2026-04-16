@@ -1,9 +1,5 @@
 import { useMemo } from 'react';
-import {
-  calculateDistanceMeters,
-  getLatestPlaceStamp,
-  getTodayStampLog,
-} from '../lib/visits';
+import { calculateDistanceMeters, getLatestPlaceStamp, getTodayStampLog } from '../lib/visits';
 import type {
   ApiStatus,
   BootstrapResponse,
@@ -12,17 +8,22 @@ import type {
   MyPageResponse,
   Place,
   Review,
-  SessionUser,
   RoutePreview,
+  SessionUser,
 } from '../types';
-
-function filterPlacesByCategory(places: Place[], category: Category) {
-  if (category === 'all') {
-    return places;
-  }
-
-  return places.filter((place) => place.category === category);
-}
+import {
+  buildPlaceNameById,
+  filterPlacesByCategory,
+  getRoutePreviewPlaces,
+  getSelectedFestival,
+  getSelectedPlace,
+} from './app-view-models/placeSelections';
+import {
+  getHasCreatedReviewToday,
+  getKnownMyReviews,
+  getReviewProofMessage,
+} from './app-view-models/reviewCapability';
+import { getGlobalStatus, getHydratedMyPage } from './app-view-models/statusModels';
 
 interface UseAppViewModelsParams {
   places: Place[];
@@ -68,89 +69,41 @@ export function useAppViewModels({
   mapLocationMessage,
 }: UseAppViewModelsParams) {
   const filteredPlaces = useMemo(() => filterPlacesByCategory(places, activeCategory), [places, activeCategory]);
-  const hydratedMyPage = useMemo(() => (
-    myPage ? {
-      ...myPage,
-      notifications,
-      unreadNotificationCount,
-    } : myPage
-  ), [myPage, notifications, unreadNotificationCount]);
-  const selectedPlace = useMemo(() => {
-    if (!selectedPlaceId) {
-      return null;
-    }
-
-    return places.find((place) => place.id === selectedPlaceId) ?? null;
-  }, [places, selectedPlaceId]);
-  const routePreviewPlaces = useMemo(() => {
-    if (!selectedRoutePreview) {
-      return [];
-    }
-
-    return selectedRoutePreview.placeIds
-      .map((placeId) => places.find((place) => place.id === placeId) ?? null)
-      .filter(Boolean) as Place[];
-  }, [places, selectedRoutePreview]);
-  const selectedFestival = useMemo(() => {
-    if (!selectedFestivalId) {
-      return null;
-    }
-
-    return festivals.find((festival) => festival.id === selectedFestivalId) ?? null;
-  }, [festivals, selectedFestivalId]);
+  const hydratedMyPage = useMemo(() => getHydratedMyPage({ myPage, notifications, unreadNotificationCount }), [myPage, notifications, unreadNotificationCount]);
+  const selectedPlace = useMemo(() => getSelectedPlace(places, selectedPlaceId), [places, selectedPlaceId]);
+  const routePreviewPlaces = useMemo(() => getRoutePreviewPlaces(places, selectedRoutePreview), [places, selectedRoutePreview]);
+  const selectedFestival = useMemo(() => getSelectedFestival(festivals, selectedFestivalId), [festivals, selectedFestivalId]);
   const todayStamp = selectedPlace ? getTodayStampLog(stampState.logs, selectedPlace.id) : null;
   const latestStamp = selectedPlace ? getLatestPlaceStamp(stampState.logs, selectedPlace.id) : null;
   const visitCount = selectedPlace?.totalVisitCount ?? 0;
-  const selectedPlaceDistanceMeters =
-    selectedPlace && currentPosition
-      ? calculateDistanceMeters(currentPosition.latitude, currentPosition.longitude, selectedPlace.latitude, selectedPlace.longitude)
-      : null;
-  const knownMyReviews = useMemo(() => {
-    if (!sessionUser) {
-      return [];
-    }
-
-    const reviewMap = new Map();
-    for (const review of [...reviews, ...selectedPlaceReviews, ...(myPage?.reviews ?? [])]) {
-      if (review.userId !== sessionUser.id) {
-        continue;
-      }
-      reviewMap.set(review.id, review);
-    }
-
-    return [...reviewMap.values()] as Review[];
-  }, [myPage?.reviews, reviews, selectedPlaceReviews, sessionUser]);
-  const hasCreatedReviewToday = useMemo(() => {
-    if (!sessionUser || !todayStamp) {
-      return false;
-    }
-
-    return knownMyReviews.some((review) => review.placeId === todayStamp.placeId && (review.stampId === todayStamp.id || review.visitedAt.startsWith(todayStamp.stampedDate)));
-  }, [knownMyReviews, sessionUser, todayStamp]);
+  const selectedPlaceDistanceMeters = selectedPlace && currentPosition
+    ? calculateDistanceMeters(currentPosition.latitude, currentPosition.longitude, selectedPlace.latitude, selectedPlace.longitude)
+    : null;
+  const knownMyReviews = useMemo(() => getKnownMyReviews({
+    reviews,
+    selectedPlaceReviews,
+    myPageReviews: myPage?.reviews,
+    sessionUser,
+  }), [myPage?.reviews, reviews, selectedPlaceReviews, sessionUser]);
+  const hasCreatedReviewToday = useMemo(() => getHasCreatedReviewToday({
+    knownMyReviews,
+    sessionUser,
+    todayStamp,
+  }), [knownMyReviews, sessionUser, todayStamp]);
   const canCreateReview = Boolean(sessionUser && selectedPlace && todayStamp && !hasCreatedReviewToday);
-  const placeNameById = useMemo(() => Object.fromEntries(places.map((place) => [place.id, place.name])), [places]);
-  const globalStatus = useMemo(() => {
-    if (notice) {
-      return { tone: 'info' as const, message: notice };
-    }
-    if (bootstrapStatus === 'error' && bootstrapError) {
-      return { tone: 'error' as const, message: bootstrapError };
-    }
-    if (mapLocationMessage) {
-      return {
-        tone: mapLocationStatus === 'error' ? ('error' as const) : ('info' as const),
-        message: mapLocationMessage,
-      };
-    }
-    return null;
-  }, [notice, bootstrapStatus, bootstrapError, mapLocationMessage, mapLocationStatus]);
-  const reviewProofMessage = !sessionUser
-    ? '로그인하면 오늘 방문 인증 뒤에만 피드를 남길 수 있어요.'
-    : hasCreatedReviewToday
-      ? '오늘은 이미 이 장소 피드를 작성했어요. 피드는 하루에 하나만 남길 수 있어요.'
-      : todayStamp
-        ? `${todayStamp.visitLabel} 방문 스탬프가 확인됐어요. 오늘 피드 한 개를 작성할 수 있어요.`
-        : '오늘 방문 스탬프를 먼저 찍으면 피드를 작성할 수 있어요.';
+  const placeNameById = useMemo(() => buildPlaceNameById(places), [places]);
+  const globalStatus = useMemo(() => getGlobalStatus({
+    notice,
+    bootstrapStatus,
+    bootstrapError,
+    mapLocationStatus,
+    mapLocationMessage,
+  }), [notice, bootstrapStatus, bootstrapError, mapLocationMessage, mapLocationStatus]);
+  const reviewProofMessage = getReviewProofMessage({
+    sessionUser,
+    hasCreatedReviewToday,
+    todayStamp,
+  });
 
   return {
     filteredPlaces,
