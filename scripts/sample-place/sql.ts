@@ -1,0 +1,76 @@
+export function sqlString(value: unknown) {
+  if (value === null || value === undefined) return 'null';
+  return `'${String(value).replace(/'/g, "''")}'`;
+}
+
+export function sqlJson(value: unknown) {
+  return `${sqlString(JSON.stringify(value))}::jsonb`;
+}
+
+export function buildSamplePlaceSeedSql(places: Array<Record<string, any>>) {
+  return [
+    'begin;',
+    '',
+    'insert into public.map (',
+    '  slug,',
+    '  name,',
+    '  district,',
+    '  category,',
+    '  latitude,',
+    '  longitude,',
+    '  summary,',
+    '  description,',
+    '  image_url,',
+    '  image_storage_path,',
+    '  vibe_tags,',
+    '  visit_time,',
+    '  route_hint,',
+    '  stamp_reward,',
+    '  hero_label,',
+    '  jam_color,',
+    '  accent_color,',
+    '  is_active',
+    ') values',
+    places.map((place) => `(${[
+      sqlString(place.slug),
+      sqlString(place.name),
+      sqlString(place.district),
+      sqlString(place.category),
+      place.latitude,
+      place.longitude,
+      sqlString(place.summary),
+      sqlString(place.description),
+      'null',
+      sqlString(place.imageStoragePath),
+      sqlJson(place.vibeTags),
+      sqlString(place.visitTime),
+      sqlString(place.routeHint),
+      sqlString(place.stampReward),
+      sqlString(place.heroLabel),
+      sqlString(place.jamColor),
+      sqlString(place.accentColor),
+      'true',
+    ].join(', ')})`).join(',\n'),
+    'on conflict (slug) do update set',
+    '  name = excluded.name,',
+    '  district = excluded.district,',
+    '  category = excluded.category,',
+    '  latitude = excluded.latitude,',
+    '  longitude = excluded.longitude,',
+    '  summary = excluded.summary,',
+    '  description = excluded.description,',
+    '  image_storage_path = excluded.image_storage_path,',
+    '  vibe_tags = excluded.vibe_tags,',
+    '  visit_time = excluded.visit_time,',
+    '  route_hint = excluded.route_hint,',
+    '  stamp_reward = excluded.stamp_reward,',
+    '  hero_label = excluded.hero_label,',
+    '  jam_color = excluded.jam_color,',
+    '  accent_color = excluded.accent_color,',
+    '  is_active = excluded.is_active,',
+    '  updated_at = now();',
+    '',
+    'commit;',
+    '',
+  ].join('\n');
+}
