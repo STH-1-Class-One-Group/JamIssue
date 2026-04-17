@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from sqlalchemy.orm import Session
-
-from .models import CommentCreate, CommentOut, UserNotificationOut
 from .repositories.account_data_repository import delete_account as delete_account
 from .repositories.admin_data_repository import (
     get_admin_summary as get_admin_summary,
