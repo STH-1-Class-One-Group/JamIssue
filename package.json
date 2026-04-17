@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "tsx scripts/build-frontend.ts",
+    "prebuild": "node scripts/build-frontend.mjs prepare",
+    "build": "esbuild src/main.tsx --bundle --outdir=infra/nginx/site/assets --public-path=/assets --entry-names=main-[hash] --chunk-names=chunk-[hash] --asset-names=asset-[hash] --format=esm --splitting --target=es2020,chrome110,safari16 --jsx=automatic --loader:.css=css --loader:.png=file --loader:.otf=file --loader:.ttf=file --loader:.woff=file --loader:.woff2=file --minify --log-level=info && node scripts/build-frontend.mjs finalize",
     "lint": "eslint src scripts deploy/api-worker-shell test",
     "test": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run",
     "test:unit": "tsx scripts/run-unit-tests.ts",

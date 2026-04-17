@@ -13,6 +13,7 @@ import type {
   RoutePreview,
   SessionUser,
   Tab,
+  UserNotification,
   UserRoute,
 } from '../../types';
 
@@ -60,6 +61,7 @@ export interface AppPageStageProps {
     adminLoading: boolean;
     commentsHasMore: boolean;
     commentsLoadingMore: boolean;
+    unreadNotificationCount: number;
   };
   sharedActions: {
     onRequestLogin: () => void;
@@ -97,5 +99,8 @@ export interface AppPageStageProps {
     onRefreshAdmin: () => Promise<void>;
     onToggleAdminPlace: (placeId: string, nextValue: boolean) => Promise<void>;
     onToggleAdminManualOverride: (placeId: string, nextValue: boolean) => Promise<void>;
+    onOpenNotification: (notification: UserNotification) => Promise<void>;
+    onMarkAllNotificationsRead: () => Promise<void>;
+    onDeleteNotification: (notificationId: string) => Promise<void>;
   };
 }

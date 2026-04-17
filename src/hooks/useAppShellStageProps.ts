@@ -5,10 +5,6 @@ type AppShellCoordinatorState = ReturnType<typeof useAppShellCoordinator>;
 export function useAppShellStageProps(state: AppShellCoordinatorState) {
   const {
     activeTab,
-    handleDeleteNotification,
-    handleMarkAllNotificationsRead,
-    handleOpenGlobalNotification,
-    sessionUser,
     shellNavigation: {
       canNavigateBack,
       handleNavigateBack,
@@ -23,10 +19,5 @@ export function useAppShellStageProps(state: AppShellCoordinatorState) {
     handleNavigateBack,
     handleBottomNavChange,
     globalStatus: viewModels.globalStatus,
-    hydratedMyPage: viewModels.hydratedMyPage,
-    sessionUser,
-    handleOpenGlobalNotification,
-    handleMarkAllNotificationsRead,
-    handleDeleteNotification,
   };
 }

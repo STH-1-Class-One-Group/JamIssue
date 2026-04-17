@@ -95,6 +95,7 @@ export function usePageStageProps(state: AppShellCoordinatorState) {
       adminLoading,
       commentsHasMore: myCommentsHasMore,
       commentsLoadingMore: myCommentsLoadingMore,
+      unreadNotificationCount: viewModels.hydratedMyPage?.unreadNotificationCount ?? 0,
     },
     sharedActions: {
       onRequestLogin: mapStageActions.handleRequestLogin,
@@ -132,6 +133,9 @@ export function usePageStageProps(state: AppShellCoordinatorState) {
       onRefreshAdmin: adminActions.handleRefreshAdminImport,
       onToggleAdminPlace: adminActions.handleToggleAdminPlace,
       onToggleAdminManualOverride: adminActions.handleToggleAdminManualOverride,
+      onOpenNotification: state.handleOpenGlobalNotification,
+      onMarkAllNotificationsRead: state.handleMarkAllNotificationsRead,
+      onDeleteNotification: state.handleDeleteNotification,
     },
   };
 }

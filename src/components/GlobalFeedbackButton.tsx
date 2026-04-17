@@ -1,4 +1,4 @@
-const FEEDBACK_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfKNC80Y2_kDm2NFzOAa6IBOfcgjdZYv48EavTkjdbEI4bMQw/viewform?usp=publish-editor';
+export const FEEDBACK_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfKNC80Y2_kDm2NFzOAa6IBOfcgjdZYv48EavTkjdbEI4bMQw/viewform?usp=publish-editor';
 
 function FeedbackIcon() {
   return (

@@ -26,6 +26,7 @@ export function PageStageMyView({
         routeError: myPageData.routeError,
         commentsHasMore: myPageData.commentsHasMore,
         commentsLoadingMore: myPageData.commentsLoadingMore,
+        unreadNotificationCount: myPageData.unreadNotificationCount,
       }}
       reviewActions={{
         onOpenPlace: sharedActions.onOpenPlace,
@@ -53,6 +54,9 @@ export function PageStageMyView({
         onRefreshAdmin: myPageActions.onRefreshAdmin,
         onToggleAdminPlace: myPageActions.onToggleAdminPlace,
         onToggleAdminManualOverride: myPageActions.onToggleAdminManualOverride,
+        onOpenNotification: myPageActions.onOpenNotification,
+        onMarkAllNotificationsRead: myPageActions.onMarkAllNotificationsRead,
+        onDeleteNotification: myPageActions.onDeleteNotification,
       }}
     />
   );

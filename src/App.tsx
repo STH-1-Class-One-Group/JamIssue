@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
 import { BottomNav } from './components/BottomNav';
-import { GlobalFeedbackButton } from './components/GlobalFeedbackButton';
 import { FloatingBackButton } from './components/FloatingBackButton';
-import { GlobalNotificationCenter } from './components/GlobalNotificationCenter';
 import { GlobalStatusBanner } from './components/GlobalStatusBanner';
 import {
   useAppRouteState,
@@ -51,38 +49,26 @@ export default function App() {
     handleNavigateBack,
     handleBottomNavChange,
     globalStatus,
-    hydratedMyPage,
-    sessionUser,
-    handleOpenGlobalNotification,
-    handleMarkAllNotificationsRead,
-    handleDeleteNotification,
     mapStageProps,
     pageStageProps,
   } = useAppStageProps(coordinator);
   return (
     <div className="map-app-shell">
-      <div className={[
-        'phone-shell',
-        activeTab === 'map' ? 'phone-shell--map' : '',
-      ].filter(Boolean).join(' ')}>
+      <div
+        className={[
+          'phone-shell',
+          activeTab === 'map' ? 'phone-shell--map' : '',
+        ].filter(Boolean).join(' ')}
+      >
         {globalStatus && (
           <div className="phone-shell__status-slot">
-            <GlobalStatusBanner tone={globalStatus.tone} message={globalStatus.message} layout={activeTab === 'map' ? 'map' : 'page'} />
+            <GlobalStatusBanner
+              tone={globalStatus.tone}
+              message={globalStatus.message}
+              layout={activeTab === 'map' ? 'map' : 'page'}
+            />
           </div>
         )}
-        <div className="phone-shell__utility-slot">
-          <GlobalFeedbackButton />
-          {sessionUser && hydratedMyPage && (
-            <GlobalNotificationCenter
-              sessionUserName={sessionUser.nickname}
-              notifications={hydratedMyPage.notifications}
-              unreadCount={hydratedMyPage.unreadNotificationCount}
-              onOpenNotification={handleOpenGlobalNotification}
-              onMarkAllNotificationsRead={handleMarkAllNotificationsRead}
-              onDeleteNotification={handleDeleteNotification}
-            />
-          )}
-        </div>
         <div className="phone-shell__body">
           {activeTab === 'map' ? (
             <AppMapStageView {...mapStageProps} />

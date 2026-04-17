@@ -1,36 +1,37 @@
-﻿import { build } from "esbuild";
-import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+/* global console, process */
+
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, "..");
-const siteDir = path.join(rootDir, "infra", "nginx", "site");
-const assetsDir = path.join(siteDir, "assets");
-const iconsDir = path.join(siteDir, "icons");
+const rootDir = path.resolve(__dirname, '..');
+const siteDir = path.join(rootDir, 'infra', 'nginx', 'site');
+const assetsDir = path.join(siteDir, 'assets');
+const iconsDir = path.join(siteDir, 'icons');
 
-const APP_NAME = "대전잼있슈";
-const APP_SHORT_NAME = "잼있슈";
-const APP_DESCRIPTION = "대전을 한 입에 고르는 모바일 여행 앱";
-const MAP_KEY_WARNING = "PUBLIC_NAVER_MAP_CLIENT_ID 값이 비어 있어 지도 영역은 안내 상태로 표시됩니다.";
+const APP_NAME = '대전잼있슈';
+const APP_SHORT_NAME = '잼있슈';
+const APP_DESCRIPTION = '대전을 한 입에 고르는 모바일 여행 앱';
+const MAP_KEY_WARNING = 'PUBLIC_NAVER_MAP_CLIENT_ID 값이 비어 있어 지도 영역은 안내 상태로 표시됩니다.';
 
 async function readPublicEnv() {
-  const envFiles = [path.join(rootDir, ".env.example"), path.join(rootDir, ".env")];
+  const envFiles = [path.join(rootDir, '.env.example'), path.join(rootDir, '.env')];
   const values = {
     ...process.env,
   };
 
   for (const envFile of envFiles) {
     try {
-      const content = await readFile(envFile, "utf8");
+      const content = await readFile(envFile, 'utf8');
       for (const line of content.split(/\r?\n/)) {
         const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith("#")) {
+        if (!trimmed || trimmed.startsWith('#')) {
           continue;
         }
 
-        const separatorIndex = trimmed.indexOf("=");
+        const separatorIndex = trimmed.indexOf('=');
         if (separatorIndex <= 0) {
           continue;
         }
@@ -48,17 +49,17 @@ async function readPublicEnv() {
 
   const mapKey =
     (values.PUBLIC_NAVER_MAP_CLIENT_ID &&
-    values.PUBLIC_NAVER_MAP_CLIENT_ID !== "YOUR_NAVER_MAP_CLIENT_ID"
+    values.PUBLIC_NAVER_MAP_CLIENT_ID !== 'YOUR_NAVER_MAP_CLIENT_ID'
       ? values.PUBLIC_NAVER_MAP_CLIENT_ID
-      : "") ||
+      : '') ||
     values.NAVER_MAP_CLIENT_ID ||
-    "";
+    '';
 
   return {
-    apiBaseUrl: values.PUBLIC_APP_BASE_URL || values.APP_BASE_URL || "http://localhost:8000",
+    apiBaseUrl: values.PUBLIC_APP_BASE_URL || values.APP_BASE_URL || 'http://localhost:8000',
     naverMapClientId: mapKey,
-    supabaseUrl: values.PUBLIC_SUPABASE_URL || values.APP_SUPABASE_URL || "",
-    supabaseAnonKey: values.PUBLIC_SUPABASE_ANON_KEY || values.APP_SUPABASE_ANON_KEY || "",
+    supabaseUrl: values.PUBLIC_SUPABASE_URL || values.APP_SUPABASE_URL || '',
+    supabaseAnonKey: values.PUBLIC_SUPABASE_ANON_KEY || values.APP_SUPABASE_ANON_KEY || '',
   };
 }
 
@@ -68,17 +69,17 @@ function createManifest() {
       name: APP_NAME,
       short_name: APP_SHORT_NAME,
       description: APP_DESCRIPTION,
-      start_url: "/",
-      display: "standalone",
-      background_color: "#fff8fb",
-      theme_color: "#ff7fa8",
-      lang: "ko",
+      start_url: '/',
+      display: 'standalone',
+      background_color: '#fff8fb',
+      theme_color: '#ff7fa8',
+      lang: 'ko',
       icons: [
         {
-          src: "/icons/jamissue-icon.svg",
-          sizes: "any",
-          type: "image/svg+xml",
-          purpose: "any maskable",
+          src: '/icons/jamissue-icon.svg',
+          sizes: 'any',
+          type: 'image/svg+xml',
+          purpose: 'any maskable',
         },
       ],
     },
@@ -158,64 +159,53 @@ async function resolveBuiltAssets() {
   const cssFile = files.find((file) => /^main-[A-Z0-9]+\.css$/i.test(file));
 
   if (!jsFile || !cssFile) {
-    throw new Error(`Expected hashed main assets, found: ${files.join(", ")}`);
+    throw new Error(`Expected hashed main assets, found: ${files.join(', ')}`);
   }
 
   return { jsFile, cssFile };
 }
 
-async function writeStaticFiles(publicConfig, builtAssets) {
-  await mkdir(siteDir, { recursive: true });
-  await mkdir(iconsDir, { recursive: true });
-  await writeFile(path.join(siteDir, "index.html"), createIndexHtml(builtAssets), "utf8");
-  await writeFile(path.join(siteDir, "_headers"), createPagesHeaders(), "utf8");
-  await writeFile(path.join(siteDir, "manifest.webmanifest"), createManifest(), "utf8");
-  await writeFile(path.join(iconsDir, "jamissue-icon.svg"), createIconSvg(), "utf8");
-  await writeFile(
-    path.join(siteDir, "app-config.js"),
-    `window.__JAMISSUE_CONFIG__ = ${JSON.stringify(publicConfig, null, 2)};\n`,
-    "utf8",
-  );
+async function prepareBuild() {
+  await rm(siteDir, { recursive: true, force: true });
+  await mkdir(assetsDir, { recursive: true });
 }
 
-async function main() {
+async function finalizeBuild() {
   const publicConfig = await readPublicEnv();
 
   if (!publicConfig.naverMapClientId) {
     console.warn(MAP_KEY_WARNING);
   }
 
-  await rm(siteDir, { recursive: true, force: true });
-  await mkdir(assetsDir, { recursive: true });
-
-  await build({
-    entryPoints: [path.join(rootDir, "src", "main.tsx")],
-    bundle: true,
-    outdir: assetsDir,
-    publicPath: "/assets",
-    entryNames: "main-[hash]",
-    chunkNames: "chunk-[hash]",
-    assetNames: "asset-[hash]",
-    format: "esm",
-    splitting: true,
-    target: ["es2020", "chrome110", "safari16"],
-    jsx: "automatic",
-    loader: {
-      ".css": "css",
-      ".png": "file",
-      ".otf": "file",
-      ".ttf": "file",
-      ".woff": "file",
-      ".woff2": "file",
-    },
-    minify: true,
-    sourcemap: false,
-    logLevel: "info",
-  });
-
   const builtAssets = await resolveBuiltAssets();
-  await writeStaticFiles(publicConfig, builtAssets);
+  await mkdir(siteDir, { recursive: true });
+  await mkdir(iconsDir, { recursive: true });
+  await writeFile(path.join(siteDir, 'index.html'), createIndexHtml(builtAssets), 'utf8');
+  await writeFile(path.join(siteDir, '_headers'), createPagesHeaders(), 'utf8');
+  await writeFile(path.join(siteDir, 'manifest.webmanifest'), createManifest(), 'utf8');
+  await writeFile(path.join(iconsDir, 'jamissue-icon.svg'), createIconSvg(), 'utf8');
+  await writeFile(
+    path.join(siteDir, 'app-config.js'),
+    `window.__JAMISSUE_CONFIG__ = ${JSON.stringify(publicConfig, null, 2)};\n`,
+    'utf8',
+  );
   console.log(`Built mobile web bundle to ${siteDir}`);
+}
+
+async function main() {
+  const mode = process.argv[2];
+
+  if (mode === 'prepare') {
+    await prepareBuild();
+    return;
+  }
+
+  if (mode === 'finalize') {
+    await finalizeBuild();
+    return;
+  }
+
+  throw new Error(`Unknown build mode: ${mode ?? '(missing)'}`);
 }
 
 main().catch((error) => {

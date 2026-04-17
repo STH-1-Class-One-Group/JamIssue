@@ -32,9 +32,8 @@ export function MyPageAccountSection({
         </button>
       </div>
       {!sessionUser.profileCompletedAt && (
-        <p className="section-copy">닉네임을 먼저 정하면 기록을 계정 기준으로 계속 이어갈 수 있어요.</p>
+        <p className="section-copy">프로필을 먼저 완성하면 기록과 계정 정보가 같은 기준으로 이어져요.</p>
       )}
     </section>
   );
 }
-
