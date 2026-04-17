@@ -25,6 +25,7 @@ export function MyPageAccountSection({
       </div>
       <div className="account-action-row">
         <button type="button" className={showSettings ? 'secondary-button is-complete' : 'secondary-button'} onClick={onToggleSettings}>
+          <span aria-hidden="true">⚙</span>{' '}
           {showSettings ? '설정 닫기' : '설정 열기'}
         </button>
         <button type="button" className="secondary-button" onClick={onLogout} disabled={isLoggingOut}>
