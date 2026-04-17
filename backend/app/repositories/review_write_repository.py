@@ -173,6 +173,17 @@ def create_comment_with_notifications(
     return get_review_comments(db, review_id), notifications
 
 
+def create_comment(
+    db: Session,
+    review_id: str,
+    payload: CommentCreate,
+    user_id: str,
+    nickname: str,
+) -> list[CommentOut]:
+    comments, _ = create_comment_with_notifications(db, review_id, payload, user_id, nickname)
+    return comments
+
+
 def delete_comment(
     db: Session,
     review_id: str,

@@ -1,6 +1,7 @@
 import { useAppCoordinatorActions } from './useAppCoordinatorActions';
 import { useAppCoordinatorEffects } from './useAppCoordinatorEffects';
 import { useAppCoordinatorServices } from './useAppCoordinatorServices';
+import { buildAppShellCoordinatorResult } from './buildAppShellCoordinatorResult';
 import type { CoordinatorArgs } from './useAppShellCoordinator.types';
 
 export function useAppShellCoordinator({
@@ -36,20 +37,14 @@ export function useAppShellCoordinator({
     services,
   });
 
-  return {
-    ...services,
-    ...actions,
+  return buildAppShellCoordinatorResult({
+    routeState,
+    domainState,
+    shellRuntimeState,
+    pageRuntimeState,
+    dataState,
     initialMapViewport,
-    ...pageRuntimeState,
-    ...domainState.auth,
-    ...domainState.map,
-    ...domainState.myPage,
-    ...domainState.returnView,
-    ...domainState.review,
-    ...routeState,
-    ...shellRuntimeState,
-    ...dataState,
-    ...services.navigationHelpers,
-    ...services.paginationActions,
-  };
+    services,
+    actions,
+  });
 }

@@ -45,7 +45,8 @@ from .repositories.review_query_repository import (
     to_review_out as to_review_out,
 )
 from .repositories.review_write_repository import (
-    create_comment_with_notifications as create_comment_with_notifications_entry,
+    create_comment as create_comment,
+    create_comment_with_notifications as create_comment_with_notifications,
     create_review as create_review,
     delete_comment as delete_comment,
     delete_review as delete_review,
@@ -103,25 +104,5 @@ __all__ = [
 
 def utcnow_naive():
     return utcnow_naive_entry()
-
-def create_comment_with_notifications(
-    db: Session,
-    review_id: str,
-    payload: CommentCreate,
-    user_id: str,
-    nickname: str,
-) -> tuple[list[CommentOut], list[tuple[str, UserNotificationOut]]]:
-    return create_comment_with_notifications_entry(db, review_id, payload, user_id, nickname)
-
-
-def create_comment(
-    db: Session,
-    review_id: str,
-    payload: CommentCreate,
-    user_id: str,
-    nickname: str,
-) -> list[CommentOut]:
-    comments, _ = create_comment_with_notifications(db, review_id, payload, user_id, nickname)
-    return comments
 
 
