@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
   createComment,
   deleteComment,
@@ -20,7 +21,7 @@ export function useAppReviewCommentActions({
   const setCommentSubmittingReviewId = useAppPageRuntimeStore((state) => state.setCommentSubmittingReviewId);
   const setCommentMutatingId = useAppPageRuntimeStore((state) => state.setCommentMutatingId);
 
-  async function handleCreateComment(reviewId: string, body: string, parentId?: string) {
+  const handleCreateComment = useCallback(async (reviewId: string, body: string, parentId?: string) => {
     if (!sessionUser) {
       goToTab('my');
       setNotice('댓글을 남기려면 먼저 로그인해 주세요.');
@@ -40,9 +41,9 @@ export function useAppReviewCommentActions({
     } finally {
       setCommentSubmittingReviewId(null);
     }
-  }
+  }, [sessionUser, goToTab, setNotice, setCommentSubmittingReviewId, syncReviewComments, patchReviewCollections, formatErrorMessage]);
 
-  async function handleUpdateComment(reviewId: string, commentId: string, body: string) {
+  const handleUpdateComment = useCallback(async (reviewId: string, commentId: string, body: string) => {
     if (!sessionUser) {
       goToTab('my');
       setNotice('댓글을 수정하려면 먼저 로그인해 주세요.');
@@ -65,9 +66,9 @@ export function useAppReviewCommentActions({
     } finally {
       setCommentMutatingId(null);
     }
-  }
+  }, [sessionUser, goToTab, setNotice, setCommentMutatingId, syncReviewComments, patchReviewCollections, activeTab, refreshMyPageForUser, formatErrorMessage]);
 
-  async function handleDeleteComment(reviewId: string, commentId: string) {
+  const handleDeleteComment = useCallback(async (reviewId: string, commentId: string) => {
     if (!sessionUser) {
       goToTab('my');
       setNotice('댓글을 삭제하려면 먼저 로그인해 주세요.');
@@ -90,7 +91,7 @@ export function useAppReviewCommentActions({
     } finally {
       setCommentMutatingId(null);
     }
-  }
+  }, [sessionUser, goToTab, setNotice, setCommentMutatingId, syncReviewComments, patchReviewCollections, activeTab, refreshMyPageForUser, formatErrorMessage]);
 
   return {
     handleCreateComment,

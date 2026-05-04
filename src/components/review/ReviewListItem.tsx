@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { CommentThread } from '../CommentThread';
 import type { Review } from '../../types';
 import { CommentIcon, HeartIcon } from './ReviewActionIcons';
@@ -22,7 +23,8 @@ interface ReviewListItemProps {
   onOpenComments?: (reviewId: string) => void;
 }
 
-export function ReviewListItem({
+// Optimizes performance by preventing unnecessary re-renders of list items in feeds
+export const ReviewListItem = memo(function ReviewListItem({
   review,
   currentUserId,
   highlightedReviewId,
@@ -120,4 +122,4 @@ export function ReviewListItem({
       )}
     </article>
   );
-}
+});
