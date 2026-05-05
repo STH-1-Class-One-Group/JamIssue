@@ -12,14 +12,30 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
   const coursesLoadedRef = useRef(false);
 
   function patchReviewCollections(reviewId: string, updater: (review: ReviewSummary) => ReviewSummary) {
-    setReviews((current) => current.map((review) => (review.id === reviewId ? toReviewSummary(updater(review)) : review)));
-    setSelectedPlaceReviews((current) =>
-      current.map((review) => (review.id === reviewId ? toReviewSummary(updater(review)) : review)),
-    );
-    for (const placeId of Object.keys(placeReviewsCacheRef.current)) {
-      placeReviewsCacheRef.current[placeId] = placeReviewsCacheRef.current[placeId].map((review) =>
-        review.id === reviewId ? toReviewSummary(updater(review)) : review,
-      );
+    const patchFn = (r: ReviewSummary) => (r.id === reviewId ? toReviewSummary(updater(r)) : r);
+
+    setReviews((current) => current.map(patchFn));
+    setSelectedPlaceReviews((current) => current.map(patchFn));
+
+    const existingReview =
+      reviews.find((r) => r.id === reviewId) || selectedPlaceReviews.find((r) => r.id === reviewId);
+
+    if (existingReview) {
+      const { placeId } = existingReview;
+      const collection = placeReviewsCacheRef.current[placeId];
+      if (collection) {
+        placeReviewsCacheRef.current[placeId] = collection.map(patchFn);
+        return;
+      }
+    }
+
+    const cache = placeReviewsCacheRef.current;
+    for (const placeId of Object.keys(cache)) {
+      const collection = cache[placeId];
+      if (collection.some((r) => r.id === reviewId)) {
+        cache[placeId] = collection.map(patchFn);
+        break;
+      }
     }
   }
 
