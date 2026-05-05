@@ -3,6 +3,7 @@ import type { MyPageResponse, SessionUser, Tab, UserRoute } from '../types';
 import { createPublishRouteHandler } from './app-route-actions/publishRouteAction';
 import { createToggleRouteLikeHandler } from './app-route-actions/routeLikeAction';
 import { useAppRouteActionStoreBindings } from './useAppRouteActionStoreBindings';
+import { useEventCallback } from './useEventCallback';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 type CommunityRoutesCache = Partial<Record<'popular' | 'latest', UserRoute[]>>;
@@ -27,7 +28,7 @@ export function useAppRouteActions({
 }: UseAppRouteActionsParams) {
   const bindings = useAppRouteActionStoreBindings();
 
-  const handleToggleRouteLike = createToggleRouteLikeHandler({
+  const handleToggleRouteLike = useEventCallback(createToggleRouteLikeHandler({
     sessionUser: bindings.sessionUser,
     setNotice: bindings.setNotice,
     setRouteLikeUpdatingId: bindings.setRouteLikeUpdatingId,
@@ -35,9 +36,9 @@ export function useAppRouteActions({
     patchCommunityRoutes,
     formatErrorMessage,
     goToTab,
-  });
+  }));
 
-  const handlePublishRoute = createPublishRouteHandler({
+  const handlePublishRoute = useEventCallback(createPublishRouteHandler({
     sessionUser: bindings.sessionUser,
     setRouteSubmitting: bindings.setRouteSubmitting,
     setRouteError: bindings.setRouteError,
@@ -48,7 +49,7 @@ export function useAppRouteActions({
     refreshMyPageForUser,
     formatErrorMessage,
     goToTab,
-  });
+  }));
 
   return {
     handleToggleRouteLike,

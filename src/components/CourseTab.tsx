@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { CommunityRouteCard } from './course/CommunityRouteCard';
 import { CourseTabHeader } from './course/CourseTabHeader';
 import type { CourseTabProps } from './course/courseTabTypes';
 import { useHighlightedCourseRoute } from './course/useHighlightedCourseRoute';
 
-export function CourseTab({
+export const CourseTab = memo(function CourseTab({
   courses,
   communityRoutes,
   sort,
@@ -63,4 +64,4 @@ export function CourseTab({
       </section>
     </section>
   );
-}
+});
