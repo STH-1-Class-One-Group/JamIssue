@@ -1,4 +1,4 @@
-import type { MutableRefObject } from 'react';
+import { memo, type MutableRefObject } from 'react';
 import type { SessionUser, UserRoute } from '../../types';
 import { HeartIcon } from '../review/ReviewActionIcons';
 import type { RoutePreviewPayload } from './courseTabTypes';
@@ -16,7 +16,7 @@ interface CommunityRouteCardProps {
   onRequestLogin: () => void;
 }
 
-export function CommunityRouteCard({
+export const CommunityRouteCard = memo(function CommunityRouteCard({
   route,
   highlightedRouteId,
   routeLikeUpdatingId,
@@ -80,4 +80,4 @@ export function CommunityRouteCard({
       </div>
     </article>
   );
-}
+});

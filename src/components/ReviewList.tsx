@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { memo, useRef } from 'react';
 import type { Review } from '../types';
 import { ReviewListEmptyState } from './review/ReviewListEmptyState';
 import { ReviewListItem } from './review/ReviewListItem';
@@ -16,7 +16,6 @@ interface ReviewListProps {
   onSubmitComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
   onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
   onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;
-  onDeleteReview?: (reviewId: string) => Promise<void>;
   onRequestLogin: () => void;
   onOpenPlace?: (placeId: string) => void;
   onOpenComments?: (reviewId: string) => void;
@@ -24,7 +23,7 @@ interface ReviewListProps {
   emptyBody: string;
 }
 
-export function ReviewList({
+export const ReviewList = memo(function ReviewList({
   reviews,
   canWriteComment,
   canToggleLike,
@@ -36,7 +35,6 @@ export function ReviewList({
   onSubmitComment,
   onUpdateComment,
   onDeleteComment,
-  onDeleteReview: _onDeleteReview,
   onRequestLogin,
   onOpenPlace,
   onOpenComments,
@@ -73,4 +71,4 @@ export function ReviewList({
       ))}
     </div>
   );
-}
+});

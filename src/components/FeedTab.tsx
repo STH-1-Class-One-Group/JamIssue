@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { FeedLoadMoreRow } from './feed/FeedLoadMoreRow';
@@ -46,7 +46,7 @@ interface FeedTabProps {
   };
 }
 
-export function FeedTab({
+export const FeedTab = memo(function FeedTab({
   feedData,
   commentSheetData,
   sharedData,
@@ -115,7 +115,6 @@ export function FeedTab({
           onSubmitComment={onCreateComment}
           onUpdateComment={onUpdateComment}
           onDeleteComment={onDeleteComment}
-          onDeleteReview={onDeleteReview}
           onRequestLogin={onRequestLogin}
           onOpenPlace={onOpenPlace}
           onOpenComments={onOpenComments}
@@ -144,4 +143,4 @@ export function FeedTab({
       />
     </>
   );
-}
+});
