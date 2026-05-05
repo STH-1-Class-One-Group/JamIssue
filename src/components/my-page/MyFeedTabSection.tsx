@@ -30,7 +30,6 @@ export function MyFeedTabSection({
             review={review}
             onOpenPlace={onOpenPlace}
             onOpenReview={onOpenReview}
-            onUpdateReview={onUpdateReview}
             onDeleteReview={onDeleteReview}
             {...reviewEditor}
             editingReviewBody={isEditingThisCard ? reviewEditor.editingReviewBody : ''}

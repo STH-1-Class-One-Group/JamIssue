@@ -24,7 +24,6 @@ interface MyFeedReviewCardProps {
   onOpenPlace: (placeId: string) => void;
   onOpenReview: (reviewId: string) => void;
   onDeleteReview: (reviewId: string) => Promise<void>;
-  onUpdateReview: (reviewId: string, payload: ReviewUpdatePayload) => Promise<void>;
 }
 
 export const MyFeedReviewCard = memo(function MyFeedReviewCard({
@@ -46,10 +45,7 @@ export const MyFeedReviewCard = memo(function MyFeedReviewCard({
   onOpenPlace,
   onOpenReview,
   onDeleteReview,
-  onUpdateReview,
 }: MyFeedReviewCardProps) {
-  void onUpdateReview;
-
   return (
     <article className="review-card review-card--my-feed">
       <ReviewFeedCardHeader
