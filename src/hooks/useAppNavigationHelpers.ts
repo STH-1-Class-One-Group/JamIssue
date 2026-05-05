@@ -1,3 +1,4 @@
+import { useEventCallback } from './useEventCallback';
 import { createReviewNavigationHelpers } from './app-navigation/reviewNavigation';
 import { createReturnViewSnapshot } from './app-navigation/returnView';
 import { createTabNavigationHelpers } from './app-navigation/tabNavigation';
@@ -71,7 +72,15 @@ export function useAppNavigationHelpers({
   });
 
   return {
-    ...reviewNavigation,
-    ...tabNavigation,
+    handleOpenReviewComments: useEventCallback(reviewNavigation.handleOpenReviewComments),
+    handleCloseReviewComments: useEventCallback(reviewNavigation.handleCloseReviewComments),
+    handleOpenReviewWithReturn: useEventCallback(reviewNavigation.handleOpenReviewWithReturn),
+    handleOpenPlaceFeedWithReturn: useEventCallback(reviewNavigation.handleOpenPlaceFeedWithReturn),
+    handleOpenCommentWithReturn: useEventCallback(reviewNavigation.handleOpenCommentWithReturn),
+
+    handleOpenRoutePreview: useEventCallback(tabNavigation.handleOpenRoutePreview),
+    handleOpenPlaceWithReturn: useEventCallback(tabNavigation.handleOpenPlaceWithReturn),
+    handleOpenFestivalWithReturn: useEventCallback(tabNavigation.handleOpenFestivalWithReturn),
+    handleOpenCommunityRouteWithReturn: useEventCallback(tabNavigation.handleOpenCommunityRouteWithReturn),
   };
 }

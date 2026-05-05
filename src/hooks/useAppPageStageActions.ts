@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useEventCallback } from './useEventCallback';
 import type { SessionUser } from '../types';
 
 interface UseAppPageStageActionsParams {
@@ -22,31 +22,31 @@ export function useAppPageStageActions({
   refreshMyPageForUser,
   reportBackgroundError,
 }: UseAppPageStageActionsParams) {
-  const handleClearPlaceFilter = useCallback(() => {
+  const handleClearPlaceFilter = useEventCallback(() => {
     setFeedPlaceFilterId(null);
-  }, [setFeedPlaceFilterId]);
+  });
 
-  const handleChangeRouteSort = useCallback((sort: 'popular' | 'latest') => {
+  const handleChangeRouteSort = useEventCallback((sort: 'popular' | 'latest') => {
     setCommunityRouteSort(sort);
     void fetchCommunityRoutes(sort).catch(reportBackgroundError);
-  }, [fetchCommunityRoutes, reportBackgroundError, setCommunityRouteSort]);
+  });
 
-  const handleRetryMyPage = useCallback(async () => {
+  const handleRetryMyPage = useEventCallback(async () => {
     if (!sessionUser) {
       return;
     }
     await refreshMyPageForUser(sessionUser, true);
-  }, [refreshMyPageForUser, sessionUser]);
+  });
 
-  const handleOpenCommentFromMyPage = useCallback((reviewId: string, commentId: string) => {
+  const handleOpenCommentFromMyPage = useEventCallback((reviewId: string, commentId: string) => {
     handleOpenCommentWithReturn(reviewId, commentId);
-  }, [handleOpenCommentWithReturn]);
+  });
 
-  const handleOpenRouteFromMyPage = useCallback(async (routeId: string) => {
+  const handleOpenRouteFromMyPage = useEventCallback(async (routeId: string) => {
     setCommunityRouteSort('latest');
     await fetchCommunityRoutes('latest');
     handleOpenCommunityRouteWithReturn(routeId);
-  }, [fetchCommunityRoutes, handleOpenCommunityRouteWithReturn, setCommunityRouteSort]);
+  });
 
   return {
     handleClearPlaceFilter,
