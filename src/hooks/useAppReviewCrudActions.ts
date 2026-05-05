@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useEventCallback } from './useEventCallback';
 import {
   createReview,
   deleteReview,
@@ -36,7 +36,7 @@ export function useAppReviewCrudActions({
   const setDeletingReviewId = useAppPageRuntimeStore((state) => state.setDeletingReviewId);
   const setHighlightedReviewId = useReviewUIStore((state) => state.setHighlightedReviewId);
 
-  const handleCreateReview = useCallback(async (payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) => {
+  const handleCreateReview = useEventCallback(async (payload: { stampId: string; body: string; mood: ReviewMood; file: File | null }) => {
     if (!sessionUser || !selectedPlace) {
       goToTab('my');
       return;
@@ -74,9 +74,9 @@ export function useAppReviewCrudActions({
     } finally {
       setReviewSubmitting(false);
     }
-  }, [sessionUser, selectedPlace, goToTab, setReviewSubmitting, setReviewError, upsertReviewCollections, refreshMyPageForUser, setNotice, commitRouteState, formatErrorMessage]);
+  });
 
-  const handleUpdateReview = useCallback(async (
+  const handleUpdateReview = useEventCallback(async (
     reviewId: string,
     payload: { body: string; mood: ReviewMood; file?: File | null; removeImage?: boolean },
   ) => {
@@ -116,9 +116,9 @@ export function useAppReviewCrudActions({
       };
     });
     setNotice('피드를 수정했어요.');
-  }, [sessionUser, goToTab, setNotice, patchReviewCollections, setMyPage]);
+  });
 
-  const handleDeleteReview = useCallback(async (reviewId: string) => {
+  const handleDeleteReview = useEventCallback(async (reviewId: string) => {
     if (!sessionUser) {
       goToTab('my');
       setNotice('피드를 삭제하려면 먼저 로그인해 주세요.');
@@ -166,7 +166,7 @@ export function useAppReviewCrudActions({
     } finally {
       setDeletingReviewId(null);
     }
-  }, [sessionUser, goToTab, setNotice, setDeletingReviewId, clearReviewComments, setReviews, setSelectedPlaceReviews, placeReviewsCacheRef, setMyPage, activeCommentReviewId, handleCloseReviewComments, highlightedReviewId, setHighlightedReviewId, activeTab, refreshMyPageForUser, formatErrorMessage]);
+  });
 
   return {
     handleCreateReview,

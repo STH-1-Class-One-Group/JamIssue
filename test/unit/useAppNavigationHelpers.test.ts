@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useAppNavigationHelpers } from '../../src/hooks/useAppNavigationHelpers';
 import type { RoutePreview } from '../../src/types';
 
@@ -23,7 +24,7 @@ describe('useAppNavigationHelpers', () => {
     const goToTab = vi.fn();
     const commitRouteState = vi.fn();
 
-    const helpers = useAppNavigationHelpers({
+    const { result } = renderHook(() => useAppNavigationHelpers({
       activeTab: 'course',
       myPageTab: 'stamps',
       activeCommentReviewId: null,
@@ -48,7 +49,9 @@ describe('useAppNavigationHelpers', () => {
       openPlace: vi.fn(),
       openFestival: vi.fn(),
       upsertReviewCollections: vi.fn(),
-    });
+    }));
+
+    const helpers = result.current;
 
     helpers.handleOpenRoutePreview(routePreview);
 
