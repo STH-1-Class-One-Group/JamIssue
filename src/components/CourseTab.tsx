@@ -1,12 +1,10 @@
-import { memo } from 'react';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { CommunityRouteCard } from './course/CommunityRouteCard';
 import { CourseTabHeader } from './course/CourseTabHeader';
 import type { CourseTabProps } from './course/courseTabTypes';
 import { useHighlightedCourseRoute } from './course/useHighlightedCourseRoute';
 
-// Optimizes performance by preventing unnecessary re-renders of CourseTab when parent re-renders
-export const CourseTab = memo(function CourseTab({
+export function CourseTab({
   courses,
   communityRoutes,
   sort,
@@ -65,4 +63,4 @@ export const CourseTab = memo(function CourseTab({
       </section>
     </section>
   );
-});
+}

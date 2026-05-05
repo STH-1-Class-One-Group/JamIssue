@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAutoLoadMore } from '../hooks/useAutoLoadMore';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import { FeedLoadMoreRow } from './feed/FeedLoadMoreRow';
@@ -46,8 +46,7 @@ interface FeedTabProps {
   };
 }
 
-// Optimizes performance by preventing unnecessary re-renders of FeedTab when parent re-renders
-export const FeedTab = memo(function FeedTab({
+export function FeedTab({
   feedData,
   commentSheetData,
   sharedData,
@@ -119,7 +118,7 @@ export const FeedTab = memo(function FeedTab({
           onDeleteReview={onDeleteReview}
           onRequestLogin={onRequestLogin}
           onOpenPlace={onOpenPlace}
-          onOpenComments={onOpenComments}
+          onOpenComments={(reviewId) => onOpenComments(reviewId)}
           emptyTitle={placeFilterId ? `${placeFilterName} 피드가 아직 없어요` : '아직 공개된 피드가 없어요'}
           emptyBody={placeFilterId ? '이 장소를 찍은 뒤 첫 피드를 남겨 보세요.' : '먼저 스탬프를 찍고 오늘의 분위기를 짧게 남겨 보세요.'}
         />
@@ -145,4 +144,4 @@ export const FeedTab = memo(function FeedTab({
       />
     </>
   );
-});
+}
