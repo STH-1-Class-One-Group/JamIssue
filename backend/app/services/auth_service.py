@@ -5,7 +5,13 @@ from starlette.requests import Request
 
 from ..config import Settings
 from ..jwt_auth import issue_access_token
-from ..models import AuthProviderOut, AuthSessionResponse, ProfileUpdateRequest, SessionUser
+from ..models import (
+    AuthProviderOut,
+    AuthSessionResponse,
+    NaverCallbackQueryParams,
+    ProfileUpdateRequest,
+    SessionUser,
+)
 from ..naver_oauth import build_redirect_url, exchange_code_for_token, fetch_naver_profile
 from ..repositories.auth_repository import (
     build_session_user,
@@ -71,10 +77,7 @@ def complete_naver_login(
     request: Request,
     db: Session,
     *,
-    code: str | None,
-    state: str | None,
-    error: str | None,
-    error_description: str | None,
+    params: NaverCallbackQueryParams,
     app_settings: Settings,
 ) -> tuple[RedirectResponse, str | None]:
     redirect_target = get_redirect_target(request, app_settings)
@@ -82,16 +85,18 @@ def complete_naver_login(
     link_user_id = request.session.pop("oauth_link_user_id", None)
     link_provider = request.session.pop("oauth_link_provider", None)
 
-    if error:
+    if params.error:
         return (
             RedirectResponse(
-                build_redirect_url(redirect_target, auth="naver-error", reason=error_description or error),
+                build_redirect_url(
+                    redirect_target, auth="naver-error", reason=params.error_description or params.error
+                ),
                 status_code=status.HTTP_302_FOUND,
             ),
             None,
         )
 
-    if not code or not state or state != expected_state:
+    if not params.code or not params.state or params.state != expected_state:
         return (
             RedirectResponse(
                 build_redirect_url(redirect_target, auth="naver-error", reason="state-mismatch"),
@@ -101,7 +106,7 @@ def complete_naver_login(
         )
 
     try:
-        token_payload = exchange_code_for_token(app_settings, code, state)
+        token_payload = exchange_code_for_token(app_settings, params.code, params.state)
         profile = fetch_naver_profile(token_payload["access_token"])
         if link_user_id and link_provider == "naver":
             user = link_naver_identity_entry(db, link_user_id, profile)
