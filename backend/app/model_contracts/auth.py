@@ -32,3 +32,10 @@ class AuthSessionResponse(ApiModel):
 
 class ProfileUpdateRequest(ApiModel):
     nickname: str
+
+
+class NaverCallbackQueryParams(ApiModel):
+    code: str | None = None
+    state: str | None = None
+    error: str | None = None
+    error_description: str | None = None

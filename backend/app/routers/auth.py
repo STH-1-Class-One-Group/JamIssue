@@ -6,7 +6,13 @@ from ..api_deps import get_session_user, require_session_user
 from ..config import Settings, get_settings
 from ..db import get_db
 from ..jwt_auth import clear_auth_cookie, set_auth_cookie
-from ..models import AuthProviderOut, AuthSessionResponse, ProfileUpdateRequest, SessionUser
+from ..models import (
+    AuthProviderOut,
+    AuthSessionResponse,
+    NaverCallbackQueryParams,
+    ProfileUpdateRequest,
+    SessionUser,
+)
 from ..naver_oauth import build_naver_login_url, generate_oauth_state
 from ..services.auth_service import build_auth_providers, complete_naver_login, update_profile_session_payload
 
@@ -117,20 +123,14 @@ def start_link_login(
 @router.get("/api/auth/naver/callback")
 def finish_naver_login(
     request: Request,
+    params: NaverCallbackQueryParams = Depends(),
     db: Session = Depends(get_db),
-    code: str | None = None,
-    state: str | None = None,
-    error: str | None = None,
-    error_description: str | None = None,
     app_settings: Settings = Depends(get_settings),
 ) -> RedirectResponse:
     response, access_token = complete_naver_login(
         request,
         db,
-        code=code,
-        state=state,
-        error=error,
-        error_description=error_description,
+        params=params,
         app_settings=app_settings,
     )
     if access_token:
