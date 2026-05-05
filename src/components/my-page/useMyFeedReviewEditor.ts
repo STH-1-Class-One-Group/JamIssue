@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEventCallback } from '../../hooks/useEventCallback';
 import type { ReviewMood } from '../../types';
 import type { MyReview, ReviewUpdatePayload } from './myFeedTabTypes';
 
@@ -11,25 +12,25 @@ export function useMyFeedReviewEditor(onUpdateReview: (reviewId: string, payload
   const [reviewUpdatingId, setReviewUpdatingId] = useState<string | null>(null);
   const [reviewEditError, setReviewEditError] = useState<string | null>(null);
 
-  function startEditingReview(review: MyReview) {
+  const startEditingReview = useEventCallback((review: MyReview) => {
     setEditingReviewId(review.id);
     setEditingReviewBody(review.body);
     setEditingReviewMood(review.mood);
     setEditingReviewFile(null);
     setEditingReviewRemoveImage(false);
     setReviewEditError(null);
-  }
+  });
 
-  function cancelEditingReview() {
+  const cancelEditingReview = useEventCallback(() => {
     setEditingReviewId(null);
     setEditingReviewBody('');
     setEditingReviewMood('혼자서');
     setEditingReviewFile(null);
     setEditingReviewRemoveImage(false);
     setReviewEditError(null);
-  }
+  });
 
-  async function handleSaveReview(reviewId: string) {
+  const handleSaveReview = useEventCallback(async (reviewId: string) => {
     try {
       setReviewUpdatingId(reviewId);
       setReviewEditError(null);
@@ -45,7 +46,7 @@ export function useMyFeedReviewEditor(onUpdateReview: (reviewId: string, payload
     } finally {
       setReviewUpdatingId(null);
     }
-  }
+  });
 
   return {
     editingReviewId,

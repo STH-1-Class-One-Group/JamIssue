@@ -22,17 +22,24 @@ export function MyFeedTabSection({
 
   return (
     <div className="review-stack">
-      {reviews.map((review) => (
-        <MyFeedReviewCard
-          key={review.id}
-          review={review}
-          onOpenPlace={onOpenPlace}
-          onOpenReview={onOpenReview}
-          onUpdateReview={onUpdateReview}
-          onDeleteReview={onDeleteReview}
-          {...reviewEditor}
-        />
-      ))}
+      {reviews.map((review) => {
+        const isEditingThisCard = reviewEditor.editingReviewId === review.id;
+        return (
+          <MyFeedReviewCard
+            key={review.id}
+            review={review}
+            onOpenPlace={onOpenPlace}
+            onOpenReview={onOpenReview}
+            onUpdateReview={onUpdateReview}
+            onDeleteReview={onDeleteReview}
+            {...reviewEditor}
+            editingReviewBody={isEditingThisCard ? reviewEditor.editingReviewBody : ''}
+            editingReviewMood={isEditingThisCard ? reviewEditor.editingReviewMood : '혼자서'}
+            editingReviewFile={isEditingThisCard ? reviewEditor.editingReviewFile : null}
+            editingReviewRemoveImage={isEditingThisCard ? reviewEditor.editingReviewRemoveImage : false}
+          />
+        );
+      })}
       {reviews.length === 0 && <p className="empty-copy">아직 작성한 리뷰가 없어요.</p>}
     </div>
   );

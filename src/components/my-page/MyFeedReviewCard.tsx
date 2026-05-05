@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ReviewFormFields } from '../ReviewFormFields';
 import { ReviewFeedCardHeader } from '../review/ReviewFeedCardHeader';
 import { ReviewTagRow } from '../review/ReviewTagRow';
@@ -26,7 +27,7 @@ interface MyFeedReviewCardProps {
   onUpdateReview: (reviewId: string, payload: ReviewUpdatePayload) => Promise<void>;
 }
 
-export function MyFeedReviewCard({
+export const MyFeedReviewCard = memo(function MyFeedReviewCard({
   review,
   editingReviewId,
   editingReviewBody,
@@ -119,4 +120,4 @@ export function MyFeedReviewCard({
       )}
     </article>
   );
-}
+});
