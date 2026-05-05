@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { ReviewFormFields } from '../ReviewFormFields';
 import { ReviewFeedCardHeader } from '../review/ReviewFeedCardHeader';
 import { ReviewTagRow } from '../review/ReviewTagRow';
-import type { MyReview, ReviewUpdatePayload } from './myFeedTabTypes';
+import type { MyReview } from './myFeedTabTypes';
 import { reviewMoodOptions } from './myFeedTabTypes';
 
 interface MyFeedReviewCardProps {
@@ -23,10 +24,9 @@ interface MyFeedReviewCardProps {
   onOpenPlace: (placeId: string) => void;
   onOpenReview: (reviewId: string) => void;
   onDeleteReview: (reviewId: string) => Promise<void>;
-  onUpdateReview: (reviewId: string, payload: ReviewUpdatePayload) => Promise<void>;
 }
 
-export function MyFeedReviewCard({
+export const MyFeedReviewCard = memo(function MyFeedReviewCard({
   review,
   editingReviewId,
   editingReviewBody,
@@ -45,10 +45,7 @@ export function MyFeedReviewCard({
   onOpenPlace,
   onOpenReview,
   onDeleteReview,
-  onUpdateReview,
 }: MyFeedReviewCardProps) {
-  void onUpdateReview;
-
   return (
     <article className="review-card review-card--my-feed">
       <ReviewFeedCardHeader
@@ -119,4 +116,4 @@ export function MyFeedReviewCard({
       )}
     </article>
   );
-}
+});
