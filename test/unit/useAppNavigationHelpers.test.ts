@@ -25,7 +25,6 @@ describe('useAppNavigationHelpers', () => {
     const commitRouteState = vi.fn();
 
     const { result } = renderHook(() => useAppNavigationHelpers({
-
       activeTab: 'course',
       myPageTab: 'stamps',
       activeCommentReviewId: null,

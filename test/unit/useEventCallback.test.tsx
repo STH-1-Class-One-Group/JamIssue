@@ -17,7 +17,6 @@ describe('useEventCallback', () => {
 
     const ref2 = result.current;
 
-    // Function reference must remain exactly the same
     expect(ref1).toBe(ref2);
   });
 
@@ -41,12 +40,29 @@ describe('useEventCallback', () => {
   });
 
   it('correctly passes arguments to the callback', () => {
-    const callback = vi.fn();
+    const callback = vi.fn((label: string, count: number, meta: { test: boolean }) => `${label}-${count}-${meta.test}`);
 
     const { result } = renderHook(() => useEventCallback(callback));
 
-    result.current('arg1', 42, { test: true });
+    const value = result.current('arg1', 42, { test: true });
 
     expect(callback).toHaveBeenCalledWith('arg1', 42, { test: true });
+    expect(value).toBe('arg1-42-true');
+  });
+
+  it('keeps the stable function wired to the latest rendered state', () => {
+    const { result, rerender } = renderHook(
+      ({ prefix }) => useEventCallback((value: string) => `${prefix}:${value}`),
+      { initialProps: { prefix: 'first' } },
+    );
+
+    const stableCallback = result.current;
+
+    expect(stableCallback('value')).toBe('first:value');
+
+    rerender({ prefix: 'second' });
+
+    expect(result.current).toBe(stableCallback);
+    expect(stableCallback('value')).toBe('second:value');
   });
 });
