@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { memo, useRef } from 'react';
 import type { Review } from '../types';
 import { ReviewListEmptyState } from './review/ReviewListEmptyState';
 import { ReviewListItem } from './review/ReviewListItem';
@@ -24,7 +24,8 @@ interface ReviewListProps {
   emptyBody: string;
 }
 
-export function ReviewList({
+// Optimizes performance by preventing unnecessary re-renders of ReviewList
+export const ReviewList = memo(function ReviewList({
   reviews,
   canWriteComment,
   canToggleLike,
@@ -73,4 +74,4 @@ export function ReviewList({
       ))}
     </div>
   );
-}
+});
