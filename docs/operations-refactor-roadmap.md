@@ -205,14 +205,17 @@
 - [ ] facade별 import surface를 더 줄일 필요가 있는지 재평가
 - [ ] 순차 PR 머지 후 `main` 기준으로 잔여 dead code와 문서 drift 재점검
 
-### 현재 순차 PR 권장 순서
-1. `codex/my-page-service-split`
-2. `codex/stamp-service-split`
-3. `codex/place-service-split`
-4. `codex/course-service-split`
-5. `codex/bootstrap-service-split`
-6. `codex/page-boundary-cleanup`
-7. `codex/facade-contract-tests`
+### 목적 중심 브랜치 권장 이름
+
+과거 작업에는 `codex/*` 형식의 legacy 브랜치가 남아 있지만, 새 작업은 작성자/도구 접두사를 쓰지 않는다. 브랜치 이름은 `<area>-<purpose>` 형식으로 목적이 바로 보이게 만든다.
+
+1. `my-page-service-boundary`
+2. `stamp-service-boundary`
+3. `place-service-boundary`
+4. `course-service-boundary`
+5. `bootstrap-service-boundary`
+6. `page-boundary-cleanup`
+7. `facade-contract-tests`
 
 ### 완료 조건
 - `repository_normalized.py`가 더 이상 프로젝트의 만능 파일이 아니다.

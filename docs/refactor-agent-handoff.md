@@ -63,7 +63,8 @@ These decisions are fixed unless the repository owner explicitly changes them.
 
 | Decision | Rule |
 | --- | --- |
-| Work branch | All implementation happens on `refactor`. Do not work directly on `main`. |
+| Work branch | All implementation happens on `worker-backend-solid-hardening`. Do not work directly on `main`. |
+| Branch naming | Use purpose-first names such as `<area>-<purpose>`. Do not use tool or author prefixes such as `codex/`. |
 | Issue structure | Parent issue -> sub-issue -> checklist -> completion evidence is mandatory. |
 | Parent issue | #199 `Epic: Worker-first backend SOLID hardening` |
 | Sub-issues | #200 through #206 |
@@ -254,7 +255,7 @@ explicit linked evidence.
 The parent refactor is complete only when all of the following are true:
 
 - #200 through #206 are closed with evidence.
-- `refactor -> main` PR is merged.
+- `worker-backend-solid-hardening -> main` PR is merged.
 - Worker route, use case/service, repository/adapter, and mapper responsibilities are visibly separated.
 - Supabase REST calls are isolated behind repository/adapter-style boundaries where practical.
 - `any` usage is removed or intentionally contained at external boundaries.
@@ -268,7 +269,7 @@ The parent refactor is complete only when all of the following are true:
 
 Before starting work, an agent must confirm:
 
-- [ ] I am on the `refactor` branch.
+- [ ] I am on the `worker-backend-solid-hardening` branch.
 - [ ] I know which sub-issue I am working on.
 - [ ] I have read `AGENTS.md`.
 - [ ] I have read `docs/github-label-convention.md`.
