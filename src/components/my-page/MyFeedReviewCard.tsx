@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { ReviewFormFields } from '../ReviewFormFields';
 import { ReviewFeedCardHeader } from '../review/ReviewFeedCardHeader';
 import { ReviewTagRow } from '../review/ReviewTagRow';
-import type { MyReview, ReviewUpdatePayload } from './myFeedTabTypes';
+import type { MyReview } from './myFeedTabTypes';
 import { reviewMoodOptions } from './myFeedTabTypes';
 
 interface MyFeedReviewCardProps {
