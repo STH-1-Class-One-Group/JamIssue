@@ -1,72 +1,95 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect, test, vi } from 'vitest';
-import React from 'react';
+import type { ReactNode } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MyFeedTabSection } from '../../src/components/my-page/MyFeedTabSection';
-import * as MyFeedReviewCardModule from '../../src/components/my-page/MyFeedReviewCard';
+import type { MyReview } from '../../src/components/my-page/myFeedTabTypes';
+import { createReviewFixture } from '../fixtures/app-fixtures';
 
-// Spy on the memoized component's type (the render function inside memo)
-// In React 18, a memo component is an object { $$typeof: Symbol(react.memo), type: [Function] }
-const originalRenderFunction = (MyFeedReviewCardModule.MyFeedReviewCard as any).type;
+const headerRenderCounts = vi.hoisted(() => new Map<string, number>());
 
-const renderCounts: Record<string, number> = {};
+interface MockReviewFeedCardHeaderProps {
+  title: ReactNode;
+  mood: ReactNode;
+  meta: ReactNode;
+}
 
-// We replace the render function inside the memo wrapper with our spied version
-// This allows React to still do the memo bailout, but when it DOES render, we count it.
-(MyFeedReviewCardModule.MyFeedReviewCard as any).type = vi.fn((props: any) => {
-  renderCounts[props.review.id] = (renderCounts[props.review.id] || 0) + 1;
-  return originalRenderFunction(props);
-});
+vi.mock('../../src/components/review/ReviewFeedCardHeader', () => ({
+  ReviewFeedCardHeader: ({ title, mood, meta }: MockReviewFeedCardHeaderProps) => {
+    const countKey = String(meta);
+    headerRenderCounts.set(countKey, (headerRenderCounts.get(countKey) ?? 0) + 1);
 
-test('MyFeedReviewCard does not re-render inactive cards during edits', async () => {
-  const user = userEvent.setup();
-  const mockUpdate = vi.fn().mockResolvedValue(undefined);
+    return (
+      <div data-testid={`review-feed-card-header-${countKey}`}>
+        <div>{title}</div>
+        <span>{mood}</span>
+        <p>{meta}</p>
+      </div>
+    );
+  },
+}));
 
-  const reviews = [
-    {
-      id: 'rev-1', placeId: 'p-1', placeName: 'P 1', body: 'body 1', mood: '혼자서',
-      visitedAt: '2024-05-01', visitLabel: '1', badge: '1', hasPublishedRoute: false,
-      imageUrl: null, thumbnailUrl: null,
-    },
-    {
-      id: 'rev-2', placeId: 'p-2', placeName: 'P 2', body: 'body 2', mood: '혼자서',
-      visitedAt: '2024-05-02', visitLabel: '1', badge: '1', hasPublishedRoute: false,
-      imageUrl: null, thumbnailUrl: null,
-    }
-  ] as any[];
+function getHeaderRenderCount(meta: string) {
+  return headerRenderCounts.get(meta) ?? 0;
+}
 
-  render(
-    <MyFeedTabSection
-      reviews={reviews}
-      onOpenPlace={vi.fn()}
-      onOpenReview={vi.fn()}
-      onUpdateReview={mockUpdate}
-      onDeleteReview={vi.fn()}
-    />
-  );
+describe('MyFeedTabSection render stability', () => {
+  beforeEach(() => {
+    headerRenderCounts.clear();
+  });
 
-  // Initial render: both cards should render once
-  expect(renderCounts['rev-1']).toBe(1);
-  expect(renderCounts['rev-2']).toBe(1);
+  it('does not re-render inactive cards during edits', async () => {
+    const user = userEvent.setup();
+    const mockUpdate = vi.fn().mockResolvedValue(undefined);
+    const activeMeta = '2024-05-01';
+    const inactiveMeta = '2024-05-02';
+    const reviews: MyReview[] = [
+      createReviewFixture({
+        id: 'rev-1',
+        placeId: 'p-1',
+        placeName: 'P 1',
+        body: 'body 1',
+        visitedAt: activeMeta,
+        imageUrl: null,
+        thumbnailUrl: null,
+        hasPublishedRoute: false,
+      }),
+      createReviewFixture({
+        id: 'rev-2',
+        placeId: 'p-2',
+        placeName: 'P 2',
+        body: 'body 2',
+        visitedAt: inactiveMeta,
+        imageUrl: null,
+        thumbnailUrl: null,
+        hasPublishedRoute: false,
+      }),
+    ];
 
-  // Start editing rev-1
-  const editButtons = screen.getAllByRole('button', { name: '수정' });
-  await user.click(editButtons[0]);
+    render(
+      <MyFeedTabSection
+        reviews={reviews}
+        onOpenPlace={vi.fn()}
+        onOpenReview={vi.fn()}
+        onUpdateReview={mockUpdate}
+        onDeleteReview={vi.fn()}
+      />,
+    );
 
-  // Now the editor is open for rev-1.
-  // rev-1 re-renders because its editing state changed.
-  // rev-2 should NOT re-render because its props (the default stable ones) haven't changed.
+    expect(getHeaderRenderCount(activeMeta)).toBe(1);
+    expect(getHeaderRenderCount(inactiveMeta)).toBe(1);
 
-  const initialRev2Count = renderCounts['rev-2'];
+    const editButtons = screen.getAllByRole('button', { name: '수정' });
+    await user.click(editButtons[0]);
 
-  // Type in the textarea for rev-1
-  const textarea = screen.getByLabelText('리뷰 내용');
-  await user.clear(textarea);
-  await user.type(textarea, 'updated body 1');
+    const activeCountAfterOpen = getHeaderRenderCount(activeMeta);
+    const inactiveCountAfterOpen = getHeaderRenderCount(inactiveMeta);
 
-  // Verify rev-2 did not re-render at all during the typing
-  expect(renderCounts['rev-2']).toBe(initialRev2Count);
+    const textarea = screen.getByLabelText('리뷰 내용');
+    await user.clear(textarea);
+    await user.type(textarea, 'updated body 1');
 
-  // rev-1 should have rendered several times during typing
-  expect(renderCounts['rev-1']).toBeGreaterThan(1);
+    expect(getHeaderRenderCount(inactiveMeta)).toBe(inactiveCountAfterOpen);
+    expect(getHeaderRenderCount(activeMeta)).toBeGreaterThan(activeCountAfterOpen);
+  });
 });
