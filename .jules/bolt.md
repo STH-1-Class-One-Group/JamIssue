@@ -1,0 +1,3 @@
+## 2024-05-04 - React.memo Optimization in FeedTab
+**Learning:** In heavily mapped list components like `ReviewList`, passing inline functions like `onOpenComments={(reviewId) => onOpenComments(reviewId)}` breaks `React.memo` for all child items because the function reference changes on every render.
+**Action:** Always pass the function reference directly (e.g., `onOpenComments={onOpenComments}`) when the child component expects the exact same arguments, to preserve memoization and prevent unnecessary re-renders. Avoid using complex `useRef` + `useCallback` hacks to stabilize props unless absolutely necessary, as it bypasses standard React data flow.
