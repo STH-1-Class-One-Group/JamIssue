@@ -55,11 +55,14 @@ export const ReviewList = memo(function ReviewList({
           key={review.id}
           review={review}
           currentUserId={currentUserId}
-          highlightedReviewId={highlightedReviewId}
+          // Performance optimization: pass `null` to inactive items to prevent O(N) re-renders
+          highlightedReviewId={highlightedReviewId === review.id ? highlightedReviewId : null}
           canWriteComment={canWriteComment}
           canToggleLike={canToggleLike}
-          likingReviewId={likingReviewId}
-          submittingReviewId={submittingReviewId}
+          // Performance optimization: pass `null` to inactive items to prevent O(N) re-renders
+          likingReviewId={likingReviewId === review.id ? likingReviewId : null}
+          // Performance optimization: pass `null` to inactive items to prevent O(N) re-renders
+          submittingReviewId={submittingReviewId === review.id ? submittingReviewId : null}
           onToggleLike={onToggleLike}
           onSubmitComment={onSubmitComment}
           onUpdateComment={onUpdateComment}
