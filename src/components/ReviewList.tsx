@@ -55,11 +55,16 @@ export const ReviewList = memo(function ReviewList({
           key={review.id}
           review={review}
           currentUserId={currentUserId}
-          highlightedReviewId={highlightedReviewId}
+          // Performance Optimization: Prevent O(N) re-renders
+          // Conditionally pass active IDs (highlightedReviewId, likingReviewId, submittingReviewId)
+          // only to the specific list item that needs them, passing null to the rest.
+          // This keeps the props referentially stable for inactive items, allowing React.memo
+          // to skip re-rendering them when one active ID changes.
+          highlightedReviewId={highlightedReviewId === review.id ? highlightedReviewId : null}
           canWriteComment={canWriteComment}
           canToggleLike={canToggleLike}
-          likingReviewId={likingReviewId}
-          submittingReviewId={submittingReviewId}
+          likingReviewId={likingReviewId === review.id ? likingReviewId : null}
+          submittingReviewId={submittingReviewId === review.id ? submittingReviewId : null}
           onToggleLike={onToggleLike}
           onSubmitComment={onSubmitComment}
           onUpdateComment={onUpdateComment}
