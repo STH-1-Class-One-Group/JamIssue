@@ -28,6 +28,10 @@ from .config_database import (
 )
 from .config_paths import resolve_repo_relative_path, split_csv_set, split_csv_values
 
+INSECURE_SESSION_SECRET = "jamissue-local-session-secret"
+INSECURE_JWT_SECRET = "jamissue-local-jwt-secret"
+PRODUCTION_ENVS = {"production", "prod", "staging"}
+
 
 class Settings(BaseSettings):
     """Environment-backed settings used by the backend."""
@@ -81,22 +85,24 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    @model_validator(mode="after")
-    def validate_secrets(self) -> Settings:
-        """Ensure secrets are explicitly set and secure in production environments."""
-        insecure_session_secret = "jamissue-local-session-secret"
-        insecure_jwt_secret = "jamissue-local-jwt-secret"
+    @model_validator(mode="before")
+    @classmethod
+    def validate_explicit_production_secrets(cls, data: object) -> object:
+        if not isinstance(data, dict):
+            return data
 
-        lowered_env = self.env.strip().lower()
-        is_production = lowered_env in {"production", "prod", "staging"}
+        lowered_env = str(data.get("env") or "development").strip().lower()
+        if lowered_env not in PRODUCTION_ENVS:
+            return data
 
-        if is_production:
-            if not self.session_secret or self.session_secret == insecure_session_secret:
-                raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value in production")
-            if not self.jwt_secret or self.jwt_secret == insecure_jwt_secret:
-                raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value in production")
+        session_secret = data.get("session_secret")
+        jwt_secret = data.get("jwt_secret")
+        if not isinstance(session_secret, str) or not session_secret.strip() or session_secret == INSECURE_SESSION_SECRET:
+            raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value in production")
+        if not isinstance(jwt_secret, str) or not jwt_secret.strip() or jwt_secret == INSECURE_JWT_SECRET:
+            raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value in production")
 
-        return self
+        return data
 
     @property
     def backend_dir(self) -> Path:
