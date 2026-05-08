@@ -54,7 +54,10 @@ export function createReviewNavigationHelpers({
     }
 
     const existing =
-      [...reviews, ...selectedPlaceReviews, ...myPageReviews].find((review) => review.id === reviewId) ?? null;
+      reviews.find((review) => review.id === reviewId) ??
+      selectedPlaceReviews.find((review) => review.id === reviewId) ??
+      myPageReviews.find((review) => review.id === reviewId) ??
+      null;
     if (existing) {
       upsertReviewCollections(existing);
       return existing;
