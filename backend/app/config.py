@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from datetime import timedelta
 from functools import lru_cache
+import secrets
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import URL
 
@@ -35,9 +37,9 @@ class Settings(BaseSettings):
     port: int = 8001
     cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000"
     frontend_url: str = "http://localhost:8000"
-    session_secret: str = "jamissue-local-session-secret"
+    session_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     session_https: bool = False
-    jwt_secret: str = "jamissue-local-jwt-secret"
+    jwt_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     jwt_algorithm: str = "HS256"
     jwt_access_token_minutes: int = 60 * 24 * 14
     admin_user_ids: str = ""
@@ -78,6 +80,34 @@ class Settings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_secrets_before(cls, data: Any) -> Any:
+        """Ensure secrets are explicitly set and secure in production environments."""
+        if not isinstance(data, dict):
+            return data
+
+        insecure_session_secret = "jamissue-local-session-secret"
+        insecure_jwt_secret = "jamissue-local-jwt-secret"
+
+        # Settings collects from env vars etc. before passing to validator
+        env = data.get("env", "development")
+        if isinstance(env, str):
+            env = env.strip().lower()
+
+        is_production = env in {"production", "prod", "staging"}
+
+        if is_production:
+            session_secret = data.get("session_secret")
+            jwt_secret = data.get("jwt_secret")
+
+            if not session_secret or session_secret == insecure_session_secret:
+                raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value in production")
+            if not jwt_secret or jwt_secret == insecure_jwt_secret:
+                raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value in production")
+
+        return data
 
     @property
     def backend_dir(self) -> Path:
