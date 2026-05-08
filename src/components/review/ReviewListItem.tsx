@@ -23,6 +23,7 @@ interface ReviewListItemProps {
   onOpenComments?: (reviewId: string) => void;
 }
 
+// Optimizes performance by preventing unnecessary re-renders of list items in feeds
 export const ReviewListItem = memo(function ReviewListItem({
   review,
   currentUserId,
