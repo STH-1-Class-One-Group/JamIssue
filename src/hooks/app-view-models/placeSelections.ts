@@ -21,9 +21,20 @@ export function getRoutePreviewPlaces(places: Place[], selectedRoutePreview: Rou
     return [];
   }
 
-  return selectedRoutePreview.placeIds
-    .map((placeId) => places.find((place) => place.id === placeId) ?? null)
-    .filter(Boolean) as Place[];
+  const placeMap = new Map<string, Place>();
+  for (const place of places) {
+    placeMap.set(place.id, place);
+  }
+
+  const routePlaces: Place[] = [];
+  for (const placeId of selectedRoutePreview.placeIds) {
+    const place = placeMap.get(placeId);
+    if (place) {
+      routePlaces.push(place);
+    }
+  }
+
+  return routePlaces;
 }
 
 export function getSelectedFestival(festivals: FestivalItem[], selectedFestivalId: string | null) {
