@@ -9,11 +9,11 @@ import { ReviewTagRow } from './ReviewTagRow';
 interface ReviewListItemProps {
   review: Review;
   currentUserId: string | null;
-  highlightedReviewId: string | null;
+  isHighlighted: boolean;
   canWriteComment: boolean;
   canToggleLike: boolean;
-  likingReviewId: string | null;
-  submittingReviewId: string | null;
+  isLiking: boolean;
+  isSubmitting: boolean;
   onToggleLike: (reviewId: string) => Promise<void>;
   onSubmitComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
   onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
@@ -27,11 +27,11 @@ interface ReviewListItemProps {
 export const ReviewListItem = memo(function ReviewListItem({
   review,
   currentUserId,
-  highlightedReviewId,
+  isHighlighted,
   canWriteComment,
   canToggleLike,
-  likingReviewId,
-  submittingReviewId,
+  isLiking,
+  isSubmitting,
   onToggleLike,
   onSubmitComment,
   onUpdateComment,
@@ -43,7 +43,7 @@ export const ReviewListItem = memo(function ReviewListItem({
   return (
     <article
       data-review-id={review.id}
-      className={review.id === highlightedReviewId ? 'review-card review-card--feed review-card--highlighted' : 'review-card review-card--feed'}
+      className={isHighlighted ? 'review-card review-card--feed review-card--highlighted' : 'review-card review-card--feed'}
     >
       <ReviewFeedCardHeader
         title={<strong className="review-card__title">{review.placeName}</strong>}
@@ -68,7 +68,7 @@ export const ReviewListItem = memo(function ReviewListItem({
           <button
             type="button"
             className={review.likedByMe ? 'review-action-button is-active' : 'review-action-button'}
-            disabled={likingReviewId === review.id}
+            disabled={isLiking}
             onClick={() => (canToggleLike ? onToggleLike(review.id) : onRequestLogin())}
             aria-pressed={review.likedByMe}
           >
@@ -110,7 +110,7 @@ export const ReviewListItem = memo(function ReviewListItem({
           comments={review.comments}
           canWriteComment={canWriteComment}
           currentUserId={currentUserId}
-          submittingReviewId={submittingReviewId}
+          submittingReviewId={isSubmitting ? review.id : null}
           mutatingCommentId={null}
           highlightedCommentId={null}
           reviewId={review.id}
