@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterPlacesByCategory } from '../../src/lib/filterPlaces';
+import { filterPlacesByCategory } from '../../src/hooks/app-view-models/placeSelections';
 import type { Place } from '../../src/types';
 import { placeFixture } from '../fixtures/app-fixtures';
 
