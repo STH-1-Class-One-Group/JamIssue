@@ -1,3 +1,0 @@
-## 2024-05-07 - Conditional Prop Passing for Flat List Memoization
-**Learning:** When using `React.memo` on items in a mapped flat list component (like `ReviewListItem` in `ReviewList`), passing global active IDs (e.g., `highlightedReviewId`, `likingReviewId`) directly to all items causes an O(N) re-render whenever the active ID changes, defeating the purpose of memoization.
-**Action:** Use a conditional prop pattern (`activeId === item.id ? activeId : null`) when mapping the list. This ensures that only the item becoming active and the item becoming inactive receive new props and re-render, reducing render complexity to O(1). Note: Apply this only to flat lists; it breaks nested structures because descendants get cut off from receiving the target ID.

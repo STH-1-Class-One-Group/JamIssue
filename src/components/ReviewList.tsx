@@ -55,11 +55,11 @@ export const ReviewList = memo(function ReviewList({
           key={review.id}
           review={review}
           currentUserId={currentUserId}
-          highlightedReviewId={highlightedReviewId === review.id ? highlightedReviewId : null}
+          highlightedReviewId={highlightedReviewId}
           canWriteComment={canWriteComment}
           canToggleLike={canToggleLike}
-          likingReviewId={likingReviewId === review.id ? likingReviewId : null}
-          submittingReviewId={submittingReviewId === review.id ? submittingReviewId : null}
+          likingReviewId={likingReviewId}
+          submittingReviewId={submittingReviewId}
           onToggleLike={onToggleLike}
           onSubmitComment={onSubmitComment}
           onUpdateComment={onUpdateComment}
