@@ -1,7 +1,6 @@
 import pytest
 from app.config import Settings
 
-
 def test_secrets_default_factory():
     # In development mode, secrets should be automatically generated if not provided
     settings = Settings(env="development")
