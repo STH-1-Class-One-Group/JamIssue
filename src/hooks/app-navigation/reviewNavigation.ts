@@ -1,5 +1,6 @@
 import { getReviewDetail } from '../../api/reviewsClient';
 import type { SnapshotReturnView, UseAppNavigationHelpersParams } from './navigationTypes';
+import type { Review } from '../../types';
 import { formatNavigationErrorMessage } from './navigationTypes';
 
 interface ReviewNavigationParams
@@ -53,11 +54,17 @@ export function createReviewNavigationHelpers({
       return null;
     }
 
-    const existing =
-      reviews.find((review) => review.id === reviewId) ??
-      selectedPlaceReviews.find((review) => review.id === reviewId) ??
-      myPageReviews.find((review) => review.id === reviewId) ??
-      null;
+    let existing: Review | null | undefined = reviews.find((review) => review.id === reviewId);
+    if (!existing) {
+      existing = selectedPlaceReviews.find((review) => review.id === reviewId);
+    }
+    if (!existing) {
+      existing = myPageReviews.find((review) => review.id === reviewId);
+    }
+    if (!existing) {
+      existing = null;
+    }
+
     if (existing) {
       upsertReviewCollections(existing);
       return existing;

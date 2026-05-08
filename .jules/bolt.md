@@ -1,3 +1,3 @@
 ## 2024-05-08 - [Avoid Spread Allocation in Array Find]
 **Learning:** Using `[...a, ...b, ...c].find(condition)` is a common pattern in the codebase, but it causes significant overhead by unnecessarily allocating a new array and copying elements from all source arrays before the search even begins.
-**Action:** Replace this pattern with chained `.find()` calls using the nullish coalescing operator: `a.find(condition) ?? b.find(condition) ?? c.find(condition)`. This completely avoids the allocation and provides an early exit if the item is found early, dramatically improving both memory usage and execution time.
+**Action:** Replace this pattern with sequential `.find()` calls using explicit `if` statements (to satisfy strict project style constraints avoiding chained nullish operators). This completely avoids the allocation and provides an early exit if the item is found early, dramatically improving both memory usage and execution time.
