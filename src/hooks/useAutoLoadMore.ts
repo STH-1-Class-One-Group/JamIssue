@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { useEffect, useRef } from 'react';
+import { useEventCallback } from './useEventCallback';
 
 interface UseAutoLoadMoreOptions {
   enabled: boolean;
@@ -17,6 +18,7 @@ export function useAutoLoadMore({
   rootMargin = '160px 0px',
 }: UseAutoLoadMoreOptions) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const stableOnLoadMore = useEventCallback(onLoadMore);
 
   useEffect(() => {
     if (!enabled || loading || typeof IntersectionObserver === 'undefined') {
@@ -37,7 +39,7 @@ export function useAutoLoadMore({
 
         if (entries.some((entry) => entry.isIntersecting)) {
           requested = true;
-          void onLoadMore();
+          void stableOnLoadMore();
         }
       },
       {
@@ -53,7 +55,7 @@ export function useAutoLoadMore({
       requested = true;
       observer.disconnect();
     };
-  }, [enabled, loading, onLoadMore, rootMargin, rootRef]);
+  }, [enabled, loading, stableOnLoadMore, rootMargin, rootRef]);
 
   return sentinelRef;
 }
