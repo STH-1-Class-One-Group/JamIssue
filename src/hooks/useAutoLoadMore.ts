@@ -18,6 +18,9 @@ export function useAutoLoadMore({
   rootMargin = '160px 0px',
 }: UseAutoLoadMoreOptions) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Performance optimization: stabilize onLoadMore callback to prevent unnecessary
+  // IntersectionObserver teardown and recreation if parent re-renders with a new inline function.
   const stableOnLoadMore = useEventCallback(onLoadMore);
 
   useEffect(() => {
