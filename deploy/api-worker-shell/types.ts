@@ -1,5 +1,7 @@
 export type AuthProviderKey = 'naver' | 'kakao';
 
+export type WorkerJsonRecord = Record<string, unknown>;
+
 export interface WorkerEnv {
   APP_ADMIN_USER_IDS?: string;
   APP_CORS_ORIGINS?: string;
@@ -53,4 +55,199 @@ export interface SupabaseUserRow {
   email?: string | null;
   provider?: string | null;
   profile_completed_at?: string | null;
+}
+
+export interface SupabaseMapRow extends WorkerJsonRecord {
+  position_id: string | number;
+  slug: string;
+  name: string;
+  district?: string | null;
+  category: string;
+  latitude: number;
+  longitude: number;
+  summary?: string | null;
+  description?: string | null;
+  image_url?: string | null;
+  image_storage_path?: string | null;
+  vibe_tags?: unknown;
+  visit_time?: string | null;
+  route_hint?: string | null;
+  stamp_reward?: string | null;
+  hero_label?: string | null;
+  jam_color?: string | null;
+  accent_color?: string | null;
+  is_active?: boolean | null;
+  total_visit_count?: number | null;
+}
+
+export interface SupabaseCourseRow extends WorkerJsonRecord {
+  course_id: string | number;
+  title: string;
+  mood: string;
+  duration: string;
+  note: string;
+  color: string;
+  display_order?: number | null;
+}
+
+export interface SupabaseCoursePlaceRow extends WorkerJsonRecord {
+  course_id: string | number;
+  position_id: string | number;
+  stop_order: number;
+}
+
+export interface WorkerPlace extends WorkerJsonRecord {
+  id: string;
+  positionId: string;
+  name: string;
+  district?: string | null;
+  category: string;
+  jamColor: string;
+  accentColor: string;
+  imageUrl: string | null;
+  latitude: number;
+  longitude: number;
+  summary?: string | null;
+  description?: string | null;
+  vibeTags: unknown[];
+  visitTime?: string | null;
+  routeHint?: string | null;
+  stampReward?: string | null;
+  heroLabel?: string | null;
+  totalVisitCount: number;
+}
+
+export interface WorkerCourse extends WorkerJsonRecord {
+  id: string;
+  title: string;
+  mood: string;
+  duration: string;
+  note: string;
+  color: string;
+  placeIds: string[];
+}
+
+export interface WorkerReviewComment extends WorkerJsonRecord {
+  id: string;
+  replies?: WorkerReviewComment[];
+}
+
+export interface WorkerReview extends WorkerJsonRecord {
+  id: string;
+  comments?: WorkerReviewComment[];
+}
+
+export interface WorkerTravelSession extends WorkerJsonRecord {
+  id: string;
+  placeIds: string[];
+}
+
+export interface WorkerStampLog extends WorkerJsonRecord {
+  id: string;
+  placeId: string;
+}
+
+export interface WorkerStaticBaseRows {
+  placeRows: SupabaseMapRow[];
+  courseRows: SupabaseCourseRow[];
+  coursePlaceRows: SupabaseCoursePlaceRow[];
+}
+
+export interface WorkerBaseData {
+  places: WorkerPlace[];
+  placesByPositionId: Map<string, WorkerPlace>;
+  reviews: WorkerReview[];
+  courses: WorkerCourse[];
+  collectedPlaceIds: string[];
+  stampLogs: WorkerStampLog[];
+  travelSessions: WorkerTravelSession[];
+}
+
+export interface SupabaseCacheState<T> {
+  pending: Promise<T> | null;
+  value: T | null;
+}
+
+export interface WorkerReviewReadService {
+  handleReviewFeed(request: Request, env: WorkerEnv, url: URL): Promise<Response>;
+  handleReviews(request: Request, env: WorkerEnv, url: URL): Promise<Response>;
+  handleReviewDetail(request: Request, env: WorkerEnv, reviewId: string): Promise<Response>;
+  loadSingleReview(env: WorkerEnv, reviewId: string, sessionUserId?: string | null): Promise<WorkerReview | null>;
+  mapReviewRows(
+    feedRows: WorkerJsonRecord[],
+    commentRows: WorkerJsonRecord[],
+    likeRows: WorkerJsonRecord[],
+    usersById: Map<string, WorkerJsonRecord>,
+    placesByPositionId: Map<string, WorkerPlace>,
+    stampRowsById: Map<string, WorkerJsonRecord>,
+    routeRows: WorkerJsonRecord[],
+    likedFeedIds: Set<string>,
+  ): WorkerReview[];
+}
+
+export interface WorkerCommunityRouteService {
+  handleCommunityRoutes(request: Request, env: WorkerEnv, url: URL): Promise<Response>;
+  handleCreateUserRoute(request: Request, env: WorkerEnv): Promise<Response>;
+  handleMyRoutes(request: Request, env: WorkerEnv): Promise<Response>;
+  handleToggleCommunityRouteLike(request: Request, env: WorkerEnv, routeId: string): Promise<Response>;
+  loadCommunityRoutes(env: WorkerEnv, options?: WorkerJsonRecord): Promise<WorkerJsonRecord[]>;
+}
+
+export interface WorkerMyService {
+  handleMyComments(request: Request, env: WorkerEnv, url: URL): Promise<Response>;
+  handleMySummary(request: Request, env: WorkerEnv): Promise<Response>;
+}
+
+export interface WorkerAdminService {
+  handleAdminSummary(request: Request, env: WorkerEnv): Promise<Response>;
+  handleAdminImportPublicData(request: Request, env: WorkerEnv): Promise<Response>;
+  handleAdminPlaceVisibility(request: Request, env: WorkerEnv, placeId: string): Promise<Response>;
+}
+
+export interface WorkerStampService {
+  handleToggleStamp(request: Request, env: WorkerEnv): Promise<Response>;
+}
+
+export interface WorkerNotificationInsertResult extends WorkerJsonRecord {
+  notification_id?: string | number | null;
+}
+
+export interface WorkerNotificationCreatePayload extends WorkerJsonRecord {
+  userId: string;
+  type: string;
+  title: string;
+  actorUserId?: string | null;
+  body?: string;
+  reviewId?: string | number | null;
+  commentId?: string | number | null;
+  routeId?: string | number | null;
+  metadata?: WorkerJsonRecord;
+}
+
+export interface WorkerReviewInteractionDeps {
+  badgeByMood: Record<string, string>;
+  countUnreadNotifications(env: WorkerEnv, userId: string): Promise<number>;
+  createUserNotification(env: WorkerEnv, payload: WorkerNotificationCreatePayload): Promise<WorkerNotificationInsertResult | null>;
+  loadBaseData(env: WorkerEnv, sessionUserId?: string | null): Promise<WorkerBaseData>;
+  loadNotificationById(env: WorkerEnv, notificationId: string | number): Promise<WorkerJsonRecord | null>;
+  loadSingleReview(env: WorkerEnv, reviewId: string, sessionUserId?: string | null): Promise<WorkerReview | null>;
+  publishNotificationEvent(env: WorkerEnv, userId: string, event: string, payload: WorkerJsonRecord): Promise<void>;
+  readSessionUser(request: Request, env: WorkerEnv): Promise<WorkerSessionUser | null>;
+}
+
+export interface RouteRuntime {
+  adminService: WorkerAdminService;
+  buildReviewInteractionDeps: () => WorkerReviewInteractionDeps;
+  communityRouteService: WorkerCommunityRouteService;
+  loadBaseData: (env: WorkerEnv, sessionUserId?: string | null) => Promise<WorkerBaseData>;
+  loadStaticBaseRows: (env: WorkerEnv) => Promise<WorkerStaticBaseRows>;
+  mapCourses: (
+    courseRows: SupabaseCourseRow[],
+    coursePlaceRows: SupabaseCoursePlaceRow[],
+    placesByPositionId: Map<string, WorkerPlace>,
+  ) => WorkerCourse[];
+  mapPlace: (row: SupabaseMapRow) => WorkerPlace;
+  myService: WorkerMyService;
+  reviewReadService: WorkerReviewReadService;
+  stampService: WorkerStampService;
 }

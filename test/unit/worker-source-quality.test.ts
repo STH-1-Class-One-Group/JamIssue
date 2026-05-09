@@ -38,4 +38,11 @@ describe('worker source quality gates', () => {
       expect(longestLine, `${relativePath} has a suspiciously long line`).toBeLessThanOrEqual(maxWorkerLineLength);
     }
   });
+
+  it('keeps the Worker route runtime contract centralized', () => {
+    const routingSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/routing.ts'), 'utf8');
+
+    expect(routingSource).toContain("import type { RouteRuntime, WorkerEnv, WorkerPlace } from '../types';");
+    expect(routingSource).not.toContain('interface RouteRuntime');
+  });
 });
