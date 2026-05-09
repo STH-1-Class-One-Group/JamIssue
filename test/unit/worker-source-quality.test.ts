@@ -42,8 +42,24 @@ describe('worker source quality gates', () => {
   it('keeps the Worker route runtime contract centralized', () => {
     const routingSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/routing.ts'), 'utf8');
 
-    expect(routingSource).toContain("import type { RouteRuntime, WorkerEnv, WorkerPlace } from '../types';");
+    expect(routingSource).toContain("import type { RouteRuntime, WorkerEnv } from '../types';");
     expect(routingSource).not.toContain('interface RouteRuntime');
+  });
+
+  it('keeps routing dispatch separate from route registry and proxy helpers', () => {
+    const routingSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/routing.ts'), 'utf8');
+    const routeRegistrySource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/route-registry.ts'), 'utf8');
+    const proxySource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/proxy.ts'), 'utf8');
+
+    expect(routingSource).toContain('createExactRoutes');
+    expect(routingSource).toContain('createPatternRoutes');
+    expect(routingSource).not.toContain('const exactRoutes');
+    expect(routingSource).not.toContain('const patternRoutes');
+    expect(routingSource).not.toContain('function handleHealth');
+    expect(routingSource).not.toContain('APP_ORIGIN_API_URL');
+    expect(routeRegistrySource).toContain('export function createExactRoutes');
+    expect(routeRegistrySource).toContain('export function createPatternRoutes');
+    expect(proxySource).toContain('export async function proxyToOrigin');
   });
 
   it('keeps base-data facade separated from repository and mapper responsibilities', () => {
