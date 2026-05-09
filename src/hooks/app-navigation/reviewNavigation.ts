@@ -53,8 +53,13 @@ export function createReviewNavigationHelpers({
       return null;
     }
 
+    // Performance optimization: Avoid allocating a new array just to find a single element
+    // by chaining `.find()` calls. This eliminates O(N) allocation and allows early return.
     const existing =
-      [...reviews, ...selectedPlaceReviews, ...myPageReviews].find((review) => review.id === reviewId) ?? null;
+      reviews.find((review) => review.id === reviewId) ??
+      selectedPlaceReviews.find((review) => review.id === reviewId) ??
+      myPageReviews.find((review) => review.id === reviewId) ??
+      null;
     if (existing) {
       upsertReviewCollections(existing);
       return existing;
