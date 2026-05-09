@@ -1,3 +1,0 @@
-## 2024-05-09 - Avoid spreading arrays for lookups
-**Learning:** In frontend data fetching and navigation logic (like `reviewNavigation.ts`), it's common to search across multiple collections (e.g., `reviews`, `selectedPlaceReviews`, `myPageReviews`). A naive approach `[...a, ...b, ...c].find(id)` allocates a new array on every call, leading to unnecessary memory overhead and preventing early termination of the search.
-**Action:** Always replace spread-based lookups with chained `.find()` using nullish coalescing: `a.find(id) ?? b.find(id) ?? c.find(id)`. This pattern ensures $O(1)$ extra memory and immediate early return once the element is found.
