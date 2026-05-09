@@ -1,4 +1,4 @@
-import type { SupabaseRequestOptions, WorkerEnv } from '../types';
+import type { SupabaseCacheState, SupabaseRequestOptions, WorkerEnv } from '../types';
 
 export function getSupabaseKey(env: WorkerEnv) {
   return env.APP_SUPABASE_SERVICE_ROLE_KEY || env.APP_SUPABASE_ANON_KEY || '';
@@ -75,7 +75,7 @@ export function buildInFilter(values: unknown[]) {
   return `in.(${unique.map((value) => encodeFilterValue(value)).join(',')})`;
 }
 
-export async function rememberPending<T>(cacheState: any, loader: () => Promise<T>): Promise<T> {
+export async function rememberPending<T>(cacheState: SupabaseCacheState<T>, loader: () => Promise<T>): Promise<T> {
   if (cacheState.pending) {
     return cacheState.pending;
   }

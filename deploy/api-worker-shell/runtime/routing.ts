@@ -17,19 +17,12 @@ import {
 import { handleCreateComment, handleCreateReview, handleDeleteComment, handleDeleteReview, handleReviewUpload, handleToggleReviewLike, handleUpdateComment, handleUpdateReview } from '../services/review-interactions';
 import { handleBannerEvents, handleFestivalImport, handleFestivals } from '../services/festivals';
 import { handleDeleteNotification, handleMarkAllNotificationsRead, handleMarkNotificationRead, handleMyNotifications, handleNotificationRealtimeChannel } from '../services/notifications';
-import type { WorkerEnv } from '../types';
+import type { RouteRuntime, WorkerEnv, WorkerPlace } from '../types';
 
-interface RouteRuntime {
-  adminService: any;
-  buildReviewInteractionDeps: () => any;
-  communityRouteService: any;
-  loadBaseData: (env: WorkerEnv, sessionUserId?: string | null) => Promise<any>;
-  loadStaticBaseRows: (env: WorkerEnv) => Promise<any>;
-  mapCourses: (courseRows: any[], coursePlaceRows: any[], placesByPositionId: Map<string, any>) => any[];
-  mapPlace: (row: any) => any;
-  myService: any;
-  reviewReadService: any;
-  stampService: any;
+type PublicWorkerPlace = Omit<WorkerPlace, 'positionId'>;
+
+function toPublicPlace({ positionId: _positionId, ...place }: WorkerPlace): PublicWorkerPlace {
+  return place;
 }
 
 async function handleHealth(request: Request, env: WorkerEnv) {
@@ -68,7 +61,7 @@ async function handleMapBootstrap(request: Request, env: WorkerEnv, runtime: Rou
     200,
     {
       auth: createAuthResponse(sessionUser, env),
-      places: mapData.places.map(({ positionId: _positionId, ...place }: any) => place),
+      places: mapData.places.map(toPublicPlace),
       stamps: {
         collectedPlaceIds: mapData.collectedPlaceIds,
         logs: mapData.stampLogs,
@@ -83,8 +76,8 @@ async function handleMapBootstrap(request: Request, env: WorkerEnv, runtime: Rou
 
 async function handleCuratedCourses(request: Request, env: WorkerEnv, runtime: RouteRuntime) {
   const { placeRows, courseRows, coursePlaceRows } = await runtime.loadStaticBaseRows(env);
-  const places = placeRows.map((row: any) => runtime.mapPlace(row));
-  const placesByPositionId = new Map<string, any>(places.map((place: any) => [place.positionId, place]));
+  const places = placeRows.map((row) => runtime.mapPlace(row));
+  const placesByPositionId = new Map<string, WorkerPlace>(places.map((place) => [place.positionId, place]));
   return jsonResponse(200, { courses: runtime.mapCourses(courseRows, coursePlaceRows, placesByPositionId) }, env, request);
 }
 
@@ -95,7 +88,7 @@ async function handleBootstrap(request: Request, env: WorkerEnv, runtime: RouteR
     200,
     {
       auth: createAuthResponse(sessionUser, env),
-      places: baseData.places.map(({ positionId: _positionId, ...place }: any) => place),
+      places: baseData.places.map(toPublicPlace),
       reviews: baseData.reviews,
       courses: baseData.courses,
       stamps: {

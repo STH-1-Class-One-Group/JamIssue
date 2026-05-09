@@ -1,6 +1,18 @@
 import { formatDate, formatDateTime, toSeoulDateKey } from '../lib/dates';
 import { buildInFilter, encodeFilterValue, rememberPending, supabaseRequest } from '../lib/supabase';
-import type { WorkerEnv } from '../types';
+import type {
+  SupabaseCacheState,
+  SupabaseCoursePlaceRow,
+  SupabaseCourseRow,
+  SupabaseMapRow,
+  WorkerBaseData,
+  WorkerCourse,
+  WorkerEnv,
+  WorkerJsonRecord,
+  WorkerPlace,
+  WorkerReviewReadService,
+  WorkerStaticBaseRows,
+} from '../types';
 
 export const BADGE_BY_MOOD = {
   설렘: '첫 방문',
@@ -12,10 +24,8 @@ export const BADGE_BY_MOOD = {
 
 const STATIC_BASE_CACHE_TTL_MS = 5 * 60 * 1000;
 
-let staticBaseCache: {
+let staticBaseCache: SupabaseCacheState<WorkerStaticBaseRows> & {
   expiresAt: number;
-  pending: Promise<any> | null;
-  value: any | null;
 } = {
   expiresAt: 0,
   pending: null,
@@ -148,7 +158,7 @@ export function normalizePlaceCategory(category: string, slug = '') {
   return 'attraction';
 }
 
-function getCategoryPalette(category: string, row: any) {
+function getCategoryPalette(category: string, row: SupabaseMapRow) {
   const fallbackJam = row.jam_color ?? '#FFB3C6';
   const fallbackAccent = row.accent_color ?? '#FF6B9D';
 
@@ -166,7 +176,7 @@ function getCategoryPalette(category: string, row: any) {
   }
 }
 
-export function mapPlace(row: any) {
+export function mapPlace(row: SupabaseMapRow): WorkerPlace {
   const category = normalizePlaceCategory(row.category, row.slug);
   const palette = getCategoryPalette(category, row);
 
@@ -201,7 +211,7 @@ function buildPlaceVisitCountMap(stampRows: any[]) {
   return counts;
 }
 
-export async function loadStaticBaseRows(env: WorkerEnv) {
+export async function loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBaseRows> {
   const now = Date.now();
   if (staticBaseCache.value && staticBaseCache.expiresAt > now) {
     return staticBaseCache.value;
@@ -209,12 +219,12 @@ export async function loadStaticBaseRows(env: WorkerEnv) {
 
   return rememberPending(staticBaseCache, async () => {
     const [placeRows, courseRows, coursePlaceRows] = await Promise.all([
-      supabaseRequest(
+      supabaseRequest<SupabaseMapRow[]>(
         env,
         'map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,image_url,image_storage_path,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&is_active=eq.true&order=position_id.asc',
       ),
-      supabaseRequest(env, 'course?select=course_id,title,mood,duration,note,color,display_order&order=display_order.asc'),
-      supabaseRequest(env, 'course_place?select=course_id,position_id,stop_order&order=stop_order.asc'),
+      supabaseRequest<SupabaseCourseRow[]>(env, 'course?select=course_id,title,mood,duration,note,color,display_order&order=display_order.asc'),
+      supabaseRequest<SupabaseCoursePlaceRow[]>(env, 'course_place?select=course_id,position_id,stop_order&order=stop_order.asc'),
     ]);
     const value = { placeRows, courseRows, coursePlaceRows };
     staticBaseCache = { ...staticBaseCache, value, expiresAt: Date.now() + STATIC_BASE_CACHE_TTL_MS, pending: null };
@@ -222,7 +232,11 @@ export async function loadStaticBaseRows(env: WorkerEnv) {
   });
 }
 
-export function mapCourses(courseRows: any[], coursePlaceRows: any[], placesByPositionId: Map<string, any>) {
+export function mapCourses(
+  courseRows: SupabaseCourseRow[],
+  coursePlaceRows: SupabaseCoursePlaceRow[],
+  placesByPositionId: Map<string, WorkerPlace>,
+): WorkerCourse[] {
   const placeIdsByCourseId = new Map<string, Array<{ placeId: string; stopOrder: number }>>();
   for (const row of coursePlaceRows) {
     const courseId = String(row.course_id);
@@ -248,11 +262,11 @@ export function mapCourses(courseRows: any[], coursePlaceRows: any[], placesByPo
   }));
 }
 
-export function createLoadBaseData(reviewReadService: any) {
-  return async function loadBaseData(env: WorkerEnv, sessionUserId: string | null = null) {
+export function createLoadBaseData(reviewReadService: WorkerReviewReadService) {
+  return async function loadBaseData(env: WorkerEnv, sessionUserId: string | null = null): Promise<WorkerBaseData> {
     const [{ placeRows, courseRows, coursePlaceRows }, feedRows] = await Promise.all([
       loadStaticBaseRows(env),
-      supabaseRequest(env, 'feed?select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at&order=created_at.desc'),
+      supabaseRequest<WorkerJsonRecord[]>(env, 'feed?select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at&order=created_at.desc'),
     ]);
 
     const feedIdsFilter = buildInFilter(feedRows.map((row: any) => row.feed_id));
@@ -329,9 +343,13 @@ export function createLoadBaseData(reviewReadService: any) {
     const placesByPositionId = new Map<string, any>(places.map((place: any) => [place.positionId, place]));
     const usersById = new Map<string, any>(userRows.map((row: any) => [row.user_id, row]));
     const stampRowsById = new Map<string, any>((allStampRows ?? []).map((row: any) => [String(row.stamp_id), row]));
-    const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row: any) => String(row.feed_id)));
+    const likedFeedIds = new Set<string>((userFeedLikeRows ?? []).map((row: any) => String(row.feed_id)));
     const collectedPlaceIds = [
-      ...new Set(userStampRows.map((row: any) => placesByPositionId.get(String(row.position_id))?.id).filter(Boolean)),
+      ...new Set<string>(
+        userStampRows
+          .map((row: any) => placesByPositionId.get(String(row.position_id))?.id)
+          .filter((placeId: unknown): placeId is string => typeof placeId === 'string' && placeId.length > 0),
+      ),
     ];
     const stampLogs = buildStampLogs(userStampRows, placesByPositionId);
     const travelSessions = buildTravelSessions(userSessionRows ?? [], userStampRows, placesByPositionId, ownerRouteRows ?? []);
