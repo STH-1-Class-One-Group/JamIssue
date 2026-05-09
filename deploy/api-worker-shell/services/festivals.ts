@@ -187,7 +187,7 @@ export async function handleFestivalImport(request, env) { const configuredToken
     importedItems = await upsertImportedFestivalItems(env, payload.items, { sourceName: payload.sourceName, sourceUrl: payload.sourceUrl, importedAt: payload.importedAt, });
 }
 catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return jsonResponse(422, { detail: message }, env, request);
+    console.error('[worker] festival import failed', error);
+    return jsonResponse(422, { detail: '공공 행사 데이터를 정리할 수 없어요.' }, env, request);
 } festivalsCache = { expiresAt: 0, syncAt: Date.now(), value: null, pending: null, }; return jsonResponse(200, { importedEvents: importedItems.length, sourceName: String(payload.sourceName || INTERNAL_FESTIVAL_SOURCE_NAME), importedAt: parseFestivalDate(payload.importedAt)?.toISOString() || new Date().toISOString(), }, env, request); }
 
