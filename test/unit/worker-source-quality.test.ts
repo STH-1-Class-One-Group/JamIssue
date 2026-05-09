@@ -70,4 +70,21 @@ describe('worker source quality gates', () => {
     expect(reviewReadSource).not.toContain('function mapReviewRows');
     expect(repositorySource).toContain('supabaseRequest');
   });
+
+  it('keeps account, community, and admin service persistence behind domain repositories', () => {
+    const serviceFiles = [
+      'deploy/api-worker-shell/services/admin.ts',
+      'deploy/api-worker-shell/services/community-routes.ts',
+      'deploy/api-worker-shell/services/my.ts',
+    ];
+
+    for (const file of serviceFiles) {
+      const source = readFileSync(join(workspaceRoot, file), 'utf8');
+      expect(source, file).not.toContain('supabaseRequest');
+    }
+
+    expect(readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/admin-domain/repository.ts'), 'utf8')).toContain('supabaseRequest');
+    expect(readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/community-domain/repository.ts'), 'utf8')).toContain('supabaseRequest');
+    expect(readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/my-domain/repository.ts'), 'utf8')).toContain('supabaseRequest');
+  });
 });
