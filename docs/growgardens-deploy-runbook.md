@@ -20,6 +20,21 @@ GitHub main
 - 운영 반영 브랜치: `main`
 - 백엔드 기준: Cloudflare Worker가 운영 진입점이며, FastAPI는 로컬 검증과 레거시 origin fallback 성격으로 유지합니다.
 
+### Worker-first backend 책임 경계
+
+운영 API는 Worker-first BFF입니다. Worker 내부는 아래 경계를 기준으로 유지합니다.
+
+| 계층 | 책임 |
+| --- | --- |
+| `index.ts` | 서비스 조립과 fetch error boundary |
+| `runtime/routing.ts` | preflight, exact route dispatch, pattern route dispatch, fallback handoff |
+| `runtime/route-registry.ts` | route 목록과 handler 연결 |
+| `runtime/proxy.ts` | FastAPI legacy origin fallback proxy |
+| `runtime/base-data-*` | bootstrap/map-bootstrap read-model 조회, 매핑, 조립 |
+| `services/*-domain/repository.ts` | Supabase REST persistence boundary |
+
+FastAPI origin fallback은 운영 기본 경로가 아니라 아직 Worker로 직접 옮기지 않은 legacy 경로의 안전망입니다.
+
 ## 2. GitHub Actions 워크플로
 
 ### `ci.yml`
@@ -166,7 +181,9 @@ Worker 변수/시크릿 대응:
 ```powershell
 cd D:\JamIssue
 npm.cmd install
+npm.cmd run lint
 npm.cmd run typecheck
+npm.cmd run test:unit
 npm.cmd run build
 ```
 
@@ -189,6 +206,14 @@ python -m pytest tests
 ```powershell
 cd D:\JamIssue\backend
 ..\.tools\python313\python.exe -m pytest -p no:cacheprovider tests
+```
+
+Worker source quality와 UTF-8 검증:
+
+```powershell
+cd D:\JamIssue
+npm.cmd run test:unit
+.\.tools\python313\python.exe .tmp/check_utf8_integrity.py --staged
 ```
 
 ## 7. 장애 점검 포인트

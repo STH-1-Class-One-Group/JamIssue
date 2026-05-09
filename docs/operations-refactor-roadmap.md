@@ -205,14 +205,17 @@
 - [ ] facade별 import surface를 더 줄일 필요가 있는지 재평가
 - [ ] 순차 PR 머지 후 `main` 기준으로 잔여 dead code와 문서 drift 재점검
 
-### 현재 순차 PR 권장 순서
-1. `codex/my-page-service-split`
-2. `codex/stamp-service-split`
-3. `codex/place-service-split`
-4. `codex/course-service-split`
-5. `codex/bootstrap-service-split`
-6. `codex/page-boundary-cleanup`
-7. `codex/facade-contract-tests`
+### 과거 순차 PR 기록
+
+아래 작업은 이미 완료된 FastAPI/Repository 정리 흐름입니다. 새 브랜치 예시로 재사용하지 않습니다.
+
+1. `my-page-service-split`
+2. `stamp-service-split`
+3. `place-service-split`
+4. `course-service-split`
+5. `bootstrap-service-split`
+6. `page-boundary-cleanup`
+7. `facade-contract-tests`
 
 ### 완료 조건
 - `repository_normalized.py`가 더 이상 프로젝트의 만능 파일이 아니다.
@@ -221,7 +224,7 @@
 
 ## 4. Worker route/data/security 경계 분리
 
-상태: IN PROGRESS
+상태: DONE
 우선순위: 높음
 성격: 운영 백엔드 구조 안정화
 
@@ -237,12 +240,27 @@
 - [x] Kakao/Naver provider 설정 회귀 테스트 추가
 - [x] OAuth state mismatch, admin 403, public event import token 회귀 테스트 추가
 - [x] Worker 소스가 긴 한 줄 blob으로 돌아가지 않도록 unit 품질 게이트 추가
-- [x] `index.ts` 부트스트랩, `runtime/base-data.ts` 데이터 로딩/매핑, `runtime/routing.ts` 라우팅으로 분리
+- [x] `index.ts` composition root, `runtime/routing.ts` dispatch, `runtime/route-registry.ts` route registry로 분리
+- [x] `runtime/base-data.ts`를 repository, mapper, assembler로 분리
+- [x] review/comment/notification 흐름을 domain repository/mapper/service-use-case로 분리
+- [x] my/community/admin 흐름을 domain repository/mapper/service boundary로 분리
+- [x] fallback proxy를 `runtime/proxy.ts`로 분리
 
-### 남은 TODO
-- [ ] `services/reviews.ts`, `services/my.ts`, `services/community-routes.ts`의 긴 라인 포맷을 추가 정리
-- [ ] Supabase row 타입을 리뷰/마이/커뮤니티 경로까지 점진 확장
+### 완료 근거
+
+| Issue | PR | Main merge SHA |
+| --- | --- | --- |
+| #200 | #224 | `64bd982e1ca8880d81ff3e9608a77ab8f9ce06c3` |
+| #201 | #225 | `4583b15985f832790e3399306f7ba2f7f4ac24a3` |
+| #202 | #226 | `cdf774a4ec1ea39f332e9c8a3f0fe085c05e5bcc` |
+| #203 | #227 | `93d13f7ab58908727c291028486bd6b7159a26e7` |
+| #204 | #228 | `21dd8d58ac51ea3a980018e68261e493a47d7264` |
+| #205 | #229 | `3da0fdd7bf9aafadd0aeaa5300169ddab7036fd3` |
+
+### 남은 후속
 - [ ] 운영 protected smoke 토큰 발급/로테이션 절차와 Worker 세션 시크릿 로테이션 절차 연결
+- [ ] Worker `services/festivals.ts`의 public data adapter 경계 재평가
+- [ ] Supabase realtime adapter 경계 분리 여부 검토
 
 ### 완료 조건
 - Worker `index.ts`가 부트스트랩과 fetch error boundary 중심으로 유지된다.
@@ -256,9 +274,9 @@
   - `npm run build`
   - `backend/.venv/Scripts/python.exe -m pytest tests`
 - 프론트 훅/스토어 리팩토링 중 실제로 쓰이지 않는 중복 모듈은 즉시 제거합니다.
-- 한 번에 전부 하지 않고, 도메인 하나씩 독립 커밋으로 나눕니다.
+- 한 번에 전부 하지 않고, 도메인 하나씩 독립 PR로 나눕니다.
 - 운영 경로를 건드리는 작업은 배포 전 smoke 절차가 먼저 있어야 합니다.
 
 ## 지금 결론
-현재 브랜치는 안정화/구조 정리의 1차 마감선까지는 도달했습니다.
-이 문서의 항목들은 그 다음 단계의 운영 체계 리팩터링이며, 팀이 합의한 뒤 계획적으로 진행하는 것이 맞습니다.
+Worker-first backend SOLID hardening은 1차 마감선까지 도달했습니다.
+다음 리팩터링은 기능 추가와 섞지 말고, 별도 parent issue와 sub-issue를 먼저 만든 뒤 진행합니다.
