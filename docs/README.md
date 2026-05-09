@@ -26,3 +26,4 @@
 - [account-identity-schema.md](account-identity-schema.md)
 - [code-flow-diagrams.md](code-flow-diagrams.md)
 - [operations-refactor-roadmap.md](operations-refactor-roadmap.md)
+- [worker-backend-solid-traceability.md](worker-backend-solid-traceability.md)
