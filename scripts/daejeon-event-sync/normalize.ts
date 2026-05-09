@@ -1,18 +1,39 @@
 import { DETAIL_BASE_URL } from './constants';
 import type { ImportedEvent } from './types';
 
-function escapeHtml(text: string) {
-  return String(text || '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ');
+const SAFE_ENTITY_MAP: Record<string, string> = {
+  amp: '&',
+  quot: '"',
+  '#39': "'",
+  nbsp: ' ',
+};
+
+function decodeSafeHtmlEntities(text: string) {
+  return String(text || '').replace(/&(amp|quot|#39|nbsp);/g, (entity, key: string) => SAFE_ENTITY_MAP[key] ?? entity);
+}
+
+function stripMarkup(text: string) {
+  let output = '';
+  let insideTag = false;
+  for (const char of String(text || '')) {
+    if (char === '<') {
+      insideTag = true;
+      output += ' ';
+      continue;
+    }
+    if (char === '>') {
+      insideTag = false;
+      continue;
+    }
+    if (!insideTag) {
+      output += char;
+    }
+  }
+  return output;
 }
 
 function stripHtml(text: string) {
-  return escapeHtml(String(text || '').replace(/<[^>]+>/g, ' '))
+  return decodeSafeHtmlEntities(stripMarkup(text))
     .replace(/\s+/g, ' ')
     .trim();
 }
