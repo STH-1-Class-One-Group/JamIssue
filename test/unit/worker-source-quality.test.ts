@@ -45,4 +45,17 @@ describe('worker source quality gates', () => {
     expect(routingSource).toContain("import type { RouteRuntime, WorkerEnv, WorkerPlace } from '../types';");
     expect(routingSource).not.toContain('interface RouteRuntime');
   });
+
+  it('keeps base-data facade separated from repository and mapper responsibilities', () => {
+    const facadeSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/base-data.ts'), 'utf8');
+    const assemblerSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/base-data-assembler.ts'), 'utf8');
+    const repositorySource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/base-data-repository.ts'), 'utf8');
+
+    expect(facadeSource).toContain("from './base-data-repository'");
+    expect(facadeSource).toContain("from './base-data-mappers'");
+    expect(facadeSource).not.toContain('supabaseRequest');
+    expect(facadeSource).not.toContain('function mapPlace');
+    expect(assemblerSource).not.toContain('supabaseRequest');
+    expect(repositorySource).toContain('supabaseRequest');
+  });
 });
