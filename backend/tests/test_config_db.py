@@ -37,6 +37,28 @@ def test_engine_options_use_nullpool_for_supabase_pooler():
     assert engine_options['pool_recycle'] == 1800
 
 
+def test_supabase_host_matching_requires_domain_boundary():
+    settings = Settings(
+        env='worker',
+        database_url='postgres://jamissue:secret@pooler.supabase.com.attacker.example:6543/postgres',
+    )
+
+    assert settings.database_provider == 'postgresql'
+    assert settings.is_supabase_database is False
+    assert settings.uses_supabase_pooler is False
+
+
+def test_supabase_pooler_host_allows_subdomain_boundary():
+    settings = Settings(
+        env='worker',
+        database_url='postgres://postgres.demo:secret@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres',
+    )
+
+    assert settings.database_provider == 'supabase-postgres'
+    assert settings.is_supabase_database is True
+    assert settings.uses_supabase_pooler is True
+
+
 def test_sqlite_connect_args_and_storage_target_label(tmp_path):
     settings = Settings(
         database_url=f"sqlite:///{tmp_path / 'test.db'}",

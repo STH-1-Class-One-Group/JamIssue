@@ -6,16 +6,38 @@ export interface RawSamplePlaceRow {
   latitude: number;
 }
 
+const SAFE_ENTITY_MAP: Record<string, string> = {
+  amp: '&',
+  quot: '"',
+  '#39': "'",
+  nbsp: ' ',
+};
+
+function decodeSafeHtmlEntities(value: string) {
+  return value.replace(/&(amp|quot|#39|nbsp);/g, (entity, key: string) => SAFE_ENTITY_MAP[key] ?? entity);
+}
+
+function stripMarkup(value: string) {
+  let output = '';
+  let insideTag = false;
+  for (const char of value) {
+    if (char === '<') {
+      insideTag = true;
+      continue;
+    }
+    if (char === '>') {
+      insideTag = false;
+      continue;
+    }
+    if (!insideTag) {
+      output += char;
+    }
+  }
+  return output;
+}
+
 export function decodeHtml(value: string) {
-  return value
-    .replace(/<[^>]+>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ')
-    .trim();
+  return decodeSafeHtmlEntities(stripMarkup(value)).trim();
 }
 
 export function parseSamplePlaceRows(html: string): RawSamplePlaceRow[] {

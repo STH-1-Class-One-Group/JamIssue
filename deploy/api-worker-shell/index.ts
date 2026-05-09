@@ -66,21 +66,21 @@ const routeRequest = createRouteRequest({
   stampService,
 });
 
+export function buildWorkerErrorPayload() {
+  return {
+    service: 'daejeon-jamissue-api',
+    status: 'worker-error',
+    message: 'Internal worker error',
+  };
+}
+
 export default {
   async fetch(request: Request, env: WorkerEnv) {
     try {
       return await routeRequest(request, env);
     } catch (error) {
-      return jsonResponse(
-        500,
-        {
-          service: 'daejeon-jamissue-api',
-          status: 'worker-error',
-          message: error instanceof Error ? error.message : String(error),
-        },
-        env,
-        request,
-      );
+      console.error('Worker request failed', error);
+      return jsonResponse(500, buildWorkerErrorPayload(), env, request);
     }
   },
 };

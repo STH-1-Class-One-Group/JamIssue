@@ -40,14 +40,18 @@ def is_mysql_database(database_url: str) -> bool:
     return database_url.lower().startswith("mysql")
 
 
+def host_matches_domain(host: str, domain: str) -> bool:
+    lowered_host = host.strip(".").lower()
+    lowered_domain = domain.strip(".").lower()
+    return lowered_host == lowered_domain or lowered_host.endswith(f".{lowered_domain}")
+
+
 def is_supabase_database(host: str) -> bool:
-    lowered = host.lower()
-    return "supabase.co" in lowered or "pooler.supabase.com" in lowered
+    return host_matches_domain(host, "supabase.co") or host_matches_domain(host, "pooler.supabase.com")
 
 
 def uses_supabase_pooler(host: str, url: URL | None) -> bool:
-    lowered = host.lower()
-    return lowered.endswith("pooler.supabase.com") or (url.port == 6543 if url else False)
+    return host_matches_domain(host, "pooler.supabase.com") or (host_matches_domain(host, "supabase.co") and (url.port == 6543 if url else False))
 
 
 def prefer_sqlalchemy_null_pool(*, env: str, uses_pooler: bool, is_postgres: bool) -> bool:
