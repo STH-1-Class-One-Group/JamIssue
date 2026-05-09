@@ -46,7 +46,7 @@ request
 | #203 | `worker-review-domain-service` | [#227](https://github.com/STH-1-Class-One-Group/JamIssue/pull/227) | `93d13f7ab58908727c291028486bd6b7159a26e7` | review/comment/notification domain 분리 |
 | #204 | `worker-account-community-admin-boundaries` | [#228](https://github.com/STH-1-Class-One-Group/JamIssue/pull/228) | `21dd8d58ac51ea3a980018e68261e493a47d7264` | my/community/admin repository boundary 분리 |
 | #205 | `worker-routing-runtime-cleanup` | [#229](https://github.com/STH-1-Class-One-Group/JamIssue/pull/229) | `3da0fdd7bf9aafadd0aeaa5300169ddab7036fd3` | route registry/proxy/handler 분리 |
-| #206 | `worker-docs-release-traceability` | TBD in PR | TBD after merge | Wiki/런북/릴리즈 노트 최신화 |
+| #206 | `worker-docs-release-traceability` | [#230](https://github.com/STH-1-Class-One-Group/JamIssue/pull/230) | merge 후 #206에 기록 | Wiki/런북/릴리즈 노트 최신화 |
 
 ## 검증 기준
 
