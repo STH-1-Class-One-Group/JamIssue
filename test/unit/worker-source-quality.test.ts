@@ -58,4 +58,16 @@ describe('worker source quality gates', () => {
     expect(assemblerSource).not.toContain('supabaseRequest');
     expect(repositorySource).toContain('supabaseRequest');
   });
+
+  it('keeps review interaction persistence behind the review repository boundary', () => {
+    const interactionSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/review-interactions.ts'), 'utf8');
+    const repositorySource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/review-domain/repository.ts'), 'utf8');
+    const reviewReadSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/reviews.ts'), 'utf8');
+
+    expect(interactionSource).not.toContain('supabaseRequest');
+    expect(interactionSource).not.toContain('feed?select=');
+    expect(reviewReadSource).toContain("import { createReviewMapper } from './review-domain/mapper';");
+    expect(reviewReadSource).not.toContain('function mapReviewRows');
+    expect(repositorySource).toContain('supabaseRequest');
+  });
 });
