@@ -30,7 +30,47 @@ export function jsonResponse(
   });
 
   applyCorsHeaders(headers, env, request);
-  return new Response(JSON.stringify(payload), { status, headers });
+  return new Response(JSON.stringify(toJsonSafePayload(payload)), { status, headers });
+}
+
+function toJsonSafePayload(payload: unknown, seen = new WeakSet<object>()): unknown {
+  if (payload instanceof Error) {
+    return { message: 'Internal error' };
+  }
+
+  if (payload === null || typeof payload === 'string' || typeof payload === 'number' || typeof payload === 'boolean') {
+    return payload;
+  }
+
+  if (typeof payload === 'bigint') {
+    return payload.toString();
+  }
+
+  if (Array.isArray(payload)) {
+    if (seen.has(payload)) {
+      return '[Circular]';
+    }
+    seen.add(payload);
+    return payload.map((value) => toJsonSafePayload(value, seen));
+  }
+
+  if (typeof payload === 'object') {
+    if (seen.has(payload)) {
+      return '[Circular]';
+    }
+
+    seen.add(payload);
+    const safePayload: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(payload)) {
+      if (/^stack(trace)?$/iu.test(key)) {
+        continue;
+      }
+      safePayload[key] = toJsonSafePayload(value, seen);
+    }
+    return safePayload;
+  }
+
+  return null;
 }
 
 export function redirectResponse(location: string, env: WorkerEnv, request: Request, cookies: string[] = []) {

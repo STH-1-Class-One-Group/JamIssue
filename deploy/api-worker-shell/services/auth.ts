@@ -78,10 +78,10 @@ export async function handleUpdateProfile(request: Request, env: WorkerEnv) {
   try {
     nickname = await ensureUniqueNickname(env, payload.nickname, sessionResult.sessionUser.id);
   } catch (error) {
-    const profileError = error as { message?: string; status?: number };
+    const profileError = error as { status?: number };
     return jsonResponse(
       profileError.status ?? 400,
-      { detail: profileError.message ?? '닉네임을 저장할 수 없어요.' },
+      { detail: getProfileUpdateErrorMessage(profileError.status) },
       env,
       request,
     );
@@ -116,6 +116,16 @@ export async function handleUpdateProfile(request: Request, env: WorkerEnv) {
     }
     throw error;
   }
+}
+
+function getProfileUpdateErrorMessage(status?: number) {
+  if (status === 409) {
+    return '이미 사용 중인 닉네임이에요.';
+  }
+  if (status === 400) {
+    return '닉네임은 두 글자 이상으로 적어 주세요.';
+  }
+  return '닉네임을 저장할 수 없어요.';
 }
 
 async function buildStateLoginResponse(
@@ -217,7 +227,7 @@ async function finishSocialLogin({ request, env, url, provider, exchangeCode, fe
     if (isMissingSigningSecretError(errorValue)) {
       return sessionSecretUnavailableResponse(request, env, { 'set-cookie': cleanupCookie });
     }
-    const reason = errorValue instanceof Error ? errorValue.message : String(errorValue);
+    const reason = `${provider}-callback-failed`;
     return redirectResponse(buildRedirectUrl(redirectTarget, { auth: `${provider}-error`, reason }), env, request, [
       cleanupCookie,
     ]);
