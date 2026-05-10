@@ -48,6 +48,48 @@ export interface SupabaseCoursePlaceRow extends WorkerJsonRecord {
   stop_order: number;
 }
 
+export interface WorkerFeedRow extends WorkerJsonRecord {
+  feed_id: string | number;
+  position_id: string | number;
+  user_id: string;
+  stamp_id?: string | number | null;
+  created_at: string;
+}
+
+export interface WorkerFeedLikeRow extends WorkerJsonRecord {
+  feed_id: string | number;
+  user_id?: string | null;
+}
+
+export interface WorkerPositionStampRow extends WorkerJsonRecord {
+  position_id: string | number;
+}
+
+export interface WorkerStampRow extends WorkerPositionStampRow {
+  stamp_id: string | number;
+  travel_session_id?: string | number | null;
+  stamp_date?: string | null;
+  visit_ordinal?: string | number | null;
+  created_at: string;
+}
+
+export interface WorkerTravelSessionRow extends WorkerJsonRecord {
+  travel_session_id: string | number;
+  started_at: string;
+  ended_at: string;
+  stamp_count?: string | number | null;
+}
+
+export interface WorkerUserRouteRow extends WorkerJsonRecord {
+  route_id: string | number;
+  travel_session_id?: string | number | null;
+}
+
+export interface WorkerUserSummaryRow extends WorkerJsonRecord {
+  user_id: string;
+  nickname?: string | null;
+}
+
 export interface WorkerPlace extends WorkerJsonRecord {
   id: string;
   positionId: string;

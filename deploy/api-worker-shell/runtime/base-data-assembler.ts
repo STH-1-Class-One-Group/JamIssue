@@ -29,18 +29,18 @@ export function createLoadBaseData(reviewReadService: WorkerReviewReadService) {
 
     const allStampRows = [
       ...reviewStampRows,
-      ...userStampRows.filter((row: any) => !reviewStampRows.some((stamp: any) => String(stamp.stamp_id) === String(row.stamp_id))),
+      ...userStampRows.filter((row) => !reviewStampRows.some((stamp) => String(stamp.stamp_id) === String(row.stamp_id))),
     ];
     const placeVisitCounts = buildPlaceVisitCountMap(allPlaceStampRows);
     const places = placeRows.map((row) => mapPlace({ ...row, total_visit_count: placeVisitCounts.get(String(row.position_id)) ?? 0 }));
     const placesByPositionId = new Map<string, WorkerPlace>(places.map((place) => [place.positionId, place]));
-    const usersById = new Map<string, WorkerJsonRecord>(userRows.map((row: any) => [row.user_id, row]));
-    const stampRowsById = new Map<string, WorkerJsonRecord>((allStampRows ?? []).map((row: any) => [String(row.stamp_id), row]));
-    const likedFeedIds = new Set<string>((userFeedLikeRows ?? []).map((row: any) => String(row.feed_id)));
+    const usersById = new Map<string, WorkerJsonRecord>(userRows.map((row) => [row.user_id, row]));
+    const stampRowsById = new Map<string, WorkerJsonRecord>((allStampRows ?? []).map((row) => [String(row.stamp_id), row]));
+    const likedFeedIds = new Set<string>((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
     const collectedPlaceIds = [
       ...new Set<string>(
         userStampRows
-          .map((row: any) => placesByPositionId.get(String(row.position_id))?.id)
+          .map((row) => placesByPositionId.get(String(row.position_id))?.id)
           .filter((placeId: unknown): placeId is string => typeof placeId === 'string' && placeId.length > 0),
       ),
     ];
