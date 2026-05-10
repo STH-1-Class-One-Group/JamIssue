@@ -71,7 +71,8 @@ describe('interface locality source quality baseline', () => {
         'src/components/AppPageStage.tsx',
         'src/hooks/usePageStageProps.ts',
       ]),
-    ).toBeLessThanOrEqual(11);
+    ).toBeLessThanOrEqual(5);
+    expect(gitGrepCount('Pick<AppPageStageProps', ['src/components/page-stage'])).toBe(0);
   });
 
   it('keeps FastAPI compatibility model facade imports from growing', () => {
