@@ -52,7 +52,7 @@ def test_auth_cookie_settings_share_jwt_expiration_window():
     assert cookie_settings['samesite'] == 'lax'
 
 
-def test_auth_cookie_settings_disable_secure_in_local_env():
+def test_auth_cookie_settings_secure_by_environment():
     dev_settings = Settings(jwt_secret='unit-test-secret', jwt_access_token_minutes=10, env='development', session_https=True)
     prod_settings = Settings(
         jwt_secret='unit-test-secret',
