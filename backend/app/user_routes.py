@@ -8,7 +8,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from .db_models import MapPlace, UserRoute, UserRouteLike, UserRoutePlace, UserStamp
-from .models import RouteSort, UserRouteCreate, UserRouteLikeResponse, UserRouteOut
+from .model_contracts.core import RouteSort
+from .model_contracts.routes import UserRouteCreate, UserRouteLikeResponse, UserRouteOut
 from .repository_support import format_datetime, utcnow_naive
 from .repositories.user_data_repository import get_or_create_user
 from .runtime_config import FastApiRouteRuntimeConfig

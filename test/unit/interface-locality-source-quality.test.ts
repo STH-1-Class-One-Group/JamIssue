@@ -76,6 +76,6 @@ describe('interface locality source quality baseline', () => {
   });
 
   it('keeps FastAPI compatibility model facade imports from growing', () => {
-    expect(gitGrepCount('from \\.models import', ['backend/app'])).toBeLessThanOrEqual(5);
+    expect(gitGrepCount('from \\.models import', ['backend/app'])).toBe(0);
   });
 });
