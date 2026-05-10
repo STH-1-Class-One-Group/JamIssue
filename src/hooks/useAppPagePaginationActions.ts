@@ -1,6 +1,7 @@
 import { useCallback, type Dispatch, type SetStateAction } from 'react';
 import { getMyCommentsPage } from '../api/myClient';
 import { getReviewFeedPage } from '../api/reviewsClient';
+import { PaginationRuntimeConfig } from '../config/runtimeLimitConfig';
 import { toReviewSummaryList } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import type { MyPageResponse, Review, SessionUser } from '../types';
@@ -43,7 +44,7 @@ export function useAppPagePaginationActions({
 
     setFeedLoadingMore(true);
     try {
-      const page = await getReviewFeedPage({ cursor: feedNextCursor, limit: 10 });
+      const page = await getReviewFeedPage({ cursor: feedNextCursor, limit: PaginationRuntimeConfig.pageSize });
       setReviews((current) => {
         const existingIds = new Set(current.map((review) => review.id));
         const nextItems = toReviewSummaryList(page.items).filter((review) => !existingIds.has(review.id));
@@ -78,7 +79,10 @@ export function useAppPagePaginationActions({
     setMyCommentsLoadingMore(true);
     setMyCommentsLoadedOnce(true);
     try {
-      const page = await getMyCommentsPage({ cursor: initial ? null : myCommentsNextCursor, limit: 10 });
+      const page = await getMyCommentsPage({
+        cursor: initial ? null : myCommentsNextCursor,
+        limit: PaginationRuntimeConfig.pageSize,
+      });
       setMyPage((current) => {
         if (!current) {
           return current;

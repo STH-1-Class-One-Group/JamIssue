@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { useEffect, useRef } from 'react';
+import { AutoLoadMoreConfig } from '../config/runtimeLimitConfig';
 import { useEventCallback } from './useEventCallback';
 
 interface UseAutoLoadMoreOptions {
@@ -15,7 +16,7 @@ export function useAutoLoadMore({
   loading,
   onLoadMore,
   rootRef,
-  rootMargin = '160px 0px',
+  rootMargin = AutoLoadMoreConfig.defaultRootMargin,
 }: UseAutoLoadMoreOptions) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const stableOnLoadMore = useEventCallback(onLoadMore);
@@ -45,7 +46,7 @@ export function useAutoLoadMore({
       {
         root: rootRef.current,
         rootMargin,
-        threshold: 0.01,
+        threshold: AutoLoadMoreConfig.threshold,
       },
     );
 

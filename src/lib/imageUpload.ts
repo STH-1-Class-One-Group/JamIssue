@@ -1,13 +1,4 @@
-const MAX_UPLOAD_DIMENSION = 1600;
-const MAX_UPLOAD_BYTES = 1_000_000;
-const INITIAL_JPEG_QUALITY = 0.84;
-const MIN_JPEG_QUALITY = 0.58;
-const JPEG_QUALITY_STEP = 0.08;
-const MIN_DIMENSION_AFTER_RESIZE = 960;
-
-const THUMBNAIL_DIMENSION = 480;
-const THUMBNAIL_MAX_BYTES = 120_000;
-const THUMBNAIL_MIN_DIMENSION_AFTER_RESIZE = 320;
+import { ImageUploadConfig } from '../config/runtimeLimitConfig';
 
 export interface PreparedReviewImageUpload {
   file: File;
@@ -53,15 +44,15 @@ function drawResizedCanvas(image: HTMLImageElement, maxDimension: number) {
 
 async function canvasToBlob(canvas: HTMLCanvasElement, quality?: number) {
   return await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+    canvas.toBlob((blob) => resolve(blob), ImageUploadConfig.jpegMimeType, quality);
   });
 }
 
 async function compressCanvas(canvas: HTMLCanvasElement, maxBytes: number) {
-  let quality = INITIAL_JPEG_QUALITY;
+  let quality = ImageUploadConfig.jpegQuality.initial;
   let blob: Blob | null = null;
 
-  while (quality >= MIN_JPEG_QUALITY) {
+  while (quality >= ImageUploadConfig.jpegQuality.min) {
     blob = await canvasToBlob(canvas, quality);
     if (!blob) {
       return null;
@@ -69,7 +60,7 @@ async function compressCanvas(canvas: HTMLCanvasElement, maxBytes: number) {
     if (blob.size <= maxBytes) {
       return blob;
     }
-    quality -= JPEG_QUALITY_STEP;
+    quality -= ImageUploadConfig.jpegQuality.step;
   }
 
   return blob;
@@ -77,8 +68,8 @@ async function compressCanvas(canvas: HTMLCanvasElement, maxBytes: number) {
 
 function shrinkCanvas(canvas: HTMLCanvasElement, minDimension: number) {
   const resizedCanvas = document.createElement('canvas');
-  resizedCanvas.width = Math.max(minDimension, Math.round(canvas.width * 0.75));
-  resizedCanvas.height = Math.max(minDimension, Math.round(canvas.height * 0.75));
+  resizedCanvas.width = Math.max(minDimension, Math.round(canvas.width * ImageUploadConfig.shrinkScale));
+  resizedCanvas.height = Math.max(minDimension, Math.round(canvas.height * ImageUploadConfig.shrinkScale));
   const context = resizedCanvas.getContext('2d');
   if (!context) {
     return null;
@@ -106,8 +97,8 @@ async function buildOptimizedFile(file: File, options: { maxDimension: number; m
     }
   }
 
-  return new File([compressedBlob], replaceExtension(file.name, 'jpg'), {
-    type: 'image/jpeg',
+  return new File([compressedBlob], replaceExtension(file.name, ImageUploadConfig.jpegExtension), {
+    type: ImageUploadConfig.jpegMimeType,
     lastModified: Date.now(),
   });
 }
@@ -123,14 +114,14 @@ export async function prepareReviewImageUpload(file: File): Promise<PreparedRevi
   try {
     const [optimizedFile, optimizedThumbnail] = await Promise.all([
       buildOptimizedFile(file, {
-        maxDimension: MAX_UPLOAD_DIMENSION,
-        maxBytes: MAX_UPLOAD_BYTES,
-        minDimension: MIN_DIMENSION_AFTER_RESIZE,
+        maxDimension: ImageUploadConfig.main.maxDimension,
+        maxBytes: ImageUploadConfig.main.maxBytes,
+        minDimension: ImageUploadConfig.main.minDimensionAfterResize,
       }),
       buildOptimizedFile(file, {
-        maxDimension: THUMBNAIL_DIMENSION,
-        maxBytes: THUMBNAIL_MAX_BYTES,
-        minDimension: THUMBNAIL_MIN_DIMENSION_AFTER_RESIZE,
+        maxDimension: ImageUploadConfig.thumbnail.maxDimension,
+        maxBytes: ImageUploadConfig.thumbnail.maxBytes,
+        minDimension: ImageUploadConfig.thumbnail.minDimensionAfterResize,
       }),
     ]);
 

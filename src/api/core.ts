@@ -1,4 +1,5 @@
 import { getClientConfig } from '../config';
+import { ApiCacheConfig } from '../config/runtimeLimitConfig';
 
 export class ApiError extends Error {
   status: number;
@@ -9,7 +10,6 @@ export class ApiError extends Error {
   }
 }
 
-const DEFAULT_GET_TTL_MS = 15_000;
 const WORKER_FALLBACK_BASE_URL = '';
 
 const responseCache = new Map<string, { expiresAt: number; value: unknown }>();
@@ -29,22 +29,6 @@ function clonePayload<T>(value: T): T {
 function buildCacheKey(path: string, init?: RequestInit) {
   const method = (init?.method ?? 'GET').toUpperCase();
   return method + ':' + path;
-}
-
-function getTtlForPath(path: string) {
-  if (path.startsWith('/api/festivals') || path.startsWith('/api/banner/events')) {
-    return 30 * 60 * 1000;
-  }
-  if (path.startsWith('/api/courses/curated')) {
-    return 60 * 1000;
-  }
-  if (path.startsWith('/api/map-bootstrap') || path.startsWith('/api/community-routes')) {
-    return 20 * 1000;
-  }
-  if (path.startsWith('/api/reviews') || path.startsWith('/api/my/summary')) {
-    return 10 * 1000;
-  }
-  return DEFAULT_GET_TTL_MS;
 }
 
 export function invalidateApiCache(prefixes: string[] = []) {
@@ -144,7 +128,7 @@ export async function fetchJson<T>(path: string, init?: RequestInit): Promise<T>
     const payload = await requestPromise;
     if (canCache) {
       responseCache.set(cacheKey, {
-        expiresAt: now + getTtlForPath(path),
+        expiresAt: now + ApiCacheConfig.getTtlForPath(path),
         value: clonePayload(payload),
       });
     }

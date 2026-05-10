@@ -1,5 +1,6 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { getReviewFeedPage } from '../../api/reviewsClient';
+import { PaginationRuntimeConfig } from '../../config/runtimeLimitConfig';
 import { toReviewSummaryList } from '../../lib/reviews';
 import type { Review } from '../../types';
 
@@ -21,7 +22,7 @@ export function createFeedReviewLoader({
       return;
     }
 
-    const page = await getReviewFeedPage({ limit: 10 });
+    const page = await getReviewFeedPage({ limit: PaginationRuntimeConfig.pageSize });
     setReviews(toReviewSummaryList(page.items));
     setFeedNextCursor(page.nextCursor);
     setFeedHasMore(Boolean(page.nextCursor));
