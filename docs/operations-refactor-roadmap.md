@@ -19,6 +19,7 @@
 3. FastAPI repository/service 예외 계약 정리
 4. Worker route/data/security 경계 분리
 5. `repository_normalized.py` 잔여 facade 축소
+6. 1.2.9 refactoring candidate 추적성 정리
 
 ## 1. 운영 스모크 테스트 자동화
 
@@ -221,6 +222,41 @@
 - `repository_normalized.py`가 더 이상 프로젝트의 만능 파일이 아니다.
 - `main.py -> service -> repository` 흐름이 대부분의 경로에서 일관된다.
 - 리뷰/스탬프/프로필 변경 시 관련 파일 경계가 명확하다.
+
+## 3-1. Repo-wide interface locality hardening
+
+상태: DONE
+우선순위: 높음
+성격: 1.2.9 refactoring candidate / SOLID / interface locality
+
+### 배경
+1.2.9의 config hardening 이후에도 내부 구현 인터페이스 일부가 중앙 barrel 또는 compatibility facade에 남아 있었습니다. 이 상태에서는 실제 소유 모듈과 타입 정의 위치가 멀어져 변경 영향 범위를 판단하기 어렵습니다.
+
+### 목표
+공용 타입을 제거하지 않고, public API DTO와 cross-domain model은 중앙에 유지합니다. 대신 runtime/service dependency, Supabase row, mapper input, stage/view props처럼 구현 내부에 가까운 인터페이스는 소유 모듈 근처로 이동합니다.
+
+### 완료
+- [x] parent issue #254와 child issue #255~#261로 작업 단위를 materialize
+- [x] `docs/interface-locality-baseline.md`와 source-quality gate 추가
+- [x] Worker runtime/service contract를 runtime/service/domain 소유 위치로 이동
+- [x] Worker data row/DTO contract를 repository/mapper 근처로 이동
+- [x] `AppPageStageProps` 중심 `Pick` 의존을 stage-local props로 축소
+- [x] `src/components`와 `src/hooks`의 root `src/types.ts` barrel import를 0개로 축소
+- [x] FastAPI active app code의 `.models` facade import를 0개로 축소
+
+### 완료 근거
+| Issue | PR | Main merge SHA |
+| --- | --- | --- |
+| #255 | #262 | `852728bda993710c09de8adb07711be0d5cb5968` |
+| #256 | #263 | `5d88d6a15536c6ac04ed58bc4d26ca43d01ad8d7` |
+| #257 | #264, #265 | `23b65010575e3f033dff44ec04f6801199b02ce8`, `3464b303004ca6409ca4c1b2d1ed96b313844cd5` |
+| #258 | #266 | `b7140db222b99cbc15c88e1eaefc0d2f1fc0202e` |
+| #259 | #267 | `d589761066188632a72f6adbb6b6099b61fd8a35` |
+| #260 | #268 | `3242d0ae6fa88c617f0bbcc681b469926fd06c31` |
+
+### 남은 후속
+- [ ] #261에서 1.2.9 Wiki release note와 roadmap mirror를 final SHA 기준으로 갱신
+- [ ] 최종 릴리즈 전 Dependabot/code-scanning open alert 상태를 권한 있는 Security 경로로 재확인
 
 ## 4. Worker route/data/security 경계 분리
 
