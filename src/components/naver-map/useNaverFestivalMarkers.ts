@@ -64,21 +64,56 @@ export function useNaverFestivalMarkers({
     });
   }, [festivals, mapRef, mapsApi, onSelectFestival, selectedFestivalId, status]);
 
+  const prevSelectedFestivalIdRef = useRef<string | null>(selectedFestivalId);
+  const prevFestivalsRef = useRef<FestivalItem[]>(festivals);
+
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {
       return;
     }
 
-    festivals.forEach((festival) => {
-      const marker = festivalMarkersRef.current.get(festival.id);
-      if (!marker) {
-        return;
+    const isFestivalsSame = festivals === prevFestivalsRef.current;
+    const prevSelectedId = prevSelectedFestivalIdRef.current;
+
+    if (isFestivalsSame && prevSelectedId !== selectedFestivalId) {
+      if (prevSelectedId) {
+        const prevFestival = festivals.find((f) => f.id === prevSelectedId);
+        const prevMarker = festivalMarkersRef.current.get(prevSelectedId);
+        if (prevFestival && prevMarker) {
+          prevMarker.setIcon({
+            content: festivalMarkerContent(prevFestival, false),
+            anchor: new mapsApi.Point(15, 15),
+          });
+          prevMarker.setZIndex(110);
+        }
       }
-      marker.setIcon({
-        content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
-        anchor: new mapsApi.Point(15, 15),
+
+      if (selectedFestivalId) {
+        const nextFestival = festivals.find((f) => f.id === selectedFestivalId);
+        const nextMarker = festivalMarkersRef.current.get(selectedFestivalId);
+        if (nextFestival && nextMarker) {
+          nextMarker.setIcon({
+            content: festivalMarkerContent(nextFestival, true),
+            anchor: new mapsApi.Point(15, 15),
+          });
+          nextMarker.setZIndex(170);
+        }
+      }
+    } else {
+      festivals.forEach((festival) => {
+        const marker = festivalMarkersRef.current.get(festival.id);
+        if (!marker) {
+          return;
+        }
+        marker.setIcon({
+          content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
+          anchor: new mapsApi.Point(15, 15),
+        });
+        marker.setZIndex(festival.id === selectedFestivalId ? 170 : 110);
       });
-      marker.setZIndex(festival.id === selectedFestivalId ? 170 : 110);
-    });
+    }
+
+    prevSelectedFestivalIdRef.current = selectedFestivalId;
+    prevFestivalsRef.current = festivals;
   }, [festivals, mapRef, mapsApi, selectedFestivalId, status]);
 }
