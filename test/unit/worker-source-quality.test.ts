@@ -39,11 +39,17 @@ describe('worker source quality gates', () => {
     }
   });
 
-  it('keeps the Worker route runtime contract centralized', () => {
+  it('keeps the Worker route runtime contract owned by the runtime layer', () => {
     const routingSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/routing.ts'), 'utf8');
+    const runtimeContractSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/runtime/route-runtime.ts'), 'utf8');
+    const globalTypesSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/types.ts'), 'utf8');
 
-    expect(routingSource).toContain("import type { RouteRuntime, WorkerEnv } from '../types';");
+    expect(routingSource).toContain("import type { RouteRuntime } from './route-runtime';");
     expect(routingSource).not.toContain('interface RouteRuntime');
+    expect(runtimeContractSource).toContain('export interface RouteRuntime');
+    expect(globalTypesSource).not.toContain('interface RouteRuntime');
+    expect(globalTypesSource).not.toContain('WorkerReviewReadService');
+    expect(globalTypesSource).not.toContain('WorkerReviewInteractionDeps');
   });
 
   it('keeps routing dispatch separate from route registry and proxy helpers', () => {

@@ -22,6 +22,7 @@ import {
   normalizePlaceCategory,
 } from './runtime/base-data';
 import { createRouteRequest } from './runtime/routing';
+import type { WorkerReviewInteractionDeps } from './services/review-domain/contracts';
 import type { WorkerEnv } from './types';
 
 const reviewReadService = createReviewReadService({
@@ -40,7 +41,7 @@ const myService = createMyService({
 const adminService = createAdminService({ normalizePlaceCategory });
 const stampService = createStampService({ loadBaseData });
 
-function buildReviewInteractionDeps() {
+function buildReviewInteractionDeps(): WorkerReviewInteractionDeps {
   return {
     badgeByMood: BADGE_BY_MOOD,
     countUnreadNotifications,

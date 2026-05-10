@@ -1,6 +1,7 @@
 import { jsonResponse } from '../lib/http';
 import { getSupabaseKey } from '../lib/supabase';
-import type { WorkerEnv, WorkerJsonRecord, WorkerReviewInteractionDeps, WorkerSessionUser } from '../types';
+import type { WorkerEnv, WorkerJsonRecord, WorkerSessionUser } from '../types';
+import type { WorkerReviewInteractionDeps } from './review-domain/contracts';
 import { publishReviewNotification } from './review-domain/notifications';
 import {
   countReviewLikes,

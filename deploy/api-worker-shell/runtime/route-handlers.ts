@@ -1,7 +1,8 @@
 import { jsonResponse } from '../lib/http';
 import { getSupabaseKey } from '../lib/supabase';
 import { createAuthResponse, kakaoConfigured, naverConfigured, readSessionUser } from '../services/auth';
-import type { RouteRuntime, WorkerEnv, WorkerPlace } from '../types';
+import type { WorkerEnv, WorkerPlace } from '../types';
+import type { RouteRuntime } from './route-runtime';
 
 type PublicWorkerPlace = Omit<WorkerPlace, 'positionId'>;
 
