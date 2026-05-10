@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
+import { NaverMarkerConfig } from '../../config/mapConfig';
 import { currentLocationMarkerContent } from './markerContent';
 
 type MapsApi = typeof window.naver.maps;
@@ -38,10 +39,10 @@ export function useNaverCurrentLocationMarker({
         map: mapRef.current,
         position,
         title: '',
-        zIndex: 200,
+        zIndex: NaverMarkerConfig.zIndex.currentLocation,
         icon: {
           content: currentLocationMarkerContent(),
-          anchor: new mapsApi.Point(15, 15),
+          anchor: new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y),
         },
       });
       return;

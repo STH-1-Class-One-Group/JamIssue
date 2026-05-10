@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
+import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { Place } from '../../types';
 import { placeMarkerContent } from './markerContent';
 
@@ -30,7 +31,7 @@ export function useNaverPlaceMarkers({
     }
 
     const nextIds = new Set(places.map((place) => place.id));
-    const markerAnchor = new mapsApi.Point(15, 15);
+    const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     for (const [placeId, marker] of placeMarkersRef.current.entries()) {
       if (!nextIds.has(placeId)) {
@@ -71,7 +72,7 @@ export function useNaverPlaceMarkers({
 
     const isPlacesSame = places === prevPlacesRef.current;
     const prevSelectedId = prevSelectedPlaceIdRef.current;
-    const markerAnchor = new mapsApi.Point(15, 15);
+    const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     if (isPlacesSame && prevSelectedId !== selectedPlaceId) {
       if (prevSelectedId) {
@@ -82,7 +83,7 @@ export function useNaverPlaceMarkers({
             content: placeMarkerContent(prevPlace, false),
             anchor: markerAnchor,
           });
-          prevMarker.setZIndex(100);
+          prevMarker.setZIndex(NaverMarkerConfig.zIndex.placeDefault);
         }
       }
 
@@ -94,7 +95,7 @@ export function useNaverPlaceMarkers({
             content: placeMarkerContent(nextPlace, true),
             anchor: markerAnchor,
           });
-          nextMarker.setZIndex(160);
+          nextMarker.setZIndex(NaverMarkerConfig.zIndex.placeActive);
         }
       }
     } else {
@@ -107,7 +108,7 @@ export function useNaverPlaceMarkers({
           content: placeMarkerContent(place, place.id === selectedPlaceId),
           anchor: markerAnchor,
         });
-        marker.setZIndex(place.id === selectedPlaceId ? 160 : 100);
+        marker.setZIndex(place.id === selectedPlaceId ? NaverMarkerConfig.zIndex.placeActive : NaverMarkerConfig.zIndex.placeDefault);
       });
     }
 

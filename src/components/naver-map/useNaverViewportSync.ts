@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { SelectionMotionConfig } from '../../config/mapConfig';
 
 type ViewportChangeHandler = ((lat: number, lng: number, zoom: number) => void) | undefined;
 
@@ -35,7 +36,7 @@ export function useNaverViewportSync({
       viewportDebounceTimerRef.current = setTimeout(() => {
         onViewportChangeRef.current?.(center.lat(), center.lng(), zoom);
         viewportDebounceTimerRef.current = null;
-      }, 300);
+      }, SelectionMotionConfig.viewportIdleDebounceMs);
     });
 
     idleListenerRef.current = idleListener;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { MapViewportConfig } from '../../config/mapConfig';
 import { DAEJEON_CENTER, loadNaverMaps } from './mapSdk';
 
 type MapInstanceArgs = {
@@ -39,8 +40,8 @@ export function useNaverMapInstance({
 
         mapRef.current = new maps.Map(mapElementRef.current, {
           center: new maps.LatLng(initialCenter?.lat ?? DAEJEON_CENTER.latitude, initialCenter?.lng ?? DAEJEON_CENTER.longitude),
-          zoom: initialZoom ?? 13,
-          minZoom: 11,
+          zoom: initialZoom ?? MapViewportConfig.defaultZoom,
+          minZoom: MapViewportConfig.minZoom,
           scaleControl: false,
           logoControl: false,
           mapDataControl: false,

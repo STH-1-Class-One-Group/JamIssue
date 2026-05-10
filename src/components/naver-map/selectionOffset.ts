@@ -1,21 +1,20 @@
-export function getSelectionVerticalOffset(mapElement: HTMLDivElement | null, targetType: 'place' | 'festival') {
+import { SelectionMotionConfig } from '../../config/mapConfig';
+import type { SelectionTargetType } from '../../config/mapConfig';
+
+function getViewportSizeBucket() {
+  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= SelectionMotionConfig.mobileBreakpointPx;
+  return isMobileViewport ? 'mobile' : 'desktop';
+}
+
+export function getSelectionVerticalOffset(mapElement: HTMLDivElement | null, targetType: SelectionTargetType) {
   const mapHeight = mapElement?.clientHeight ?? 0;
-  const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 640;
+  const viewportSize = getViewportSizeBucket();
   if (mapHeight <= 0) {
-    if (targetType === 'place') {
-      return isMobileViewport ? 360 : 250;
-    }
-    return isMobileViewport ? 280 : 190;
+    return SelectionMotionConfig.fallbackOffsetPx[targetType][viewportSize];
   }
 
-  const ratio = targetType === 'place'
-    ? (isMobileViewport ? 0.56 : 0.38)
-    : (isMobileViewport ? 0.42 : 0.29);
-  const minOffset = targetType === 'place'
-    ? (isMobileViewport ? 340 : 240)
-    : (isMobileViewport ? 260 : 170);
-  const maxOffset = targetType === 'place'
-    ? (isMobileViewport ? 430 : 310)
-    : (isMobileViewport ? 330 : 230);
+  const ratio = SelectionMotionConfig.offsetRatio[targetType][viewportSize];
+  const minOffset = SelectionMotionConfig.minOffsetPx[targetType][viewportSize];
+  const maxOffset = SelectionMotionConfig.maxOffsetPx[targetType][viewportSize];
   return Math.min(maxOffset, Math.max(minOffset, Math.round(mapHeight * ratio)));
 }

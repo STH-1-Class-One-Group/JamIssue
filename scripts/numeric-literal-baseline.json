@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "ee6cf17cbe5dc2ac189d1486b2ae31ed7754c750",
+  "generatedFrom": "e70ded4f21bd8f2e9a7fa0644d699e626c9a9897",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -3639,26 +3639,6 @@
       ]
     },
     {
-      "path": "src/components/naver-map/mapSdk.ts",
-      "count": 2,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
-          "value": "36.3504",
-          "line": 1,
-          "column": 43
-        },
-        {
-          "value": "127.3845",
-          "line": 1,
-          "column": 63
-        }
-      ]
-    },
-    {
       "path": "src/components/naver-map/markerContent.ts",
       "count": 144,
       "owner": "frontend-map",
@@ -3700,7 +3680,7 @@
     },
     {
       "path": "src/components/naver-map/selectionOffset.ts",
-      "count": 19,
+      "count": 2,
       "owner": "frontend-map",
       "category": "map-coordinate-marker-baseline",
       "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
@@ -3708,33 +3688,13 @@
       "examples": [
         {
           "value": "0",
-          "line": 2,
+          "line": 10,
           "column": 49
         },
         {
-          "value": "640",
-          "line": 3,
-          "column": 82
-        },
-        {
           "value": "0",
-          "line": 4,
+          "line": 12,
           "column": 20
-        },
-        {
-          "value": "360",
-          "line": 6,
-          "column": 33
-        },
-        {
-          "value": "250",
-          "line": 6,
-          "column": 39
-        },
-        {
-          "value": "280",
-          "line": 8,
-          "column": 31
         }
       ]
     },
@@ -3754,91 +3714,6 @@
       ]
     },
     {
-      "path": "src/components/naver-map/useNaverCurrentLocationMarker.ts",
-      "count": 3,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
-          "value": "200",
-          "line": 41,
-          "column": 17
-        },
-        {
-          "value": "15",
-          "line": 44,
-          "column": 37
-        },
-        {
-          "value": "15",
-          "line": 44,
-          "column": 41
-        }
-      ]
-    },
-    {
-      "path": "src/components/naver-map/useNaverFestivalMarkers.ts",
-      "count": 10,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
-          "value": "15",
-          "line": 33,
-          "column": 44
-        },
-        {
-          "value": "15",
-          "line": 33,
-          "column": 48
-        },
-        {
-          "value": "170",
-          "line": 57,
-          "column": 54
-        },
-        {
-          "value": "110",
-          "line": 57,
-          "column": 60
-        },
-        {
-          "value": "15",
-          "line": 78,
-          "column": 44
-        },
-        {
-          "value": "15",
-          "line": 78,
-          "column": 48
-        }
-      ]
-    },
-    {
-      "path": "src/components/naver-map/useNaverMapInstance.ts",
-      "count": 2,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
-          "value": "13",
-          "line": 42,
-          "column": 32
-        },
-        {
-          "value": "11",
-          "line": 43,
-          "column": 20
-        }
-      ]
-    },
-    {
       "path": "src/components/naver-map/useNaverMapInteractions.ts",
       "count": 1,
       "owner": "frontend-map",
@@ -3854,7 +3729,7 @@
       ]
     },
     {
-      "path": "src/components/naver-map/useNaverPlaceMarkers.ts",
+      "path": "src/components/naver-map/useNaverRoutePreviewOverlay.ts",
       "count": 8,
       "owner": "frontend-map",
       "category": "map-coordinate-marker-baseline",
@@ -3862,119 +3737,39 @@
       "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
       "examples": [
         {
-          "value": "15",
-          "line": 33,
-          "column": 44
-        },
-        {
-          "value": "15",
-          "line": 33,
-          "column": 48
-        },
-        {
-          "value": "15",
-          "line": 74,
-          "column": 44
-        },
-        {
-          "value": "15",
-          "line": 74,
-          "column": 48
-        },
-        {
-          "value": "100",
-          "line": 85,
-          "column": 32
-        },
-        {
-          "value": "160",
-          "line": 97,
-          "column": 32
-        }
-      ]
-    },
-    {
-      "path": "src/components/naver-map/useNaverRoutePreviewOverlay.ts",
-      "count": 16,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
           "value": "0",
-          "line": 53,
+          "line": 54,
           "column": 62
         },
         {
           "value": "0.82",
-          "line": 62,
+          "line": 63,
           "column": 22
         },
         {
           "value": "4",
-          "line": 63,
+          "line": 64,
           "column": 21
         },
         {
-          "value": "120",
-          "line": 66,
-          "column": 15
+          "value": "1",
+          "line": 78,
+          "column": 53
         },
         {
-          "value": "165",
-          "line": 75,
-          "column": 19
+          "value": "2",
+          "line": 84,
+          "column": 38
         },
         {
           "value": "1",
-          "line": 77,
-          "column": 53
+          "line": 88,
+          "column": 46
         }
       ]
     },
     {
       "path": "src/components/naver-map/useNaverSelectionSync.ts",
-      "count": 7,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
-          "value": "13",
-          "line": 57,
-          "column": 85
-        },
-        {
-          "value": "15",
-          "line": 58,
-          "column": 75
-        },
-        {
-          "value": "15",
-          "line": 58,
-          "column": 81
-        },
-        {
-          "value": "640",
-          "line": 71,
-          "column": 86
-        },
-        {
-          "value": "260",
-          "line": 72,
-          "column": 71
-        },
-        {
-          "value": "180",
-          "line": 72,
-          "column": 77
-        }
-      ]
-    },
-    {
-      "path": "src/components/naver-map/useNaverViewportSync.ts",
       "count": 1,
       "owner": "frontend-map",
       "category": "map-coordinate-marker-baseline",
@@ -3982,9 +3777,9 @@
       "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
       "examples": [
         {
-          "value": "300",
-          "line": 38,
-          "column": 10
+          "value": "0",
+          "line": 80,
+          "column": 23
         }
       ]
     },
@@ -4259,6 +4054,46 @@
       ]
     },
     {
+      "path": "src/config/mapConfig.ts",
+      "count": 53,
+      "owner": "frontend-map",
+      "category": "map-geo-config-baseline",
+      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
+      "reason": "Map viewport, marker layer, selection-motion, geolocation, and distance values are owned by map config.",
+      "examples": [
+        {
+          "value": "36.3504",
+          "line": 14,
+          "column": 62
+        },
+        {
+          "value": "127.3845",
+          "line": 14,
+          "column": 82
+        },
+        {
+          "value": "13",
+          "line": 15,
+          "column": 33
+        },
+        {
+          "value": "11",
+          "line": 16,
+          "column": 29
+        },
+        {
+          "value": "15",
+          "line": 17,
+          "column": 39
+        },
+        {
+          "value": "5",
+          "line": 18,
+          "column": 44
+        }
+      ]
+    },
+    {
       "path": "src/hooks/app-navigation/shellBackNavigation.ts",
       "count": 2,
       "owner": "frontend-ui",
@@ -4305,46 +4140,6 @@
           "value": "8000",
           "line": 83,
           "column": 30
-        }
-      ]
-    },
-    {
-      "path": "src/hooks/app-route/mapViewportState.ts",
-      "count": 6,
-      "owner": "frontend-map",
-      "category": "map-coordinate-marker-baseline",
-      "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
-      "reason": "Map center, zoom, marker, overlay, or selection-motion values are migrated through map config work.",
-      "examples": [
-        {
-          "value": "36.3504",
-          "line": 7,
-          "column": 50
-        },
-        {
-          "value": "127.3845",
-          "line": 7,
-          "column": 64
-        },
-        {
-          "value": "13",
-          "line": 7,
-          "column": 80
-        },
-        {
-          "value": "10",
-          "line": 17,
-          "column": 48
-        },
-        {
-          "value": "5",
-          "line": 32,
-          "column": 33
-        },
-        {
-          "value": "5",
-          "line": 33,
-          "column": 33
         }
       ]
     },
@@ -4605,41 +4400,21 @@
     },
     {
       "path": "src/lib/geolocation.ts",
-      "count": 10,
+      "count": 2,
       "owner": "frontend-map",
       "category": "geolocation-threshold-baseline",
       "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
       "reason": "Distance, radius, accuracy, and timeout values are migrated through geolocation config work.",
       "examples": [
         {
-          "value": "36.3504",
-          "line": 9,
-          "column": 36
-        },
-        {
-          "value": "127.3845",
-          "line": 9,
-          "column": 56
-        },
-        {
-          "value": "45_000",
-          "line": 10,
-          "column": 37
-        },
-        {
-          "value": "5_000",
-          "line": 11,
-          "column": 49
-        },
-        {
-          "value": "150",
-          "line": 12,
-          "column": 48
+          "value": "0",
+          "line": 15,
+          "column": 60
         },
         {
           "value": "0",
-          "line": 18,
-          "column": 60
+          "line": 45,
+          "column": 21
         }
       ]
     },
@@ -4705,41 +4480,41 @@
     },
     {
       "path": "src/lib/visits.ts",
-      "count": 17,
+      "count": 8,
       "owner": "frontend-map",
       "category": "geolocation-threshold-baseline",
       "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
       "reason": "Distance, radius, accuracy, and timeout values are migrated through geolocation config work.",
       "examples": [
         {
-          "value": "6_371_000",
-          "line": 9,
-          "column": 29
-        },
-        {
-          "value": "180",
-          "line": 10,
-          "column": 69
-        },
-        {
-          "value": "180",
-          "line": 11,
-          "column": 72
-        },
-        {
-          "value": "180",
-          "line": 12,
-          "column": 60
-        },
-        {
-          "value": "180",
-          "line": 13,
-          "column": 56
+          "value": "2",
+          "line": 16,
+          "column": 30
         },
         {
           "value": "2",
           "line": 16,
-          "column": 30
+          "column": 36
+        },
+        {
+          "value": "2",
+          "line": 17,
+          "column": 95
+        },
+        {
+          "value": "2",
+          "line": 17,
+          "column": 101
+        },
+        {
+          "value": "2",
+          "line": 49,
+          "column": 13
+        },
+        {
+          "value": "2",
+          "line": 50,
+          "column": 11
         }
       ]
     },
