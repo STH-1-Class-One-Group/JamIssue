@@ -4,7 +4,14 @@ import type {
   SupabaseCoursePlaceRow,
   SupabaseCourseRow,
   SupabaseMapRow,
+  WorkerFeedLikeRow,
+  WorkerFeedRow,
+  WorkerPositionStampRow,
+  WorkerStampRow,
   WorkerStaticBaseRows,
+  WorkerTravelSessionRow,
+  WorkerUserRouteRow,
+  WorkerUserSummaryRow,
 } from './base-data-contracts';
 import type { SupabaseCacheState } from '../lib/supabase';
 import type {
@@ -24,17 +31,17 @@ let staticBaseCache: SupabaseCacheState<WorkerStaticBaseRows> & {
 
 export interface WorkerBaseDataRows {
   staticRows: WorkerStaticBaseRows;
-  feedRows: WorkerJsonRecord[];
+  feedRows: WorkerFeedRow[];
   commentRows: WorkerJsonRecord[];
-  likeRows: WorkerJsonRecord[];
-  reviewStampRows: WorkerJsonRecord[];
-  userFeedLikeRows: WorkerJsonRecord[];
-  userSessionRows: WorkerJsonRecord[];
-  ownerRouteRows: WorkerJsonRecord[];
-  userStampRows: WorkerJsonRecord[];
-  allPlaceStampRows: WorkerJsonRecord[];
-  reviewRouteRows: WorkerJsonRecord[];
-  userRows: WorkerJsonRecord[];
+  likeRows: WorkerFeedLikeRow[];
+  reviewStampRows: WorkerStampRow[];
+  userFeedLikeRows: WorkerFeedLikeRow[];
+  userSessionRows: WorkerTravelSessionRow[];
+  ownerRouteRows: WorkerUserRouteRow[];
+  userStampRows: WorkerStampRow[];
+  allPlaceStampRows: WorkerPositionStampRow[];
+  reviewRouteRows: WorkerUserRouteRow[];
+  userRows: WorkerUserSummaryRow[];
 }
 
 export async function loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBaseRows> {
@@ -61,14 +68,14 @@ export async function loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBa
 export async function loadBaseDataRows(env: WorkerEnv, sessionUserId: string | null = null): Promise<WorkerBaseDataRows> {
   const [staticRows, feedRows] = await Promise.all([
     loadStaticBaseRows(env),
-    supabaseRequest<WorkerJsonRecord[]>(
+    supabaseRequest<WorkerFeedRow[]>(
       env,
       'feed?select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at&order=created_at.desc',
     ),
   ]);
 
-  const feedIdsFilter = buildInFilter(feedRows.map((row: any) => row.feed_id));
-  const reviewStampIdsFilter = buildInFilter(feedRows.map((row: any) => row.stamp_id).filter(Boolean));
+  const feedIdsFilter = buildInFilter(feedRows.map((row) => row.feed_id));
+  const reviewStampIdsFilter = buildInFilter(feedRows.map((row) => row.stamp_id).filter(Boolean));
   const [
     commentRows,
     likeRows,
@@ -80,20 +87,20 @@ export async function loadBaseDataRows(env: WorkerEnv, sessionUserId: string | n
     allPlaceStampRows = [],
   ] = await Promise.all([
     feedIdsFilter
-      ? supabaseRequest<WorkerJsonRecord[]>(
+        ? supabaseRequest<WorkerStampRow[]>(
           env,
           `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=${feedIdsFilter}&order=created_at.asc`,
         )
       : Promise.resolve([]),
-    feedIdsFilter ? supabaseRequest<WorkerJsonRecord[]>(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`) : Promise.resolve([]),
+    feedIdsFilter ? supabaseRequest<WorkerFeedLikeRow[]>(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`) : Promise.resolve([]),
     reviewStampIdsFilter
-      ? supabaseRequest<WorkerJsonRecord[]>(
+        ? supabaseRequest<WorkerTravelSessionRow[]>(
           env,
           `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=${reviewStampIdsFilter}`,
         )
       : Promise.resolve([]),
     sessionUserId && feedIdsFilter
-      ? supabaseRequest<WorkerJsonRecord[]>(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=${feedIdsFilter}`)
+      ? supabaseRequest<WorkerFeedLikeRow[]>(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=${feedIdsFilter}`)
       : Promise.resolve([]),
     sessionUserId
       ? supabaseRequest<WorkerJsonRecord[]>(
@@ -104,37 +111,37 @@ export async function loadBaseDataRows(env: WorkerEnv, sessionUserId: string | n
         )
       : Promise.resolve([]),
     sessionUserId
-      ? supabaseRequest<WorkerJsonRecord[]>(env, `user_route?select=route_id,travel_session_id&user_id=eq.${encodeFilterValue(sessionUserId)}&order=created_at.desc`)
+        ? supabaseRequest<WorkerUserRouteRow[]>(env, `user_route?select=route_id,travel_session_id&user_id=eq.${encodeFilterValue(sessionUserId)}&order=created_at.desc`)
       : Promise.resolve([]),
     sessionUserId
-      ? supabaseRequest<WorkerJsonRecord[]>(
+        ? supabaseRequest<WorkerStampRow[]>(
           env,
           `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&user_id=eq.${encodeFilterValue(
             sessionUserId,
           )}&order=created_at.desc`,
         )
       : Promise.resolve([]),
-    supabaseRequest<WorkerJsonRecord[]>(env, 'user_stamp?select=position_id'),
+    supabaseRequest<WorkerPositionStampRow[]>(env, 'user_stamp?select=position_id'),
   ]);
 
   const reviewTravelSessionIds = [
     ...new Set(
       (reviewStampRows ?? [])
-        .map((row: any) => row.travel_session_id)
+        .map((row) => row.travel_session_id)
         .filter(Boolean)
-        .map((value: any) => String(value)),
+        .map((value) => String(value)),
     ),
   ];
   const reviewRouteRows =
     reviewTravelSessionIds.length > 0
-      ? await supabaseRequest<WorkerJsonRecord[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
+      ? await supabaseRequest<WorkerUserRouteRow[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
       : [];
   const userIdsFilter = buildInFilter([
-    ...feedRows.map((row: any) => row.user_id),
-    ...commentRows.map((row: any) => row.user_id),
+    ...feedRows.map((row) => row.user_id),
+    ...commentRows.map((row) => row.user_id),
     ...(sessionUserId ? [sessionUserId] : []),
   ]);
-  const userRows = userIdsFilter ? await supabaseRequest<WorkerJsonRecord[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
+  const userRows = userIdsFilter ? await supabaseRequest<WorkerUserSummaryRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
 
   return {
     staticRows,

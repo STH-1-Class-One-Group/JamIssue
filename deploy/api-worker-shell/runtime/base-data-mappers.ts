@@ -5,9 +5,13 @@ import type {
   SupabaseCourseRow,
   SupabaseMapRow,
   WorkerCourse,
+  WorkerPositionStampRow,
   WorkerPlace,
   WorkerStampLog,
+  WorkerStampRow,
   WorkerTravelSession,
+  WorkerTravelSessionRow,
+  WorkerUserRouteRow,
 } from './base-data-contracts';
 
 export const BADGE_BY_MOOD = {
@@ -23,7 +27,7 @@ export function formatVisitLabel(visitNumber: unknown) {
   return `${safeVisitNumber}번째 방문`;
 }
 
-function buildSessionDurationLabel(session: any) {
+function buildSessionDurationLabel(session: WorkerTravelSessionRow) {
   const startedAt = new Date(session.started_at);
   const endedAt = new Date(session.ended_at);
   const diffMs = Math.max(0, endedAt.getTime() - startedAt.getTime());
@@ -34,7 +38,7 @@ function buildSessionDurationLabel(session: any) {
   return `${diffDays}박 ${diffDays + 1}일 · 스탬프 ${session.stamp_count ?? 0}개`;
 }
 
-export function buildStampLogs(stampRows: any[], placesByPositionId: Map<string, WorkerPlace>): WorkerStampLog[] {
+export function buildStampLogs(stampRows: WorkerStampRow[], placesByPositionId: Map<string, WorkerPlace>): WorkerStampLog[] {
   const todayKey = toSeoulDateKey();
   const sessionCounts = new Map<string, number>();
 
@@ -67,12 +71,12 @@ export function buildStampLogs(stampRows: any[], placesByPositionId: Map<string,
 }
 
 export function buildTravelSessions(
-  sessionRows: any[],
-  userStampRows: any[],
+  sessionRows: WorkerTravelSessionRow[],
+  userStampRows: WorkerStampRow[],
   placesByPositionId: Map<string, WorkerPlace>,
-  ownerRouteRows: any[] = [],
+  ownerRouteRows: WorkerUserRouteRow[] = [],
 ): WorkerTravelSession[] {
-  const stampsBySessionId = new Map<string, any[]>();
+  const stampsBySessionId = new Map<string, WorkerStampRow[]>();
   for (const stampRow of userStampRows) {
     if (!stampRow.travel_session_id) {
       continue;
@@ -188,7 +192,7 @@ export function mapPlace(row: SupabaseMapRow): WorkerPlace {
   };
 }
 
-export function buildPlaceVisitCountMap(stampRows: any[]) {
+export function buildPlaceVisitCountMap(stampRows: WorkerPositionStampRow[]) {
   const counts = new Map<string, number>();
   for (const row of stampRows ?? []) {
     const key = String(row.position_id);
