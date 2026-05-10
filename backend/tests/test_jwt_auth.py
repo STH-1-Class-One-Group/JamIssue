@@ -53,11 +53,20 @@ def test_auth_cookie_settings_share_jwt_expiration_window():
 
 
 def test_auth_cookie_settings_disable_secure_in_local_env():
-    settings = Settings(jwt_secret='unit-test-secret', jwt_access_token_minutes=10, env='development', session_https=True)
+    dev_settings = Settings(jwt_secret='unit-test-secret', jwt_access_token_minutes=10, env='development', session_https=True)
+    prod_settings = Settings(
+        jwt_secret='unit-test-secret',
+        session_secret='unit-test-session-secret',
+        jwt_access_token_minutes=10,
+        env='production',
+        session_https=True,
+    )
 
-    cookie_settings = auth_cookie_settings(settings)
+    dev_cookie_settings = auth_cookie_settings(dev_settings)
+    prod_cookie_settings = auth_cookie_settings(prod_settings)
 
-    assert cookie_settings['secure'] is False
+    assert dev_cookie_settings['secure'] is False
+    assert prod_cookie_settings['secure'] is True
 
 
 def test_access_token_with_unknown_crit_header_is_rejected():

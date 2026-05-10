@@ -46,7 +46,7 @@ request
 | #203 | `worker-review-domain-service` | [#227](https://github.com/STH-1-Class-One-Group/JamIssue/pull/227) | `93d13f7ab58908727c291028486bd6b7159a26e7` | review/comment/notification domain 분리 |
 | #204 | `worker-account-community-admin-boundaries` | [#228](https://github.com/STH-1-Class-One-Group/JamIssue/pull/228) | `21dd8d58ac51ea3a980018e68261e493a47d7264` | my/community/admin repository boundary 분리 |
 | #205 | `worker-routing-runtime-cleanup` | [#229](https://github.com/STH-1-Class-One-Group/JamIssue/pull/229) | `3da0fdd7bf9aafadd0aeaa5300169ddab7036fd3` | route registry/proxy/handler 분리 |
-| #206 | `worker-docs-release-traceability` | [#230](https://github.com/STH-1-Class-One-Group/JamIssue/pull/230) | merge 후 #206에 기록 | Wiki/런북/릴리즈 노트 최신화 |
+| #206 | `worker-docs-release-traceability` | [#230](https://github.com/STH-1-Class-One-Group/JamIssue/pull/230) | `TBD` | PR merge 후 실제 main merge SHA 반영 예정 (Wiki/런북/릴리즈 노트 최신화) |
 
 ## 검증 기준
 
@@ -62,7 +62,9 @@ request
 
 FastAPI 파일을 변경한 경우에는 backend pytest를 추가 기준으로 둡니다.
 
-## 1.2.8 후보 범위
+## 1.2.8 후보 범위 (상태: Candidate, 미확정)
+
+이 섹션의 `1.2.8`은 배포 확정 전 후보 범위이며, 확정 시 Release Notes에서 상태를 Final로 갱신합니다.
 
 `1.2.8` 후보는 `1.2.7` 이후 변경 중 사용자 경험, 운영 안정성, 백엔드 유지보수성에 의미가 있는 변경을 묶습니다.
 
