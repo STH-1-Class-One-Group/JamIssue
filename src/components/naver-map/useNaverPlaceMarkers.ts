@@ -30,6 +30,7 @@ export function useNaverPlaceMarkers({
     }
 
     const nextIds = new Set(places.map((place) => place.id));
+    const markerAnchor = new mapsApi.Point(15, 15);
 
     for (const [placeId, marker] of placeMarkersRef.current.entries()) {
       if (!nextIds.has(placeId)) {
@@ -52,7 +53,7 @@ export function useNaverPlaceMarkers({
         title: '',
         icon: {
           content: placeMarkerContent(place, place.id === selectedPlaceId),
-          anchor: new mapsApi.Point(15, 15),
+          anchor: markerAnchor,
         },
       });
       mapsApi.Event.addListener(marker, 'click', () => onSelectPlace(place.id));
@@ -60,21 +61,57 @@ export function useNaverPlaceMarkers({
     });
   }, [mapRef, mapsApi, onSelectPlace, places, selectedPlaceId, status]);
 
+  const prevSelectedPlaceIdRef = useRef<string | null>(selectedPlaceId);
+  const prevPlacesRef = useRef<Place[]>(places);
+
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {
       return;
     }
 
-    places.forEach((place) => {
-      const marker = placeMarkersRef.current.get(place.id);
-      if (!marker) {
-        return;
+    const isPlacesSame = places === prevPlacesRef.current;
+    const prevSelectedId = prevSelectedPlaceIdRef.current;
+    const markerAnchor = new mapsApi.Point(15, 15);
+
+    if (isPlacesSame && prevSelectedId !== selectedPlaceId) {
+      if (prevSelectedId) {
+        const prevPlace = places.find((p) => p.id === prevSelectedId);
+        const prevMarker = placeMarkersRef.current.get(prevSelectedId);
+        if (prevPlace && prevMarker) {
+          prevMarker.setIcon({
+            content: placeMarkerContent(prevPlace, false),
+            anchor: markerAnchor,
+          });
+          prevMarker.setZIndex(100);
+        }
       }
-      marker.setIcon({
-        content: placeMarkerContent(place, place.id === selectedPlaceId),
-        anchor: new mapsApi.Point(15, 15),
+
+      if (selectedPlaceId) {
+        const nextPlace = places.find((p) => p.id === selectedPlaceId);
+        const nextMarker = placeMarkersRef.current.get(selectedPlaceId);
+        if (nextPlace && nextMarker) {
+          nextMarker.setIcon({
+            content: placeMarkerContent(nextPlace, true),
+            anchor: markerAnchor,
+          });
+          nextMarker.setZIndex(160);
+        }
+      }
+    } else {
+      places.forEach((place) => {
+        const marker = placeMarkersRef.current.get(place.id);
+        if (!marker) {
+          return;
+        }
+        marker.setIcon({
+          content: placeMarkerContent(place, place.id === selectedPlaceId),
+          anchor: markerAnchor,
+        });
+        marker.setZIndex(place.id === selectedPlaceId ? 160 : 100);
       });
-      marker.setZIndex(place.id === selectedPlaceId ? 160 : 100);
-    });
+    }
+
+    prevSelectedPlaceIdRef.current = selectedPlaceId;
+    prevPlacesRef.current = places;
   }, [mapRef, mapsApi, places, selectedPlaceId, status]);
 }
