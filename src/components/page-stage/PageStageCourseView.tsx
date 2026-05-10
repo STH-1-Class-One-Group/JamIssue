@@ -1,7 +1,5 @@
 import { CourseTab } from '../CourseTab';
-import type { AppPageStageProps } from './appPageStageTypes';
-
-type PageStageCourseViewProps = Pick<AppPageStageProps, 'sharedData' | 'courseData' | 'sharedActions' | 'courseActions'>;
+import type { PageStageCourseViewProps } from './appPageStageTypes';
 
 export function PageStageCourseView({
   sharedData,
