@@ -1,13 +1,15 @@
 import { buildInFilter, encodeFilterValue, rememberPending, supabaseRequest } from '../lib/supabase';
 import { WorkerBaseDataRuntimeConfig } from '../config/runtime';
 import type {
-  SupabaseCacheState,
   SupabaseCoursePlaceRow,
   SupabaseCourseRow,
   SupabaseMapRow,
+  WorkerStaticBaseRows,
+} from './base-data-contracts';
+import type { SupabaseCacheState } from '../lib/supabase';
+import type {
   WorkerEnv,
   WorkerJsonRecord,
-  WorkerStaticBaseRows,
 } from '../types';
 
 const STATIC_BASE_CACHE_TTL_MS = WorkerBaseDataRuntimeConfig.staticBaseCacheTtlMs;

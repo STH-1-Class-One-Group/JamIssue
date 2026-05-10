@@ -1,5 +1,6 @@
 import { encodeFilterValue, supabaseRequest } from '../../lib/supabase';
-import type { SupabaseIdentityRow, SupabaseUserRow, WorkerEnv, WorkerSessionUser } from '../../types';
+import type { WorkerEnv, WorkerSessionUser } from '../../types';
+import type { SupabaseIdentityRow, SupabaseUserRow } from './contracts';
 import { buildSessionUser } from './session';
 
 interface SocialProfile {
