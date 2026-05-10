@@ -6,7 +6,9 @@
  * Non-Goals: This file does not perform persistence, notification publishing, or DTO mapping.
  * Dependencies: Worker environment primitives and current Worker read-model DTOs.
  */
-import type { WorkerBaseData, WorkerEnv, WorkerJsonRecord, WorkerPlace, WorkerReview, WorkerSessionUser } from '../../types';
+import type { WorkerBaseData, WorkerPlace } from '../../runtime/base-data-contracts';
+import type { WorkerEnv, WorkerJsonRecord, WorkerSessionUser } from '../../types';
+import type { WorkerReview } from './read-model';
 
 export interface WorkerReviewReadService {
   handleReviewFeed(request: Request, env: WorkerEnv, url: URL): Promise<Response>;

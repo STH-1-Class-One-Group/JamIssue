@@ -1,5 +1,15 @@
-import type { SupabaseCacheState, SupabaseRequestOptions, WorkerEnv } from '../types';
+import type { WorkerEnv } from '../types';
 import { WorkerSupabaseRuntimeConfig } from '../config/runtime';
+
+export interface SupabaseRequestOptions extends RequestInit {
+  headers?: HeadersInit;
+  body?: BodyInit | null;
+}
+
+export interface SupabaseCacheState<T> {
+  pending: Promise<T> | null;
+  value: T | null;
+}
 
 export function getSupabaseKey(env: WorkerEnv) {
   return env.APP_SUPABASE_SERVICE_ROLE_KEY || env.APP_SUPABASE_ANON_KEY || '';

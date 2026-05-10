@@ -8,7 +8,7 @@ import type {
   WorkerPlace,
   WorkerStampLog,
   WorkerTravelSession,
-} from '../types';
+} from './base-data-contracts';
 
 export const BADGE_BY_MOOD = {
   설렘: '첫 방문',

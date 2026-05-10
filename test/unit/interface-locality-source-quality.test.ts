@@ -41,10 +41,16 @@ function countSourceMatches(file: string, pattern: RegExp) {
 
 describe('interface locality source quality baseline', () => {
   it('keeps Worker central type surface from growing before locality splits', () => {
-    expect(countSourceMatches('deploy/api-worker-shell/types.ts', /^export (type|interface) /gm)).toBeLessThanOrEqual(19);
+    expect(countSourceMatches('deploy/api-worker-shell/types.ts', /^export (type|interface) /gm)).toBeLessThanOrEqual(4);
     expect(
       gitGrepCount(
         'WorkerReviewReadService\\|WorkerCommunityRouteService\\|WorkerMyService\\|WorkerAdminService\\|WorkerStampService\\|WorkerReviewInteractionDeps\\|RouteRuntime',
+        ['deploy/api-worker-shell/types.ts'],
+      ),
+    ).toBe(0);
+    expect(
+      gitGrepCount(
+        'SupabaseMapRow\\|SupabaseCourseRow\\|SupabaseCoursePlaceRow\\|SupabaseIdentityRow\\|SupabaseUserRow\\|WorkerBaseData\\|WorkerPlace\\|WorkerReview',
         ['deploy/api-worker-shell/types.ts'],
       ),
     ).toBe(0);

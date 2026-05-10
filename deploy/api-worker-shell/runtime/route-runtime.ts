@@ -12,10 +12,10 @@ import type {
   SupabaseMapRow,
   WorkerBaseData,
   WorkerCourse,
-  WorkerEnv,
   WorkerPlace,
   WorkerStaticBaseRows,
-} from '../types';
+} from './base-data-contracts';
+import type { WorkerEnv } from '../types';
 import type { WorkerAdminService } from '../services/admin-domain/contracts';
 import type { WorkerCommunityRouteService } from '../services/community-domain/contracts';
 import type { WorkerMyService } from '../services/my-domain/contracts';
