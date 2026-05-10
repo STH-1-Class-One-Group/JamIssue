@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "2597f982e1bff0ece06e98020f8cd624472721e4",
+  "generatedFrom": "1e87b79d113e0376345b5985440f8496982b240b",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -2930,41 +2930,26 @@
     },
     {
       "path": "src/api/core.ts",
-      "count": 13,
+      "count": 3,
       "owner": "frontend-runtime",
       "category": "frontend-runtime-limit-baseline",
       "scopeId": "TSK-002-04-FRONTEND-RUNTIME-LIMIT-CONFIG",
       "reason": "Upload limits, cache TTLs, autoload margins, and interaction delays are migrated through runtime config work.",
       "examples": [
         {
-          "value": "15_000",
-          "line": 12,
-          "column": 28
+          "value": "0",
+          "line": 35,
+          "column": 27
         },
         {
-          "value": "30",
-          "line": 36,
-          "column": 12
+          "value": "401",
+          "line": 65,
+          "column": 29
         },
         {
-          "value": "60",
-          "line": 36,
-          "column": 17
-        },
-        {
-          "value": "1000",
-          "line": 36,
-          "column": 22
-        },
-        {
-          "value": "60",
-          "line": 39,
-          "column": 12
-        },
-        {
-          "value": "1000",
-          "line": 39,
-          "column": 17
+          "value": "204",
+          "line": 71,
+          "column": 27
         }
       ]
     },
@@ -3135,41 +3120,6 @@
           "value": "2",
           "line": 19,
           "column": 18
-        }
-      ]
-    },
-    {
-      "path": "src/components/floating-back-button/constants.ts",
-      "count": 5,
-      "owner": "frontend-runtime",
-      "category": "frontend-runtime-limit-baseline",
-      "scopeId": "TSK-002-04-FRONTEND-RUNTIME-LIMIT-CONFIG",
-      "reason": "Upload limits, cache TTLs, autoload margins, and interaction delays are migrated through runtime config work.",
-      "examples": [
-        {
-          "value": "46",
-          "line": 1,
-          "column": 28
-        },
-        {
-          "value": "12",
-          "line": 2,
-          "column": 29
-        },
-        {
-          "value": "120",
-          "line": 3,
-          "column": 39
-        },
-        {
-          "value": "180",
-          "line": 4,
-          "column": 36
-        },
-        {
-          "value": "260",
-          "line": 5,
-          "column": 36
         }
       ]
     },
@@ -4094,6 +4044,46 @@
       ]
     },
     {
+      "path": "src/config/runtimeLimitConfig.ts",
+      "count": 27,
+      "owner": "frontend-runtime",
+      "category": "frontend-runtime-limit-config-baseline",
+      "scopeId": "TSK-002-04-FRONTEND-RUNTIME-LIMIT-CONFIG",
+      "reason": "API cache TTL, upload compression, autoload, pagination, feedback, and floating-button runtime values are owned by runtime limit config.",
+      "examples": [
+        {
+          "value": "1000",
+          "line": 2,
+          "column": 30
+        },
+        {
+          "value": "60",
+          "line": 3,
+          "column": 30
+        },
+        {
+          "value": "15",
+          "line": 4,
+          "column": 37
+        },
+        {
+          "value": "30",
+          "line": 7,
+          "column": 66
+        },
+        {
+          "value": "20",
+          "line": 9,
+          "column": 73
+        },
+        {
+          "value": "10",
+          "line": 10,
+          "column": 61
+        }
+      ]
+    },
+    {
       "path": "src/config/uiTokenConfig.ts",
       "count": 87,
       "owner": "frontend-ui",
@@ -4184,21 +4174,6 @@
       ]
     },
     {
-      "path": "src/hooks/app-tab-loaders/feedReviewLoader.ts",
-      "count": 1,
-      "owner": "frontend-ui",
-      "category": "frontend-ui-inline-token-baseline",
-      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
-      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
-      "examples": [
-        {
-          "value": "10",
-          "line": 24,
-          "column": 51
-        }
-      ]
-    },
-    {
       "path": "src/hooks/useAppAuthActions.ts",
       "count": 1,
       "owner": "frontend-ui",
@@ -4210,26 +4185,6 @@
           "value": "2",
           "line": 32,
           "column": 48
-        }
-      ]
-    },
-    {
-      "path": "src/hooks/useAppCoordinatorEffects.ts",
-      "count": 2,
-      "owner": "frontend-ui",
-      "category": "frontend-ui-inline-token-baseline",
-      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
-      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
-      "examples": [
-        {
-          "value": "120",
-          "line": 14,
-          "column": 36
-        },
-        {
-          "value": "4000",
-          "line": 15,
-          "column": 33
         }
       ]
     },
@@ -4255,26 +4210,6 @@
           "value": "1",
           "line": 81,
           "column": 71
-        }
-      ]
-    },
-    {
-      "path": "src/hooks/useAppPagePaginationActions.ts",
-      "count": 2,
-      "owner": "frontend-ui",
-      "category": "frontend-ui-inline-token-baseline",
-      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
-      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
-      "examples": [
-        {
-          "value": "10",
-          "line": 46,
-          "column": 77
-        },
-        {
-          "value": "10",
-          "line": 81,
-          "column": 100
         }
       ]
     },
@@ -4374,31 +4309,6 @@
       ]
     },
     {
-      "path": "src/hooks/useAutoLoadMore.ts",
-      "count": 3,
-      "owner": "frontend-runtime",
-      "category": "frontend-runtime-limit-baseline",
-      "scopeId": "TSK-002-04-FRONTEND-RUNTIME-LIMIT-CONFIG",
-      "reason": "Upload limits, cache TTLs, autoload margins, and interaction delays are migrated through runtime config work.",
-      "examples": [
-        {
-          "value": "160px",
-          "line": 18,
-          "column": 17
-        },
-        {
-          "value": "0px",
-          "line": 18,
-          "column": 23
-        },
-        {
-          "value": "0.01",
-          "line": 48,
-          "column": 20
-        }
-      ]
-    },
-    {
       "path": "src/index.css",
       "count": 1534,
       "owner": "frontend-ui",
@@ -4460,41 +4370,41 @@
     },
     {
       "path": "src/lib/imageUpload.ts",
-      "count": 20,
+      "count": 9,
       "owner": "frontend-runtime",
       "category": "frontend-runtime-limit-baseline",
       "scopeId": "TSK-002-04-FRONTEND-RUNTIME-LIMIT-CONFIG",
       "reason": "Upload limits, cache TTLs, autoload margins, and interaction delays are migrated through runtime config work.",
       "examples": [
         {
-          "value": "1600",
-          "line": 1,
-          "column": 30
+          "value": "-1",
+          "line": 10,
+          "column": 20
         },
         {
-          "value": "1_000_000",
-          "line": 2,
+          "value": "0",
+          "line": 13,
+          "column": 28
+        },
+        {
+          "value": "1",
+          "line": 31,
           "column": 26
         },
         {
-          "value": "0.84",
-          "line": 3,
-          "column": 30
-        },
-        {
-          "value": "0.58",
-          "line": 4,
+          "value": "1",
+          "line": 32,
           "column": 26
         },
         {
-          "value": "0.08",
-          "line": 5,
+          "value": "1",
+          "line": 33,
           "column": 27
         },
         {
-          "value": "960",
-          "line": 6,
-          "column": 36
+          "value": "0",
+          "line": 41,
+          "column": 28
         }
       ]
     },

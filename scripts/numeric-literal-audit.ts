@@ -95,6 +95,14 @@ function inferClassification(path: string): Pick<NumericLiteralFileAudit, 'owner
       reason: 'Inline review image frame layout and transform values are owned by UI token config.',
     };
   }
+  if (path === 'src/config/runtimeLimitConfig.ts') {
+    return {
+      owner: 'frontend-runtime',
+      category: 'frontend-runtime-limit-config-baseline',
+      scopeId: 'TSK-002-04-FRONTEND-RUNTIME-LIMIT-CONFIG',
+      reason: 'API cache TTL, upload compression, autoload, pagination, feedback, and floating-button runtime values are owned by runtime limit config.',
+    };
+  }
   if (path.includes('/naver-map/') || path.includes('mapViewportState')) {
     return {
       owner: 'frontend-map',

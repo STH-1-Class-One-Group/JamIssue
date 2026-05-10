@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { FeedbackRuntimeConfig } from '../config/runtimeLimitConfig';
 import { getInitialNotice } from './useAppRouteState';
 import { useAppFeedbackEffects } from './useAppFeedbackEffects';
 import { useAppBootstrapLifecycle } from './useAppBootstrapLifecycle';
@@ -10,9 +11,6 @@ import type {
   ShellRuntimeState,
 } from './useAppShellCoordinator.types';
 import type { useAppCoordinatorServices } from './useAppCoordinatorServices';
-
-const STAMP_UNLOCK_RADIUS_METERS = 120;
-const NOTICE_DISMISS_DELAY_MS = 4000;
 
 type CoordinatorEffectsArgs = {
   routeState: RouteState;
@@ -77,8 +75,8 @@ export function useAppCoordinatorEffects({
     todayStamp: viewModels.todayStamp,
     notice,
     mapLocationMessage,
-    stampUnlockRadiusMeters: STAMP_UNLOCK_RADIUS_METERS,
-    noticeDismissDelayMs: NOTICE_DISMISS_DELAY_MS,
+    stampUnlockRadiusMeters: FeedbackRuntimeConfig.stampUnlockRadiusMeters,
+    noticeDismissDelayMs: FeedbackRuntimeConfig.noticeDismissDelayMs,
   });
 
   useAppBootstrapLifecycle({
