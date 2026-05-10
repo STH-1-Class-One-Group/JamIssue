@@ -13,6 +13,7 @@
     "test:smoke:ui": "node --max-old-space-size=8192 ./node_modules/vitest/vitest.mjs run test/smoke",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:regression && npm run test:smoke:ui",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.scripts.json --noEmit && tsc -p tsconfig.worker.json --noEmit",
+    "check:numeric-literals": "tsx scripts/numeric-literal-audit.ts --check",
     "smoke": "tsx scripts/run-public-smoke-checks.ts",
     "smoke:public": "tsx scripts/run-public-smoke-checks.ts",
     "smoke:protected": "tsx scripts/run-protected-smoke-checks.ts"
