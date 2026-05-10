@@ -1,4 +1,4 @@
-import type { MyPageTabKey } from '../../types';
+import type { MyPageTabKey } from '../../types/core';
 
 type MyPagePrimaryTabsProps = {
   activeTab: MyPageTabKey;

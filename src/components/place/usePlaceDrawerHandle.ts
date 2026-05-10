@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { DrawerState } from '../../types';
+import type { DrawerState } from '../../types/core';
 
 interface UsePlaceDrawerHandleOptions {
   drawerState: DrawerState;

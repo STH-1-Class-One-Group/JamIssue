@@ -1,16 +1,9 @@
 import { useMemo } from 'react';
 import { calculateDistanceMeters, getLatestPlaceStamp, getTodayStampLog } from '../lib/visits';
-import type {
-  ApiStatus,
-  BootstrapResponse,
-  Category,
-  FestivalItem,
-  MyPageResponse,
-  Place,
-  Review,
-  RoutePreview,
-  SessionUser,
-} from '../types';
+import type { ApiStatus, Category, FestivalItem, Place, RoutePreview } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { BootstrapResponse, Review } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
 import {
   buildPlaceNameById,
   filterPlacesByCategory,

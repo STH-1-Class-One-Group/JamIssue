@@ -1,4 +1,4 @@
-﻿import type { Tab } from '../types';
+﻿import type { Tab } from '../types/core';
 
 interface BottomNavProps {
   activeTab: Tab;

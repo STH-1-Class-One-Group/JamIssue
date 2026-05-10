@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { getReviews } from '../api/reviewsClient';
 import { toReviewSummaryList } from '../lib/reviews';
-import type { Review, Tab } from '../types';
+import type { Tab } from '../types/core';
+import type { Review } from '../types/review';
 
 interface UseSelectedPlaceReviewSyncParams {
   activeTab: Tab;

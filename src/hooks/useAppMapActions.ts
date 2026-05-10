@@ -3,7 +3,9 @@ import { claimStamp } from '../api/stampClient';
 import { getCurrentDevicePosition } from '../lib/geolocation';
 import { formatDistanceMeters } from '../lib/visits';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import type { DrawerState, Place, SessionUser, StampState, Tab } from '../types';
+import type { DrawerState, Place, Tab } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { StampState } from '../types/review';
 import type { RouteStateCommitOptions } from './useAppRouteState';
 
 type HistoryMode = 'push' | 'replace';

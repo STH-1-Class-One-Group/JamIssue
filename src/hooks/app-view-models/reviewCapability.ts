@@ -1,4 +1,6 @@
-import type { MyPageResponse, Review, SessionUser, StampLog } from '../../types';
+import type { SessionUser } from '../../types/auth';
+import type { Review, StampLog } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
 
 export function getKnownMyReviews({
   reviews,

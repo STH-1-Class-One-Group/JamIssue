@@ -2,7 +2,7 @@ import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { getReviewFeedPage } from '../../api/reviewsClient';
 import { PaginationRuntimeConfig } from '../../config/runtimeLimitConfig';
 import { toReviewSummaryList } from '../../lib/reviews';
-import type { Review } from '../../types';
+import type { Review } from '../../types/review';
 
 interface CreateFeedReviewLoaderParams {
   feedLoadedRef: MutableRefObject<boolean>;

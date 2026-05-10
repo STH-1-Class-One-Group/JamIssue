@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
 import { NaverMarkerConfig } from '../../config/mapConfig';
-import type { FestivalItem } from '../../types';
+import type { FestivalItem } from '../../types/core';
 import { festivalMarkerContent, hasFestivalCoordinates } from './markerContent';
 
 type MapsApi = typeof window.naver.maps;

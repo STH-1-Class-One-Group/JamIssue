@@ -1,4 +1,4 @@
-import type { Comment } from '../../types';
+import type { Comment } from '../../types/review';
 
 export interface CommentThreadProps {
   comments: Comment[];

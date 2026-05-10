@@ -1,6 +1,9 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { toggleCommunityRouteLike } from '../../api/routesClient';
-import type { MyPageResponse, SessionUser, Tab, UserRoute } from '../../types';
+import type { Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { UserRoute } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
 
 type HistoryMode = 'push' | 'replace';
 

@@ -1,4 +1,4 @@
-import type { Category, FestivalItem, Place, RoutePreview } from '../../types';
+import type { Category, FestivalItem, Place, RoutePreview } from '../../types/core';
 
 export function filterPlacesByCategory(places: Place[], category: Category) {
   if (category === 'all') {

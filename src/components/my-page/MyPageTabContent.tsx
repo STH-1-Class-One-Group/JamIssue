@@ -1,5 +1,8 @@
 import { Suspense, lazy, type RefObject } from 'react';
-import type { AdminSummaryResponse, MyPageResponse, MyPageTabKey, ReviewMood, SessionUser } from '../../types';
+import type { MyPageTabKey, ReviewMood } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { MyPageResponse } from '../../types/my-page';
+import type { AdminSummaryResponse } from '../../types/admin';
 import { MyCommentsTabSection } from './MyCommentsTabSection';
 import { MyFeedTabSection } from './MyFeedTabSection';
 import { MyPagePrimaryTabs } from './MyPagePrimaryTabs';

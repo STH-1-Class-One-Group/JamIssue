@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { CommentThread } from '../CommentThread';
-import type { Review } from '../../types';
+import type { Review } from '../../types/review';
 import { CommentIcon, HeartIcon } from './ReviewActionIcons';
 import { ReviewFeedCardHeader } from './ReviewFeedCardHeader';
 import { ReviewImageFrame } from './ReviewImageFrame';

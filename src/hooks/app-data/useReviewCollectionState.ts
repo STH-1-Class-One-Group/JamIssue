@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { toReviewSummary } from '../../lib/reviews';
-import type { BootstrapResponse } from '../../types';
+import type { BootstrapResponse } from '../../types/review';
 
 type ReviewSummary = BootstrapResponse['reviews'][number];
 

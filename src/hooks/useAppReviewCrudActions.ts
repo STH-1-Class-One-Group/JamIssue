@@ -8,7 +8,7 @@ import {
 import { toReviewSummary } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useReviewUIStore } from '../store/review-ui-store';
-import type { ReviewMood } from '../types';
+import type { ReviewMood } from '../types/core';
 import type { UseAppReviewActionsParams } from './useAppReviewActions.types';
 
 export function useAppReviewCrudActions({

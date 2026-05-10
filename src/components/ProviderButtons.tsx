@@ -1,4 +1,4 @@
-﻿import type { AuthProvider, ProviderKey } from '../types';
+﻿import type { AuthProvider, ProviderKey } from '../types/auth';
 
 interface ProviderButtonsProps {
   providers: AuthProvider[];

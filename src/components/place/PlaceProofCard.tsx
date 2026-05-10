@@ -1,4 +1,4 @@
-import type { ApiStatus } from '../../types';
+import type { ApiStatus } from '../../types/core';
 
 interface PlaceProofCardProps {
   loggedIn: boolean;

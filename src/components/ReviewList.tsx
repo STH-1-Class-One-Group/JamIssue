@@ -1,5 +1,5 @@
 import { memo, useRef } from 'react';
-import type { Review } from '../types';
+import type { Review } from '../types/review';
 import { ReviewListEmptyState } from './review/ReviewListEmptyState';
 import { ReviewListItem } from './review/ReviewListItem';
 import { useScrollToHighlightedReview } from './review/useScrollToHighlightedReview';

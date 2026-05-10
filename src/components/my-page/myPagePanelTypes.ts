@@ -1,11 +1,7 @@
-import type {
-  AdminSummaryResponse,
-  AuthProvider,
-  MyPageResponse,
-  MyPageTabKey,
-  ReviewMood,
-  SessionUser,
-} from '../../types';
+import type { MyPageTabKey, ReviewMood } from '../../types/core';
+import type { AuthProvider, SessionUser } from '../../types/auth';
+import type { MyPageResponse } from '../../types/my-page';
+import type { AdminSummaryResponse } from '../../types/admin';
 
 export interface MyPagePanelProps {
   sessionData: {

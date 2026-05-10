@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useEventCallback } from '../../hooks/useEventCallback';
-import type { ReviewMood } from '../../types';
+import type { ReviewMood } from '../../types/core';
 import type { MyReview, ReviewUpdatePayload } from './myFeedTabTypes';
 
 export function useMyFeedReviewEditor(onUpdateReview: (reviewId: string, payload: ReviewUpdatePayload) => Promise<void>) {

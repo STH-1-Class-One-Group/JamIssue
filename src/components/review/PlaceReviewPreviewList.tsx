@@ -1,5 +1,5 @@
 import { formatReviewVisitedAt } from '../../lib/visits';
-import type { Review } from '../../types';
+import type { Review } from '../../types/review';
 
 interface PlaceReviewPreviewListProps {
   reviews: Review[];

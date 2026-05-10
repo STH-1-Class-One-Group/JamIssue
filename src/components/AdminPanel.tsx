@@ -1,4 +1,4 @@
-﻿import type { AdminSummaryResponse } from '../types';
+﻿import type { AdminSummaryResponse } from '../types/admin';
 
 interface AdminPanelProps {
   summary: AdminSummaryResponse | null;

@@ -1,6 +1,7 @@
 ﻿import { useRef } from 'react';
 import { CommentThread } from './CommentThread';
-import type { ApiStatus, Comment, Review } from '../types';
+import type { ApiStatus } from '../types/core';
+import type { Comment, Review } from '../types/review';
 
 interface FeedCommentSheetProps {
   review: Review | null;

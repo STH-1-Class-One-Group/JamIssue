@@ -2,13 +2,10 @@
 import { importPublicData, updatePlaceVisibility } from '../api/adminClient';
 import { getFestivals, getMapBootstrap } from '../api/bootstrapClient';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import type {
-  AdminSummaryResponse,
-  FestivalItem,
-  Place,
-  SessionUser,
-  StampState,
-} from '../types';
+import type { FestivalItem, Place } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { StampState } from '../types/review';
+import type { AdminSummaryResponse } from '../types/admin';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 

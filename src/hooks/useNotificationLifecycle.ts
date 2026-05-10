@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import type { MyPageResponse, SessionUser } from '../types';
+import type { SessionUser } from '../types/auth';
+import type { MyPageResponse } from '../types/my-page';
 
 interface UseNotificationLifecycleParams {
   sessionUser: SessionUser | null;

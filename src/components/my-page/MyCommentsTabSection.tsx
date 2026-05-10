@@ -1,5 +1,5 @@
 import type { RefObject } from 'react';
-import type { MyPageResponse } from '../../types';
+import type { MyPageResponse } from '../../types/my-page';
 
 type MyComment = NonNullable<MyPageResponse>['comments'][number];
 

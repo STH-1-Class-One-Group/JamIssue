@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { getClientConfig } from '../config';
-import type { ApiStatus, FestivalItem, Place } from '../types';
+import type { ApiStatus, FestivalItem, Place } from '../types/core';
 import { NaverMapStatus } from './naver-map/NaverMapStatus';
 import { useNaverMapInstance } from './naver-map/useNaverMapInstance';
 import { useNaverMapInteractions } from './naver-map/useNaverMapInteractions';

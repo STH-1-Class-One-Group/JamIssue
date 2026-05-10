@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react';
-import type { ReviewMood } from '../types';
+import type { ReviewMood } from '../types/core';
 
 interface ReviewFormFieldsProps {
   moodOptions: ReviewMood[];

@@ -1,5 +1,5 @@
 import { categoryInfo, categoryItems } from '../../lib/categories';
-import type { Category } from '../../types';
+import type { Category } from '../../types/core';
 
 type MapStageCategoryStripProps = {
   activeCategory: Category;

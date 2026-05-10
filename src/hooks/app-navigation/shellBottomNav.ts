@@ -1,4 +1,4 @@
-import type { DrawerState, RoutePreview, Tab } from '../../types';
+import type { DrawerState, RoutePreview, Tab } from '../../types/core';
 import type { RouteStateCommitOptions } from '../useAppRouteState';
 
 interface CreateBottomNavChangeHandlerParams {

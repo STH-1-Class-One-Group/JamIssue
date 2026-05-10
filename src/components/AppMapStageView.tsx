@@ -1,16 +1,8 @@
 import { memo } from 'react';
 import { MapTabStage } from './MapTabStage';
-import type {
-  ApiStatus,
-  BootstrapResponse,
-  Category,
-  DrawerState,
-  FestivalItem,
-  Place,
-  ReviewMood,
-  RoutePreview,
-  SessionUser,
-} from '../types';
+import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { BootstrapResponse } from '../types/review';
 
 interface AppMapStageViewProps {
   mapData: {

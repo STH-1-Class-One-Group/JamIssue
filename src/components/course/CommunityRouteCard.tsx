@@ -1,5 +1,6 @@
 import { memo, type MutableRefObject } from 'react';
-import type { SessionUser, UserRoute } from '../../types';
+import type { SessionUser } from '../../types/auth';
+import type { UserRoute } from '../../types/review';
 import { HeartIcon } from '../review/ReviewActionIcons';
 import type { RoutePreviewPayload } from './courseTabTypes';
 

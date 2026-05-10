@@ -57,11 +57,11 @@ describe('interface locality source quality baseline', () => {
   });
 
   it('keeps frontend root type barrel usage from growing before locality splits', () => {
-    const rootTypeImportPattern = "from '../types\\|from '../../types";
+    const rootTypeImportPattern = "from '../types';\\|from '../../types';\\|from \"../types\";\\|from \"../../types\";";
 
-    expect(gitGrepCount(rootTypeImportPattern, ['src'])).toBeLessThanOrEqual(106);
-    expect(gitGrepCount(rootTypeImportPattern, ['src/components'])).toBeLessThanOrEqual(44);
-    expect(gitGrepCount(rootTypeImportPattern, ['src/hooks'])).toBeLessThanOrEqual(43);
+    expect(gitGrepCount(rootTypeImportPattern, ['src'])).toBeLessThanOrEqual(19);
+    expect(gitGrepCount(rootTypeImportPattern, ['src/components'])).toBe(0);
+    expect(gitGrepCount(rootTypeImportPattern, ['src/hooks'])).toBe(0);
   });
 
   it('keeps wide stage prop coupling from growing before stage-local props are split', () => {

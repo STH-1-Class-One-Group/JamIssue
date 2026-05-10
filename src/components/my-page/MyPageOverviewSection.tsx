@@ -1,4 +1,5 @@
-import type { Place, TravelSession } from '../../types';
+import type { Place } from '../../types/core';
+import type { TravelSession } from '../../types/review';
 
 type MyPageOverviewSectionProps = {
   uniquePlaceCount: number;

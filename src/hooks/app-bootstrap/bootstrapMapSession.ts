@@ -1,7 +1,10 @@
 import type * as React from 'react';
 
 import { getMapBootstrap } from '../../api/bootstrapClient';
-import type { MyPageResponse, Place, SessionUser, StampState } from '../../types';
+import type { Place } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { StampState } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
 import { handleBootstrapAuthNotice } from './bootstrapAuthNotice';
 import { applyBootstrapSelections, resetBootstrapRuntime } from './bootstrapRuntimeReset';
 
