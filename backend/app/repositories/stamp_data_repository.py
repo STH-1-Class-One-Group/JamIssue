@@ -17,6 +17,7 @@ from ..repository_support import (
     to_seoul_date,
     utcnow_naive,
 )
+from ..runtime_config import FastApiRouteRuntimeConfig, FastApiStampRuntimeConfig
 from .user_data_repository import get_or_create_user
 
 
@@ -83,7 +84,7 @@ def build_travel_sessions(
                 stampCount=session.stamp_count,
                 placeIds=unique_place_ids,
                 placeNames=unique_place_names,
-                canPublish=len(unique_place_ids) >= 2,
+                canPublish=len(unique_place_ids) >= FastApiRouteRuntimeConfig.min_route_place_count,
                 publishedRouteId=published_route_id_by_session.get(session.travel_session_id),
                 coverPlaceId=unique_place_ids[0] if unique_place_ids else None,
             )
@@ -130,7 +131,7 @@ def _build_stamp_state(db: Session, user_id: str | None) -> StampState:
 
 
 def _find_or_create_travel_session(db: Session, user_id: str, now: datetime, last_stamp: UserStamp | None) -> TravelSession:
-    if last_stamp and now - last_stamp.created_at <= timedelta(hours=24):
+    if last_stamp and now - last_stamp.created_at <= timedelta(hours=FastApiStampRuntimeConfig.travel_session_gap_hours):
         if last_stamp.travel_session_id:
             session = db.get(TravelSession, last_stamp.travel_session_id)
             if session:

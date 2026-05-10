@@ -5,6 +5,7 @@ from __future__ import annotations
 from math import asin, cos, radians, sin, sqrt
 
 from .db_models import MapPlace
+from .runtime_config import FastApiStampRuntimeConfig
 
 
 def calculate_distance_meters(
@@ -13,7 +14,6 @@ def calculate_distance_meters(
     end_latitude: float,
     end_longitude: float,
 ) -> float:
-    earth_radius_meters = 6_371_000
     latitude_delta = radians(end_latitude - start_latitude)
     longitude_delta = radians(end_longitude - start_longitude)
     start_latitude_radians = radians(start_latitude)
@@ -22,7 +22,7 @@ def calculate_distance_meters(
         sin(latitude_delta / 2) ** 2
         + cos(start_latitude_radians) * cos(end_latitude_radians) * sin(longitude_delta / 2) ** 2
     )
-    return earth_radius_meters * (2 * asin(sqrt(haversine)))
+    return FastApiStampRuntimeConfig.earth_radius_meters * (2 * asin(sqrt(haversine)))
 
 
 def ensure_stamp_can_be_collected(

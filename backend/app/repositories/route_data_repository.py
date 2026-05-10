@@ -8,10 +8,11 @@ from sqlalchemy.orm import Session, joinedload
 from ..db_models import MapPlace, TravelSession, UserRoute, UserRouteLike, UserRoutePlace, UserStamp
 from ..models import RouteSort, UserRouteCreate, UserRouteLikeResponse, UserRouteOut
 from ..repository_support import format_datetime, utcnow_naive
+from ..runtime_config import FastApiRouteRuntimeConfig
 from .errors import RepositoryNotFoundError, RepositoryPermissionError, RepositoryValidationError
 from .user_data_repository import get_or_create_user
 
-MIN_ROUTE_PLACE_COUNT = 2
+MIN_ROUTE_PLACE_COUNT = FastApiRouteRuntimeConfig.min_route_place_count
 
 
 def _to_user_route_out(route: UserRoute, current_user_id: str | None) -> UserRouteOut:

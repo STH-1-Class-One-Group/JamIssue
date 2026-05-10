@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timedelta
 from typing import Any, Mapping
 
+from ..runtime_config import FastApiPublicDataRuntimeConfig
 from .event_schemas import NormalizedPublicEvent
 
 TITLE_KEYS = ("title", "eventTitle", "eventNm", "fstvlNm", "축제명", "행사명", "콘텐츠명")
@@ -25,6 +26,12 @@ LATITUDE_KEYS = ("latitude", "lat", "mapY", "위도", "y")
 LONGITUDE_KEYS = ("longitude", "lng", "mapX", "경도", "x")
 ID_KEYS = ("externalId", "id", "eventId", "contentid", "콘텐츠ID", "축제일련번호")
 UPDATED_KEYS = ("sourceUpdatedAt", "modifiedtime", "수정일시", "lastUpdatedAt")
+
+END_OF_DAY_DELTA = timedelta(
+    hours=FastApiPublicDataRuntimeConfig.end_of_day_hour,
+    minutes=FastApiPublicDataRuntimeConfig.end_of_day_minute,
+    seconds=FastApiPublicDataRuntimeConfig.end_of_day_second,
+)
 
 
 def first_value(payload: Mapping[str, Any], keys: tuple[str, ...]) -> Any:
@@ -73,7 +80,7 @@ def parse_datetime(value: Any, *, end_of_day: bool = False) -> datetime | None:
 
     if text.isdigit() and len(text) == 8:
         base = datetime.strptime(text, "%Y%m%d")
-        return base + timedelta(hours=23, minutes=59, seconds=59) if end_of_day else base
+        return base + END_OF_DAY_DELTA if end_of_day else base
 
     patterns = (
         "%Y-%m-%dT%H:%M:%S",
@@ -87,7 +94,7 @@ def parse_datetime(value: Any, *, end_of_day: bool = False) -> datetime | None:
         try:
             base = datetime.strptime(text, pattern)
             if pattern in {"%Y-%m-%d", "%Y.%m.%d", "%Y/%m/%d"} and end_of_day:
-                return base + timedelta(hours=23, minutes=59, seconds=59)
+                return base + END_OF_DAY_DELTA
             return base
         except ValueError:
             continue
@@ -170,9 +177,9 @@ def normalize_public_event(payload: Mapping[str, Any], city_keyword: str = "대�
     if not starts_at:
         starts_at = ends_at.replace(hour=0, minute=0, second=0, microsecond=0)
     if not ends_at:
-        ends_at = starts_at + timedelta(hours=23, minutes=59, seconds=59)
+        ends_at = starts_at + END_OF_DAY_DELTA
     if ends_at < starts_at:
-        ends_at = starts_at + timedelta(hours=23, minutes=59, seconds=59)
+        ends_at = starts_at + END_OF_DAY_DELTA
 
     venue_name = text_value(payload, VENUE_KEYS)
     district = derive_district(payload, city_keyword)

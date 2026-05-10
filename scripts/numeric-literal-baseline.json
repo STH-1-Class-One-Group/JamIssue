@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "a20928a7ed64dd88fd91c3b6b9eb85781c1c15be",
+  "generatedFrom": "3bcbbc4fd9e28d3b70f4899461e95dafbb7eb9e4",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -20,7 +20,7 @@
     },
     {
       "path": "backend/app/config.py",
-      "count": 24,
+      "count": 11,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
@@ -28,32 +28,32 @@
       "examples": [
         {
           "value": "127.0",
-          "line": 36,
+          "line": 42,
           "column": 18
         },
         {
           "value": "8001",
-          "line": 37,
+          "line": 43,
           "column": 17
         },
         {
           "value": "8000",
-          "line": 38,
+          "line": 44,
           "column": 43
         },
         {
           "value": "127.0",
-          "line": 38,
+          "line": 44,
           "column": 55
         },
         {
           "value": "8000",
-          "line": 38,
+          "line": 44,
           "column": 65
         },
         {
           "value": "8000",
-          "line": 39,
+          "line": 45,
           "column": 43
         }
       ]
@@ -235,7 +235,7 @@
     },
     {
       "path": "backend/app/main.py",
-      "count": 3,
+      "count": 1,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
@@ -243,18 +243,8 @@
       "examples": [
         {
           "value": "1.0",
-          "line": 27,
+          "line": 28,
           "column": 14
-        },
-        {
-          "value": "60",
-          "line": 43,
-          "column": 13
-        },
-        {
-          "value": "60",
-          "line": 43,
-          "column": 18
         }
       ]
     },
@@ -315,35 +305,25 @@
     },
     {
       "path": "backend/app/naver_oauth.py",
-      "count": 5,
+      "count": 3,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
       "reason": "FastAPI settings, model limits, service thresholds, and repository constants are reviewed through FastAPI config work.",
       "examples": [
         {
-          "value": "24",
-          "line": 36,
-          "column": 34
-        },
-        {
           "value": "00",
-          "line": 95,
+          "line": 96,
           "column": 38
         },
         {
           "value": "8",
-          "line": 113,
+          "line": 114,
           "column": 55
         },
         {
-          "value": "10",
-          "line": 121,
-          "column": 39
-        },
-        {
           "value": "8",
-          "line": 122,
+          "line": 123,
           "column": 59
         }
       ]
@@ -440,7 +420,7 @@
     },
     {
       "path": "backend/app/public_data/event_normalizer.py",
-      "count": 20,
+      "count": 8,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
@@ -448,33 +428,33 @@
       "examples": [
         {
           "value": "8",
-          "line": 74,
+          "line": 81,
           "column": 40
         },
         {
-          "value": "23",
-          "line": 76,
-          "column": 39
+          "value": "1",
+          "line": 123,
+          "column": 28
         },
         {
-          "value": "59",
-          "line": 76,
-          "column": 51
+          "value": "8",
+          "line": 142,
+          "column": 44
         },
         {
-          "value": "59",
-          "line": 76,
-          "column": 63
+          "value": "12",
+          "line": 143,
+          "column": 36
         },
         {
-          "value": "23",
-          "line": 90,
-          "column": 47
+          "value": "0",
+          "line": 178,
+          "column": 42
         },
         {
-          "value": "59",
-          "line": 90,
-          "column": 59
+          "value": "0",
+          "line": 178,
+          "column": 52
         }
       ]
     },
@@ -615,30 +595,25 @@
     },
     {
       "path": "backend/app/repositories/notification_data_repository.py",
-      "count": 4,
+      "count": 3,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
       "reason": "FastAPI settings, model limits, service thresholds, and repository constants are reviewed through FastAPI config work.",
       "examples": [
         {
-          "value": "50",
-          "line": 25,
-          "column": 72
-        },
-        {
           "value": "0",
-          "line": 43,
+          "line": 49,
           "column": 12
         },
         {
           "value": "0",
-          "line": 59,
+          "line": 65,
           "column": 42
         },
         {
           "value": "0",
-          "line": 131,
+          "line": 137,
           "column": 16
         }
       ]
@@ -730,7 +705,7 @@
     },
     {
       "path": "backend/app/repositories/route_data_repository.py",
-      "count": 8,
+      "count": 7,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
@@ -738,73 +713,73 @@
       "examples": [
         {
           "value": "2",
-          "line": 14,
-          "column": 25
-        },
-        {
-          "value": "2",
-          "line": 92,
+          "line": 93,
           "column": 21
         },
         {
           "value": "8",
-          "line": 94,
+          "line": 95,
           "column": 27
         },
         {
           "value": "0",
-          "line": 142,
+          "line": 143,
           "column": 20
         },
         {
           "value": "1",
-          "line": 149,
+          "line": 150,
           "column": 62
         },
         {
           "value": "1",
-          "line": 176,
+          "line": 177,
           "column": 51
+        },
+        {
+          "value": "0",
+          "line": 177,
+          "column": 54
         }
       ]
     },
     {
       "path": "backend/app/repositories/stamp_data_repository.py",
-      "count": 9,
+      "count": 7,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
       "reason": "FastAPI settings, model limits, service thresholds, and repository constants are reviewed through FastAPI config work.",
       "examples": [
         {
-          "value": "2",
-          "line": 86,
-          "column": 53
-        },
-        {
           "value": "0",
-          "line": 88,
+          "line": 89,
           "column": 47
         },
         {
-          "value": "24",
-          "line": 133,
-          "column": 70
-        },
-        {
           "value": "1",
-          "line": 139,
+          "line": 140,
           "column": 40
         },
         {
           "value": "2",
-          "line": 148,
+          "line": 149,
           "column": 25
         },
         {
           "value": "1",
-          "line": 162,
+          "line": 163,
           "column": 21
+        },
+        {
+          "value": "0",
+          "line": 204,
+          "column": 10
+        },
+        {
+          "value": "1",
+          "line": 209,
+          "column": 16
         }
       ]
     },
@@ -840,17 +815,12 @@
     },
     {
       "path": "backend/app/repository_support_geo.py",
-      "count": 6,
+      "count": 5,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
       "reason": "FastAPI settings, model limits, service thresholds, and repository constants are reviewed through FastAPI config work.",
       "examples": [
-        {
-          "value": "6_371_000",
-          "line": 16,
-          "column": 27
-        },
         {
           "value": "2",
           "line": 22,
@@ -874,7 +844,7 @@
         {
           "value": "2",
           "line": 25,
-          "column": 35
+          "column": 61
         }
       ]
     },
@@ -929,17 +899,42 @@
       ]
     },
     {
-      "path": "backend/app/routers/my.py",
-      "count": 1,
+      "path": "backend/app/runtime_config.py",
+      "count": 24,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
-      "reason": "FastAPI settings, model limits, service thresholds, and repository constants are reviewed through FastAPI config work.",
+      "reason": "FastAPI auth, public-data, upload, stamp, route, and notification runtime values are owned by FastAPI runtime config.",
       "examples": [
         {
-          "value": "15",
-          "line": 76,
-          "column": 86
+          "value": "32",
+          "line": 7,
+          "column": 42
+        },
+        {
+          "value": "60",
+          "line": 8,
+          "column": 40
+        },
+        {
+          "value": "24",
+          "line": 8,
+          "column": 45
+        },
+        {
+          "value": "14",
+          "line": 8,
+          "column": 50
+        },
+        {
+          "value": "60",
+          "line": 9,
+          "column": 42
+        },
+        {
+          "value": "60",
+          "line": 9,
+          "column": 47
         }
       ]
     },
@@ -1060,41 +1055,41 @@
     },
     {
       "path": "backend/app/user_routes.py",
-      "count": 11,
+      "count": 9,
       "owner": "fastapi-backend",
       "category": "fastapi-runtime-config-baseline",
       "scopeId": "TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW",
       "reason": "FastAPI settings, model limits, service thresholds, and repository constants are reviewed through FastAPI config work.",
       "examples": [
         {
-          "value": "6",
-          "line": 15,
-          "column": 25
-        },
-        {
           "value": "2",
-          "line": 16,
-          "column": 25
-        },
-        {
-          "value": "2",
-          "line": 22,
+          "line": 23,
           "column": 37
         },
         {
           "value": "6",
-          "line": 24,
+          "line": 25,
           "column": 37
         },
         {
           "value": "2",
-          "line": 103,
+          "line": 104,
           "column": 21
         },
         {
           "value": "8",
-          "line": 105,
+          "line": 106,
           "column": 27
+        },
+        {
+          "value": "0",
+          "line": 134,
+          "column": 20
+        },
+        {
+          "value": "1",
+          "line": 141,
+          "column": 60
         }
       ]
     },
