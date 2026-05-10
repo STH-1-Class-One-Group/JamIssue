@@ -11,9 +11,10 @@ from .db_models import MapPlace, UserRoute, UserRouteLike, UserRoutePlace, UserS
 from .models import RouteSort, UserRouteCreate, UserRouteLikeResponse, UserRouteOut
 from .repository_support import format_datetime, utcnow_naive
 from .repositories.user_data_repository import get_or_create_user
+from .runtime_config import FastApiRouteRuntimeConfig
 
-MAX_ROUTE_PLACE_COUNT = 6
-MIN_ROUTE_PLACE_COUNT = 2
+MAX_ROUTE_PLACE_COUNT = FastApiRouteRuntimeConfig.max_route_place_count
+MIN_ROUTE_PLACE_COUNT = FastApiRouteRuntimeConfig.min_route_place_count
 
 
 def _normalize_place_ids(place_ids: list[str]) -> list[str]:

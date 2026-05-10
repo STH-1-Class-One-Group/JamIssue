@@ -111,6 +111,14 @@ function inferClassification(path: string): Pick<NumericLiteralFileAudit, 'owner
       reason: 'Worker session, cache, pagination, festival, notification, and stamp runtime values are owned by Worker runtime config.',
     };
   }
+  if (path === 'backend/app/runtime_config.py') {
+    return {
+      owner: 'fastapi-backend',
+      category: 'fastapi-runtime-config-baseline',
+      scopeId: 'TSK-002-06-FASTAPI-RUNTIME-CONFIG-REVIEW',
+      reason: 'FastAPI auth, public-data, upload, stamp, route, and notification runtime values are owned by FastAPI runtime config.',
+    };
+  }
   if (path.includes('/naver-map/') || path.includes('mapViewportState')) {
     return {
       owner: 'frontend-map',

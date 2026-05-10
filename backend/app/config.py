@@ -27,6 +27,12 @@ from .config_database import (
     uses_supabase_pooler,
 )
 from .config_paths import resolve_repo_relative_path, split_csv_set, split_csv_values
+from .runtime_config import (
+    FastApiAuthRuntimeConfig,
+    FastApiPublicDataRuntimeConfig,
+    FastApiStampRuntimeConfig,
+    FastApiUploadRuntimeConfig,
+)
 
 
 class Settings(BaseSettings):
@@ -37,11 +43,11 @@ class Settings(BaseSettings):
     port: int = 8001
     cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000"
     frontend_url: str = "http://localhost:8000"
-    session_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
+    session_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(FastApiAuthRuntimeConfig.default_secret_token_urlsafe_bytes))
     session_https: bool = False
-    jwt_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
+    jwt_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(FastApiAuthRuntimeConfig.default_secret_token_urlsafe_bytes))
     jwt_algorithm: str = "HS256"
-    jwt_access_token_minutes: int = 60 * 24 * 14
+    jwt_access_token_minutes: int = FastApiAuthRuntimeConfig.default_jwt_access_token_minutes
     admin_user_ids: str = ""
     database_url: str = "mysql+pymysql://jamissue:jamissue@127.0.0.1:3306/jamissue?charset=utf8mb4"
     seed_demo_data: bool = False
@@ -49,19 +55,19 @@ class Settings(BaseSettings):
     auto_import_public_data: bool = True
     public_data_path: str = "data/public_bundle.json"
     public_data_source_url: str = ""
-    public_data_request_timeout_seconds: float = 3.0
+    public_data_request_timeout_seconds: float = FastApiPublicDataRuntimeConfig.request_timeout_seconds
     public_event_path: str = "data/public_events.json"
     public_event_source_url: str = ""
-    public_event_request_timeout_seconds: float = 3.0
+    public_event_request_timeout_seconds: float = FastApiPublicDataRuntimeConfig.request_timeout_seconds
     public_event_service_key: str = ""
     public_event_city_keyword: str = "대전"
-    public_event_refresh_minutes: int = 360
-    public_event_limit: int = 6
+    public_event_refresh_minutes: int = FastApiPublicDataRuntimeConfig.event_refresh_minutes
+    public_event_limit: int = FastApiPublicDataRuntimeConfig.event_limit
     storage_backend: Literal["local", "supabase"] = "local"
     upload_dir: str = "storage/uploads"
     upload_base_url: str = "/uploads"
-    max_upload_size_bytes: int = 5 * 1024 * 1024
-    stamp_unlock_radius_meters: int = 120
+    max_upload_size_bytes: int = FastApiUploadRuntimeConfig.max_upload_size_bytes
+    stamp_unlock_radius_meters: int = FastApiStampRuntimeConfig.default_unlock_radius_meters
     supabase_url: str = ""
     supabase_anon_key: str = ""
     supabase_service_role_key: str = ""

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from ..db_models import UserNotification
 from ..models import NotificationDeleteResponse, NotificationReadResponse, UserNotificationOut
 from ..repository_support import format_datetime, utcnow_naive
+from ..runtime_config import FastApiNotificationRuntimeConfig
 from .errors import RepositoryNotFoundError, RepositoryValidationError
 
 
@@ -22,7 +23,12 @@ def to_notification_out(notification: UserNotification) -> UserNotificationOut:
     )
 
 
-def list_user_notifications(db: Session, user_id: str, *, limit: int = 50) -> list[UserNotificationOut]:
+def list_user_notifications(
+    db: Session,
+    user_id: str,
+    *,
+    limit: int = FastApiNotificationRuntimeConfig.user_notification_list_limit,
+) -> list[UserNotificationOut]:
     notifications = db.scalars(
         select(UserNotification)
         .options(joinedload(UserNotification.actor))

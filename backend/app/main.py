@@ -12,6 +12,7 @@ from .routers.auth import router as auth_router
 from .routers.content import router as content_router
 from .routers.my import router as my_router
 from .routers.reviews import router as reviews_router
+from .runtime_config import FastApiAuthRuntimeConfig
 from .storage import (
     FileTooLargeError,
     InvalidFileTypeError,
@@ -40,7 +41,7 @@ app.add_middleware(
     secret_key=settings.session_secret,
     same_site="lax",
     https_only=settings.session_https,
-    max_age=60 * 60,
+    max_age=FastApiAuthRuntimeConfig.session_middleware_max_age_seconds,
 )
 
 mount_storage_backend(app, settings)

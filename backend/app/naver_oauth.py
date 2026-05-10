@@ -10,6 +10,7 @@ from urllib.request import Request, urlopen
 from fastapi import HTTPException, status
 
 from .config import Settings
+from .runtime_config import FastApiAuthRuntimeConfig
 
 NAVER_AUTHORIZE_URL = "https://nid.naver.com/oauth2.0/authorize"
 NAVER_TOKEN_URL = "https://nid.naver.com/oauth2.0/token"
@@ -33,7 +34,7 @@ def build_redirect_url(base_url: str, **params: str) -> str:
 
 
 def generate_oauth_state() -> str:
-    return secrets.token_urlsafe(24)
+    return secrets.token_urlsafe(FastApiAuthRuntimeConfig.oauth_state_token_urlsafe_bytes)
 
 
 def ensure_naver_login_config(settings: Settings) -> None:
@@ -118,7 +119,7 @@ def _read_error_payload_detail(error: HTTPError, fallback_detail: str) -> str:
 
 def _load_json(request: Request, default_detail: str) -> dict:
     try:
-        with urlopen(request, timeout=10) as response:
+        with urlopen(request, timeout=FastApiAuthRuntimeConfig.oauth_http_timeout_seconds) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
         detail = _read_error_payload_detail(error, default_detail)

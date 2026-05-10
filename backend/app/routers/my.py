@@ -12,6 +12,7 @@ from ..db import get_db
 from ..jwt_auth import clear_auth_cookie
 from ..models import MyPageResponse, NotificationDeleteResponse, NotificationReadResponse, SessionUser, UserNotificationOut, UserRouteOut
 from ..notification_broker import notification_broker
+from ..runtime_config import FastApiNotificationRuntimeConfig
 from ..services.account_service import delete_my_account_service
 from ..services.my_page_service import read_my_page_service
 from ..services.notification_service import (
@@ -73,7 +74,10 @@ async def stream_my_notifications(
                 if await request.is_disconnected():
                     break
                 try:
-                    event = await asyncio.wait_for(subscription.queue.get(), timeout=15)
+                    event = await asyncio.wait_for(
+                        subscription.queue.get(),
+                        timeout=FastApiNotificationRuntimeConfig.sse_heartbeat_timeout_seconds,
+                    )
                     event_name = str(event.get("event", "message"))
                     payload = {key: value for key, value in event.items() if key != "event"}
                     yield format_sse_event(event_name, payload, event_id=str(uuid4()))
