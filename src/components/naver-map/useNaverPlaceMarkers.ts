@@ -60,7 +60,7 @@ export function useNaverPlaceMarkers({
       mapsApi.Event.addListener(marker, 'click', () => onSelectPlace(place.id));
       placeMarkersRef.current.set(place.id, marker);
     });
-  }, [mapRef, mapsApi, onSelectPlace, places, selectedPlaceId, status]);
+  }, [mapRef, mapsApi, onSelectPlace, places, status]);
 
   const prevSelectedPlaceIdRef = useRef<string | null>(selectedPlaceId);
   const prevPlacesRef = useRef<Place[]>(places);

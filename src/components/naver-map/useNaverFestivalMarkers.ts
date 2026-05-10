@@ -64,7 +64,7 @@ export function useNaverFestivalMarkers({
       mapsApi.Event.addListener(marker, 'click', () => onSelectFestival(festival.id));
       festivalMarkersRef.current.set(festival.id, marker);
     });
-  }, [festivals, mapRef, mapsApi, onSelectFestival, selectedFestivalId, status]);
+  }, [festivals, mapRef, mapsApi, onSelectFestival, status]);
 
   const prevSelectedFestivalIdRef = useRef<string | null>(selectedFestivalId);
   const prevFestivalsRef = useRef<FestivalItem[]>(festivals);
