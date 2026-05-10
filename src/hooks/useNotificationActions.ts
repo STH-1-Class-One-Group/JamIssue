@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import type { MyPageTabKey, UserNotification } from '../types';
+import type { MyPageTabKey } from '../types/core';
+import type { UserNotification } from '../types/my-page';
 
 interface UseNotificationActionsParams {
   markNotificationReadInStore: (notificationId: string) => Promise<void>;

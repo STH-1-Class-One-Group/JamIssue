@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import type {
-  AdminSummaryResponse,
-  BootstrapResponse,
-  FestivalItem,
-  MyPageResponse,
-} from '../types';
+import type { FestivalItem } from '../types/core';
+import type { BootstrapResponse } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
+import type { AdminSummaryResponse } from '../types/admin';
 import { useCommunityRouteState } from './app-data/useCommunityRouteState';
 import { useReviewCollectionState } from './app-data/useReviewCollectionState';
 

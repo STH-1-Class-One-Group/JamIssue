@@ -1,15 +1,10 @@
 import { useCallback } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import type {
-  AdminSummaryResponse,
-  CommunityRouteSort,
-  Course,
-  MyPageResponse,
-  Review,
-  SessionUser,
-  Tab,
-  UserRoute,
-} from '../types';
+import type { CommunityRouteSort, Course, Tab } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { Review, UserRoute } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
+import type { AdminSummaryResponse } from '../types/admin';
 import { createCommunityRouteLoader } from './app-tab-loaders/communityRouteLoader';
 import { createFeedReviewLoader } from './app-tab-loaders/feedReviewLoader';
 import { createAdminSummaryLoader, createMyPageSummaryLoader } from './app-tab-loaders/summaryLoaders';

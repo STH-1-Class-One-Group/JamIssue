@@ -1,7 +1,9 @@
 ﻿import { useEffect } from 'react';
 import { formatDistanceMeters } from '../lib/visits';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import type { Place, SessionUser, StampLog } from '../types';
+import type { Place } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { StampLog } from '../types/review';
 
 interface UseAppFeedbackEffectsParams {
   selectedPlace: Place | null;

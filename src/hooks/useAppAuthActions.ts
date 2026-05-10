@@ -4,7 +4,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useAuthStore } from '../store/auth-store';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import type { MyPageResponse } from '../types';
+import type { MyPageResponse } from '../types/my-page';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 

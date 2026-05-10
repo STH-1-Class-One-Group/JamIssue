@@ -4,7 +4,9 @@ import { getReviewFeedPage } from '../api/reviewsClient';
 import { PaginationRuntimeConfig } from '../config/runtimeLimitConfig';
 import { toReviewSummaryList } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
-import type { MyPageResponse, Review, SessionUser } from '../types';
+import type { SessionUser } from '../types/auth';
+import type { Review } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 

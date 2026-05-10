@@ -1,5 +1,5 @@
 import { useEventCallback } from './useEventCallback';
-import type { SessionUser } from '../types';
+import type { SessionUser } from '../types/auth';
 
 interface UseAppPageStageActionsParams {
   sessionUser: SessionUser | null;

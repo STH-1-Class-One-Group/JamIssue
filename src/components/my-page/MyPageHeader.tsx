@@ -1,4 +1,4 @@
-import type { SessionUser } from '../../types';
+import type { SessionUser } from '../../types/auth';
 
 interface MyPageHeaderProps {
   sessionUser: SessionUser;

@@ -1,6 +1,6 @@
 import { cssPx, UiNaverMarkerVisualConfig } from '../../config/uiTokenConfig';
 import { categoryInfo } from '../../lib/categories';
-import type { FestivalItem, Place } from '../../types';
+import type { FestivalItem, Place } from '../../types/core';
 
 export function placeMarkerContent(place: Place, isActive: boolean) {
   const info = categoryInfo[place.category];

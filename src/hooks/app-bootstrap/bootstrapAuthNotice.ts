@@ -1,4 +1,4 @@
-import type { SessionUser } from '../../types';
+import type { SessionUser } from '../../types/auth';
 
 const PROFILE_COMPLETION_NOTICE =
   '프로필을 먼저 완성하면 같은 계정으로 스탬프와 리뷰를 이어서 남길 수 있어요.';

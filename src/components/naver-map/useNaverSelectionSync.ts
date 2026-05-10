@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { MapViewportConfig, SelectionMotionConfig } from '../../config/mapConfig';
-import type { FestivalItem, Place } from '../../types';
+import type { FestivalItem, Place } from '../../types/core';
 import { hasFestivalCoordinates } from './markerContent';
 import { getSelectionVerticalOffset } from './selectionOffset';
 

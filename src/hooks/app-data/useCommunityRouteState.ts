@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import type { CommunityRouteSort, UserRoute } from '../../types';
+import type { CommunityRouteSort } from '../../types/core';
+import type { UserRoute } from '../../types/review';
 
 export function useCommunityRouteState() {
   const [communityRoutes, setCommunityRoutes] = useState<UserRoute[]>([]);

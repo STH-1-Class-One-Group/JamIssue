@@ -1,4 +1,4 @@
-import type { DrawerState, FestivalItem } from '../types';
+import type { DrawerState, FestivalItem } from '../types/core';
 
 interface FestivalDetailSheetProps {
   festival: FestivalItem | null;

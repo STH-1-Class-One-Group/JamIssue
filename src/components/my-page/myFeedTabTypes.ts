@@ -1,4 +1,5 @@
-import type { MyPageResponse, ReviewMood } from '../../types';
+import type { ReviewMood } from '../../types/core';
+import type { MyPageResponse } from '../../types/my-page';
 
 export const reviewMoodOptions: ReviewMood[] = ['혼자서', '친구랑', '데이트', '야경 맛집'];
 

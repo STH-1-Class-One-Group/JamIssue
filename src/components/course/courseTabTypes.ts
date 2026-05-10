@@ -1,4 +1,6 @@
-import type { CommunityRouteSort, Course, SessionUser, UserRoute } from '../../types';
+import type { CommunityRouteSort, Course } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { UserRoute } from '../../types/review';
 
 export interface RoutePreviewPayload {
   id: string;

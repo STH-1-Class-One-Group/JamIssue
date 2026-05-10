@@ -1,7 +1,9 @@
 import { useNotificationActions } from './useNotificationActions';
 import { useNotificationLifecycle } from './useNotificationLifecycle';
 import { useNotificationStore } from '../store/notification-store';
-import type { MyPageResponse, MyPageTabKey, SessionUser } from '../types';
+import type { MyPageTabKey } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { MyPageResponse } from '../types/my-page';
 
 interface UseGlobalNotificationsParams {
   sessionUser: SessionUser | null;

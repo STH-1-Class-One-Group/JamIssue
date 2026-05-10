@@ -1,7 +1,7 @@
 import type * as React from 'react';
 
 import { getFestivals } from '../../api/bootstrapClient';
-import type { FestivalItem } from '../../types';
+import type { FestivalItem } from '../../types/core';
 import { resetFestivalSelection } from './bootstrapRuntimeReset';
 
 interface BootstrapFestivalLoaderParams {

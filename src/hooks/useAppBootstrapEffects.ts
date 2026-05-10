@@ -1,13 +1,10 @@
 import { useEffect } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
-import type {
-  FestivalItem,
-  MyPageResponse,
-  Place,
-  SessionUser,
-  StampState,
-} from '../types';
+import type { FestivalItem, Place } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { StampState } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
 import { bootstrapFestivalLoader } from './app-bootstrap/bootstrapFestivalLoader';
 import { bootstrapMapSession } from './app-bootstrap/bootstrapMapSession';
 import { clearAuthQueryParams } from './useAppRouteState';

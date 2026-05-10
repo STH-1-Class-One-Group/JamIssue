@@ -1,4 +1,4 @@
-import type { RoutePreview } from '../../types';
+import type { RoutePreview } from '../../types/core';
 
 type MapStageRoutePreviewCardProps = {
   routePreview: RoutePreview | null;

@@ -4,16 +4,11 @@ import { useSelectedPlaceReviewSync } from './useSelectedPlaceReviewSync';
 import { useAppBootstrapSharedRefs } from './useAppBootstrapSharedRefs';
 import { useFestivalBootstrapEffect, useMapBootstrapEffect } from './useAppBootstrapEffects';
 import { useAppBootstrapStoreBindings } from './useAppBootstrapStoreBindings';
-import type {
-  AdminSummaryResponse,
-  FestivalItem,
-  MyPageResponse,
-  Place,
-  Review,
-  SessionUser,
-  StampState,
-  Tab,
-} from '../types';
+import type { FestivalItem, Place, Tab } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { Review, StampState } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
+import type { AdminSummaryResponse } from '../types/admin';
 
 interface UseAppBootstrapLifecycleParams {
   activeTab: Tab;

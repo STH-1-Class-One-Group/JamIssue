@@ -1,4 +1,4 @@
-import type { SessionUser } from '../../types';
+import type { SessionUser } from '../../types/auth';
 
 type MyPageAccountSectionProps = {
   sessionUser: SessionUser;

@@ -1,4 +1,4 @@
-import type { MyPageResponse } from '../../types';
+import type { MyPageResponse } from '../../types/my-page';
 
 export type NotificationItem = NonNullable<MyPageResponse>['notifications'][number];
 

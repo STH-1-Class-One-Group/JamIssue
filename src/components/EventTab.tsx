@@ -1,5 +1,5 @@
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
-import type { FestivalItem } from '../types';
+import type { FestivalItem } from '../types/core';
 
 interface EventTabProps {
   festivals: FestivalItem[];

@@ -1,6 +1,9 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { createUserRoute } from '../../api/routesClient';
-import type { MyPageResponse, MyPageTabKey, SessionUser, Tab, UserRoute } from '../../types';
+import type { MyPageTabKey, Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { UserRoute } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
 
 type CommunityRoutesCache = Partial<Record<'popular' | 'latest', UserRoute[]>>;
 type HistoryMode = 'push' | 'replace';

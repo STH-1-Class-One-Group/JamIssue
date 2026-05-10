@@ -1,4 +1,4 @@
-import type { DrawerState, RoutePreview, Tab } from '../../types';
+import type { DrawerState, RoutePreview, Tab } from '../../types/core';
 
 export type RouteState = {
   tab: Tab;

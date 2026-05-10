@@ -1,4 +1,4 @@
-import type { MyPageResponse } from '../../types';
+import type { MyPageResponse } from '../../types/my-page';
 
 type StampLog = NonNullable<MyPageResponse>['stampLogs'][number];
 type TravelSession = NonNullable<MyPageResponse>['travelSessions'][number];

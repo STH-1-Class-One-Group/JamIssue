@@ -1,4 +1,4 @@
-import type { RoutePreview, Tab } from '../../types';
+import type { RoutePreview, Tab } from '../../types/core';
 import type { RouteState, RouteStateCommitOptions } from './routeHistoryState';
 import { buildHistoryState, buildRouteUrl } from './routeHistoryState';
 

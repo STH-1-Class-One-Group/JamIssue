@@ -1,6 +1,7 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { getCommunityRoutes } from '../../api/routesClient';
-import type { CommunityRouteSort, UserRoute } from '../../types';
+import type { CommunityRouteSort } from '../../types/core';
+import type { UserRoute } from '../../types/review';
 
 type CommunityRoutesCache = Partial<Record<CommunityRouteSort, UserRoute[]>>;
 

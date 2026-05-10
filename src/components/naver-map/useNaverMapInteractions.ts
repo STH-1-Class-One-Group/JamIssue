@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { FestivalItem, Place } from '../../types';
+import type { FestivalItem, Place } from '../../types/core';
 import { useNaverCurrentLocationMarker } from './useNaverCurrentLocationMarker';
 import { useNaverCurrentLocationFocus } from './useNaverCurrentLocationFocus';
 import { useNaverFestivalMarkers } from './useNaverFestivalMarkers';

@@ -5,7 +5,9 @@ import { FeedLoadMoreRow } from './feed/FeedLoadMoreRow';
 import { FeedTabHeader } from './feed/FeedTabHeader';
 import { FeedCommentSheet } from './FeedCommentSheet';
 import { ReviewList } from './ReviewList';
-import type { ApiStatus, Comment, Review, SessionUser } from '../types';
+import type { ApiStatus } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { Comment, Review } from '../types/review';
 
 interface FeedTabProps {
   feedData: {

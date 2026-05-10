@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useAppMapStore } from '../store/app-map-store';
 import { useAppRouteStore } from '../store/app-route-store';
-import type { Tab } from '../types';
+import type { Tab } from '../types/core';
 import {
   clearAuthQueryParams,
   getInitialRouteState,

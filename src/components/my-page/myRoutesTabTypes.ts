@@ -1,4 +1,5 @@
-import type { CourseMood, MyPageResponse } from '../../types';
+import type { CourseMood } from '../../types/core';
+import type { MyPageResponse } from '../../types/my-page';
 
 export const routeMoodOptions: CourseMood[] = ['데이트', '사진', '힐링', '비 오는 날'];
 

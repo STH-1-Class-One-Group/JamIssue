@@ -1,4 +1,5 @@
-import type { ApiStatus, DrawerState, Place, Review, ReviewMood, StampLog } from '../../types';
+import type { ApiStatus, DrawerState, Place, ReviewMood } from '../../types/core';
+import type { Review, StampLog } from '../../types/review';
 
 export interface PlaceDetailSheetProps {
   place: Place | null;

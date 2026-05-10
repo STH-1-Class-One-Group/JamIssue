@@ -1,14 +1,9 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { RouteStateCommitOptions } from './useAppRouteState';
-import type {
-  Comment,
-  DrawerState,
-  MyPageResponse,
-  Place,
-  Review,
-  SessionUser,
-  Tab,
-} from '../types';
+import type { DrawerState, Place, Tab } from '../types/core';
+import type { SessionUser } from '../types/auth';
+import type { Comment, Review } from '../types/review';
+import type { MyPageResponse } from '../types/my-page';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 export type HistoryMode = 'push' | 'replace';

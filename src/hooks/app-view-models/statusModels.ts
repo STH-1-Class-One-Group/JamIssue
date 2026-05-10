@@ -1,4 +1,5 @@
-import type { ApiStatus, MyPageResponse } from '../../types';
+import type { ApiStatus } from '../../types/core';
+import type { MyPageResponse } from '../../types/my-page';
 
 export function getHydratedMyPage({
   myPage,

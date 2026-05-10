@@ -2,7 +2,10 @@ import type { Dispatch, SetStateAction } from 'react';
 import { getAdminSummary } from '../../api/adminClient';
 import { getMySummary } from '../../api/myClient';
 import { toReviewSummaryList } from '../../lib/reviews';
-import type { AdminSummaryResponse, MyPageResponse, SessionUser, Tab } from '../../types';
+import type { Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { MyPageResponse } from '../../types/my-page';
+import type { AdminSummaryResponse } from '../../types/admin';
 
 interface CreateAdminSummaryLoaderParams {
   activeTab: Tab;

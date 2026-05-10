@@ -1,20 +1,8 @@
-import type {
-  AdminSummaryResponse,
-  ApiStatus,
-  AuthProvider,
-  Comment,
-  CommunityRouteSort,
-  Course,
-  FestivalItem,
-  MyPageResponse,
-  MyPageTabKey,
-  Review,
-  ReviewMood,
-  RoutePreview,
-  SessionUser,
-  Tab,
-  UserRoute,
-} from '../../types';
+import type { ApiStatus, CommunityRouteSort, Course, FestivalItem, MyPageTabKey, ReviewMood, RoutePreview, Tab } from '../../types/core';
+import type { AuthProvider, SessionUser } from '../../types/auth';
+import type { Comment, Review, UserRoute } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
+import type { AdminSummaryResponse } from '../../types/admin';
 
 export interface AppPageStageSharedData {
   sessionUser: SessionUser | null;

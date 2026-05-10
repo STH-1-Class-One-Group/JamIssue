@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ReviewFormFields } from './ReviewFormFields';
-import type { ReviewMood } from '../types';
+import type { ReviewMood } from '../types/core';
 
 type ReviewComposerStatus = 'login' | 'claim' | 'ready' | 'daily-limit';
 
