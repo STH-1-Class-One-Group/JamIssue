@@ -212,11 +212,27 @@ Worker source quality와 UTF-8 검증:
 
 ```powershell
 cd D:\JamIssue
+npm.cmd run check:numeric-literals
 npm.cmd run test:unit
 .\.tools\python313\python.exe .tmp/check_utf8_integrity.py --staged
 ```
 
-## 7. 장애 점검 포인트
+## 7. Config hardening 기준
+
+운영 값, 좌표, 시간, 용량, 레이아웃 수치는 raw number로 production code에 직접 추가하지 않습니다. 새 수치가 필요하면 아래 중 하나로 분류합니다.
+
+| 영역 | 기준 위치 |
+| --- | --- |
+| 지도/좌표/마커 | `src/config/mapConfig.ts` |
+| UI token과 visual config | `src/config/uiTokenConfig.ts`, `src/styles/tokens.css` |
+| 프론트 런타임 limit | `src/config/runtimeLimitConfig.ts` |
+| Worker 운영 limit | `deploy/api-worker-shell/config/runtime.ts` |
+| FastAPI local/fallback runtime | `backend/app/runtime_config.py` |
+| 허용 예외 | `config/numeric-literal-allowlist.json` |
+
+허용 예외를 추가할 때는 category와 reason을 남깁니다. 새 production numeric literal은 `npm.cmd run check:numeric-literals`에서 분류되지 않으면 실패해야 합니다.
+
+## 8. 장애 점검 포인트
 
 ### 행사 API가 0건일 때
 

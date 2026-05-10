@@ -27,3 +27,4 @@
 - [code-flow-diagrams.md](code-flow-diagrams.md)
 - [operations-refactor-roadmap.md](operations-refactor-roadmap.md)
 - [worker-backend-solid-traceability.md](worker-backend-solid-traceability.md)
+- [config-hardening-traceability.md](config-hardening-traceability.md)
