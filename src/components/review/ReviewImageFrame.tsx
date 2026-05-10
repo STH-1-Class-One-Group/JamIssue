@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { UiReviewImageFrameConfig } from '../../config/uiTokenConfig';
 
 interface ReviewImageFrameProps {
   src: string;
@@ -38,30 +39,14 @@ export function ReviewImageFrame({ src, thumbnailSrc = null, alt }: ReviewImageF
     <div
       ref={frameRef}
       className={isTall ? 'review-card__image-frame review-card__image-frame--rotated' : 'review-card__image-frame'}
-      style={{
-        width: '100%',
-        height: 'min(220px, 56vw)',
-        maxHeight: '220px',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        background: 'rgba(255, 250, 252, 0.96)',
-        border: '1px solid rgba(255, 176, 201, 0.16)',
-        padding: '0',
-        position: 'relative',
-      }}
+      style={UiReviewImageFrameConfig.frameStyle}
     >
       {isTall ? (
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: `${Math.max(frameSize.height, 1)}px`,
-            height: `${Math.max(frameSize.width, 1)}px`,
-            transform: 'translate(-50%, -50%) rotate(-90deg)',
-            transformOrigin: 'center center',
-            overflow: 'hidden',
-            borderRadius: '14px',
+            ...UiReviewImageFrameConfig.rotatedWrapperStyle,
+            width: `${Math.max(frameSize.height, UiReviewImageFrameConfig.minimumRotatedDimensionPx)}px`,
+            height: `${Math.max(frameSize.width, UiReviewImageFrameConfig.minimumRotatedDimensionPx)}px`,
           }}
         >
           <img
@@ -77,7 +62,7 @@ export function ReviewImageFrame({ src, thumbnailSrc = null, alt }: ReviewImageF
             }}
             onLoad={(event) => {
               const target = event.currentTarget;
-              setIsTall(target.naturalHeight > target.naturalWidth * 1.12);
+              setIsTall(target.naturalHeight > target.naturalWidth * UiReviewImageFrameConfig.tallImageAspectRatio);
               if (frameRef.current) {
                 setFrameSize({
                   width: frameRef.current.clientWidth || 0,
@@ -85,14 +70,7 @@ export function ReviewImageFrame({ src, thumbnailSrc = null, alt }: ReviewImageF
                 });
               }
             }}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              borderRadius: '14px',
-              display: 'block',
-              margin: 0,
-            }}
+            style={UiReviewImageFrameConfig.imageStyle}
           />
         </div>
       ) : (
@@ -109,7 +87,7 @@ export function ReviewImageFrame({ src, thumbnailSrc = null, alt }: ReviewImageF
           }}
           onLoad={(event) => {
             const target = event.currentTarget;
-            setIsTall(target.naturalHeight > target.naturalWidth * 1.12);
+            setIsTall(target.naturalHeight > target.naturalWidth * UiReviewImageFrameConfig.tallImageAspectRatio);
             if (frameRef.current) {
               setFrameSize({
                 width: frameRef.current.clientWidth || 0,
@@ -117,14 +95,7 @@ export function ReviewImageFrame({ src, thumbnailSrc = null, alt }: ReviewImageF
               });
             }
           }}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            borderRadius: '14px',
-            display: 'block',
-            margin: 0,
-          }}
+          style={UiReviewImageFrameConfig.imageStyle}
         />
       )}
     </div>

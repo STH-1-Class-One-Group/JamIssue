@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "e70ded4f21bd8f2e9a7fa0644d699e626c9a9897",
+  "generatedFrom": "2597f982e1bff0ece06e98020f8cd624472721e4",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -3640,7 +3640,7 @@
     },
     {
       "path": "src/components/naver-map/markerContent.ts",
-      "count": 144,
+      "count": 52,
       "owner": "frontend-map",
       "category": "map-coordinate-marker-baseline",
       "scopeId": "TSK-002-02-FRONTEND-MAP-GEO-CONFIG",
@@ -3648,33 +3648,33 @@
       "examples": [
         {
           "value": "95",
-          "line": 6,
+          "line": 7,
           "column": 45
         },
         {
           "value": "70",
-          "line": 6,
+          "line": 7,
           "column": 49
         },
         {
           "value": "96",
-          "line": 6,
+          "line": 7,
           "column": 53
         },
         {
           "value": "0.18",
-          "line": 6,
+          "line": 7,
           "column": 57
         },
         {
-          "value": "1.08",
-          "line": 7,
-          "column": 35
+          "value": "50%",
+          "line": 15,
+          "column": 44
         },
         {
-          "value": "1",
-          "line": 7,
-          "column": 51
+          "value": "999px",
+          "line": 15,
+          "column": 226
         }
       ]
     },
@@ -3920,7 +3920,7 @@
     },
     {
       "path": "src/components/review/ReviewImageFrame.tsx",
-      "count": 41,
+      "count": 8,
       "owner": "frontend-ui",
       "category": "frontend-ui-inline-token-baseline",
       "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
@@ -3928,33 +3928,33 @@
       "examples": [
         {
           "value": "0",
-          "line": 12,
+          "line": 13,
           "column": 55
         },
         {
           "value": "0",
-          "line": 12,
+          "line": 13,
           "column": 66
         },
         {
           "value": "0",
-          "line": 24,
+          "line": 25,
           "column": 50
         },
         {
           "value": "0",
-          "line": 25,
+          "line": 26,
           "column": 52
         },
         {
-          "value": "100%",
-          "line": 42,
-          "column": 17
+          "value": "0",
+          "line": 68,
+          "column": 58
         },
         {
-          "value": "220px",
-          "line": 43,
-          "column": 22
+          "value": "0",
+          "line": 69,
+          "column": 60
         }
       ]
     },
@@ -4090,6 +4090,46 @@
           "value": "5",
           "line": 18,
           "column": 44
+        }
+      ]
+    },
+    {
+      "path": "src/config/uiTokenConfig.ts",
+      "count": 87,
+      "owner": "frontend-ui",
+      "category": "frontend-ui-token-config-baseline",
+      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
+      "reason": "Inline review image frame layout and transform values are owned by UI token config.",
+      "examples": [
+        {
+          "value": "1.08",
+          "line": 8,
+          "column": 45
+        },
+        {
+          "value": "1.06",
+          "line": 9,
+          "column": 48
+        },
+        {
+          "value": "1",
+          "line": 10,
+          "column": 41
+        },
+        {
+          "value": "6",
+          "line": 11,
+          "column": 33
+        },
+        {
+          "value": "30",
+          "line": 12,
+          "column": 34
+        },
+        {
+          "value": "10",
+          "line": 13,
+          "column": 34
         }
       ]
     },
@@ -4360,7 +4400,7 @@
     },
     {
       "path": "src/index.css",
-      "count": 1565,
+      "count": 1534,
       "owner": "frontend-ui",
       "category": "css-layout-token-baseline",
       "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
@@ -4408,12 +4448,12 @@
       "examples": [
         {
           "value": "0",
-          "line": 15,
+          "line": 14,
           "column": 60
         },
         {
           "value": "0",
-          "line": 45,
+          "line": 44,
           "column": 21
         }
       ]

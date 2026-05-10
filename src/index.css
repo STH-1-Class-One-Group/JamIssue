@@ -19,6 +19,35 @@
   --line: rgba(255, 255, 255, 0.76);
   --shadow: 0 18px 42px rgba(255, 143, 183, 0.18);
   --sheet-shadow: 0 -18px 34px rgba(66, 40, 60, 0.16);
+  --app-shell-safe-y: 16px;
+  --app-shell-safe-x: 14px;
+  --phone-shell-max-width: 430px;
+  --phone-shell-max-height: 920px;
+  --phone-shell-height-gap: 24px;
+  --phone-shell-radius: 32px;
+  --layer-app-header: 40;
+  --layer-utility: 1200;
+  --layer-utility-panel: 1201;
+  --utility-slot-top: 14px;
+  --utility-slot-right: 20px;
+  --utility-gap: 10px;
+  --utility-control-size: 48px;
+  --utility-control-radius: 18px;
+  --utility-menu-top: 56px;
+  --utility-menu-width: 220px;
+  --utility-panel-viewport-gap: 40px;
+  --utility-panel-padding: 14px;
+  --utility-panel-radius: 24px;
+  --utility-panel-border: 1px solid rgba(255, 197, 217, 0.42);
+  --utility-panel-background: rgba(255, 252, 249, 0.98);
+  --utility-panel-shadow: 0 20px 42px rgba(66, 40, 60, 0.18);
+  --utility-panel-blur: 18px;
+  --notification-panel-top: 156px;
+  --notification-panel-width: 332px;
+  --notification-panel-max-height: 520px;
+  --notification-panel-max-vh: 62vh;
+  --notification-panel-embedded-gap: 6px;
+  --notification-scrollbar-size: 10px;
 }
 
 * {
@@ -86,18 +115,18 @@ textarea {
   place-items: center;
   background: var(--app-surface-background);
   padding:
-    max(16px, env(safe-area-inset-top))
-    max(14px, env(safe-area-inset-right))
-    max(16px, env(safe-area-inset-bottom))
-    max(14px, env(safe-area-inset-left));
+    max(var(--app-shell-safe-y), env(safe-area-inset-top))
+    max(var(--app-shell-safe-x), env(safe-area-inset-right))
+    max(var(--app-shell-safe-y), env(safe-area-inset-bottom))
+    max(var(--app-shell-safe-x), env(safe-area-inset-left));
 }
 
 .phone-shell {
   position: relative;
-  width: min(100%, 430px);
-  height: min(920px, calc(var(--app-height) - 24px));
-  max-height: calc(var(--app-height) - 24px);
-  border-radius: 32px;
+  width: min(100%, var(--phone-shell-max-width));
+  height: min(var(--phone-shell-max-height), calc(var(--app-height) - var(--phone-shell-height-gap)));
+  max-height: calc(var(--app-height) - var(--phone-shell-height-gap));
+  border-radius: var(--phone-shell-radius);
   overflow: hidden;
   background: rgba(255, 252, 249, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.82);
@@ -113,19 +142,19 @@ textarea {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 40;
+  z-index: var(--layer-app-header);
   padding: 10px 138px 0 16px;
   pointer-events: none;
 }
 
 .phone-shell__utility-slot {
   position: absolute;
-  top: 14px;
-  right: 20px;
-  z-index: 1200;
+  top: var(--utility-slot-top);
+  right: var(--utility-slot-right);
+  z-index: var(--layer-utility);
   display: inline-flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: var(--utility-gap);
   pointer-events: auto;
 }
 
@@ -154,26 +183,26 @@ textarea {
 }
 
 .global-settings-menu__trigger {
-  min-width: 48px;
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
+  min-width: var(--utility-control-size);
+  width: var(--utility-control-size);
+  height: var(--utility-control-size);
+  border-radius: var(--utility-control-radius);
 }
 
 .global-settings-menu__menu {
   position: absolute;
-  top: 56px;
+  top: var(--utility-menu-top);
   right: 0;
-  z-index: 1201;
+  z-index: var(--layer-utility-panel);
   display: grid;
-  gap: 10px;
-  width: min(220px, calc(100vw - 40px));
-  padding: 14px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 197, 217, 0.42);
-  background: rgba(255, 252, 249, 0.98);
-  box-shadow: 0 20px 42px rgba(66, 40, 60, 0.18);
-  backdrop-filter: blur(18px);
+  gap: var(--utility-gap);
+  width: min(var(--utility-menu-width), calc(100vw - var(--utility-panel-viewport-gap)));
+  padding: var(--utility-panel-padding);
+  border-radius: var(--utility-panel-radius);
+  border: var(--utility-panel-border);
+  background: var(--utility-panel-background);
+  box-shadow: var(--utility-panel-shadow);
+  backdrop-filter: blur(var(--utility-panel-blur));
 }
 
 .global-settings-menu__item {
@@ -185,30 +214,30 @@ textarea {
 }
 
 .feedback-button {
-  min-width: 48px;
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
+  min-width: var(--utility-control-size);
+  width: var(--utility-control-size);
+  height: var(--utility-control-size);
+  border-radius: var(--utility-control-radius);
   text-decoration: none;
 }
 
 .global-notification-panel {
   position: absolute;
-  top: 156px;
+  top: var(--notification-panel-top);
   right: 0;
-  z-index: 1201;
-  width: min(332px, calc(100vw - 40px));
-  max-height: min(62vh, 520px);
+  z-index: var(--layer-utility-panel);
+  width: min(var(--notification-panel-width), calc(100vw - var(--utility-panel-viewport-gap)));
+  max-height: min(var(--notification-panel-max-vh), var(--notification-panel-max-height));
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 151, 187, 0.72) rgba(255, 241, 246, 0.92);
-  padding: 14px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 197, 217, 0.42);
-  background: rgba(255, 252, 249, 0.98);
-  box-shadow: 0 20px 42px rgba(66, 40, 60, 0.18);
-  backdrop-filter: blur(18px);
+  padding: var(--utility-panel-padding);
+  border-radius: var(--utility-panel-radius);
+  border: var(--utility-panel-border);
+  background: var(--utility-panel-background);
+  box-shadow: var(--utility-panel-shadow);
+  backdrop-filter: blur(var(--utility-panel-blur));
 }
 
 .global-notification-panel--embedded {
@@ -217,11 +246,11 @@ textarea {
   right: auto;
   width: 100%;
   max-height: none;
-  margin-top: 6px;
+  margin-top: var(--notification-panel-embedded-gap);
 }
 
 .global-notification-panel::-webkit-scrollbar {
-  width: 10px;
+  width: var(--notification-scrollbar-size);
 }
 
 .global-notification-panel::-webkit-scrollbar-track {
