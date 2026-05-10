@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-003-01-INTERFACE-LOCALITY-AUDIT`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/255
-PR: `TBD-TSK-003-01-INTERFACE-LOCALITY-AUDIT`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/262
 Branch: `interface-locality-audit`
 Status: `baseline`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/254
