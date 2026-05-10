@@ -1,4 +1,5 @@
 import { formatDate, formatDateTime, toSeoulDateKey } from '../lib/dates';
+import { WorkerTimeConfig } from '../config/runtime';
 import type {
   SupabaseCoursePlaceRow,
   SupabaseCourseRow,
@@ -26,7 +27,7 @@ function buildSessionDurationLabel(session: any) {
   const startedAt = new Date(session.started_at);
   const endedAt = new Date(session.ended_at);
   const diffMs = Math.max(0, endedAt.getTime() - startedAt.getTime());
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffDays = Math.floor(diffMs / WorkerTimeConfig.dayMs);
   if (diffDays <= 0) {
     return `당일 코스 · 스탬프 ${session.stamp_count ?? 0}개`;
   }

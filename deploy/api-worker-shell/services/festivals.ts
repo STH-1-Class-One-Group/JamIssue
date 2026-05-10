@@ -1,16 +1,17 @@
 import { formatDate, toSeoulDateKey } from '../lib/dates';
 import { jsonResponse } from '../lib/http';
 import { encodeFilterValue, rememberPending, supabaseRequest } from '../lib/supabase';
+import { WorkerFestivalRuntimeConfig } from '../config/runtime';
 const textEncoder = new TextEncoder();
-const FESTIVALS_CACHE_TTL_MS = 10 * 60 * 1000;
-const INTERNAL_FESTIVAL_SOURCE_KEY = 'jamissue-public-event-feed';
-const INTERNAL_FESTIVAL_SOURCE_NAME = 'Daejeon Official Event Search';
-const INTERNAL_FESTIVAL_SOURCE_URL = 'https://www.daejeon.go.kr/fvu/FvuEventList.do?menuSeq=504';
+const FESTIVALS_CACHE_TTL_MS = WorkerFestivalRuntimeConfig.cacheTtlMs;
+const INTERNAL_FESTIVAL_SOURCE_KEY = WorkerFestivalRuntimeConfig.internalSourceKey;
+const INTERNAL_FESTIVAL_SOURCE_NAME = WorkerFestivalRuntimeConfig.internalSourceName;
+const INTERNAL_FESTIVAL_SOURCE_URL = WorkerFestivalRuntimeConfig.internalSourceUrl;
 let festivalsCache = { expiresAt: 0, syncAt: 0, value: null, pending: null };
 function base64UrlEncode(bytes) { let binary = ''; for (const byte of bytes) {
     binary += String.fromCharCode(byte);
 } return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, ''); }
-function createFestivalExternalId(title, startDate, venueName, roadAddress) { const seed = `${title}|${startDate.toISOString()}|${venueName || ''}|${roadAddress || ''}`; const bytes = textEncoder.encode(seed); return `festival-${base64UrlEncode(bytes).slice(0, 22)}`; }
+function createFestivalExternalId(title, startDate, venueName, roadAddress) { const seed = `${title}|${startDate.toISOString()}|${venueName || ''}|${roadAddress || ''}`; const bytes = textEncoder.encode(seed); return `festival-${base64UrlEncode(bytes).slice(0, WorkerFestivalRuntimeConfig.externalIdTokenLength)}`; }
 function isFestivalOngoingInSeoul(startsAt, endsAt, nowValue = Date.now()) { if (!startsAt || !endsAt) {
     return false;
 } const startDateKey = toSeoulDateKey(startsAt); const endDateKey = toSeoulDateKey(endsAt); const nowDateKey = toSeoulDateKey(nowValue); return startDateKey <= nowDateKey && endDateKey >= nowDateKey; }
@@ -138,7 +139,7 @@ function parseFestivalDate(value, endOfDay = false) { if (!value) {
 } if (endOfDay && /^\d{4}-\d{2}-\d{2}$/.test(text)) {
     parsed.setUTCHours(23, 59, 59, 0);
 } return parsed; }
-function getFestivalWindowEnd(now) { return new Date(now + 30 * 24 * 60 * 60 * 1000); }
+function getFestivalWindowEnd(now) { return new Date(now + WorkerFestivalRuntimeConfig.windowMs); }
 function getTargetFestivalCityKeyword(env) { const cityKeyword = String(env.APP_PUBLIC_EVENT_CITY_KEYWORD || '대전').trim(); return cityKeyword || '대전'; }
 function getTargetFestivalAreaKeywords(cityKeyword) { const normalized = String(cityKeyword || '').trim(); const keywords = new Set(normalized ? [normalized] : []); if (normalized.includes('대전')) {
     ['대전광역시', '동구', '중구', '서구', '유성구', '대덕구'].forEach((keyword) => keywords.add(keyword));
@@ -170,13 +171,13 @@ async function upsertImportedFestivalItems(env: any, items: any[], options: any 
 } const staleIds = (existingRows || []).filter((row) => !seenExternalIds.has(String(row.external_id))).map((row) => row.public_event_id); if (staleIds.length > 0) {
     await supabaseRequest(env, `public_event?public_event_id=in.(${staleIds.join(',')})`, { method: 'DELETE', });
 } await supabaseRequest(env, `public_data_source?source_id=eq.${encodeFilterValue(sourceId)}`, { method: 'PATCH', body: JSON.stringify({ name: sourceName, source_url: requestUrl, last_imported_at: importedAt, updated_at: nowIso, }), }); return normalizedItems; }
-async function loadFestivalRowsFromDb(env, nowIso, windowEndIso, limit = 100) { const rows = await supabaseRequest(env, `public_event?select=public_event_id,title,venue_name,district,address,road_address,starts_at,ends_at,summary,source_page_url,latitude,longitude&ends_at=gte.${encodeFilterValue(nowIso)}&starts_at=lte.${encodeFilterValue(windowEndIso)}&order=starts_at.asc&limit=${limit}`); const cityKeyword = getTargetFestivalCityKeyword(env); return groupFestivalRowsBySeries((rows || []).filter((row) => isFestivalRowInTargetArea(row, cityKeyword))); }
+async function loadFestivalRowsFromDb(env, nowIso, windowEndIso, limit = WorkerFestivalRuntimeConfig.dbQueryLimit) { const rows = await supabaseRequest(env, `public_event?select=public_event_id,title,venue_name,district,address,road_address,starts_at,ends_at,summary,source_page_url,latitude,longitude&ends_at=gte.${encodeFilterValue(nowIso)}&starts_at=lte.${encodeFilterValue(windowEndIso)}&order=starts_at.asc&limit=${limit}`); const cityKeyword = getTargetFestivalCityKeyword(env); return groupFestivalRowsBySeries((rows || []).filter((row) => isFestivalRowInTargetArea(row, cityKeyword))); }
 function buildFestivalCard(row, now) { return { id: String(row.public_event_id), title: row.title, venueName: row.venue_name ?? null, startDate: row.starts_at ? toSeoulDateKey(row.starts_at) : '', endDate: row.ends_at ? toSeoulDateKey(row.ends_at) : '', homepageUrl: row.source_page_url ?? null, roadAddress: row.road_address ?? row.address ?? null, latitude: parseFestivalCoordinate(row.latitude), longitude: parseFestivalCoordinate(row.longitude), isOngoing: isFestivalOngoingInSeoul(row.starts_at, row.ends_at, now), }; }
 function buildBannerItem(row, now, emptyDateLabel = '') { return { id: String(row.public_event_id), title: row.title, venueName: row.venue_name ?? null, district: row.district ?? '', startDate: row.starts_at, endDate: row.ends_at, dateLabel: row.starts_at && row.ends_at ? `${formatDate(row.starts_at)} - ${formatDate(row.ends_at)}` : emptyDateLabel, summary: row.summary ?? '', sourcePageUrl: row.source_page_url ?? null, linkedPlaceName: null, isOngoing: isFestivalOngoingInSeoul(row.starts_at, row.ends_at, now), }; }
 export async function handleFestivals(request, env) { const now = Date.now(); if (festivalsCache.value && festivalsCache.expiresAt > now) {
     return jsonResponse(200, festivalsCache.value, env, request);
-} const festivals = await rememberPending(festivalsCache, async () => { const nowIso = new Date(now).toISOString(); const windowEndIso = getFestivalWindowEnd(now).toISOString(); const rows = await loadFestivalRowsFromDb(env, nowIso, windowEndIso, 100); const windowEndTime = getFestivalWindowEnd(now).getTime(); const value = rows.filter((row) => { const startTime = new Date(row.starts_at).getTime(); const endTime = new Date(row.ends_at).getTime(); return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= windowEndTime; }).slice(0, 10).map((row) => buildFestivalCard(row, now)); festivalsCache = { ...festivalsCache, value, expiresAt: Date.now() + FESTIVALS_CACHE_TTL_MS, pending: null, }; return value; }); return jsonResponse(200, festivals, env, request); }
-export async function handleBannerEvents(request, env) { const now = Date.now(); const nowIso = new Date(now).toISOString(); const windowEndIso = getFestivalWindowEnd(now).toISOString(); const [eventRows, sourceRows] = await Promise.all([loadFestivalRowsFromDb(env, nowIso, windowEndIso, 20), supabaseRequest(env, `public_data_source?select=name,last_imported_at&source_key=eq.${encodeFilterValue(INTERNAL_FESTIVAL_SOURCE_KEY)}&limit=1`),]); const source = sourceRows[0] ?? null; const items = eventRows.length > 0 ? eventRows.slice(0, 4).map((row) => buildBannerItem(row, now)) : []; return jsonResponse(200, { sourceReady: items.length > 0 || Boolean(source?.last_imported_at), sourceName: source?.name ?? null, importedAt: source?.last_imported_at ?? null, items, }, env, request); }
+} const festivals = await rememberPending(festivalsCache, async () => { const nowIso = new Date(now).toISOString(); const windowEndIso = getFestivalWindowEnd(now).toISOString(); const rows = await loadFestivalRowsFromDb(env, nowIso, windowEndIso, WorkerFestivalRuntimeConfig.dbQueryLimit); const windowEndTime = getFestivalWindowEnd(now).getTime(); const value = rows.filter((row) => { const startTime = new Date(row.starts_at).getTime(); const endTime = new Date(row.ends_at).getTime(); return Number.isFinite(startTime) && Number.isFinite(endTime) && endTime >= now && startTime <= windowEndTime; }).slice(0, WorkerFestivalRuntimeConfig.cardDisplayLimit).map((row) => buildFestivalCard(row, now)); festivalsCache = { ...festivalsCache, value, expiresAt: Date.now() + FESTIVALS_CACHE_TTL_MS, pending: null, }; return value; }); return jsonResponse(200, festivals, env, request); }
+export async function handleBannerEvents(request, env) { const now = Date.now(); const nowIso = new Date(now).toISOString(); const windowEndIso = getFestivalWindowEnd(now).toISOString(); const [eventRows, sourceRows] = await Promise.all([loadFestivalRowsFromDb(env, nowIso, windowEndIso, WorkerFestivalRuntimeConfig.bannerQueryLimit), supabaseRequest(env, `public_data_source?select=name,last_imported_at&source_key=eq.${encodeFilterValue(INTERNAL_FESTIVAL_SOURCE_KEY)}&limit=1`),]); const source = sourceRows[0] ?? null; const items = eventRows.length > 0 ? eventRows.slice(0, WorkerFestivalRuntimeConfig.bannerDisplayLimit).map((row) => buildBannerItem(row, now)) : []; return jsonResponse(200, { sourceReady: items.length > 0 || Boolean(source?.last_imported_at), sourceName: source?.name ?? null, importedAt: source?.last_imported_at ?? null, items, }, env, request); }
 export async function handleFestivalImport(request, env) { const configuredToken = readFestivalImportToken(env); if (!configuredToken) {
     return jsonResponse(503, { detail: 'APP_EVENT_IMPORT_TOKEN is empty.' }, env, request);
 } const bearerToken = readBearerToken(request); if (!bearerToken || bearerToken !== configuredToken) {

@@ -103,6 +103,14 @@ function inferClassification(path: string): Pick<NumericLiteralFileAudit, 'owner
       reason: 'API cache TTL, upload compression, autoload, pagination, feedback, and floating-button runtime values are owned by runtime limit config.',
     };
   }
+  if (path === 'deploy/api-worker-shell/config/runtime.ts') {
+    return {
+      owner: 'worker-backend',
+      category: 'worker-runtime-config-baseline',
+      scopeId: 'TSK-002-05-WORKER-RUNTIME-CONFIG',
+      reason: 'Worker session, cache, pagination, festival, notification, and stamp runtime values are owned by Worker runtime config.',
+    };
+  }
   if (path.includes('/naver-map/') || path.includes('mapViewportState')) {
     return {
       owner: 'frontend-map',

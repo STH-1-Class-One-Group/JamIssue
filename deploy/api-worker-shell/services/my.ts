@@ -1,12 +1,13 @@
 import { jsonResponse } from '../lib/http';
 import { parseListLimit } from '../lib/supabase';
+import { WorkerPaginationRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
 import { mapMyComments } from './my-domain/mapper';
 import { loadFeedsForCommentRows, loadMyCommentRows, loadMySummaryCommentRows } from './my-domain/repository';
 
 export function createMyService({ communityRouteService, loadBaseData, loadStaticBaseRows, loadUserNotifications }: any) {
   async function loadMyCommentPageData(env: any, userId: string, options: any = {}) {
-    const { cursor = null, limit = 10 } = options;
+    const { cursor = null, limit = WorkerPaginationRuntimeConfig.myCommentsPageSize } = options;
     const commentRows = await loadMyCommentRows(env, userId, cursor, limit);
     const nextCursor = commentRows.length > limit ? String(commentRows[limit].created_at) : null;
     const pageRows = commentRows.slice(0, limit);
@@ -27,7 +28,7 @@ export function createMyService({ communityRouteService, loadBaseData, loadStati
     }
     const payload = await loadMyCommentPageData(env, sessionUser.id, {
       cursor: url.searchParams.get('cursor') ?? null,
-      limit: parseListLimit(url, 10, 20),
+      limit: parseListLimit(url, WorkerPaginationRuntimeConfig.myCommentsPageSize, WorkerPaginationRuntimeConfig.myCommentsMaxPageSize),
     });
     return jsonResponse(200, payload, env, request);
   }

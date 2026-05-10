@@ -1,5 +1,6 @@
 import { jsonResponse } from '../lib/http';
 import { buildInFilter, encodeFilterValue, parseListLimit, supabaseRequest } from '../lib/supabase';
+import { WorkerPaginationRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
 import { createReviewMapper } from './review-domain/mapper';
 
@@ -59,7 +60,7 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
   }
 
   async function loadReviewPageData(env: any, sessionUserId: string | null = null, options: any = {}) {
-    const { cursor = null, limit = 10 } = options;
+    const { cursor = null, limit = WorkerPaginationRuntimeConfig.reviewFeedPageSize } = options;
     const { placeRows } = await loadStaticBaseRows(env);
     const places = placeRows.map(mapPlace);
     const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
@@ -161,7 +162,7 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
     const sessionUser = await readSessionUser(request, env);
     const payload = await loadReviewPageData(env, sessionUser?.id ?? null, {
       cursor: url.searchParams.get('cursor') ?? null,
-      limit: parseListLimit(url, 10, 20),
+      limit: parseListLimit(url, WorkerPaginationRuntimeConfig.reviewFeedPageSize, WorkerPaginationRuntimeConfig.reviewFeedMaxPageSize),
     });
     return jsonResponse(200, payload, env, request);
   }
