@@ -12,7 +12,7 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/255
 
 ## 목적
 
-공용 타입을 전부 없애는 것이 목표가 아닙니다. public API contract와 cross-domain model은 중앙에 유지하고, runtime/service dependency, Supabase row, mapper input, stage/view props처럼 구현 내부에 가까운 인터페이스는 소유 모듈 근처로 이동하는 것이 목표입니다.
+공용 타입을 없애는 것이 목표가 아닙니다. public API contract와 cross-domain model은 중앙에 유지하고, runtime/service dependency, Supabase row, mapper input, stage/view props처럼 구현 내부에 가까운 인터페이스는 소유 모듈 근처로 이동하는 것이 목표입니다.
 
 ## 변경 금지 범위
 
@@ -21,18 +21,18 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/255
 - DB schema 변경 없음
 - Kakao/Naver REST OAuth 성공 경로 변경 없음
 - public API DTO 제거 없음
-- compatibility facade 즉시 삭제 없음
+- compatibility facade 즉시 제거 없음
 
-## 현재 기준선
+## 초기 기준선
 
-| 영역 | 현재 수치 | 해석 | 후속 이슈 |
+| 영역 | 초기 수치 | 해석 | 후속 이슈 |
 | --- | ---: | --- | --- |
 | Worker central type exports | 28 | `WorkerEnv`, Supabase row, DTO, service contract, route runtime이 한 파일에 공존 | #256, #257 |
-| Worker runtime/service contract mentions in central types | 13 | `RouteRuntime`, `Worker*Service`, review interaction deps가 중앙 types에 있음 | #256 |
+| Worker runtime/service contract mentions in central types | 13 | `RouteRuntime`, `Worker*Service`, review interaction deps가 중앙 types에 존재 | #256 |
 | Frontend root `src/types` imports | 106 | API DTO와 presentation/hook import가 같은 barrel을 공유 | #259 |
 | Frontend component root type imports | 44 | presentation component가 root barrel을 직접 참조 | #259 |
-| Frontend hook root type imports | 43 | coordinator/hook 계층이 root barrel에 넓게 의존 | #259 |
-| Wide `AppPageStageProps` coupling references | 11 | feed/course/my view가 큰 stage props에서 `Pick`으로 일부만 사용 | #258 |
+| Frontend hook root type imports | 43 | coordinator/hook 계층도 root barrel에 넓게 의존 | #259 |
+| Wide `AppPageStageProps` coupling references | 11 | feed/course/my view가 넓은 stage props에서 `Pick`으로 일부만 사용 | #258 |
 | FastAPI `.models` facade imports | 5 | active backend 일부가 compatibility facade를 직접 import | #260 |
 
 ## 후속 작업 매핑
@@ -48,16 +48,17 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/255
 
 ## Source Quality Gate
 
-`test/unit/interface-locality-source-quality.test.ts`는 현재 기준선보다 interface locality가 후퇴하지 않도록 막습니다.
+`test/unit/interface-locality-source-quality.test.ts`는 interface locality가 후퇴하지 않도록 막습니다.
 
-현재 기준:
+현재 게이트:
 
-- 중앙 Worker type export와 runtime/service contract mention은 늘어나면 안 됩니다.
-- frontend root type barrel import는 늘어나면 안 됩니다.
-- wide stage props coupling은 늘어나면 안 됩니다.
-- FastAPI `.models` facade import는 늘어나면 안 됩니다.
+- 중앙 Worker type export와 runtime/service contract mention 증가 방지
+- Worker data row/DTO contract가 중앙 `types.ts`로 되돌아가는 것 방지
+- `src/components`와 `src/hooks`의 root `src/types.ts` barrel import 재도입 방지
+- page-stage의 `Pick<AppPageStageProps>` 재도입 방지
+- FastAPI active app code의 `.models` facade import 재도입 방지
 
-후속 PR에서 수치가 줄어들면 gate는 그대로 통과합니다. 후속 PR은 필요한 때 threshold를 더 낮춰 다음 회귀 기준으로 갱신합니다.
+후속 PR에서 수치가 줄어들면 gate threshold도 낮춰 다음 회귀 기준으로 사용합니다.
 
 ## 완료 판단
 
