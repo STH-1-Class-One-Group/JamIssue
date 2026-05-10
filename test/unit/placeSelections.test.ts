@@ -54,8 +54,26 @@ describe('getRoutePreviewPlaces', () => {
     expect(result[0].name).toBe('Place 1 (First)');
   });
 
+  it('returns an empty array if routePreview.placeIds is empty', () => {
+    const routePreview: RoutePreview = {
+      placeIds: [],
+    } as RoutePreview;
+
+    const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+    expect(result).toEqual([]);
+  });
+
   it('returns an empty array if selectedRoutePreview is null', () => {
     const result = getRoutePreviewPlaces(mockPlaces, null);
+    expect(result).toEqual([]);
+  });
+
+  it('returns an empty array when places is empty', () => {
+    const routePreview: RoutePreview = {
+      placeIds: ['p1', 'p2'],
+    } as RoutePreview;
+
+    const result = getRoutePreviewPlaces([], routePreview);
     expect(result).toEqual([]);
   });
 });

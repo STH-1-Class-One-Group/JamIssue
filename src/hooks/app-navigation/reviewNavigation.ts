@@ -38,7 +38,7 @@ export function createReviewNavigationHelpers({
 }: ReviewNavigationParams) {
   function handleOpenReviewComments(reviewId: string, commentId: string | null = null) {
     goToTab('feed');
-    setHighlightedReviewId(reviewId ?? null);
+    setHighlightedReviewId(reviewId);
     setActiveCommentReviewId(reviewId);
     setHighlightedCommentId(commentId);
   }
@@ -76,7 +76,10 @@ export function createReviewNavigationHelpers({
   }
 
   async function handleOpenReviewWithReturn(reviewId: string | null) {
-    await ensureReviewLoadedById(reviewId);
+    const loadedReview = await ensureReviewLoadedById(reviewId);
+    if (!loadedReview) {
+      return;
+    }
     if (activeTab !== 'feed') {
       setReturnView(snapshotReturnView());
     }
@@ -102,7 +105,10 @@ export function createReviewNavigationHelpers({
     if (activeTab !== 'feed') {
       setReturnView(snapshotReturnView());
     }
-    await ensureReviewLoadedById(reviewId);
+    const loaded = await ensureReviewLoadedById(reviewId);
+    if (!loaded) {
+      return;
+    }
     handleOpenReviewComments(reviewId, commentId);
   }
 
