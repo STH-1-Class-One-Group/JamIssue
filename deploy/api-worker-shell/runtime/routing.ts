@@ -1,7 +1,8 @@
 import { handlePreflight } from '../lib/http';
-import type { RouteRuntime, WorkerEnv } from '../types';
+import type { WorkerEnv } from '../types';
 import { proxyToOrigin } from './proxy';
 import { createExactRoutes, createPatternRoutes } from './route-registry';
+import type { RouteRuntime } from './route-runtime';
 
 export function createRouteRequest(runtime: RouteRuntime) {
   return async function routeRequest(request: Request, env: WorkerEnv) {

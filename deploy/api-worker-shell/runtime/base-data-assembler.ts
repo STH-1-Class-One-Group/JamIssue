@@ -1,4 +1,5 @@
-import type { WorkerBaseData, WorkerEnv, WorkerJsonRecord, WorkerPlace, WorkerReviewReadService } from '../types';
+import type { WorkerReviewReadService } from '../services/review-domain/contracts';
+import type { WorkerBaseData, WorkerEnv, WorkerJsonRecord, WorkerPlace } from '../types';
 import {
   buildPlaceVisitCountMap,
   buildStampLogs,

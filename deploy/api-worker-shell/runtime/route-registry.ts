@@ -28,8 +28,9 @@ import {
   handleUpdateComment,
   handleUpdateReview,
 } from '../services/review-interactions';
-import type { RouteRuntime, WorkerEnv } from '../types';
+import type { WorkerEnv } from '../types';
 import { handleBootstrap, handleCuratedCourses, handleHealth, handleMapBootstrap } from './route-handlers';
+import type { RouteRuntime } from './route-runtime';
 
 export type ExactRoute = [method: string, pathname: string, handler: () => Promise<Response>];
 export type PatternRoute = [method: string, pattern: RegExp, handler: (match: RegExpMatchArray) => Promise<Response>];

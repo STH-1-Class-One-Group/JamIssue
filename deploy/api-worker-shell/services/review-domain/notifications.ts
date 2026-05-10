@@ -1,4 +1,5 @@
-import type { WorkerEnv, WorkerNotificationCreatePayload, WorkerReviewInteractionDeps } from '../../types';
+import type { WorkerEnv } from '../../types';
+import type { WorkerNotificationCreatePayload, WorkerReviewInteractionDeps } from './contracts';
 
 export async function publishReviewNotification(
   env: WorkerEnv,
