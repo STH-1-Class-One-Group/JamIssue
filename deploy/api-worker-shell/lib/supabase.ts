@@ -1,4 +1,5 @@
 import type { SupabaseCacheState, SupabaseRequestOptions, WorkerEnv } from '../types';
+import { WorkerSupabaseRuntimeConfig } from '../config/runtime';
 
 export function getSupabaseKey(env: WorkerEnv) {
   return env.APP_SUPABASE_SERVICE_ROLE_KEY || env.APP_SUPABASE_ANON_KEY || '';
@@ -55,7 +56,11 @@ export function encodeFilterValue(value: unknown) {
   return encodeURIComponent(String(value));
 }
 
-export function parseListLimit(url: URL, defaultLimit = 12, maxLimit = 24) {
+export function parseListLimit(
+  url: URL,
+  defaultLimit = WorkerSupabaseRuntimeConfig.defaultListLimit,
+  maxLimit = WorkerSupabaseRuntimeConfig.maxListLimit,
+) {
   const raw = Number(url.searchParams.get('limit') ?? defaultLimit);
   if (!Number.isFinite(raw) || raw <= 0) {
     return defaultLimit;

@@ -1,4 +1,5 @@
 import { buildInFilter, encodeFilterValue, rememberPending, supabaseRequest } from '../lib/supabase';
+import { WorkerBaseDataRuntimeConfig } from '../config/runtime';
 import type {
   SupabaseCacheState,
   SupabaseCoursePlaceRow,
@@ -9,7 +10,7 @@ import type {
   WorkerStaticBaseRows,
 } from '../types';
 
-const STATIC_BASE_CACHE_TTL_MS = 5 * 60 * 1000;
+const STATIC_BASE_CACHE_TTL_MS = WorkerBaseDataRuntimeConfig.staticBaseCacheTtlMs;
 
 let staticBaseCache: SupabaseCacheState<WorkerStaticBaseRows> & {
   expiresAt: number;

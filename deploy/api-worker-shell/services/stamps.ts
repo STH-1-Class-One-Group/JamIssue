@@ -1,13 +1,14 @@
 import { toSeoulDateKey } from '../lib/dates';
 import { jsonResponse } from '../lib/http';
 import { encodeFilterValue, supabaseRequest } from '../lib/supabase';
+import { WorkerStampRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
-function getStampUnlockRadius(env) { const parsed = Number(env.APP_STAMP_UNLOCK_RADIUS_METERS ?? '120'); return Number.isFinite(parsed) && parsed > 0 ? parsed : 120; }
-function calculateDistanceMeters(startLatitude, startLongitude, endLatitude, endLongitude) { const earthRadiusMeters = 6371000; const latitudeDelta = ((endLatitude - startLatitude) * Math.PI) / 180; const longitudeDelta = ((endLongitude - startLongitude) * Math.PI) / 180; const startLatitudeRadians = (startLatitude * Math.PI) / 180; const endLatitudeRadians = (endLatitude * Math.PI) / 180; const haversine = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2; return earthRadiusMeters * (2 * Math.asin(Math.sqrt(haversine))); }
+function getStampUnlockRadius(env) { const parsed = Number(env.APP_STAMP_UNLOCK_RADIUS_METERS ?? WorkerStampRuntimeConfig.defaultUnlockRadiusMeters); return Number.isFinite(parsed) && parsed > 0 ? parsed : WorkerStampRuntimeConfig.defaultUnlockRadiusMeters; }
+function calculateDistanceMeters(startLatitude, startLongitude, endLatitude, endLongitude) { const latitudeDelta = (endLatitude - startLatitude) * WorkerStampRuntimeConfig.radiansPerDegree; const longitudeDelta = (endLongitude - startLongitude) * WorkerStampRuntimeConfig.radiansPerDegree; const startLatitudeRadians = startLatitude * WorkerStampRuntimeConfig.radiansPerDegree; const endLatitudeRadians = endLatitude * WorkerStampRuntimeConfig.radiansPerDegree; const haversine = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2; return WorkerStampRuntimeConfig.earthRadiusMeters * (2 * Math.asin(Math.sqrt(haversine))); }
 function formatDistanceMeters(distanceMeters) { if (!Number.isFinite(distanceMeters)) {
     return '알 수 없음';
-} if (distanceMeters >= 1000) {
-    return `${(distanceMeters / 1000).toFixed(1)}km`;
+} if (distanceMeters >= WorkerStampRuntimeConfig.metersPerKilometer) {
+    return `${(distanceMeters / WorkerStampRuntimeConfig.metersPerKilometer).toFixed(1)}km`;
 } return `${Math.round(distanceMeters)}m`; }
 function buildNearPlaceMessage(placeName, distanceMeters, unlockRadius) { return `${placeName}까지 ${formatDistanceMeters(distanceMeters)} 남아있어요. 반경 ${unlockRadius}m 안에 들어오면 열려요.`; }
 async function requireSessionUser(request, env) { const sessionUser = await readSessionUser(request, env); if (!sessionUser) {
@@ -32,7 +33,7 @@ export function createStampService({ loadBaseData }) { async function handleTogg
     return jsonResponse(200, { collectedPlaceIds: nextBaseData.collectedPlaceIds, logs: nextBaseData.stampLogs, travelSessions: nextBaseData.travelSessions, }, env, request);
 } const nowIso = new Date().toISOString(); const placeStampRows = await supabaseRequest(env, `user_stamp?select=stamp_id&user_id=eq.${encodeFilterValue(sessionResult.sessionUser.id)}&position_id=eq.${encodeFilterValue(place.positionId)}`); const visitOrdinal = (placeStampRows?.length ?? 0) + 1; const lastStampRows = await supabaseRequest(env, `user_stamp?select=stamp_id,travel_session_id,created_at&user_id=eq.${encodeFilterValue(sessionResult.sessionUser.id)}&order=created_at.desc&limit=1`); const lastStampRow = lastStampRows?.[0] ?? null; let travelSessionId = null; if (lastStampRow) {
     const gapMs = new Date(nowIso).getTime() - new Date(lastStampRow.created_at).getTime();
-    if (gapMs <= 1000 * 60 * 60 * 24) {
+    if (gapMs <= WorkerStampRuntimeConfig.travelSessionGapMs) {
         if (lastStampRow.travel_session_id) {
             travelSessionId = Number(lastStampRow.travel_session_id);
             const sessionRows = await supabaseRequest(env, `travel_session?select=stamp_count&travel_session_id=eq.${encodeFilterValue(travelSessionId)}&limit=1`);

@@ -1,10 +1,11 @@
 import { jsonResponse } from '../../lib/http';
 import type { WorkerEnv, WorkerSessionUser } from '../../types';
+import { WorkerSessionRuntimeConfig } from '../../config/runtime';
 
-const SESSION_COOKIE_NAME = 'jamissue_worker_session';
-const OAUTH_STATE_COOKIE_NAME = 'jamissue_worker_oauth_state';
-const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
-const OAUTH_STATE_MAX_AGE_SECONDS = 60 * 10;
+const SESSION_COOKIE_NAME = WorkerSessionRuntimeConfig.sessionCookieName;
+const OAUTH_STATE_COOKIE_NAME = WorkerSessionRuntimeConfig.oauthStateCookieName;
+const SESSION_MAX_AGE_SECONDS = WorkerSessionRuntimeConfig.sessionMaxAgeSeconds;
+const OAUTH_STATE_MAX_AGE_SECONDS = WorkerSessionRuntimeConfig.oauthStateMaxAgeSeconds;
 
 const textEncoder = new TextEncoder();
 
