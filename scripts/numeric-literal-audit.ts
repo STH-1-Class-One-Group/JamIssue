@@ -79,6 +79,14 @@ function inferClassification(path: string): Pick<NumericLiteralFileAudit, 'owner
       reason: 'CSS layout, spacing, radius, color, shadow, or motion values are migrated through UI token work.',
     };
   }
+  if (path === 'src/config/mapConfig.ts') {
+    return {
+      owner: 'frontend-map',
+      category: 'map-geo-config-baseline',
+      scopeId: 'TSK-002-02-FRONTEND-MAP-GEO-CONFIG',
+      reason: 'Map viewport, marker layer, selection-motion, geolocation, and distance values are owned by map config.',
+    };
+  }
   if (path.includes('/naver-map/') || path.includes('mapViewportState')) {
     return {
       owner: 'frontend-map',

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { Place } from '../../types';
 import { routeStepMarkerContent } from './markerContent';
 
@@ -63,7 +64,7 @@ export function useNaverRoutePreviewOverlay({
       strokeWeight: 4,
       strokeLineCap: 'round',
       strokeLineJoin: 'round',
-      zIndex: 120,
+      zIndex: NaverMarkerConfig.zIndex.routeLine,
     });
 
     routeStepMarkersRef.current = routePreviewPlaces.map(
@@ -72,10 +73,10 @@ export function useNaverRoutePreviewOverlay({
           map: mapRef.current,
           position: new mapsApi.LatLng(place.latitude, place.longitude),
           title: '',
-          zIndex: 165,
+          zIndex: NaverMarkerConfig.zIndex.routeStep,
           icon: {
             content: routeStepMarkerContent(index + 1),
-            anchor: new mapsApi.Point(13, 13),
+            anchor: new mapsApi.Point(NaverMarkerConfig.anchor.routeStep.x, NaverMarkerConfig.anchor.routeStep.y),
           },
         }),
     );
@@ -83,7 +84,7 @@ export function useNaverRoutePreviewOverlay({
     if (routePreviewPlaces.length >= 2 && !selectedPlaceId && !selectedFestivalId) {
       const bounds = new mapsApi.LatLngBounds();
       routePreviewPlaces.forEach((place) => bounds.extend(new mapsApi.LatLng(place.latitude, place.longitude)));
-      mapRef.current.fitBounds?.(bounds, { top: 72, right: 40, bottom: 120, left: 40 });
+      mapRef.current.fitBounds?.(bounds, NaverMarkerConfig.routeBoundsPadding);
     } else if (routePreviewPlaces.length === 1 && !selectedPlaceId && !selectedFestivalId) {
       mapRef.current.panTo?.(new mapsApi.LatLng(routePreviewPlaces[0].latitude, routePreviewPlaces[0].longitude));
     }

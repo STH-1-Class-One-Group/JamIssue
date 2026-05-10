@@ -1,3 +1,4 @@
+import { GeoDistanceConfig } from '../config/mapConfig';
 import type { StampLog } from '../types';
 
 export function calculateDistanceMeters(
@@ -6,25 +7,24 @@ export function calculateDistanceMeters(
   endLatitude: number,
   endLongitude: number,
 ) {
-  const earthRadiusMeters = 6_371_000;
-  const latitudeDelta = ((endLatitude - startLatitude) * Math.PI) / 180;
-  const longitudeDelta = ((endLongitude - startLongitude) * Math.PI) / 180;
-  const startLatitudeRadians = (startLatitude * Math.PI) / 180;
-  const endLatitudeRadians = (endLatitude * Math.PI) / 180;
+  const latitudeDelta = ((endLatitude - startLatitude) * Math.PI) / GeoDistanceConfig.degreesPerHalfCircle;
+  const longitudeDelta = ((endLongitude - startLongitude) * Math.PI) / GeoDistanceConfig.degreesPerHalfCircle;
+  const startLatitudeRadians = (startLatitude * Math.PI) / GeoDistanceConfig.degreesPerHalfCircle;
+  const endLatitudeRadians = (endLatitude * Math.PI) / GeoDistanceConfig.degreesPerHalfCircle;
 
   const haversine =
     Math.sin(latitudeDelta / 2) ** 2 +
     Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2;
 
-  return earthRadiusMeters * (2 * Math.asin(Math.sqrt(haversine)));
+  return GeoDistanceConfig.earthRadiusMeters * (GeoDistanceConfig.haversineMultiplier * Math.asin(Math.sqrt(haversine)));
 }
 
 export function formatDistanceMeters(distanceMeters: number) {
-  if (distanceMeters < 1000) {
+  if (distanceMeters < GeoDistanceConfig.kilometerThresholdMeters) {
     return `${Math.round(distanceMeters)}m`;
   }
 
-  return `${(distanceMeters / 1000).toFixed(1)}km`;
+  return `${(distanceMeters / GeoDistanceConfig.kilometerThresholdMeters).toFixed(GeoDistanceConfig.kilometerFractionDigits)}km`;
 }
 
 export function getTodayStampLog(stampLogs: StampLog[], placeId: string) {

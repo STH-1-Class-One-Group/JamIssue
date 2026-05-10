@@ -1,15 +1,11 @@
-﻿import { calculateDistanceMeters, formatDistanceMeters } from './visits';
+import { GeolocationConfig } from '../config/mapConfig';
+import { calculateDistanceMeters, formatDistanceMeters } from './visits';
 
 export interface CurrentDeviceLocation {
   latitude: number;
   longitude: number;
   accuracyMeters: number;
 }
-
-const DAEJEON_CENTER = { latitude: 36.3504, longitude: 127.3845 };
-const DAEJEON_VALID_RADIUS_METERS = 45_000;
-const MAX_ACCEPTABLE_LOCATION_ACCURACY_METERS = 5_000;
-const EARLY_SUCCESS_LOCATION_ACCURACY_METERS = 150;
 
 function validateCurrentDevicePosition(position: GeolocationPosition): CurrentDeviceLocation {
   const nextPosition = {
@@ -19,17 +15,17 @@ function validateCurrentDevicePosition(position: GeolocationPosition): CurrentDe
   };
 
   const distanceFromDaejeon = calculateDistanceMeters(
-    DAEJEON_CENTER.latitude,
-    DAEJEON_CENTER.longitude,
+    GeolocationConfig.validAreaCenter.latitude,
+    GeolocationConfig.validAreaCenter.longitude,
     nextPosition.latitude,
     nextPosition.longitude,
   );
 
-  if (distanceFromDaejeon > DAEJEON_VALID_RADIUS_METERS) {
+  if (distanceFromDaejeon > GeolocationConfig.validRadiusMeters) {
     throw new Error('현재 위치가 대전 반경 밖으로 잡혔어요. 위치 서비스나 Wi-Fi를 켠 뒤 다시 확인해 주세요.');
   }
 
-  if (nextPosition.accuracyMeters > MAX_ACCEPTABLE_LOCATION_ACCURACY_METERS) {
+  if (nextPosition.accuracyMeters > GeolocationConfig.maxAcceptableAccuracyMeters) {
     throw new Error(`현재 위치 정확도가 약 ${formatDistanceMeters(nextPosition.accuracyMeters)}로 너무 넓어요. 위치를 다시 확인해 주세요.`);
   }
 
@@ -88,7 +84,7 @@ export function getCurrentDevicePosition() {
           bestPosition = position;
         }
 
-        if (position.coords.accuracy <= EARLY_SUCCESS_LOCATION_ACCURACY_METERS) {
+        if (position.coords.accuracy <= GeolocationConfig.earlySuccessAccuracyMeters) {
           finishWithBestPosition(watchId);
         }
       },
@@ -107,15 +103,11 @@ export function getCurrentDevicePosition() {
         }
         finishWithError(watchId, new Error('현재 위치를 확인하지 못했어요.'));
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10_000,
-        maximumAge: 0,
-      },
+      GeolocationConfig.watchOptions,
     );
 
     timeoutId = window.setTimeout(() => {
       finishWithBestPosition(watchId);
-    }, 8_000);
+    }, GeolocationConfig.settleTimeoutMs);
   });
 }

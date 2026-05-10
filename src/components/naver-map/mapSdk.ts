@@ -1,4 +1,6 @@
-export const DAEJEON_CENTER = { latitude: 36.3504, longitude: 127.3845 };
+import { MapViewportConfig } from '../../config/mapConfig';
+
+export const DAEJEON_CENTER = MapViewportConfig.daejeonCenter;
 
 declare global {
   interface Window {

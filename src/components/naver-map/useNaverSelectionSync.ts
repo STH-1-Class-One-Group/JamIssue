@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { MapViewportConfig, SelectionMotionConfig } from '../../config/mapConfig';
 import type { FestivalItem, Place } from '../../types';
 import { hasFestivalCoordinates } from './markerContent';
 import { getSelectionVerticalOffset } from './selectionOffset';
@@ -54,8 +55,10 @@ export function useNaverSelectionSync({
 
     const map = mapRef.current;
     const targetLatLng = new mapsApi.LatLng(target.latitude, target.longitude);
-    const currentZoom = typeof map.getZoom === 'function' ? Number(map.getZoom()) : 13;
-    const nextZoom = Number.isFinite(currentZoom) ? Math.max(currentZoom, 15) : 15;
+    const currentZoom = typeof map.getZoom === 'function' ? Number(map.getZoom()) : MapViewportConfig.defaultZoom;
+    const nextZoom = Number.isFinite(currentZoom)
+      ? Math.max(currentZoom, MapViewportConfig.selectedZoomFloor)
+      : MapViewportConfig.selectedZoomFloor;
 
     if (typeof map.setZoom === 'function' && currentZoom < nextZoom) {
       map.setZoom(nextZoom, false);
@@ -68,8 +71,10 @@ export function useNaverSelectionSync({
     }
 
     if (typeof map.panBy === 'function') {
-      const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= 640;
-      const panDelayMs = isMobileViewport && targetType === 'place' ? 260 : 180;
+      const isMobileViewport = typeof window !== 'undefined' && window.innerWidth <= SelectionMotionConfig.mobileBreakpointPx;
+      const panDelayMs = isMobileViewport && targetType === 'place'
+        ? SelectionMotionConfig.panDelayMs.mobilePlace
+        : SelectionMotionConfig.panDelayMs.default;
       window.setTimeout(() => {
         if (mapRef.current === map) {
           map.panBy?.(0, -getSelectionVerticalOffset(mapElementRef.current, targetType));

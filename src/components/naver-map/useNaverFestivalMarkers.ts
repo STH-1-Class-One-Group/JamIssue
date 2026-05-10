@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
+import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { FestivalItem } from '../../types';
 import { festivalMarkerContent, hasFestivalCoordinates } from './markerContent';
 
@@ -30,7 +31,7 @@ export function useNaverFestivalMarkers({
     }
 
     const nextIds = new Set(festivals.filter(hasFestivalCoordinates).map((festival) => festival.id));
-    const markerAnchor = new mapsApi.Point(15, 15);
+    const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     for (const [festivalId, marker] of festivalMarkersRef.current.entries()) {
       if (!nextIds.has(festivalId)) {
@@ -54,7 +55,7 @@ export function useNaverFestivalMarkers({
         map: mapRef.current,
         position,
         title: '',
-        zIndex: festival.id === selectedFestivalId ? 170 : 110,
+        zIndex: festival.id === selectedFestivalId ? NaverMarkerConfig.zIndex.festivalActive : NaverMarkerConfig.zIndex.festivalDefault,
         icon: {
           content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
           anchor: markerAnchor,
@@ -75,7 +76,7 @@ export function useNaverFestivalMarkers({
 
     const isFestivalsSame = festivals === prevFestivalsRef.current;
     const prevSelectedId = prevSelectedFestivalIdRef.current;
-    const markerAnchor = new mapsApi.Point(15, 15);
+    const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     if (isFestivalsSame && prevSelectedId !== selectedFestivalId) {
       if (prevSelectedId) {
@@ -86,7 +87,7 @@ export function useNaverFestivalMarkers({
             content: festivalMarkerContent(prevFestival, false),
             anchor: markerAnchor,
           });
-          prevMarker.setZIndex(110);
+          prevMarker.setZIndex(NaverMarkerConfig.zIndex.festivalDefault);
         }
       }
 
@@ -98,7 +99,7 @@ export function useNaverFestivalMarkers({
             content: festivalMarkerContent(nextFestival, true),
             anchor: markerAnchor,
           });
-          nextMarker.setZIndex(170);
+          nextMarker.setZIndex(NaverMarkerConfig.zIndex.festivalActive);
         }
       }
     } else {
@@ -111,7 +112,9 @@ export function useNaverFestivalMarkers({
           content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
           anchor: markerAnchor,
         });
-        marker.setZIndex(festival.id === selectedFestivalId ? 170 : 110);
+        marker.setZIndex(
+          festival.id === selectedFestivalId ? NaverMarkerConfig.zIndex.festivalActive : NaverMarkerConfig.zIndex.festivalDefault,
+        );
       });
     }
 
