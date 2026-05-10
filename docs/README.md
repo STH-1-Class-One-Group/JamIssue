@@ -28,3 +28,4 @@
 - [operations-refactor-roadmap.md](operations-refactor-roadmap.md)
 - [worker-backend-solid-traceability.md](worker-backend-solid-traceability.md)
 - [config-hardening-traceability.md](config-hardening-traceability.md)
+- [interface-locality-baseline.md](interface-locality-baseline.md)
