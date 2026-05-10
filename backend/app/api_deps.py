@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, Request, status
 
 from .config import Settings, get_settings
 from .jwt_auth import ACCESS_TOKEN_COOKIE, read_access_token
-from .models import SessionUser
+from .model_contracts.auth import SessionUser
 
 
 def get_session_user(request: Request, app_settings: Settings = Depends(get_settings)) -> SessionUser | None:

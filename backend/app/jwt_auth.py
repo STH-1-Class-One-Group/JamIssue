@@ -9,7 +9,7 @@ import jwt
 from fastapi import Response
 
 from .config import Settings
-from .models import SessionUser
+from .model_contracts.auth import SessionUser
 
 ACCESS_TOKEN_COOKIE = "jamissue_access_token"
 logger = logging.getLogger(__name__)

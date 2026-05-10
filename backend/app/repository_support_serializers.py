@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from .db_models import MapPlace, User
-from .models import AdminPlaceOut, PlaceOut, SessionUser
+from .model_contracts.admin import AdminPlaceOut
+from .model_contracts.auth import SessionUser
+from .model_contracts.content import PlaceOut
 from .repository_support_time import format_datetime
 
 

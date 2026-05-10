@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .db_models import UserComment
-from .models import CommentOut
+from .model_contracts.review import CommentOut
 from .repository_support_time import format_datetime
 
 
