@@ -87,6 +87,14 @@ function inferClassification(path: string): Pick<NumericLiteralFileAudit, 'owner
       reason: 'Map viewport, marker layer, selection-motion, geolocation, and distance values are owned by map config.',
     };
   }
+  if (path === 'src/config/uiTokenConfig.ts') {
+    return {
+      owner: 'frontend-ui',
+      category: 'frontend-ui-token-config-baseline',
+      scopeId: 'TSK-002-03-FRONTEND-UI-TOKEN-CONFIG',
+      reason: 'Inline review image frame layout and transform values are owned by UI token config.',
+    };
+  }
   if (path.includes('/naver-map/') || path.includes('mapViewportState')) {
     return {
       owner: 'frontend-map',
