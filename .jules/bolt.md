@@ -1,0 +1,3 @@
+## 2024-10-24 - [Naver Map DOM operations optimization]
+**Learning:** In Naver Maps, updating marker icons via `setIcon` with HTML content triggers heavy DOM operations. Iterating over all mapped markers to update selection state, even when the underlying map data hasn't changed, scales poorly (O(N)) and causes frame drops.
+**Action:** When tracking selection states in large collections of map markers, always memoize the previous selection and collection references. Only update the visual state of the specific `prev` and `next` marker instances (O(1)) rather than re-evaluating the entire collection when only the active selection ID changes.

@@ -30,6 +30,7 @@ export function useNaverPlaceMarkers({
     }
 
     const nextIds = new Set(places.map((place) => place.id));
+    const markerAnchor = new mapsApi.Point(15, 15);
 
     for (const [placeId, marker] of placeMarkersRef.current.entries()) {
       if (!nextIds.has(placeId)) {
@@ -52,7 +53,7 @@ export function useNaverPlaceMarkers({
         title: '',
         icon: {
           content: placeMarkerContent(place, place.id === selectedPlaceId),
-          anchor: new mapsApi.Point(15, 15),
+          anchor: markerAnchor,
         },
       });
       mapsApi.Event.addListener(marker, 'click', () => onSelectPlace(place.id));
@@ -70,6 +71,7 @@ export function useNaverPlaceMarkers({
 
     const isPlacesSame = places === prevPlacesRef.current;
     const prevSelectedId = prevSelectedPlaceIdRef.current;
+    const markerAnchor = new mapsApi.Point(15, 15);
 
     if (isPlacesSame && prevSelectedId !== selectedPlaceId) {
       if (prevSelectedId) {
@@ -78,7 +80,7 @@ export function useNaverPlaceMarkers({
         if (prevPlace && prevMarker) {
           prevMarker.setIcon({
             content: placeMarkerContent(prevPlace, false),
-            anchor: new mapsApi.Point(15, 15),
+            anchor: markerAnchor,
           });
           prevMarker.setZIndex(100);
         }
@@ -90,7 +92,7 @@ export function useNaverPlaceMarkers({
         if (nextPlace && nextMarker) {
           nextMarker.setIcon({
             content: placeMarkerContent(nextPlace, true),
-            anchor: new mapsApi.Point(15, 15),
+            anchor: markerAnchor,
           });
           nextMarker.setZIndex(160);
         }
@@ -103,7 +105,7 @@ export function useNaverPlaceMarkers({
         }
         marker.setIcon({
           content: placeMarkerContent(place, place.id === selectedPlaceId),
-          anchor: new mapsApi.Point(15, 15),
+          anchor: markerAnchor,
         });
         marker.setZIndex(place.id === selectedPlaceId ? 160 : 100);
       });

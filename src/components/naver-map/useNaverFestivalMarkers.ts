@@ -30,6 +30,7 @@ export function useNaverFestivalMarkers({
     }
 
     const nextIds = new Set(festivals.filter(hasFestivalCoordinates).map((festival) => festival.id));
+    const markerAnchor = new mapsApi.Point(15, 15);
 
     for (const [festivalId, marker] of festivalMarkersRef.current.entries()) {
       if (!nextIds.has(festivalId)) {
@@ -56,7 +57,7 @@ export function useNaverFestivalMarkers({
         zIndex: festival.id === selectedFestivalId ? 170 : 110,
         icon: {
           content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
-          anchor: new mapsApi.Point(15, 15),
+          anchor: markerAnchor,
         },
       });
       mapsApi.Event.addListener(marker, 'click', () => onSelectFestival(festival.id));
@@ -74,6 +75,7 @@ export function useNaverFestivalMarkers({
 
     const isFestivalsSame = festivals === prevFestivalsRef.current;
     const prevSelectedId = prevSelectedFestivalIdRef.current;
+    const markerAnchor = new mapsApi.Point(15, 15);
 
     if (isFestivalsSame && prevSelectedId !== selectedFestivalId) {
       if (prevSelectedId) {
@@ -82,7 +84,7 @@ export function useNaverFestivalMarkers({
         if (prevFestival && prevMarker) {
           prevMarker.setIcon({
             content: festivalMarkerContent(prevFestival, false),
-            anchor: new mapsApi.Point(15, 15),
+            anchor: markerAnchor,
           });
           prevMarker.setZIndex(110);
         }
@@ -94,7 +96,7 @@ export function useNaverFestivalMarkers({
         if (nextFestival && nextMarker) {
           nextMarker.setIcon({
             content: festivalMarkerContent(nextFestival, true),
-            anchor: new mapsApi.Point(15, 15),
+            anchor: markerAnchor,
           });
           nextMarker.setZIndex(170);
         }
@@ -107,7 +109,7 @@ export function useNaverFestivalMarkers({
         }
         marker.setIcon({
           content: festivalMarkerContent(festival, festival.id === selectedFestivalId),
-          anchor: new mapsApi.Point(15, 15),
+          anchor: markerAnchor,
         });
         marker.setZIndex(festival.id === selectedFestivalId ? 170 : 110);
       });
