@@ -279,4 +279,36 @@
 
 ## 지금 결론
 Worker-first backend SOLID hardening은 1차 마감선까지 도달했습니다.
-다음 리팩터링은 기능 추가와 섞지 말고, 별도 parent issue와 sub-issue를 먼저 만든 뒤 진행합니다.
+레포 전역 하드코딩 수치/좌표 Config hardening은 별도 parent issue #238과 sub-issue #239~#245로 분리해 1.2.9 후보 범위로 추적합니다.
+
+## 5. 하드코딩 수치/좌표 Config hardening
+
+상태: IN PROGRESS
+우선순위: 높음
+성격: 레포 전역 유지보수성 / 품질 게이트
+
+### 배경
+
+PR #237에서 Naver marker 선택 업데이트를 O(N)에서 O(1)로 줄이는 과정에서 marker anchor, z-index, zoom, selection offset, geolocation radius, cache TTL, upload limit, UI layout 수치가 여러 계층에 흩어져 있음을 확인했습니다.
+
+### 목표
+
+의미 있는 숫자, 좌표, 위치, 시간, 용량, 레이아웃 값을 owner-specific config class 또는 CSS token으로 옮기고, 새 raw number가 다시 들어오지 않도록 quality gate를 둡니다.
+
+### 완료 근거
+
+| Issue | PR | Main merge SHA |
+| --- | --- | --- |
+| #239 | #246 | `e70ded4f21bd8f2e9a7fa0644d699e626c9a9897` |
+| #240 | #247, #248 | `141f27d1803e499dc74c49bccff2c272074aae1e`, `2597f982e1bff0ece06e98020f8cd624472721e4` |
+| #241 | #249 | `1e87b79d113e0376345b5985440f8496982b240b` |
+| #242 | #250 | `a20928a7ed64dd88fd91c3b6b9eb85781c1c15be` |
+| #243 | #251 | `3bcbbc4fd9e28d3b70f4899461e95dafbb7eb9e4` |
+| #244 | #252 | `08bfdcfa9071b69bf84e33828b27f608529ea2b7` |
+| #245 | #253 | 문서/릴리즈 traceability PR 진행 중 |
+
+### 기준 문서
+
+- [config-hardening-traceability.md](config-hardening-traceability.md)
+
+다음 리팩터링도 기능 추가와 섞지 말고, 별도 parent issue와 sub-issue를 먼저 만든 뒤 진행합니다.
