@@ -7,6 +7,11 @@
  * Dependencies: Worker environment primitives.
  */
 import type { WorkerEnv } from '../../types';
+import type { WorkerBaseData } from '../../runtime/base-data-contracts';
+
+export interface WorkerStampServiceDeps {
+  loadBaseData(env: WorkerEnv, sessionUserId?: string | null): Promise<WorkerBaseData>;
+}
 
 export interface WorkerStampService {
   handleToggleStamp(request: Request, env: WorkerEnv): Promise<Response>;

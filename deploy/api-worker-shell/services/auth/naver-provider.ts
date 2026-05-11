@@ -17,6 +17,14 @@ interface NaverProfilePayload {
   resultcode?: string;
 }
 
+interface NaverProfileResponse {
+  email?: string | null;
+  id: string;
+  name?: string | null;
+  nickname?: string | null;
+  profile_image?: string | null;
+}
+
 function buildNaverLoginUrl(env: WorkerEnv, state: string) {
   const query = new URLSearchParams({
     response_type: 'code',
@@ -56,7 +64,13 @@ async function fetchNaverProfile(accessToken: string) {
   if (!response.ok || payload.resultcode !== '00' || !payload.response) {
     throw new Error(payload.message || '네이버 사용자 정보를 가져오지 못했어요.');
   }
-  return payload.response;
+  return {
+    id: String(payload.response.id ?? ''),
+    email: typeof payload.response.email === 'string' ? payload.response.email : null,
+    name: typeof payload.response.name === 'string' ? payload.response.name : null,
+    nickname: typeof payload.response.nickname === 'string' ? payload.response.nickname : null,
+    profile_image: typeof payload.response.profile_image === 'string' ? payload.response.profile_image : null,
+  } satisfies NaverProfileResponse;
 }
 
 export { buildNaverLoginUrl, exchangeNaverCode, fetchNaverProfile };
