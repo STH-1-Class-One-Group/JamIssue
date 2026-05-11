@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-004-01-WORKER-RESIDUAL-BOUNDARY-AUDIT`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/273
-PR: `TBD-TSK-004-01-WORKER-RESIDUAL-BOUNDARY-AUDIT`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/279
 Branch: `worker-residual-boundary-audit`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/272
