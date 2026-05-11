@@ -13,17 +13,18 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
 
   function patchReviewCollections(reviewId: string, updater: (review: ReviewSummary) => ReviewSummary) {
     const patchFn = (r: ReviewSummary) => (r.id === reviewId ? toReviewSummary(updater(r)) : r);
+    const hasReview = (r: ReviewSummary) => r.id === reviewId;
 
-    setReviews((current) => current.map(patchFn));
-    setSelectedPlaceReviews((current) => current.map(patchFn));
+    setReviews((current) => (current.some(hasReview) ? current.map(patchFn) : current));
+    setSelectedPlaceReviews((current) => (current.some(hasReview) ? current.map(patchFn) : current));
 
     const existingReview =
-      reviews.find((r) => r.id === reviewId) || selectedPlaceReviews.find((r) => r.id === reviewId);
+      reviews.find(hasReview) || selectedPlaceReviews.find(hasReview);
 
     if (existingReview) {
       const { placeId } = existingReview;
       const collection = placeReviewsCacheRef.current[placeId];
-      if (collection) {
+      if (collection && collection.some(hasReview)) {
         placeReviewsCacheRef.current[placeId] = collection.map(patchFn);
         return;
       }
@@ -32,7 +33,7 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
     const cache = placeReviewsCacheRef.current;
     for (const placeId of Object.keys(cache)) {
       const collection = cache[placeId];
-      if (collection.some((r) => r.id === reviewId)) {
+      if (collection.some(hasReview)) {
         cache[placeId] = collection.map(patchFn);
         break;
       }
