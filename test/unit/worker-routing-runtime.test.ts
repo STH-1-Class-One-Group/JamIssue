@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createRouteRequest } from '../../deploy/api-worker-shell/runtime/routing';
-import type { RouteRuntime, WorkerBaseData, WorkerEnv, WorkerReviewInteractionDeps, WorkerStaticBaseRows } from '../../deploy/api-worker-shell/types';
+import type { RouteRuntime } from '../../deploy/api-worker-shell/runtime/route-runtime';
+import type { WorkerBaseData } from '../../deploy/api-worker-shell/runtime/base-data-contracts';
+import type { WorkerReviewInteractionDeps } from '../../deploy/api-worker-shell/services/review-domain/contracts';
+import type { WorkerEnv } from '../../deploy/api-worker-shell/types';
 
 const apiUrl = 'https://api.daejeon.jamissue.com';
 
@@ -17,12 +20,6 @@ const emptyBaseData: WorkerBaseData = {
   collectedPlaceIds: [],
   stampLogs: [],
   travelSessions: [],
-};
-
-const emptyStaticRows: WorkerStaticBaseRows = {
-  placeRows: [],
-  courseRows: [],
-  coursePlaceRows: [],
 };
 
 function createJsonResponse(route: string, status = 200) {
@@ -63,23 +60,7 @@ function createRuntime(): RouteRuntime {
       loadCommunityRoutes: vi.fn(async () => []),
     },
     loadBaseData: vi.fn(async () => emptyBaseData),
-    loadStaticBaseRows: vi.fn(async () => emptyStaticRows),
-    mapCourses: vi.fn(() => []),
-    mapPlace: vi.fn((row) => ({
-      accentColor: '#FF6B9D',
-      category: String(row.category),
-      district: row.district,
-      heroLabel: row.hero_label,
-      id: String(row.slug),
-      imageUrl: row.image_url ?? null,
-      jamColor: '#FFB3C6',
-      latitude: Number(row.latitude),
-      longitude: Number(row.longitude),
-      name: String(row.name),
-      positionId: String(row.position_id),
-      totalVisitCount: 0,
-      vibeTags: [],
-    })),
+    loadCuratedCourses: vi.fn(async () => []),
     myService: {
       handleMyComments: responseHandler,
       handleMySummary: responseHandler,

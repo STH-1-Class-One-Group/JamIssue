@@ -7,6 +7,16 @@
  * Dependencies: Worker environment primitives.
  */
 import type { WorkerEnv } from '../../types';
+import type { WorkerBaseData, WorkerStaticBaseRows } from '../../runtime/base-data-contracts';
+import type { WorkerJsonRecord } from '../../types';
+import type { WorkerCommunityRouteService } from '../community-domain/contracts';
+
+export interface WorkerMyServiceDeps {
+  communityRouteService: WorkerCommunityRouteService;
+  loadBaseData(env: WorkerEnv, sessionUserId?: string | null): Promise<WorkerBaseData>;
+  loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBaseRows>;
+  loadUserNotifications(env: WorkerEnv, userId: string): Promise<WorkerJsonRecord[]>;
+}
 
 export interface WorkerMyService {
   handleMyComments(request: Request, env: WorkerEnv, url: URL): Promise<Response>;

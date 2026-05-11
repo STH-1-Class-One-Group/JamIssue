@@ -8,5 +8,5 @@ export {
   mapPlace,
   normalizePlaceCategory,
 } from './base-data-mappers';
-export { createLoadBaseData } from './base-data-assembler';
+export { createLoadBaseData, loadCuratedCourses } from './base-data-assembler';
 export { loadBaseDataRows, loadStaticBaseRows } from './base-data-repository';

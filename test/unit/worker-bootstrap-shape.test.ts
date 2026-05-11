@@ -2,15 +2,14 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { mapCourses, mapPlace } from '../../deploy/api-worker-shell/runtime/base-data';
 import { createRouteRequest } from '../../deploy/api-worker-shell/runtime/routing';
+import type { RouteRuntime } from '../../deploy/api-worker-shell/runtime/route-runtime';
 import type {
-  RouteRuntime,
   SupabaseCoursePlaceRow,
   SupabaseCourseRow,
   SupabaseMapRow,
   WorkerBaseData,
-  WorkerEnv,
-  WorkerStaticBaseRows,
-} from '../../deploy/api-worker-shell/types';
+} from '../../deploy/api-worker-shell/runtime/base-data-contracts';
+import type { WorkerEnv } from '../../deploy/api-worker-shell/types';
 
 const apiUrl = 'https://api.daejeon.jamissue.com';
 
@@ -65,12 +64,6 @@ const baseData: WorkerBaseData = {
   travelSessions: [{ id: 'session-1', placeIds: [place.id] }],
 };
 
-const staticRows: WorkerStaticBaseRows = {
-  placeRows: [placeRow],
-  courseRows: [courseRow],
-  coursePlaceRows: [coursePlaceRow],
-};
-
 function createRuntime(): RouteRuntime {
   const responseHandler = vi.fn(async () => new Response(null, { status: 204 }));
 
@@ -89,9 +82,7 @@ function createRuntime(): RouteRuntime {
       loadCommunityRoutes: vi.fn(async () => []),
     },
     loadBaseData: vi.fn(async () => baseData),
-    loadStaticBaseRows: vi.fn(async () => staticRows),
-    mapCourses,
-    mapPlace,
+    loadCuratedCourses: vi.fn(async () => baseData.courses),
     myService: {
       handleMyComments: responseHandler,
       handleMySummary: responseHandler,

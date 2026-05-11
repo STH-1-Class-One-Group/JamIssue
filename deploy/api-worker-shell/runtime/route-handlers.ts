@@ -61,10 +61,7 @@ export async function handleMapBootstrap(request: Request, env: WorkerEnv, runti
 }
 
 export async function handleCuratedCourses(request: Request, env: WorkerEnv, runtime: RouteRuntime) {
-  const { placeRows, courseRows, coursePlaceRows } = await runtime.loadStaticBaseRows(env);
-  const places = placeRows.map((row) => runtime.mapPlace(row));
-  const placesByPositionId = new Map<string, WorkerPlace>(places.map((place) => [place.positionId, place]));
-  return jsonResponse(200, { courses: runtime.mapCourses(courseRows, coursePlaceRows, placesByPositionId) }, env, request);
+  return jsonResponse(200, { courses: await runtime.loadCuratedCourses(env) }, env, request);
 }
 
 export async function handleBootstrap(request: Request, env: WorkerEnv, runtime: RouteRuntime) {

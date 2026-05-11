@@ -17,11 +17,11 @@ import {
   updateRouteLikeCount,
 } from './community-domain/repository';
 import { countUnreadNotifications, createUserNotification, loadNotificationById, publishNotificationEvent } from './notifications';
+import type { WorkerEnv, WorkerJsonRecord } from '../types';
+import type { WorkerCommunityRouteLoadOptions, WorkerCommunityRouteServiceDeps } from './community-domain/contracts';
 
-export function createCommunityRouteService({ loadStaticBaseRows }: {
-  loadStaticBaseRows: (env: any) => Promise<any>;
-}) {
-  async function requireSessionUser(request: Request, env: any) {
+export function createCommunityRouteService({ loadStaticBaseRows }: WorkerCommunityRouteServiceDeps) {
+  async function requireSessionUser(request: Request, env: WorkerEnv) {
     const sessionUser = await readSessionUser(request, env);
     if (!sessionUser) {
       return { response: jsonResponse(401, { detail: '로그인이 필요해요.' }, env, request) };
@@ -29,7 +29,7 @@ export function createCommunityRouteService({ loadStaticBaseRows }: {
     return { sessionUser };
   }
 
-  async function readJsonBody(request: Request): Promise<any> {
+  async function readJsonBody(request: Request): Promise<WorkerJsonRecord> {
     try {
       return await request.json();
     } catch {
@@ -37,7 +37,7 @@ export function createCommunityRouteService({ loadStaticBaseRows }: {
     }
   }
 
-  async function loadCommunityRoutes(env: any, options: any = {}) {
+  async function loadCommunityRoutes(env: WorkerEnv, options: WorkerCommunityRouteLoadOptions = {}) {
     const { sort = 'popular', sessionUserId = null, ownerUserId = null } = options;
     const routeRows = await loadRouteRows(env, { sort, ownerUserId });
     const { routePlaceRows, userRouteLikeRows, userRows } = await loadRouteDetailRows(env, routeRows, sessionUserId);
@@ -53,14 +53,14 @@ export function createCommunityRouteService({ loadStaticBaseRows }: {
     return mapCommunityRoutes(routeRows, routePlaceRows, usersById, placesByPositionId, likedRouteIds);
   }
 
-  async function handleCommunityRoutes(request: Request, env: any, url: URL) {
+  async function handleCommunityRoutes(request: Request, env: WorkerEnv, url: URL) {
     const sessionUser = await readSessionUser(request, env);
     const sort = url.searchParams.get('sort') === 'latest' ? 'latest' : 'popular';
     const routes = await loadCommunityRoutes(env, { sort, sessionUserId: sessionUser?.id ?? null });
     return jsonResponse(200, routes, env, request);
   }
 
-  async function handleMyRoutes(request: Request, env: any) {
+  async function handleMyRoutes(request: Request, env: WorkerEnv) {
     const sessionUser = await readSessionUser(request, env);
     if (!sessionUser) {
       return jsonResponse(401, { detail: '로그인이 필요해요.' }, env, request);
@@ -68,7 +68,7 @@ export function createCommunityRouteService({ loadStaticBaseRows }: {
     return jsonResponse(200, await loadCommunityRoutes(env, { ownerUserId: sessionUser.id, sessionUserId: sessionUser.id }), env, request);
   }
 
-  async function handleCreateUserRoute(request: Request, env: any) {
+  async function handleCreateUserRoute(request: Request, env: WorkerEnv) {
     const sessionResult = await requireSessionUser(request, env);
     if (sessionResult.response) {
       return sessionResult.response;
@@ -149,7 +149,7 @@ export function createCommunityRouteService({ loadStaticBaseRows }: {
     return jsonResponse(201, createdRoute, env, request);
   }
 
-  async function handleToggleCommunityRouteLike(request: Request, env: any, routeId: string) {
+  async function handleToggleCommunityRouteLike(request: Request, env: WorkerEnv, routeId: string) {
     const sessionResult = await requireSessionUser(request, env);
     if (sessionResult.response) {
       return sessionResult.response;

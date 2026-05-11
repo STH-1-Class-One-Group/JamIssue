@@ -6,15 +6,7 @@
  * Non-Goals: This file does not implement services, map database rows, or change external REST behavior.
  * Dependencies: Worker runtime DTOs, service-owned contracts, and review interaction dependency contracts.
  */
-import type {
-  SupabaseCoursePlaceRow,
-  SupabaseCourseRow,
-  SupabaseMapRow,
-  WorkerBaseData,
-  WorkerCourse,
-  WorkerPlace,
-  WorkerStaticBaseRows,
-} from './base-data-contracts';
+import type { WorkerBaseData, WorkerCourse } from './base-data-contracts';
 import type { WorkerEnv } from '../types';
 import type { WorkerAdminService } from '../services/admin-domain/contracts';
 import type { WorkerCommunityRouteService } from '../services/community-domain/contracts';
@@ -27,13 +19,7 @@ export interface RouteRuntime {
   buildReviewInteractionDeps: () => WorkerReviewInteractionDeps;
   communityRouteService: WorkerCommunityRouteService;
   loadBaseData: (env: WorkerEnv, sessionUserId?: string | null) => Promise<WorkerBaseData>;
-  loadStaticBaseRows: (env: WorkerEnv) => Promise<WorkerStaticBaseRows>;
-  mapCourses: (
-    courseRows: SupabaseCourseRow[],
-    coursePlaceRows: SupabaseCoursePlaceRow[],
-    placesByPositionId: Map<string, WorkerPlace>,
-  ) => WorkerCourse[];
-  mapPlace: (row: SupabaseMapRow) => WorkerPlace;
+  loadCuratedCourses: (env: WorkerEnv) => Promise<WorkerCourse[]>;
   myService: WorkerMyService;
   reviewReadService: WorkerReviewReadService;
   stampService: WorkerStampService;

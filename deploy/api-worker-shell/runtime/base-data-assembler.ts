@@ -1,5 +1,5 @@
 import type { WorkerReviewReadService } from '../services/review-domain/contracts';
-import type { WorkerBaseData, WorkerPlace } from './base-data-contracts';
+import type { WorkerBaseData, WorkerCourse, WorkerPlace } from './base-data-contracts';
 import type { WorkerEnv, WorkerJsonRecord } from '../types';
 import {
   buildPlaceVisitCountMap,
@@ -8,7 +8,14 @@ import {
   mapCourses,
   mapPlace,
 } from './base-data-mappers';
-import { loadBaseDataRows } from './base-data-repository';
+import { loadBaseDataRows, loadStaticBaseRows } from './base-data-repository';
+
+export async function loadCuratedCourses(env: WorkerEnv): Promise<WorkerCourse[]> {
+  const { placeRows, courseRows, coursePlaceRows } = await loadStaticBaseRows(env);
+  const places = placeRows.map((row) => mapPlace(row));
+  const placesByPositionId = new Map<string, WorkerPlace>(places.map((place) => [place.positionId, place]));
+  return mapCourses(courseRows, coursePlaceRows, placesByPositionId);
+}
 
 export function createLoadBaseData(reviewReadService: WorkerReviewReadService) {
   return async function loadBaseData(env: WorkerEnv, sessionUserId: string | null = null): Promise<WorkerBaseData> {

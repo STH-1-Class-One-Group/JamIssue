@@ -47,6 +47,11 @@ describe('worker source quality gates', () => {
     expect(routingSource).toContain("import type { RouteRuntime } from './route-runtime';");
     expect(routingSource).not.toContain('interface RouteRuntime');
     expect(runtimeContractSource).toContain('export interface RouteRuntime');
+    expect(runtimeContractSource).toContain('loadCuratedCourses');
+    expect(runtimeContractSource).not.toContain('Supabase');
+    expect(runtimeContractSource).not.toContain('loadStaticBaseRows');
+    expect(runtimeContractSource).not.toContain('mapCourses');
+    expect(runtimeContractSource).not.toContain('mapPlace');
     expect(globalTypesSource).not.toContain('interface RouteRuntime');
     expect(globalTypesSource).not.toContain('WorkerReviewReadService');
     expect(globalTypesSource).not.toContain('WorkerReviewInteractionDeps');
@@ -108,5 +113,32 @@ describe('worker source quality gates', () => {
     expect(readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/admin-domain/repository.ts'), 'utf8')).toContain('supabaseRequest');
     expect(readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/community-domain/repository.ts'), 'utf8')).toContain('supabaseRequest');
     expect(readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/my-domain/repository.ts'), 'utf8')).toContain('supabaseRequest');
+  });
+
+  it('keeps Worker tests from importing local contracts from the global type barrel', () => {
+    const testImportSource = execFileSync('git', ['grep', '-n', 'deploy/api-worker-shell/types', '--', 'test/unit'], {
+      cwd: workspaceRoot,
+      encoding: 'utf8',
+    })
+      .split(/\r?\n/)
+      .filter((line) => line.includes('import type'))
+      .join('\n');
+
+    expect(testImportSource).not.toMatch(
+      /RouteRuntime|WorkerBaseData|WorkerStaticBaseRows|WorkerReviewInteractionDeps|Supabase[A-Za-z]+Row/,
+    );
+  });
+
+  it('keeps Worker service constructor dependency contracts explicit', () => {
+    const serviceFiles = [
+      'deploy/api-worker-shell/services/reviews.ts',
+      'deploy/api-worker-shell/services/my.ts',
+      'deploy/api-worker-shell/services/community-routes.ts',
+    ];
+
+    for (const file of serviceFiles) {
+      const source = readFileSync(join(workspaceRoot, file), 'utf8');
+      expect(source, file).not.toMatch(/export function create[A-Za-z]+Service\([^)]*\bany\b/s);
+    }
   });
 });

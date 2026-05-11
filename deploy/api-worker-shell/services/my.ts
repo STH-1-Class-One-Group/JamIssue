@@ -4,9 +4,16 @@ import { WorkerPaginationRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
 import { mapMyComments } from './my-domain/mapper';
 import { loadFeedsForCommentRows, loadMyCommentRows, loadMySummaryCommentRows } from './my-domain/repository';
+import type { WorkerEnv } from '../types';
+import type { WorkerMyServiceDeps } from './my-domain/contracts';
 
-export function createMyService({ communityRouteService, loadBaseData, loadStaticBaseRows, loadUserNotifications }: any) {
-  async function loadMyCommentPageData(env: any, userId: string, options: any = {}) {
+interface WorkerMyCommentPageOptions {
+  cursor?: string | null;
+  limit?: number;
+}
+
+export function createMyService({ communityRouteService, loadBaseData, loadStaticBaseRows, loadUserNotifications }: WorkerMyServiceDeps) {
+  async function loadMyCommentPageData(env: WorkerEnv, userId: string, options: WorkerMyCommentPageOptions = {}) {
     const { cursor = null, limit = WorkerPaginationRuntimeConfig.myCommentsPageSize } = options;
     const commentRows = await loadMyCommentRows(env, userId, cursor, limit);
     const nextCursor = commentRows.length > limit ? String(commentRows[limit].created_at) : null;
@@ -21,7 +28,7 @@ export function createMyService({ communityRouteService, loadBaseData, loadStati
     return { items: mapMyComments(pageRows, feedRows ?? [], placesByPositionId), nextCursor };
   }
 
-  async function handleMyComments(request: Request, env: any, url: URL) {
+  async function handleMyComments(request: Request, env: WorkerEnv, url: URL) {
     const sessionUser = await readSessionUser(request, env);
     if (!sessionUser) {
       return jsonResponse(401, { detail: '로그인이 필요해요.' }, env, request);
@@ -33,7 +40,7 @@ export function createMyService({ communityRouteService, loadBaseData, loadStati
     return jsonResponse(200, payload, env, request);
   }
 
-  async function handleMySummary(request: Request, env: any) {
+  async function handleMySummary(request: Request, env: WorkerEnv) {
     const sessionUser = await readSessionUser(request, env);
     if (!sessionUser) {
       return jsonResponse(401, { detail: '로그인이 필요해요.' }, env, request);
@@ -45,7 +52,7 @@ export function createMyService({ communityRouteService, loadBaseData, loadStati
     const reviewById = new Map(baseData.reviews.map((review) => [String(review.id), review]));
     const notifications = await loadUserNotifications(env, sessionUser.id);
     const myCommentRows = await loadMySummaryCommentRows(env, sessionUser.id);
-    const placesByPositionId = new Map(baseData.places.map((place: any) => [String(place.positionId), { id: place.id, name: place.name }]));
+    const placesByPositionId = new Map(baseData.places.map((place) => [String(place.positionId), { id: place.id, name: place.name }]));
     const myComments = mapMyComments(myCommentRows ?? [], reviewById, placesByPositionId);
     const collectedSet = new Set(baseData.collectedPlaceIds);
     const visitedPlaces = baseData.places.filter((place) => collectedSet.has(place.id)).map(({ positionId, ...place }) => place);
