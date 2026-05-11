@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-004-04-WORKER-SERVICE-HANDLER-CONTRACTS`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/276
-PR: `TBD-TSK-004-04-WORKER-SERVICE-HANDLER-CONTRACTS`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/282
 Branch: `worker-service-handler-contracts`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/272
