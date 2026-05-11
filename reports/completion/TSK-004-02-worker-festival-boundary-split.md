@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-004-02-WORKER-FESTIVAL-BOUNDARY-SPLIT`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/274
-PR: `TBD-TSK-004-02-WORKER-FESTIVAL-BOUNDARY-SPLIT`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/280
 Branch: `worker-festival-boundary-split`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/272
