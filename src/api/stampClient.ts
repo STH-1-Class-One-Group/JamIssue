@@ -1,4 +1,4 @@
-import type { StampClaimRequest, StampState } from '../types';
+import type { StampState } from '../types';
 import { fetchJson, invalidateApiCache } from './core';
 
 export async function claimStamp(payload: StampClaimRequest) {
@@ -10,3 +10,10 @@ export async function claimStamp(payload: StampClaimRequest) {
   return response;
 }
 
+
+
+export interface StampClaimRequest {
+  placeId: string;
+  latitude: number;
+  longitude: number;
+}

@@ -1,6 +1,8 @@
-import type { BootstrapResponse, CourseBootstrapResponse, MapBootstrapResponse } from '../types';
+import type { Place, Course } from '../types/core';
+import type { StampState } from '../types/review';
+import type { AuthSessionResponse } from './authClient';
+import type { BootstrapResponse, FestivalItem } from '../types';
 import type { PublicEventBannerResponse } from '../publicEventTypes';
-import type { FestivalItem } from '../types';
 import { ApiError, fetchJson } from './core';
 
 export function getBootstrap() {
@@ -44,3 +46,17 @@ export function getFestivals() {
   return fetchJson<FestivalItem[]>('/api/festivals');
 }
 
+
+
+export interface MapBootstrapResponse {
+  auth: AuthSessionResponse;
+  places: Place[];
+  stamps: StampState;
+  hasRealData: boolean;
+}
+
+
+
+export interface CourseBootstrapResponse {
+  courses: Course[];
+}

@@ -1,4 +1,4 @@
-import type { AuthSessionResponse, ProfileUpdateRequest, ProviderKey } from '../types';
+import type { ProviderKey, SessionUser, AuthProvider } from '../types';
 import { fetchJson, getApiBaseUrl, invalidateApiCache } from './core';
 
 export function getProviderLoginUrl(provider: ProviderKey, nextUrl: string, mode: 'login' | 'link' = 'login') {
@@ -22,3 +22,16 @@ export async function updateProfile(payload: ProfileUpdateRequest) {
   return response;
 }
 
+
+
+export interface AuthSessionResponse {
+  isAuthenticated: boolean;
+  user: SessionUser | null;
+  providers: AuthProvider[];
+}
+
+
+
+export interface ProfileUpdateRequest {
+  nickname: string;
+}

@@ -1,14 +1,6 @@
+import type { ReviewMood } from '../types/core';
 import { prepareReviewImageUpload } from '../lib/imageUpload';
-import type {
-  Comment,
-  CommentCreateRequest,
-  Review,
-  ReviewCreateRequest,
-  ReviewFeedPageResponse,
-  ReviewLikeResponse,
-  ReviewUpdateRequest,
-  UploadResponse,
-} from '../types';
+import type { Comment, Review,  } from '../types';
 import { fetchJson, invalidateApiCache } from './core';
 
 export function getReviews(params?: { placeId?: string; userId?: string }) {
@@ -116,3 +108,51 @@ export async function uploadReviewImage(file: File) {
   });
 }
 
+
+
+export interface UploadResponse {
+  url: string;
+  fileName: string;
+  contentType: string;
+  thumbnailUrl?: string | null;
+}
+
+
+
+export interface ReviewFeedPageResponse {
+  items: Review[];
+  nextCursor: string | null;
+}
+
+
+
+export interface ReviewLikeResponse {
+  reviewId: string;
+  likeCount: number;
+  likedByMe: boolean;
+}
+
+
+
+export interface ReviewCreateRequest {
+  placeId: string;
+  stampId: string;
+  body: string;
+  mood: ReviewMood;
+  imageUrl?: string | null;
+}
+
+
+
+export interface ReviewUpdateRequest {
+  body: string;
+  mood: ReviewMood;
+  imageUrl?: string | null;
+}
+
+
+
+export interface CommentCreateRequest {
+  body: string;
+  parentId?: string | null;
+}

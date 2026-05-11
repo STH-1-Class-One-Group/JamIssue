@@ -17,12 +17,3 @@ export interface AuthProvider {
   loginUrl: string | null;
 }
 
-export interface AuthSessionResponse {
-  isAuthenticated: boolean;
-  user: SessionUser | null;
-  providers: AuthProvider[];
-}
-
-export interface ProfileUpdateRequest {
-  nickname: string;
-}

@@ -14,11 +14,6 @@ export interface MyComment {
   reviewBody: string;
 }
 
-export interface MyCommentPageResponse {
-  items: MyComment[];
-  nextCursor: string | null;
-}
-
 export interface MyStats {
   reviewCount: number;
   stampCount: number;
@@ -61,16 +56,3 @@ export interface MyPageResponse {
   routes: UserRoute[];
 }
 
-export interface NotificationReadResponse {
-  notificationId: string;
-  read: boolean;
-}
-
-export interface NotificationDeleteResponse {
-  notificationId: string;
-  deleted: boolean;
-}
-
-export interface NotificationRealtimeChannelResponse {
-  topic: string;
-}

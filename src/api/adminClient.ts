@@ -1,4 +1,4 @@
-import type { AdminPlace, AdminSummaryResponse, PlaceVisibilityRequest, PublicImportResponse } from '../types';
+import type { AdminPlace, AdminSummaryResponse } from '../types';
 import { fetchJson, invalidateApiCache } from './core';
 
 export function getAdminSummary() {
@@ -22,3 +22,16 @@ export async function importPublicData() {
   return response;
 }
 
+
+
+export interface PlaceVisibilityRequest {
+  isActive?: boolean;
+  isManualOverride?: boolean;
+}
+
+
+
+export interface PublicImportResponse {
+  importedPlaces: number;
+  importedCourses: number;
+}

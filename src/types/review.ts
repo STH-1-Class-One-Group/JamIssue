@@ -34,11 +34,6 @@ export interface Review {
   comments: Comment[];
 }
 
-export interface ReviewFeedPageResponse {
-  items: Review[];
-  nextCursor: string | null;
-}
-
 export interface StampLog {
   id: string;
   placeId: string;
@@ -65,12 +60,6 @@ export interface TravelSession {
   coverPlaceId: string | null;
 }
 
-export interface ReviewLikeResponse {
-  reviewId: string;
-  likeCount: number;
-  likedByMe: boolean;
-}
-
 export interface UserRoute {
   id: string;
   authorId: string;
@@ -87,12 +76,6 @@ export interface UserRoute {
   travelSessionId: string | null;
 }
 
-export interface UserRouteLikeResponse {
-  routeId: string;
-  likeCount: number;
-  likedByMe: boolean;
-}
-
 export interface StampState {
   collectedPlaceIds: string[];
   logs: StampLog[];
@@ -100,7 +83,7 @@ export interface StampState {
 }
 
 export interface BootstrapResponse {
-  auth: import('./auth').AuthSessionResponse;
+  auth: import('../api/authClient').AuthSessionResponse;
   places: Place[];
   reviews: Review[];
   courses: Course[];
@@ -108,46 +91,3 @@ export interface BootstrapResponse {
   hasRealData: boolean;
 }
 
-export interface MapBootstrapResponse {
-  auth: import('./auth').AuthSessionResponse;
-  places: Place[];
-  stamps: StampState;
-  hasRealData: boolean;
-}
-
-export interface CourseBootstrapResponse {
-  courses: Course[];
-}
-
-export interface ReviewCreateRequest {
-  placeId: string;
-  stampId: string;
-  body: string;
-  mood: ReviewMood;
-  imageUrl?: string | null;
-}
-
-export interface ReviewUpdateRequest {
-  body: string;
-  mood: ReviewMood;
-  imageUrl?: string | null;
-}
-
-export interface CommentCreateRequest {
-  body: string;
-  parentId?: string | null;
-}
-
-export interface UserRouteCreateRequest {
-  title: string;
-  description: string;
-  mood: string;
-  travelSessionId: string;
-  isPublic?: boolean;
-}
-
-export interface StampClaimRequest {
-  placeId: string;
-  latitude: number;
-  longitude: number;
-}

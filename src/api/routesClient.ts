@@ -1,4 +1,4 @@
-import type { CommunityRouteSort, UserRoute, UserRouteCreateRequest, UserRouteLikeResponse } from '../types';
+import type { CommunityRouteSort, UserRoute } from '../types';
 import { fetchJson, invalidateApiCache } from './core';
 
 export function getCommunityRoutes(sort: CommunityRouteSort = 'popular') {
@@ -22,3 +22,20 @@ export async function toggleCommunityRouteLike(routeId: string) {
   return response;
 }
 
+
+
+export interface UserRouteLikeResponse {
+  routeId: string;
+  likeCount: number;
+  likedByMe: boolean;
+}
+
+
+
+export interface UserRouteCreateRequest {
+  title: string;
+  description: string;
+  mood: string;
+  travelSessionId: string;
+  isPublic?: boolean;
+}

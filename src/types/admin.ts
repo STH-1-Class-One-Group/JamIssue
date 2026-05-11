@@ -23,23 +23,6 @@ export interface AdminSummaryResponse {
   places: AdminPlace[];
 }
 
-export interface PlaceVisibilityRequest {
-  isActive?: boolean;
-  isManualOverride?: boolean;
-}
-
-export interface UploadResponse {
-  url: string;
-  fileName: string;
-  contentType: string;
-  thumbnailUrl?: string | null;
-}
-
-export interface PublicImportResponse {
-  importedPlaces: number;
-  importedCourses: number;
-}
-
 export interface DiscoverySearchResponse {
   query: string;
   places: Place[];

@@ -1,11 +1,5 @@
-import type {
-  MyCommentPageResponse,
-  MyPageResponse,
-  NotificationDeleteResponse,
-  NotificationReadResponse,
-  NotificationRealtimeChannelResponse,
-  UserNotification,
-} from '../types';
+import type { MyComment } from '../types/my-page';
+import type { MyPageResponse, UserNotification,  } from '../types';
 import { fetchJson, invalidateApiCache } from './core';
 
 export function getMySummary() {
@@ -56,3 +50,29 @@ export function getMyCommentsPage(params?: { cursor?: string | null; limit?: num
   return fetchJson<MyCommentPageResponse>(`/api/my/comments${query ? `?${query}` : ''}`);
 }
 
+
+
+export interface MyCommentPageResponse {
+  items: MyComment[];
+  nextCursor: string | null;
+}
+
+
+
+export interface NotificationReadResponse {
+  notificationId: string;
+  read: boolean;
+}
+
+
+
+export interface NotificationDeleteResponse {
+  notificationId: string;
+  deleted: boolean;
+}
+
+
+
+export interface NotificationRealtimeChannelResponse {
+  topic: string;
+}
