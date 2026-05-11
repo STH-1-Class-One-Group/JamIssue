@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "3bcbbc4fd9e28d3b70f4899461e95dafbb7eb9e4",
+  "generatedFrom": "5fddc64d0f8b8a1f94f3505d2fb911958aa49a35",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -858,7 +858,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 10,
+          "line": 12,
           "column": 60
         }
       ]
@@ -1063,32 +1063,32 @@
       "examples": [
         {
           "value": "2",
-          "line": 23,
+          "line": 24,
           "column": 37
         },
         {
           "value": "6",
-          "line": 25,
+          "line": 26,
           "column": 37
         },
         {
           "value": "2",
-          "line": 104,
+          "line": 105,
           "column": 21
         },
         {
           "value": "8",
-          "line": 106,
+          "line": 107,
           "column": 27
         },
         {
           "value": "0",
-          "line": 134,
+          "line": 135,
           "column": 20
         },
         {
           "value": "1",
-          "line": 141,
+          "line": 142,
           "column": 60
         }
       ]
@@ -1168,7 +1168,7 @@
       "examples": [
         {
           "value": "500",
-          "line": 83,
+          "line": 82,
           "column": 27
         }
       ]
@@ -1248,12 +1248,12 @@
       "examples": [
         {
           "value": "0",
-          "line": 65,
+          "line": 75,
           "column": 39
         },
         {
           "value": "0",
-          "line": 77,
+          "line": 87,
           "column": 25
         }
       ]
@@ -1268,12 +1268,12 @@
       "examples": [
         {
           "value": "0",
-          "line": 33,
+          "line": 42,
           "column": 130
         },
         {
           "value": "0",
-          "line": 42,
+          "line": 51,
           "column": 108
         }
       ]
@@ -1288,32 +1288,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 22,
+          "line": 26,
           "column": 89
         },
         {
           "value": "1",
-          "line": 22,
+          "line": 26,
           "column": 115
         },
         {
           "value": "0",
-          "line": 29,
+          "line": 33,
           "column": 27
         },
         {
           "value": "0",
-          "line": 31,
+          "line": 35,
           "column": 19
         },
         {
           "value": "0",
-          "line": 32,
+          "line": 36,
           "column": 50
         },
         {
           "value": "1",
-          "line": 34,
+          "line": 38,
           "column": 37
         }
       ]
@@ -1328,12 +1328,12 @@
       "examples": [
         {
           "value": "0",
-          "line": 18,
+          "line": 27,
           "column": 14
         },
         {
           "value": "0",
-          "line": 127,
+          "line": 136,
           "column": 37
         }
       ]
@@ -1363,32 +1363,32 @@
       "examples": [
         {
           "value": "200",
-          "line": 14,
+          "line": 16,
           "column": 5
         },
         {
           "value": "200",
-          "line": 45,
+          "line": 47,
           "column": 5
         },
         {
           "value": "0",
-          "line": 54,
+          "line": 56,
           "column": 44
         },
         {
           "value": "200",
-          "line": 65,
+          "line": 64,
           "column": 23
         },
         {
           "value": "200",
-          "line": 72,
+          "line": 71,
           "column": 5
         },
         {
           "value": "0",
-          "line": 83,
+          "line": 82,
           "column": 45
         }
       ]
@@ -1403,32 +1403,32 @@
       "examples": [
         {
           "value": "1",
-          "line": 74,
+          "line": 75,
           "column": 116
         },
         {
           "value": "1",
-          "line": 75,
+          "line": 76,
           "column": 92
         },
         {
           "value": "1",
-          "line": 76,
+          "line": 77,
           "column": 93
         },
         {
           "value": "1",
-          "line": 82,
+          "line": 83,
           "column": 87
         },
         {
           "value": "200",
-          "line": 83,
+          "line": 84,
           "column": 29
         },
         {
           "value": "1",
-          "line": 86,
+          "line": 87,
           "column": 102
         }
       ]
@@ -1638,32 +1638,32 @@
       "examples": [
         {
           "value": "1",
-          "line": 18,
+          "line": 19,
           "column": 71
         },
         {
           "value": "0",
-          "line": 20,
+          "line": 21,
           "column": 17
         },
         {
           "value": "1",
-          "line": 26,
+          "line": 27,
           "column": 117
         },
         {
           "value": "0",
-          "line": 28,
+          "line": 29,
           "column": 17
         },
         {
           "value": "2",
-          "line": 50,
+          "line": 51,
           "column": 27
         },
         {
           "value": "400",
-          "line": 52,
+          "line": 53,
           "column": 20
         }
       ]
@@ -1765,41 +1765,41 @@
     },
     {
       "path": "deploy/api-worker-shell/services/festivals.ts",
-      "count": 57,
+      "count": 8,
       "owner": "worker-backend",
       "category": "worker-runtime-limit-baseline",
       "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
       "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
       "examples": [
         {
-          "value": "0",
-          "line": 10,
-          "column": 35
+          "value": "1",
+          "line": 26,
+          "column": 24
         },
         {
-          "value": "0",
-          "line": 10,
-          "column": 46
+          "value": "200",
+          "line": 40,
+          "column": 23
         },
         {
-          "value": "0",
-          "line": 14,
-          "column": 259
+          "value": "200",
+          "line": 47,
+          "column": 23
         },
         {
-          "value": "2",
-          "line": 18,
-          "column": 170
+          "value": "503",
+          "line": 56,
+          "column": 25
         },
         {
-          "value": "00",
-          "line": 20,
-          "column": 70
+          "value": "401",
+          "line": 61,
+          "column": 25
         },
         {
-          "value": "00",
-          "line": 20,
-          "column": 73
+          "value": "400",
+          "line": 66,
+          "column": 25
         }
       ]
     },
@@ -1828,32 +1828,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 13,
+          "line": 20,
           "column": 40
         },
         {
           "value": "0",
-          "line": 15,
+          "line": 22,
           "column": 29
         },
         {
           "value": "401",
-          "line": 27,
+          "line": 34,
           "column": 27
         },
         {
           "value": "200",
-          "line": 33,
+          "line": 40,
           "column": 25
         },
         {
           "value": "401",
-          "line": 39,
+          "line": 46,
           "column": 27
         },
         {
           "value": "200",
-          "line": 54,
+          "line": 61,
           "column": 7
         }
       ]
@@ -1988,32 +1988,32 @@
       "examples": [
         {
           "value": "9",
-          "line": 22,
+          "line": 23,
           "column": 62
         },
         {
           "value": "9_",
-          "line": 40,
+          "line": 41,
           "column": 67
         },
         {
           "value": "401",
-          "line": 71,
+          "line": 72,
           "column": 37
         },
         {
           "value": "400",
-          "line": 85,
+          "line": 86,
           "column": 25
         },
         {
           "value": "400",
-          "line": 88,
+          "line": 89,
           "column": 25
         },
         {
           "value": "5242880",
-          "line": 90,
+          "line": 91,
           "column": 66
         }
       ]
@@ -2028,32 +2028,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 51,
+          "line": 60,
           "column": 39
         },
         {
           "value": "1",
-          "line": 67,
+          "line": 76,
           "column": 152
         },
         {
           "value": "0",
-          "line": 74,
+          "line": 83,
           "column": 37
         },
         {
           "value": "0",
-          "line": 98,
+          "line": 107,
           "column": 39
         },
         {
           "value": "1",
-          "line": 112,
+          "line": 121,
           "column": 142
         },
         {
           "value": "0",
-          "line": 114,
+          "line": 123,
           "column": 36
         }
       ]
@@ -3033,7 +3033,7 @@
       "examples": [
         {
           "value": "1",
-          "line": 61,
+          "line": 62,
           "column": 22
         }
       ]
@@ -3103,7 +3103,7 @@
       "examples": [
         {
           "value": "72",
-          "line": 54,
+          "line": 55,
           "column": 17
         }
       ]
@@ -3423,12 +3423,12 @@
       "examples": [
         {
           "value": "0",
-          "line": 44,
+          "line": 45,
           "column": 26
         },
         {
           "value": "0",
-          "line": 68,
+          "line": 69,
           "column": 41
         }
       ]
@@ -3528,17 +3528,17 @@
       "examples": [
         {
           "value": "0",
-          "line": 25,
+          "line": 26,
           "column": 45
         },
         {
           "value": "1",
-          "line": 26,
+          "line": 27,
           "column": 72
         },
         {
           "value": "24",
-          "line": 29,
+          "line": 30,
           "column": 57
         }
       ]
@@ -4143,12 +4143,12 @@
       "examples": [
         {
           "value": "1",
-          "line": 55,
+          "line": 56,
           "column": 34
         },
         {
           "value": "1",
-          "line": 111,
+          "line": 112,
           "column": 66
         }
       ]
@@ -4163,7 +4163,7 @@
       "examples": [
         {
           "value": "1",
-          "line": 73,
+          "line": 76,
           "column": 93
         }
       ]
@@ -4208,17 +4208,17 @@
       "examples": [
         {
           "value": "1",
-          "line": 52,
+          "line": 54,
           "column": 55
         },
         {
           "value": "0",
-          "line": 81,
+          "line": 83,
           "column": 66
         },
         {
           "value": "1",
-          "line": 81,
+          "line": 83,
           "column": 71
         }
       ]
@@ -4283,7 +4283,7 @@
       "examples": [
         {
           "value": "1",
-          "line": 60,
+          "line": 61,
           "column": 63
         }
       ]
@@ -4313,7 +4313,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 78,
+          "line": 71,
           "column": 56
         }
       ]
