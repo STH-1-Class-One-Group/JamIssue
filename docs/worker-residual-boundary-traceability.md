@@ -5,7 +5,7 @@ Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/272
 Status: `implementation-complete-docs-in-progress`
 Release candidate: `1.2.10`
 
-이 문서는 1.2.9 이후 실제 Worker 코드에서 확인된 잔여 결합 지점을 어떤 PR로 제거했는지 추적합니다. 평가 문구를 맞추기 위한 문서가 아니라, `festivals.ts` 책임 과밀, mapper 계층의 `any` row 계약, handler contract 미정형화를 코드 기준으로 줄인 근거를 기록합니다.
+이 문서는 1.2.9 이후 실제 Worker 코드에서 확인된 잔여 결합 지점을 어떤 PR로 제거했는지 추적합니다. 기록 대상은 `festivals.ts` 책임 과밀, mapper 계층의 `any` row 계약, handler contract 미정형화와 이를 줄인 검증 근거입니다.
 
 ## 변경 금지 범위
 
