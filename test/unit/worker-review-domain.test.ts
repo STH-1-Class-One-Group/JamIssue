@@ -5,7 +5,8 @@ import {
   handleToggleReviewLike,
   handleUpdateReview,
 } from '../../deploy/api-worker-shell/services/review-interactions';
-import type { WorkerEnv, WorkerReviewInteractionDeps, WorkerSessionUser } from '../../deploy/api-worker-shell/types';
+import type { WorkerReviewInteractionDeps } from '../../deploy/api-worker-shell/services/review-domain/contracts';
+import type { WorkerEnv, WorkerSessionUser } from '../../deploy/api-worker-shell/types';
 
 const supabaseMock = vi.hoisted(() => ({
   encodeFilterValue: (value: unknown) => encodeURIComponent(String(value)),

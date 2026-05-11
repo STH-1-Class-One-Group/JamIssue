@@ -6,9 +6,25 @@
  * Non-Goals: This file does not perform persistence, notification publishing, or DTO mapping.
  * Dependencies: Worker environment primitives and current Worker read-model DTOs.
  */
-import type { WorkerBaseData, WorkerPlace } from '../../runtime/base-data-contracts';
+import type { SupabaseMapRow, WorkerBaseData, WorkerPlace, WorkerStaticBaseRows } from '../../runtime/base-data-contracts';
 import type { WorkerEnv, WorkerJsonRecord, WorkerSessionUser } from '../../types';
 import type { WorkerReview } from './read-model';
+
+export interface WorkerReviewReadServiceDeps {
+  formatVisitLabel: (visitNumber: unknown) => string;
+  loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBaseRows>;
+  mapPlace(row: SupabaseMapRow): WorkerPlace;
+}
+
+export interface WorkerReviewDataFilters {
+  placeId?: string;
+  userId?: string;
+}
+
+export interface WorkerReviewPageOptions {
+  cursor?: string | null;
+  limit?: number;
+}
 
 export interface WorkerReviewReadService {
   handleReviewFeed(request: Request, env: WorkerEnv, url: URL): Promise<Response>;
