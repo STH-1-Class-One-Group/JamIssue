@@ -19,7 +19,7 @@
 3. FastAPI repository/service 예외 계약 정리
 4. Worker route/data/security 경계 분리
 5. `repository_normalized.py` 잔여 facade 축소
-6. 1.2.9 refactoring candidate 추적성 정리
+6. 1.2.9 refactoring release 추적성 정리
 
 ## 1. 운영 스모크 테스트 자동화
 
@@ -227,7 +227,7 @@
 
 상태: DONE
 우선순위: 높음
-성격: 1.2.9 refactoring candidate / SOLID / interface locality
+성격: 1.2.9 refactoring release / SOLID / interface locality
 
 ### 배경
 1.2.9의 config hardening 이후에도 내부 구현 인터페이스 일부가 중앙 barrel 또는 compatibility facade에 남아 있었습니다. 이 상태에서는 실제 소유 모듈과 타입 정의 위치가 멀어져 변경 영향 범위를 판단하기 어렵습니다.
