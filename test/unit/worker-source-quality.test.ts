@@ -7,6 +7,11 @@ import { describe, expect, it } from 'vitest';
 const workspaceRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const maxWorkerLineLength = 3_500;
 
+function countSourceMatches(file: string, pattern: RegExp): number {
+  const source = readFileSync(join(workspaceRoot, file), 'utf8');
+  return [...source.matchAll(pattern)].length;
+}
+
 function collectTrackedWorkerTsFiles(): string[] {
   const output = execFileSync(
     'git',
@@ -36,6 +41,112 @@ describe('worker source quality gates', () => {
         expect(lines.length, `${relativePath} should stay reviewable`).toBeGreaterThan(1);
       }
       expect(longestLine, `${relativePath} has a suspiciously long line`).toBeLessThanOrEqual(maxWorkerLineLength);
+    }
+  });
+
+  it('keeps the TSK-004 residual Worker boundary audit from worsening before child splits', () => {
+    const residualBoundaryBaseline = [
+      {
+        file: 'deploy/api-worker-shell/services/festivals.ts',
+        limits: {
+          any: 3,
+          envAny: 1,
+          anyArray: 1,
+          supabaseRequest: 9,
+          exportedHandlers: 3,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/admin.ts',
+        limits: {
+          any: 6,
+          envAny: 5,
+          categoryAny: 1,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/notifications.ts',
+        limits: {
+          supabaseRequest: 11,
+          exportedHandlers: 5,
+          implicitEnvSignatures: 10,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/stamps.ts',
+        limits: {
+          supabaseRequest: 10,
+          implicitRequestBodyReaders: 1,
+          implicitEnvSignatures: 1,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/auth.ts',
+        limits: {
+          promiseAny: 2,
+          exportedHandlers: 8,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/review-interactions.ts',
+        limits: {
+          promiseAny: 1,
+          exportedHandlers: 8,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/review-domain/mapper.ts',
+        limits: {
+          any: 24,
+          mapAny: 4,
+          anyArray: 9,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/community-domain/mapper.ts',
+        limits: {
+          any: 7,
+          mapAny: 2,
+          anyArray: 2,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/my-domain/mapper.ts',
+        limits: {
+          any: 5,
+          mapAny: 1,
+          anyArray: 1,
+        },
+      },
+    ];
+
+    for (const { file, limits } of residualBoundaryBaseline) {
+      const expectLimit = (key: keyof typeof limits, pattern: RegExp, label: string) => {
+        const limit = limits[key];
+        if (limit === undefined) {
+          return;
+        }
+        expect(countSourceMatches(file, pattern), `${file} ${label}`).toBeLessThanOrEqual(limit);
+      };
+
+      expectLimit('any', /\bany\b/g, 'any count');
+      expectLimit('envAny', /env:\s*any/g, 'env:any count');
+      expectLimit('categoryAny', /category:\s*any/g, 'category:any count');
+      expectLimit('promiseAny', /Promise<any>/g, 'Promise<any> count');
+      expectLimit('mapAny', /Map<any/g, 'Map<any count');
+      expectLimit('anyArray', /any\[\]/g, 'any[] count');
+      expectLimit('supabaseRequest', /\bsupabaseRequest\b/g, 'supabaseRequest count');
+      expectLimit('exportedHandlers', /^export\s+async\s+function\s+handle/gm, 'exported handler count');
+      expectLimit(
+        'implicitEnvSignatures',
+        /export\s+async\s+function\s+\w+\([^)]*\benv\b(?!\s*:)/g,
+        'implicit env signature count',
+      );
+      expectLimit(
+        'implicitRequestBodyReaders',
+        /async\s+function\s+readJsonBody\(request\)/g,
+        'implicit request body reader count',
+      );
     }
   });
 
