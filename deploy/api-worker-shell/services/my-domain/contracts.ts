@@ -6,10 +6,36 @@
  * Non-Goals: This file does not implement summaries, comments, notification reads, or persistence.
  * Dependencies: Worker environment primitives.
  */
-import type { WorkerEnv } from '../../types';
+import type { WorkerEnv, WorkerJsonRecord } from '../../types';
 import type { WorkerBaseData, WorkerStaticBaseRows } from '../../runtime/base-data-contracts';
-import type { WorkerJsonRecord } from '../../types';
 import type { WorkerCommunityRouteService } from '../community-domain/contracts';
+
+export interface WorkerMyCommentRow extends WorkerJsonRecord {
+  comment_id: string | number;
+  feed_id: string | number;
+  body?: string | null;
+  parent_id?: string | number | null;
+  is_deleted?: boolean | null;
+  created_at: string;
+}
+
+export interface WorkerMyFeedRow extends WorkerJsonRecord {
+  feed_id?: string | number;
+  id?: string | number;
+  position_id?: string | number | null;
+  placeId?: string | null;
+  placeName?: string | null;
+  body?: string | null;
+}
+
+export type WorkerMyFeedInput = WorkerMyFeedRow[] | Map<string, WorkerMyFeedRow>;
+
+export interface WorkerMyPlaceRef extends WorkerJsonRecord {
+  id: string;
+  name: string;
+}
+
+export type WorkerMyPlaceMap = Map<string, WorkerMyPlaceRef>;
 
 export interface WorkerMyServiceDeps {
   communityRouteService: WorkerCommunityRouteService;

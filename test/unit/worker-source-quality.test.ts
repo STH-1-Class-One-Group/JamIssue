@@ -97,25 +97,41 @@ describe('worker source quality gates', () => {
       {
         file: 'deploy/api-worker-shell/services/review-domain/mapper.ts',
         limits: {
-          any: 24,
-          mapAny: 4,
-          anyArray: 9,
+          any: 0,
+          mapAny: 0,
+          anyArray: 0,
         },
       },
       {
         file: 'deploy/api-worker-shell/services/community-domain/mapper.ts',
         limits: {
-          any: 7,
-          mapAny: 2,
-          anyArray: 2,
+          any: 0,
+          mapAny: 0,
+          anyArray: 0,
         },
       },
       {
         file: 'deploy/api-worker-shell/services/my-domain/mapper.ts',
         limits: {
-          any: 5,
-          mapAny: 1,
-          anyArray: 1,
+          any: 0,
+          mapAny: 0,
+          anyArray: 0,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/community-domain/repository.ts',
+        limits: {
+          any: 0,
+          mapAny: 0,
+          anyArray: 0,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/my-domain/repository.ts',
+        limits: {
+          any: 0,
+          mapAny: 0,
+          anyArray: 0,
         },
       },
     ];

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "5fddc64d0f8b8a1f94f3505d2fb911958aa49a35",
+  "generatedFrom": "cb04022cd5fd091ddf0c61d56726f8eb1f818975",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -1328,12 +1328,12 @@
       "examples": [
         {
           "value": "0",
-          "line": 27,
+          "line": 32,
           "column": 14
         },
         {
           "value": "0",
-          "line": 136,
+          "line": 141,
           "column": 37
         }
       ]
@@ -1678,7 +1678,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 29,
+          "line": 43,
           "column": 36
         }
       ]
@@ -1693,32 +1693,32 @@
       "examples": [
         {
           "value": "1",
-          "line": 7,
+          "line": 13,
           "column": 100
         },
         {
           "value": "0",
-          "line": 9,
+          "line": 15,
           "column": 17
         },
         {
           "value": "1",
-          "line": 43,
+          "line": 49,
           "column": 159
         },
         {
           "value": "0",
-          "line": 45,
+          "line": 51,
           "column": 17
         },
         {
           "value": "1",
-          "line": 51,
+          "line": 57,
           "column": 138
         },
         {
           "value": "0",
-          "line": 53,
+          "line": 59,
           "column": 17
         }
       ]
@@ -1759,6 +1759,161 @@
         {
           "value": "400",
           "line": 84,
+          "column": 27
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/cache.ts",
+      "count": 3,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 15,
+          "column": 55
+        },
+        {
+          "value": "0",
+          "line": 15,
+          "column": 66
+        },
+        {
+          "value": "0",
+          "line": 41,
+          "column": 33
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/import-service.ts",
+      "count": 1,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 30,
+          "column": 34
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/mapper.ts",
+      "count": 32,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 37,
+          "column": 51
+        },
+        {
+          "value": "2",
+          "line": 55,
+          "column": 18
+        },
+        {
+          "value": "00",
+          "line": 68,
+          "column": 34
+        },
+        {
+          "value": "00",
+          "line": 68,
+          "column": 37
+        },
+        {
+          "value": "09",
+          "line": 68,
+          "column": 40
+        },
+        {
+          "value": "00",
+          "line": 68,
+          "column": 43
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/read-service.ts",
+      "count": 5,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 34,
+          "column": 12
+        },
+        {
+          "value": "0",
+          "line": 46,
+          "column": 29
+        },
+        {
+          "value": "0",
+          "line": 48,
+          "column": 24
+        },
+        {
+          "value": "0",
+          "line": 49,
+          "column": 25
+        },
+        {
+          "value": "0",
+          "line": 52,
+          "column": 33
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/repository.ts",
+      "count": 7,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "1",
+          "line": 22,
+          "column": 124
+        },
+        {
+          "value": "0",
+          "line": 24,
+          "column": 14
+        },
+        {
+          "value": "0",
+          "line": 25,
+          "column": 17
+        },
+        {
+          "value": "0",
+          "line": 37,
+          "column": 43
+        },
+        {
+          "value": "0",
+          "line": 54,
+          "column": 23
+        },
+        {
+          "value": "0",
+          "line": 68,
           "column": 27
         }
       ]
@@ -1813,7 +1968,7 @@
       "examples": [
         {
           "value": "1",
-          "line": 9,
+          "line": 10,
           "column": 22
         }
       ]
@@ -1908,32 +2063,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 5,
+          "line": 25,
           "column": 17
         },
         {
           "value": "1",
-          "line": 7,
+          "line": 27,
           "column": 16
         },
         {
           "value": "0",
-          "line": 80,
+          "line": 101,
           "column": 63
         },
         {
           "value": "1",
-          "line": 80,
+          "line": 101,
           "column": 68
         },
         {
           "value": "1",
-          "line": 89,
+          "line": 110,
           "column": 51
         },
         {
           "value": "0",
-          "line": 103,
+          "line": 124,
           "column": 62
         }
       ]
@@ -2028,32 +2183,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 60,
+          "line": 64,
           "column": 39
         },
         {
           "value": "1",
-          "line": 76,
+          "line": 80,
           "column": 152
         },
         {
           "value": "0",
-          "line": 83,
+          "line": 87,
           "column": 37
         },
         {
           "value": "0",
-          "line": 107,
+          "line": 111,
           "column": 39
         },
         {
           "value": "1",
-          "line": 121,
+          "line": 125,
           "column": 142
         },
         {
           "value": "0",
-          "line": 123,
+          "line": 127,
           "column": 36
         }
       ]

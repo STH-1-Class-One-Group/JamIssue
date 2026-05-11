@@ -1,11 +1,19 @@
 import { formatDateTime } from '../../lib/dates';
+import type { WorkerMyCommentRow, WorkerMyFeedInput, WorkerMyFeedRow, WorkerMyPlaceMap } from './contracts';
 
-export function mapMyComments(commentRows: any[], feedRows: any, placesByPositionId: Map<any, any>) {
-  const isDeletedCommentRow = (row: any) => {
+export function mapMyComments(
+  commentRows: WorkerMyCommentRow[],
+  feedRows: WorkerMyFeedInput,
+  placesByPositionId: WorkerMyPlaceMap,
+) {
+  const isDeletedCommentRow = (row: WorkerMyCommentRow) => {
     const body = String(row?.body ?? '').trim();
     return Boolean(row?.is_deleted) || body === '[deleted]' || body === '삭제된 댓글입니다.';
   };
-  const feedById = feedRows instanceof Map ? feedRows : new Map((feedRows ?? []).map((row) => [String(row.feed_id ?? row.id), row]));
+  const feedById =
+    feedRows instanceof Map
+      ? feedRows
+      : new Map<string, WorkerMyFeedRow>((feedRows ?? []).map((row) => [String(row.feed_id ?? row.id), row]));
   return commentRows
     .filter((row) => !isDeletedCommentRow(row))
     .map((row) => {

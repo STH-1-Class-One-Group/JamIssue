@@ -1,5 +1,11 @@
 import { buildInFilter, encodeFilterValue, supabaseRequest } from '../../lib/supabase';
 import type { WorkerEnv, WorkerJsonRecord } from '../../types';
+import type {
+  WorkerCommunityRouteLikeRow,
+  WorkerCommunityRoutePlaceRow,
+  WorkerCommunityRouteRow,
+  WorkerCommunityUserRow,
+} from './contracts';
 
 export async function readRouteRow(env: WorkerEnv, routeId: string) {
   const rows = await supabaseRequest<WorkerJsonRecord[]>(
@@ -14,26 +20,26 @@ export async function loadRouteRows(env: WorkerEnv, options: { sort?: string; ow
   const routeFilter = ownerUserId
     ? `user_id=eq.${encodeFilterValue(ownerUserId)}&order=created_at.desc`
     : `is_public=eq.true&order=${sort === 'popular' ? 'like_count.desc,created_at.desc' : 'created_at.desc'}`;
-  return supabaseRequest<WorkerJsonRecord[]>(
+  return supabaseRequest<WorkerCommunityRouteRow[]>(
     env,
     `user_route?select=route_id,user_id,travel_session_id,title,description,mood,like_count,created_at,is_public,is_user_generated&${routeFilter}`,
   );
 }
 
-export async function loadRouteDetailRows(env: WorkerEnv, routeRows: WorkerJsonRecord[], sessionUserId: string | null) {
-  const routeIdsFilter = buildInFilter(routeRows.map((row: any) => row.route_id));
+export async function loadRouteDetailRows(env: WorkerEnv, routeRows: WorkerCommunityRouteRow[], sessionUserId: string | null) {
+  const routeIdsFilter = buildInFilter(routeRows.map((row) => row.route_id));
   if (!routeIdsFilter) {
     return { routePlaceRows: [], userRouteLikeRows: [], userRows: [] };
   }
 
   const [routePlaceRows, userRouteLikeRows = []] = await Promise.all([
-    supabaseRequest<WorkerJsonRecord[]>(env, `user_route_place?select=route_id,position_id,stop_order&route_id=${routeIdsFilter}&order=stop_order.asc`),
+    supabaseRequest<WorkerCommunityRoutePlaceRow[]>(env, `user_route_place?select=route_id,position_id,stop_order&route_id=${routeIdsFilter}&order=stop_order.asc`),
     sessionUserId
-      ? supabaseRequest<WorkerJsonRecord[]>(env, `user_route_like?select=route_id&user_id=eq.${encodeFilterValue(sessionUserId)}&route_id=${routeIdsFilter}`)
+      ? supabaseRequest<WorkerCommunityRouteLikeRow[]>(env, `user_route_like?select=route_id&user_id=eq.${encodeFilterValue(sessionUserId)}&route_id=${routeIdsFilter}`)
       : Promise.resolve([]),
   ]);
-  const userIdsFilter = buildInFilter(routeRows.map((row: any) => row.user_id));
-  const userRows = userIdsFilter ? await supabaseRequest<WorkerJsonRecord[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
+  const userIdsFilter = buildInFilter(routeRows.map((row) => row.user_id));
+  const userRows = userIdsFilter ? await supabaseRequest<WorkerCommunityUserRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
   return { routePlaceRows, userRouteLikeRows, userRows };
 }
 
