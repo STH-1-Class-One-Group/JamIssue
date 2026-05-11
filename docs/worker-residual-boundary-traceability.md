@@ -23,7 +23,7 @@ Release candidate: `1.2.10`
 | `TSK-004-02` | [#274](https://github.com/STH-1-Class-One-Group/JamIssue/issues/274) | `worker-festival-boundary-split` | [#280](https://github.com/STH-1-Class-One-Group/JamIssue/pull/280) | `cb04022cd5fd091ddf0c61d56726f8eb1f818975` | festival handler를 유지하면서 repository/mapper/import/cache 책임 분리 |
 | `TSK-004-03` | [#275](https://github.com/STH-1-Class-One-Group/JamIssue/issues/275) | `worker-domain-mapper-contracts` | [#281](https://github.com/STH-1-Class-One-Group/JamIssue/pull/281) | `9852b88aafb2fadac60b9d7152e3acf56462d50f` | review/community/my mapper의 `any[]`, `Map<any, any>` row 계약 제거 |
 | `TSK-004-04` | [#276](https://github.com/STH-1-Class-One-Group/JamIssue/issues/276) | `worker-service-handler-contracts` | [#282](https://github.com/STH-1-Class-One-Group/JamIssue/pull/282) | `1470968e80c0c63bfa4bbcce5024ee1e7580e314` | admin/stamp/notification/auth/review-interaction handler contract typing |
-| `TSK-004-05` | [#277](https://github.com/STH-1-Class-One-Group/JamIssue/issues/277) | `worker-boundary-traceability-docs` | TBD | TBD | Wiki, roadmap, release candidate note, issue evidence 정리 |
+| `TSK-004-05` | [#277](https://github.com/STH-1-Class-One-Group/JamIssue/issues/277) | `worker-boundary-traceability-docs` | [#283](https://github.com/STH-1-Class-One-Group/JamIssue/pull/283) | TBD | Wiki, roadmap, release candidate note, issue evidence 정리 |
 
 ## 제거한 결합 지점
 

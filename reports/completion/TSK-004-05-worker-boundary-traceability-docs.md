@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-004-05-WORKER-BOUNDARY-TRACEABILITY-DOCS`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/277
-PR: `TBD-TSK-004-05-WORKER-BOUNDARY-TRACEABILITY-DOCS`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/283
 Branch: `worker-boundary-traceability-docs`
 Status: `in_progress`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/272
@@ -28,7 +28,7 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/277
 
 ## 원격 evidence
 
-- PR URL: TBD
+- PR URL: https://github.com/STH-1-Class-One-Group/JamIssue/pull/283
 - main merge SHA: TBD
 - main CI: TBD
 - production-smoke: TBD
