@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-004-03-WORKER-DOMAIN-MAPPER-CONTRACTS`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/275
-PR: `TBD-TSK-004-03-WORKER-DOMAIN-MAPPER-CONTRACTS`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/281
 Branch: `worker-domain-mapper-contracts`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/272
