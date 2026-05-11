@@ -1,19 +1,33 @@
 import { formatDateTime } from '../../lib/dates';
+import type {
+  WorkerCommunityPlaceMap,
+  WorkerCommunityRoutePlaceRow,
+  WorkerCommunityRouteRow,
+  WorkerCommunityUserRow,
+} from './contracts';
+
+interface WorkerCommunityRoutePlaceRef {
+  stopOrder: number;
+  placeId: string;
+}
 
 export function mapCommunityRoutes(
-  routeRows: any[],
-  routePlaceRows: any[],
-  usersById: Map<any, any>,
-  placesByPositionId: Map<any, any>,
-  likedRouteIds = new Set<any>(),
+  routeRows: WorkerCommunityRouteRow[],
+  routePlaceRows: WorkerCommunityRoutePlaceRow[],
+  usersById: Map<string, WorkerCommunityUserRow>,
+  placesByPositionId: WorkerCommunityPlaceMap,
+  likedRouteIds = new Set<string>(),
 ) {
-  const placeRowsByRouteId = new Map();
+  const placeRowsByRouteId = new Map<string, WorkerCommunityRoutePlaceRef[]>();
   for (const row of routePlaceRows) {
     const routeId = String(row.route_id);
     if (!placeRowsByRouteId.has(routeId)) {
       placeRowsByRouteId.set(routeId, []);
     }
-    placeRowsByRouteId.get(routeId).push({ stopOrder: row.stop_order, placeId: placesByPositionId.get(String(row.position_id))?.id ?? String(row.position_id) });
+    placeRowsByRouteId.get(routeId)?.push({
+      stopOrder: row.stop_order,
+      placeId: placesByPositionId.get(String(row.position_id))?.id ?? String(row.position_id),
+    });
   }
 
   return routeRows.map((row) => {

@@ -10,6 +10,48 @@ import type { SupabaseMapRow, WorkerBaseData, WorkerPlace, WorkerStaticBaseRows 
 import type { WorkerEnv, WorkerJsonRecord, WorkerSessionUser } from '../../types';
 import type { WorkerReview } from './read-model';
 
+export interface WorkerReviewFeedRow extends WorkerJsonRecord {
+  feed_id: string | number;
+  user_id: string;
+  position_id: string | number;
+  body: string;
+  mood?: string | null;
+  badge?: string | null;
+  created_at: string;
+  image_url?: string | null;
+  stamp_id?: string | number | null;
+}
+
+export interface WorkerReviewCommentRow extends WorkerJsonRecord {
+  comment_id: string | number;
+  feed_id: string | number;
+  user_id: string;
+  body?: string | null;
+  parent_id?: string | number | null;
+  is_deleted?: boolean | null;
+  created_at: string;
+}
+
+export interface WorkerReviewLikeRow extends WorkerJsonRecord {
+  feed_id: string | number;
+}
+
+export interface WorkerReviewUserRow extends WorkerJsonRecord {
+  user_id: string;
+  nickname?: string | null;
+}
+
+export interface WorkerReviewStampRow extends WorkerJsonRecord {
+  stamp_id: string | number;
+  visit_ordinal?: number | null;
+  travel_session_id?: string | number | null;
+}
+
+export interface WorkerReviewRouteRow extends WorkerJsonRecord {
+  route_id: string | number;
+  travel_session_id?: string | number | null;
+}
+
 export interface WorkerReviewReadServiceDeps {
   formatVisitLabel: (visitNumber: unknown) => string;
   loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBaseRows>;

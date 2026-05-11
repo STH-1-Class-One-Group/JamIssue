@@ -5,19 +5,24 @@ import type {
   SupabaseCourseRow,
   SupabaseMapRow,
   WorkerFeedLikeRow,
-  WorkerFeedRow,
   WorkerPositionStampRow,
   WorkerStampRow,
   WorkerStaticBaseRows,
   WorkerTravelSessionRow,
   WorkerUserRouteRow,
-  WorkerUserSummaryRow,
 } from './base-data-contracts';
 import type { SupabaseCacheState } from '../lib/supabase';
 import type {
   WorkerEnv,
   WorkerJsonRecord,
 } from '../types';
+import type {
+  WorkerReviewCommentRow,
+  WorkerReviewFeedRow,
+  WorkerReviewRouteRow,
+  WorkerReviewStampRow,
+  WorkerReviewUserRow,
+} from '../services/review-domain/contracts';
 
 const STATIC_BASE_CACHE_TTL_MS = WorkerBaseDataRuntimeConfig.staticBaseCacheTtlMs;
 
@@ -31,17 +36,17 @@ let staticBaseCache: SupabaseCacheState<WorkerStaticBaseRows> & {
 
 export interface WorkerBaseDataRows {
   staticRows: WorkerStaticBaseRows;
-  feedRows: WorkerFeedRow[];
-  commentRows: WorkerJsonRecord[];
+  feedRows: WorkerReviewFeedRow[];
+  commentRows: WorkerReviewCommentRow[];
   likeRows: WorkerFeedLikeRow[];
-  reviewStampRows: WorkerStampRow[];
+  reviewStampRows: WorkerReviewStampRow[];
   userFeedLikeRows: WorkerFeedLikeRow[];
   userSessionRows: WorkerTravelSessionRow[];
   ownerRouteRows: WorkerUserRouteRow[];
   userStampRows: WorkerStampRow[];
   allPlaceStampRows: WorkerPositionStampRow[];
-  reviewRouteRows: WorkerUserRouteRow[];
-  userRows: WorkerUserSummaryRow[];
+  reviewRouteRows: WorkerReviewRouteRow[];
+  userRows: WorkerReviewUserRow[];
 }
 
 export async function loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBaseRows> {
@@ -68,7 +73,7 @@ export async function loadStaticBaseRows(env: WorkerEnv): Promise<WorkerStaticBa
 export async function loadBaseDataRows(env: WorkerEnv, sessionUserId: string | null = null): Promise<WorkerBaseDataRows> {
   const [staticRows, feedRows] = await Promise.all([
     loadStaticBaseRows(env),
-    supabaseRequest<WorkerFeedRow[]>(
+    supabaseRequest<WorkerReviewFeedRow[]>(
       env,
       'feed?select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at&order=created_at.desc',
     ),
@@ -87,14 +92,14 @@ export async function loadBaseDataRows(env: WorkerEnv, sessionUserId: string | n
     allPlaceStampRows = [],
   ] = await Promise.all([
     feedIdsFilter
-        ? supabaseRequest<WorkerStampRow[]>(
+        ? supabaseRequest<WorkerReviewCommentRow[]>(
           env,
           `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=${feedIdsFilter}&order=created_at.asc`,
         )
       : Promise.resolve([]),
     feedIdsFilter ? supabaseRequest<WorkerFeedLikeRow[]>(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`) : Promise.resolve([]),
     reviewStampIdsFilter
-        ? supabaseRequest<WorkerTravelSessionRow[]>(
+        ? supabaseRequest<WorkerReviewStampRow[]>(
           env,
           `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=${reviewStampIdsFilter}`,
         )
@@ -134,14 +139,14 @@ export async function loadBaseDataRows(env: WorkerEnv, sessionUserId: string | n
   ];
   const reviewRouteRows =
     reviewTravelSessionIds.length > 0
-      ? await supabaseRequest<WorkerUserRouteRow[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
+      ? await supabaseRequest<WorkerReviewRouteRow[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
       : [];
   const userIdsFilter = buildInFilter([
     ...feedRows.map((row) => row.user_id),
     ...commentRows.map((row) => row.user_id),
     ...(sessionUserId ? [sessionUserId] : []),
   ]);
-  const userRows = userIdsFilter ? await supabaseRequest<WorkerUserSummaryRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
+  const userRows = userIdsFilter ? await supabaseRequest<WorkerReviewUserRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
 
   return {
     staticRows,

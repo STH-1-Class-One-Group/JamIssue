@@ -1,7 +1,27 @@
 import { formatDateTime } from '../../lib/dates';
+import type { WorkerPlace } from '../../runtime/base-data-contracts';
+import type { WorkerReview, WorkerReviewComment } from './read-model';
+import type {
+  WorkerReviewCommentRow,
+  WorkerReviewFeedRow,
+  WorkerReviewLikeRow,
+  WorkerReviewRouteRow,
+  WorkerReviewStampRow,
+  WorkerReviewUserRow,
+} from './contracts';
+
+interface WorkerReviewCommentNode extends WorkerReviewComment {
+  userId: string;
+  author: string;
+  body: string | null;
+  parentId: string | null;
+  isDeleted: boolean;
+  createdAt: string;
+  replies: WorkerReviewCommentNode[];
+}
 
 export function createReviewMapper(formatVisitLabel: (visitNumber: unknown) => string) {
-  function countComments(comments: any[]): number {
+  function countComments(comments: WorkerReviewCommentNode[]): number {
     let total = 0;
     for (const comment of comments) {
       total += 1 + countComments(comment.replies);
@@ -9,25 +29,25 @@ export function createReviewMapper(formatVisitLabel: (visitNumber: unknown) => s
     return total;
   }
 
-  function buildCommentTree(commentRows: any[], usersById: Map<any, any>) {
-    const isDeletedCommentRow = (row: any) => {
+  function buildCommentTree(commentRows: WorkerReviewCommentRow[], usersById: Map<string, WorkerReviewUserRow>) {
+    const isDeletedCommentRow = (row: WorkerReviewCommentRow) => {
       const body = String(row?.body ?? '').trim();
       return Boolean(row?.is_deleted) || body === '[deleted]' || body === '삭제된 댓글입니다.';
     };
-    const commentsById = new Map<string, any>();
-    const rowsById = new Map<string, any>(commentRows.map((row) => [String(row.comment_id), row]));
-    const roots: any[] = [];
+    const commentsById = new Map<string, WorkerReviewCommentNode>();
+    const rowsById = new Map<string, WorkerReviewCommentRow>(commentRows.map((row) => [String(row.comment_id), row]));
+    const roots: WorkerReviewCommentNode[] = [];
     for (const row of commentRows) {
       const comment = {
         id: String(row.comment_id),
         userId: row.user_id,
         author: usersById.get(row.user_id)?.nickname ?? '이름 없음',
-        body: isDeletedCommentRow(row) ? '삭제된 댓글입니다.' : row.body,
+        body: isDeletedCommentRow(row) ? '삭제된 댓글입니다.' : (row.body ?? null),
         parentId: row.parent_id ? String(row.parent_id) : null,
         isDeleted: isDeletedCommentRow(row),
         createdAt: formatDateTime(row.created_at),
         replies: [],
-      };
+      } satisfies WorkerReviewCommentNode;
       commentsById.set(comment.id, comment);
     }
     for (const comment of commentsById.values()) {
@@ -40,9 +60,10 @@ export function createReviewMapper(formatVisitLabel: (visitNumber: unknown) => s
       }
     }
 
-    const hasLiveDescendant = (node: any): boolean => node.replies.some((reply: any) => !reply.isDeleted || hasLiveDescendant(reply));
-    const collapseDeletedNodes = (nodes: any[]) =>
-      nodes.reduce((acc: any[], node: any) => {
+    const hasLiveDescendant = (node: WorkerReviewCommentNode): boolean =>
+      node.replies.some((reply) => !reply.isDeleted || hasLiveDescendant(reply));
+    const collapseDeletedNodes = (nodes: WorkerReviewCommentNode[]) =>
+      nodes.reduce<WorkerReviewCommentNode[]>((acc, node) => {
         const nextNode = { ...node, replies: collapseDeletedNodes(node.replies) };
         if (nextNode.isDeleted) {
           if (hasLiveDescendant(nextNode)) {
@@ -57,24 +78,24 @@ export function createReviewMapper(formatVisitLabel: (visitNumber: unknown) => s
   }
 
   function mapReviewRows(
-    feedRows: any[],
-    commentRows: any[],
-    likeRows: any[],
-    usersById: Map<any, any>,
-    placesByPositionId: Map<any, any>,
-    stampRowsById: Map<any, any>,
-    routeRows: any[] = [],
-    likedFeedIds = new Set<any>(),
-  ) {
-    const commentsByFeedId = new Map();
+    feedRows: WorkerReviewFeedRow[],
+    commentRows: WorkerReviewCommentRow[],
+    likeRows: WorkerReviewLikeRow[],
+    usersById: Map<string, WorkerReviewUserRow>,
+    placesByPositionId: Map<string, WorkerPlace>,
+    stampRowsById: Map<string, WorkerReviewStampRow>,
+    routeRows: WorkerReviewRouteRow[] = [],
+    likedFeedIds = new Set<string>(),
+  ): WorkerReview[] {
+    const commentsByFeedId = new Map<string, WorkerReviewCommentRow[]>();
     for (const row of commentRows) {
       const feedId = String(row.feed_id);
       if (!commentsByFeedId.has(feedId)) {
         commentsByFeedId.set(feedId, []);
       }
-      commentsByFeedId.get(feedId).push(row);
+      commentsByFeedId.get(feedId)?.push(row);
     }
-    const likesByFeedId = new Map();
+    const likesByFeedId = new Map<string, number>();
     for (const row of likeRows) {
       const feedId = String(row.feed_id);
       likesByFeedId.set(feedId, (likesByFeedId.get(feedId) ?? 0) + 1);
