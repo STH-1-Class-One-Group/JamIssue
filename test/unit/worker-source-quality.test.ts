@@ -59,9 +59,9 @@ describe('worker source quality gates', () => {
       {
         file: 'deploy/api-worker-shell/services/admin.ts',
         limits: {
-          any: 6,
-          envAny: 5,
-          categoryAny: 1,
+          any: 0,
+          envAny: 0,
+          categoryAny: 0,
         },
       },
       {
@@ -69,28 +69,28 @@ describe('worker source quality gates', () => {
         limits: {
           supabaseRequest: 11,
           exportedHandlers: 5,
-          implicitEnvSignatures: 10,
+          implicitEnvSignatures: 0,
         },
       },
       {
         file: 'deploy/api-worker-shell/services/stamps.ts',
         limits: {
           supabaseRequest: 10,
-          implicitRequestBodyReaders: 1,
-          implicitEnvSignatures: 1,
+          implicitRequestBodyReaders: 0,
+          implicitEnvSignatures: 0,
         },
       },
       {
         file: 'deploy/api-worker-shell/services/auth.ts',
         limits: {
-          promiseAny: 2,
+          promiseAny: 0,
           exportedHandlers: 8,
         },
       },
       {
         file: 'deploy/api-worker-shell/services/review-interactions.ts',
         limits: {
-          promiseAny: 1,
+          promiseAny: 0,
           exportedHandlers: 8,
         },
       },

@@ -8,6 +8,10 @@
  */
 import type { WorkerEnv } from '../../types';
 
+export interface WorkerAdminServiceDeps {
+  normalizePlaceCategory: (category: unknown, slug?: string) => string;
+}
+
 export interface WorkerAdminService {
   handleAdminSummary(request: Request, env: WorkerEnv): Promise<Response>;
   handleAdminImportPublicData(request: Request, env: WorkerEnv): Promise<Response>;

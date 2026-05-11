@@ -58,9 +58,9 @@ async function uploadReviewFile(env: WorkerEnv, sessionUser: WorkerSessionUser, 
   return { url: buildPublicStorageUrl(env, objectPath), fileName: safeFileName, contentType: file.type || 'application/octet-stream' };
 }
 
-async function readJsonBody(request: Request): Promise<any> {
+async function readJsonBody(request: Request): Promise<WorkerJsonRecord> {
   try {
-    return await request.json();
+    return await request.json() as WorkerJsonRecord;
   } catch {
     throw new Error('요청 형식이 올바르지 않아요.');
   }

@@ -134,7 +134,7 @@ export function createCommunityRouteService({ loadStaticBaseRows }: WorkerCommun
       type: 'route-published',
       title: '새로운 코스가 발행되었습니다.',
       body: title,
-      routeId,
+      routeId: routeId as string | number,
       metadata: { travelSessionId },
     });
     if (createdNotification?.notification_id) {

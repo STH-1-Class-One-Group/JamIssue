@@ -7,11 +7,11 @@ import {
   loadPublicDataSource,
   updateAdminPlaceVisibility,
 } from './admin-domain/repository';
+import type { WorkerEnv, WorkerJsonRecord } from '../types';
+import type { WorkerAdminServiceDeps } from './admin-domain/contracts';
 
-export function createAdminService({ normalizePlaceCategory }: {
-  normalizePlaceCategory: (category: any, slug?: string) => string;
-}) {
-  async function requireAdmin(request: Request, env: any) {
+export function createAdminService({ normalizePlaceCategory }: WorkerAdminServiceDeps) {
+  async function requireAdmin(request: Request, env: WorkerEnv) {
     const sessionUser = await readSessionUser(request, env);
     if (!sessionUser || !sessionUser.isAdmin) {
       return { response: jsonResponse(403, { detail: '관리자만 접근할 수 있어요.' }, env, request) };
@@ -19,9 +19,9 @@ export function createAdminService({ normalizePlaceCategory }: {
     return { sessionUser };
   }
 
-  async function buildAdminSummary(env: any) {
+  async function buildAdminSummary(env: WorkerEnv) {
     const { userCount, placeCount, reviewCount, commentCount, stampCount, placeRows, feedRows } = await loadAdminSummaryRows(env);
-    const reviewCountByPosition = new Map();
+    const reviewCountByPosition = new Map<string, number>();
     for (const row of feedRows ?? []) {
       const key = String(row.position_id);
       reviewCountByPosition.set(key, (reviewCountByPosition.get(key) ?? 0) + 1);
@@ -46,7 +46,7 @@ export function createAdminService({ normalizePlaceCategory }: {
     };
   }
 
-  async function handleAdminSummary(request: Request, env: any) {
+  async function handleAdminSummary(request: Request, env: WorkerEnv) {
     const auth = await requireAdmin(request, env);
     if (auth.response) {
       return auth.response;
@@ -54,14 +54,14 @@ export function createAdminService({ normalizePlaceCategory }: {
     return jsonResponse(200, await buildAdminSummary(env), env, request);
   }
 
-  async function handleAdminPlaceVisibility(request: Request, env: any, placeId: string) {
+  async function handleAdminPlaceVisibility(request: Request, env: WorkerEnv, placeId: string) {
     const auth = await requireAdmin(request, env);
     if (auth.response) {
       return auth.response;
     }
 
-    const payload = await request.json().catch(() => null);
-    const body: Record<string, unknown> = {};
+    const payload = await request.json().catch(() => null) as WorkerJsonRecord | null;
+    const body: WorkerJsonRecord = {};
     if (typeof payload?.isActive === 'boolean') {
       body.is_active = payload.isActive;
     }
@@ -93,7 +93,7 @@ export function createAdminService({ normalizePlaceCategory }: {
     );
   }
 
-  async function handleAdminImportPublicData(request: Request, env: any) {
+  async function handleAdminImportPublicData(request: Request, env: WorkerEnv) {
     const auth = await requireAdmin(request, env);
     if (auth.response) {
       return auth.response;

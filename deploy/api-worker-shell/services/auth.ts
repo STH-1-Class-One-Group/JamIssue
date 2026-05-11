@@ -1,6 +1,6 @@
 import { jsonResponse, redirectResponse } from '../lib/http';
 import { supabaseRequest } from '../lib/supabase';
-import type { AuthProviderKey, WorkerEnv, WorkerSessionUser } from '../types';
+import type { AuthProviderKey, WorkerEnv, WorkerJsonRecord, WorkerSessionUser } from '../types';
 import { buildKakaoLoginUrl, exchangeKakaoCode, fetchKakaoProfile } from './auth/kakao-provider';
 import { buildNaverLoginUrl, exchangeNaverCode, fetchNaverProfile } from './auth/naver-provider';
 import { buildAuthProviders, kakaoConfigured, naverConfigured } from './auth/provider-config';
@@ -45,9 +45,9 @@ export function createAuthResponse(sessionUser: WorkerSessionUser | null, env: W
   };
 }
 
-async function readJsonBody(request: Request): Promise<any> {
+async function readJsonBody(request: Request): Promise<WorkerJsonRecord> {
   try {
-    return await request.json();
+    return await request.json() as WorkerJsonRecord;
   } catch {
     throw new Error('요청 형식이 올바르지 않아요.');
   }
@@ -76,7 +76,7 @@ export async function handleUpdateProfile(request: Request, env: WorkerEnv) {
   const payload = await readJsonBody(request);
   let nickname;
   try {
-    nickname = await ensureUniqueNickname(env, payload.nickname, sessionResult.sessionUser.id);
+    nickname = await ensureUniqueNickname(env, String(payload.nickname ?? ''), sessionResult.sessionUser.id);
   } catch (error) {
     const profileError = error as { status?: number };
     return jsonResponse(
@@ -177,13 +177,21 @@ function buildCallbackContext(request: Request, env: WorkerEnv, statePayload: { 
   };
 }
 
+interface SocialLoginProfile {
+  email?: string | null;
+  id: string;
+  name?: string | null;
+  nickname?: string | null;
+  profile_image?: string | null;
+}
+
 interface FinishSocialLoginOptions {
   request: Request;
   env: WorkerEnv;
   url: URL;
   provider: AuthProviderKey;
   exchangeCode: (env: WorkerEnv, code: string, state?: string) => Promise<{ access_token: string }>;
-  fetchProfile: (accessToken: string) => Promise<any>;
+  fetchProfile: (accessToken: string) => Promise<SocialLoginProfile>;
 }
 
 async function finishSocialLogin({ request, env, url, provider, exchangeCode, fetchProfile }: FinishSocialLoginOptions) {

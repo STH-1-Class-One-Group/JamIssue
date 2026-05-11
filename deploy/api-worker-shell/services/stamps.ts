@@ -3,24 +3,26 @@ import { jsonResponse } from '../lib/http';
 import { encodeFilterValue, supabaseRequest } from '../lib/supabase';
 import { WorkerStampRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
-function getStampUnlockRadius(env) { const parsed = Number(env.APP_STAMP_UNLOCK_RADIUS_METERS ?? WorkerStampRuntimeConfig.defaultUnlockRadiusMeters); return Number.isFinite(parsed) && parsed > 0 ? parsed : WorkerStampRuntimeConfig.defaultUnlockRadiusMeters; }
-function calculateDistanceMeters(startLatitude, startLongitude, endLatitude, endLongitude) { const latitudeDelta = (endLatitude - startLatitude) * WorkerStampRuntimeConfig.radiansPerDegree; const longitudeDelta = (endLongitude - startLongitude) * WorkerStampRuntimeConfig.radiansPerDegree; const startLatitudeRadians = startLatitude * WorkerStampRuntimeConfig.radiansPerDegree; const endLatitudeRadians = endLatitude * WorkerStampRuntimeConfig.radiansPerDegree; const haversine = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2; return WorkerStampRuntimeConfig.earthRadiusMeters * (2 * Math.asin(Math.sqrt(haversine))); }
-function formatDistanceMeters(distanceMeters) { if (!Number.isFinite(distanceMeters)) {
+import type { WorkerEnv, WorkerJsonRecord } from '../types';
+import type { WorkerStampServiceDeps } from './stamp-domain/contracts';
+function getStampUnlockRadius(env: WorkerEnv) { const parsed = Number(env.APP_STAMP_UNLOCK_RADIUS_METERS ?? WorkerStampRuntimeConfig.defaultUnlockRadiusMeters); return Number.isFinite(parsed) && parsed > 0 ? parsed : WorkerStampRuntimeConfig.defaultUnlockRadiusMeters; }
+function calculateDistanceMeters(startLatitude: number, startLongitude: number, endLatitude: number, endLongitude: number) { const latitudeDelta = (endLatitude - startLatitude) * WorkerStampRuntimeConfig.radiansPerDegree; const longitudeDelta = (endLongitude - startLongitude) * WorkerStampRuntimeConfig.radiansPerDegree; const startLatitudeRadians = startLatitude * WorkerStampRuntimeConfig.radiansPerDegree; const endLatitudeRadians = endLatitude * WorkerStampRuntimeConfig.radiansPerDegree; const haversine = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(startLatitudeRadians) * Math.cos(endLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2; return WorkerStampRuntimeConfig.earthRadiusMeters * (2 * Math.asin(Math.sqrt(haversine))); }
+function formatDistanceMeters(distanceMeters: number) { if (!Number.isFinite(distanceMeters)) {
     return '알 수 없음';
 } if (distanceMeters >= WorkerStampRuntimeConfig.metersPerKilometer) {
     return `${(distanceMeters / WorkerStampRuntimeConfig.metersPerKilometer).toFixed(1)}km`;
 } return `${Math.round(distanceMeters)}m`; }
-function buildNearPlaceMessage(placeName, distanceMeters, unlockRadius) { return `${placeName}까지 ${formatDistanceMeters(distanceMeters)} 남아있어요. 반경 ${unlockRadius}m 안에 들어오면 열려요.`; }
-async function requireSessionUser(request, env) { const sessionUser = await readSessionUser(request, env); if (!sessionUser) {
+function buildNearPlaceMessage(placeName: string, distanceMeters: number, unlockRadius: number) { return `${placeName}까지 ${formatDistanceMeters(distanceMeters)} 남아있어요. 반경 ${unlockRadius}m 안에 들어오면 열려요.`; }
+async function requireSessionUser(request: Request, env: WorkerEnv) { const sessionUser = await readSessionUser(request, env); if (!sessionUser) {
     return { response: jsonResponse(401, { detail: '로그인이 필요해요.' }, env, request) };
 } return { sessionUser }; }
-async function readJsonBody(request) { try {
-    return await request.json();
+async function readJsonBody(request: Request): Promise<WorkerJsonRecord> { try {
+    return await request.json() as WorkerJsonRecord;
 }
 catch {
     throw new Error('요청 형식이 올바르지 않아요.');
 } }
-export function createStampService({ loadBaseData }) { async function handleToggleStamp(request, env) { const sessionResult = await requireSessionUser(request, env); if (sessionResult.response) {
+export function createStampService({ loadBaseData }: WorkerStampServiceDeps) { async function handleToggleStamp(request: Request, env: WorkerEnv) { const sessionResult = await requireSessionUser(request, env); if (sessionResult.response) {
     return sessionResult.response;
 } const payload = await readJsonBody(request); const placeId = String(payload.placeId ?? '').trim(); const latitude = Number(payload.latitude); const longitude = Number(payload.longitude); if (!placeId || !Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     return jsonResponse(400, { detail: '장소와 현재 좌표가 필요해요.' }, env, request);
