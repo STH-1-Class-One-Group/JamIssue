@@ -2,10 +2,10 @@
 
 Scope-ID: `TSK-005-00-ARCHITECTURE-REGRESSION-HARDENING`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/286
-Status: `implementation-complete-docs-in-progress`
-Release candidate: `1.2.11`
+Status: `completed`
+Release: `1.2.10`
 
-이 문서는 TSK-004 이후의 Worker-first backend와 interface-locality 구조가 이전 형태로 회귀하지 않도록 추가한 fitness function과 완료 근거를 추적합니다. 기록 기준은 평가 문구가 아니라 실제 회귀 차단 조건, PR, merge SHA, 검증 결과입니다.
+이 문서는 TSK-004 이후 정리한 Worker-first backend와 interface-locality 구조가 이전 형태로 회귀하지 않도록 추가한 fitness function과 완료 근거를 추적합니다. `1.2.11 후보`로 분리했던 범위는 정식 발행 시점에 `1.2.10`으로 흡수했습니다.
 
 ## 변경 금지 범위
 
@@ -24,7 +24,7 @@ Release candidate: `1.2.11`
 | `TSK-005-03` | [#289](https://github.com/STH-1-Class-One-Group/JamIssue/issues/289) | `worker-persistence-boundary-review-read` | [#295](https://github.com/STH-1-Class-One-Group/JamIssue/pull/295) | `bbbc572f6fd6c6869d5ba2b810d82d452e458aad` | review read persistence를 `review-domain/read-repository.ts` 경계로 이동 |
 | `TSK-005-04` | [#290](https://github.com/STH-1-Class-One-Group/JamIssue/issues/290) | `worker-source-readability-gate` | [#293](https://github.com/STH-1-Class-One-Group/JamIssue/pull/293) | `7a9a08f71ed35efeccb52d790cd37af8700575da` | Worker tracked TS long-line과 statement-density 회귀 차단 |
 | `TSK-005-05` | [#291](https://github.com/STH-1-Class-One-Group/JamIssue/issues/291) | `frontend-naver-map-sdk-contract` | [#294](https://github.com/STH-1-Class-One-Group/JamIssue/pull/294) | `fc6e8b81f02e1409202c6c03fc5d377fb5503abf` | Naver map SDK `any`를 local contract로 격리하고 gate를 0으로 낮춤 |
-| `TSK-005-06` | [#292](https://github.com/STH-1-Class-One-Group/JamIssue/issues/292) | `architecture-regression-docs-traceability` | TBD | TBD | Wiki/release/docs traceability 정리 |
+| `TSK-005-06` | [#292](https://github.com/STH-1-Class-One-Group/JamIssue/issues/292) | `architecture-regression-docs-traceability` | [#300](https://github.com/STH-1-Class-One-Group/JamIssue/pull/300) | `35f4152f5d638a9ebcb5db1836eb04e45c2d5088` | Wiki, roadmap, release traceability 정리 |
 | `TSK-005-07` | [#296](https://github.com/STH-1-Class-One-Group/JamIssue/issues/296) | `worker-stamp-persistence-boundary` | [#298](https://github.com/STH-1-Class-One-Group/JamIssue/pull/298) | `d8eff3e8d4ed26484f1735fbf4ee9ca3ef83fe4c` | stamp persistence를 `stamp-domain/repository.ts` 경계로 이동 |
 | `TSK-005-08` | [#297](https://github.com/STH-1-Class-One-Group/JamIssue/issues/297) | `worker-notification-persistence-boundary` | [#299](https://github.com/STH-1-Class-One-Group/JamIssue/pull/299) | `29b89092aeb6dd6dce07e4b09302edea8651564f` | notification persistence와 realtime broadcast를 domain repository/publisher로 격리 |
 
@@ -37,7 +37,7 @@ Release candidate: `1.2.11`
 - Worker global `types.ts`에 domain row/service contract가 다시 추가되는 경우
 - Worker service constructor dependency contract가 `any`로 회귀하는 경우
 - Worker tracked TS 파일이 one-line blob, 초장문 라인, statement-density 과밀 형태로 회귀하는 경우
-- Naver map SDK `any`가 `src/components/naver-map` local contract 밖으로 새는 경우
+- Naver map SDK `any`가 `src/components/naver-map` local contract 밖에 남는 경우
 - review/stamp/notification service가 repository/adapter 경계 밖에서 `supabaseRequest`를 직접 호출하는 경우
 
 ## Persistence Boundary 결과
@@ -61,17 +61,16 @@ Release candidate: `1.2.11`
 - `git diff --check`
 - UTF-8 integrity check
 
-최신 구현 SHA `29b89092aeb6dd6dce07e4b09302edea8651564f` 기준 원격 검증입니다.
+`1.2.10` 최종 기준 commit `3984be45ca5b292c4e0bef7482f87fdf74159e86`의 원격 검증입니다.
 
-- main CI: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25713928658
-- production-smoke: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25713928664
-- CodeQL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25713928103
-- Code Quality CodeQL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25713928111
+- main CI: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25714942439
+- production-smoke: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25714942430
+- CodeQL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25714941975
+- Code Quality CodeQL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/25714942006
 - Dependabot open alerts: 0
 - Code scanning open alerts: 0
 
-## 남은 범위
+## 남은 예외
 
-- #292 문서 PR merge SHA는 이 PR merge 후 #286/#292 이슈에 기록합니다.
-- 1.2.11은 아직 후보이며, 정식 GitHub Release/tag 발행 대상은 아닙니다.
-- Node.js 20 GitHub Actions deprecation warning은 이번 TSK-005 범위가 아니며 별도 CI maintenance 이슈로 분리합니다.
+- `1.2.11`은 별도 정식 릴리즈로 발행하지 않고 `1.2.10`에 흡수했습니다.
+- Node.js 20 GitHub Actions deprecation warning은 이번 릴리즈 범위가 아니며 별도 CI maintenance 이슈로 분리합니다.

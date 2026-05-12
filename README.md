@@ -1,37 +1,36 @@
 # JamIssue
 
-JamIssue는 대전 지역 방문 피드, 스탬프, 코스, 축제 정보를 한 흐름으로 연결하는 모바일 웹 서비스입니다.
+JamIssue는 대전 지역 방문 필드, 스탬프, 코스, 축제 정보를 하나의 모바일 웹 서비스로 연결하는 프로젝트입니다.
 
-- 서비스 주소: [https://daejeon.jamissue.com](https://daejeon.jamissue.com)
-- 프론트엔드: Cloudflare Pages
-- API: Cloudflare Worker
-- 데이터 저장소: Supabase
+- 운영 웹: [https://daejeon.jamissue.com](https://daejeon.jamissue.com)
+- 운영 API: [https://api.daejeon.jamissue.com](https://api.daejeon.jamissue.com)
+- 운영 구조: Cloudflare Pages + Cloudflare Worker + Supabase
+- 운영 기준: Worker-first BFF, FastAPI는 local/fallback 성격
+- 최신 정식 릴리즈: `1.2.10`
+- 최신 릴리즈 태그: [`release-v1.2.10`](https://github.com/STH-1-Class-One-Group/JamIssue/releases/tag/release-v1.2.10)
 
 ## 운영 구조
 
-- 기본 배포 브랜치: `main`
-- 프론트 도메인: `https://daejeon.jamissue.com`
-- API 도메인: `https://api.daejeon.jamissue.com`
-- Pages 프로젝트: `daejeon-jamissue-pages`
-- Worker 프로젝트: `daejeon-jamissue-api`
+기본 배포 브랜치는 `main`입니다.
 
-JamIssue는 현재 `Pages + Worker + Supabase` 조합을 기준으로 운영합니다.
-운영 API 진입점은 Cloudflare Worker이며, FastAPI 백엔드는 로컬 검증과 레거시 origin fallback 성격으로 유지합니다.
+- Frontend: Cloudflare Pages
+- Backend API: Cloudflare Worker
+- Database/Storage: Supabase
+- Legacy/local backend: FastAPI
 
-- Pages
-  - 정적 프론트 번들 제공
-  - 공개 환경설정 주입
-- Worker
-  - 공개 API 진입점
-  - 인증, 리뷰/댓글, 스탬프, 코스, 축제, 알림, 마이페이지 처리
-- Supabase
-  - 운영 DB
-  - 이미지 스토리지
-  - 일부 실시간 보조 기능
+Worker는 운영 API 진입점이며 인증, 리뷰/댓글, 스탬프, 코스, 축제, 알림, 마이페이지 요청을 처리합니다. FastAPI 백엔드는 운영 주 경로가 아니라 로컬 검증과 레거시 fallback 성격으로 유지합니다.
+
+## 1.2.10 릴리즈 기준
+
+`1.2.10`은 `1.2.9` 이후 진행한 리팩터링과 회귀 방지 작업을 하나로 묶은 정식 릴리즈입니다.
+
+- 기준 commit: `3984be45ca5b292c4e0bef7482f87fdf74159e86`
+- 포함 범위: TSK-004 Worker residual boundary hardening, TSK-005 architecture/interface-locality regression hardening, review collection/render allocation 최적화
+- 제외 범위: 신규 사용자 기능, API path/response shape 변경, DB schema 변경, 사용자-facing copy 변경, Kakao/Naver OAuth 성공 경로 변경
+- 릴리즈 노트: [GitHub Release 1.2.10](https://github.com/STH-1-Class-One-Group/JamIssue/releases/tag/release-v1.2.10)
+- Wiki 릴리즈 노트: [Release Notes 1.2.10](https://github.com/STH-1-Class-One-Group/JamIssue/wiki/Release-Notes-1.2.10)
 
 ## 배포 파이프라인
-
-### PR
 
 PR에서는 아래 검증이 먼저 실행됩니다.
 
@@ -42,25 +41,21 @@ PR에서는 아래 검증이 먼저 실행됩니다.
 - `Analyze (python)`
 - `Analyze (javascript-typescript)`
 
-### `main` push
-
-`main`에 반영되면 아래 순서로 운영 배포와 검증이 이어집니다.
+`main`에 반영되면 운영 배포와 smoke 검증이 실행됩니다.
 
 1. `deploy-pages`
 2. `deploy-worker`
 3. `smoke`
 4. `protected-smoke`
 
-현재 운영 smoke는 커스텀 도메인이 아니라 실제 배포 origin 기준으로 확인합니다.
+운영 smoke는 커스텀 도메인이 아니라 실제 배포 origin 기준으로 확인합니다.
 
 - Pages origin: `https://daejeon-jamissue-pages.pages.dev`
 - Worker origin: `https://daejeon-jamissue-api.yhh4433.workers.dev`
 
 ## Smoke 체크
 
-### Public smoke
-
-공개 경로가 정상인지 확인합니다.
+Public smoke는 공개 경로가 정상인지 확인합니다.
 
 - `GET /`
 - `GET /app-config.js`
@@ -70,16 +65,14 @@ PR에서는 아래 검증이 먼저 실행됩니다.
 - `GET /api/review-feed?limit=1`
 - `GET /api/community-routes`
 - `GET /api/festivals`
-- `GET /api/my/summary` 비로그인 상태 응답
+- `GET /api/my/summary` 비로그인 응답
 
-### Protected smoke
-
-보호 경로는 `SMOKE_AUTH_BEARER_TOKEN`이 있을 때만 실행합니다.
+Protected smoke는 `SMOKE_AUTH_BEARER_TOKEN`이 있을 때만 보호 경로를 확인합니다.
 
 - 토큰이 없으면 실패가 아니라 `skip` 처리
 - 토큰이 있으면 인증이 필요한 운영 경로를 실제로 확인
 
-로컬에서 실행할 때 쓰는 명령:
+로컬 실행:
 
 ```powershell
 npm.cmd run smoke:public
@@ -88,18 +81,19 @@ npm.cmd run smoke:protected
 
 ## 로컬 검증
 
-프론트 검증:
+Frontend/Worker 공통 검증:
 
 ```powershell
 cd D:\JamIssue
 npm.cmd install
+npm.cmd run check:numeric-literals
 npm.cmd run lint
 npm.cmd run typecheck
+npm.cmd run test:unit
 npm.cmd run build
-npm.cmd run test:all
 ```
 
-백엔드 검증:
+Backend 검증:
 
 ```powershell
 cd D:\JamIssue\backend
@@ -173,8 +167,10 @@ APP_EVENT_IMPORT_TOKEN=<same value as GitHub EVENT_IMPORT_TOKEN>
 - [docs/README.md](docs/README.md)
 - [docs/growgardens-deploy-runbook.md](docs/growgardens-deploy-runbook.md)
 - [docs/operations-refactor-roadmap.md](docs/operations-refactor-roadmap.md)
+- [docs/worker-residual-boundary-traceability.md](docs/worker-residual-boundary-traceability.md)
+- [docs/architecture-regression-traceability.md](docs/architecture-regression-traceability.md)
 - [backend/README.md](backend/README.md)
 
 ## CI 메모
 
-문서만 수정한 `main` 커밋에서 Actions와 배포를 함께 건너뛰고 싶을 때는 커밋 메시지에 `[skip ci]`를 포함하면 됩니다.
+문서만 수정하는 main 커밋에서 Actions와 배포를 함께 건너뛰려면 커밋 메시지에 `[skip ci]`를 포함합니다.

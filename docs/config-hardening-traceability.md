@@ -60,7 +60,7 @@ production code
 | `TSK-002-04` | [#242](https://github.com/STH-1-Class-One-Group/JamIssue/issues/242) | `frontend-runtime-limit-config` | [#250](https://github.com/STH-1-Class-One-Group/JamIssue/pull/250) | `a20928a7ed64dd88fd91c3b6b9eb85781c1c15be` | API TTL, upload, autoload, feedback, pagination runtime config |
 | `TSK-002-05` | [#243](https://github.com/STH-1-Class-One-Group/JamIssue/issues/243) | `worker-runtime-config` | [#251](https://github.com/STH-1-Class-One-Group/JamIssue/pull/251) | `3bcbbc4fd9e28d3b70f4899461e95dafbb7eb9e4` | Worker auth/session/festival/notification/stamp runtime config |
 | `TSK-002-06` | [#244](https://github.com/STH-1-Class-One-Group/JamIssue/issues/244) | `fastapi-runtime-config-review` | [#252](https://github.com/STH-1-Class-One-Group/JamIssue/pull/252) | `08bfdcfa9071b69bf84e33828b27f608529ea2b7` | FastAPI local/fallback runtime config boundary |
-| `TSK-002-07` | [#245](https://github.com/STH-1-Class-One-Group/JamIssue/issues/245) | `config-hardening-docs-traceability` | [#253](https://github.com/STH-1-Class-One-Group/JamIssue/pull/253) | `TBD` | Wiki, runbook, release traceability |
+| `TSK-002-07` | [#245](https://github.com/STH-1-Class-One-Group/JamIssue/issues/245) | `config-hardening-docs-traceability` | [#253](https://github.com/STH-1-Class-One-Group/JamIssue/pull/253) | `8d9065ab70e3dd61f6b01eaab30f1ed1a5c8a2e9` | Wiki, runbook, release traceability |
 
 ## 검증 기준
 
