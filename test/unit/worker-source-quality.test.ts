@@ -78,7 +78,7 @@ describe('worker source quality gates', () => {
       {
         file: 'deploy/api-worker-shell/services/notifications.ts',
         limits: {
-          supabaseRequest: 11,
+          supabaseRequest: 0,
           exportedHandlers: 5,
           implicitEnvSignatures: 0,
         },
@@ -252,6 +252,25 @@ describe('worker source quality gates', () => {
     expect(repositorySource).toContain('supabaseRequest');
     expect(repositorySource).toContain('user_stamp?select=');
     expect(repositorySource).toContain('travel_session?select=');
+  });
+
+  it('keeps notification persistence and realtime broadcast behind notification-domain boundaries', () => {
+    const serviceSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/notifications.ts'), 'utf8');
+    const repositorySource = readFileSync(
+      join(workspaceRoot, 'deploy/api-worker-shell/services/notification-domain/repository.ts'),
+      'utf8',
+    );
+    const publisherSource = readFileSync(
+      join(workspaceRoot, 'deploy/api-worker-shell/services/notification-domain/publisher.ts'),
+      'utf8',
+    );
+
+    expect(serviceSource).not.toContain('supabaseRequest');
+    expect(serviceSource).not.toContain('user_notification?select=');
+    expect(serviceSource).not.toContain('/realtime/v1/api/broadcast');
+    expect(repositorySource).toContain('supabaseRequest');
+    expect(repositorySource).toContain('user_notification?select=');
+    expect(publisherSource).toContain('/realtime/v1/api/broadcast');
   });
 
   it('keeps account, community, and admin service persistence behind domain repositories', () => {
