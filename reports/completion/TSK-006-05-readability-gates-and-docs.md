@@ -2,9 +2,9 @@
 
 Scope-ID: `TSK-006-05-READABILITY-GATES-AND-DOCS`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/308
-PR: `TBD-TSK-006-05-READABILITY-GATES-AND-DOCS`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/313
 Branch: `readability-gates-and-docs`
-Status: `validated-local`
+Status: `validated-remote`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/303
 Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/308
 
