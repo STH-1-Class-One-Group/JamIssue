@@ -39,6 +39,22 @@ function countSourceMatches(file: string, pattern: RegExp) {
   return [...source.matchAll(pattern)].length;
 }
 
+function collectTrackedFiles(paths: string[]) {
+  const output = execFileSync('git', ['ls-files', ...paths], {
+    cwd: workspaceRoot,
+    encoding: 'utf8',
+  });
+
+  return output.split(/\r?\n/).filter(Boolean);
+}
+
+function countTrackedSourceMatches(paths: string[], pattern: RegExp) {
+  return collectTrackedFiles(paths).reduce((count, file) => {
+    const source = readFileSync(join(workspaceRoot, file), 'utf8');
+    return count + [...source.matchAll(pattern)].length;
+  }, 0);
+}
+
 describe('interface locality source quality baseline', () => {
   it('keeps Worker central type surface from growing before locality splits', () => {
     expect(countSourceMatches('deploy/api-worker-shell/types.ts', /^export (type|interface) /gm)).toBeLessThanOrEqual(4);
@@ -62,6 +78,16 @@ describe('interface locality source quality baseline', () => {
     expect(gitGrepCount(rootTypeImportPattern, ['src'])).toBeLessThanOrEqual(19);
     expect(gitGrepCount(rootTypeImportPattern, ['src/components'])).toBe(0);
     expect(gitGrepCount(rootTypeImportPattern, ['src/hooks'])).toBe(0);
+  });
+
+  it('keeps frontend public type contracts from importing API clients', () => {
+    expect(countTrackedSourceMatches(['src/types'], /from\s+['"][^'"]*\/api(?:\/|['"])/g)).toBe(0);
+  });
+
+  it('keeps the Naver map SDK any baseline from growing before local contracts are added', () => {
+    expect(countTrackedSourceMatches(['src/components/naver-map'], /\bany\b/g)).toBeLessThanOrEqual(14);
+    expect(countTrackedSourceMatches(['src/components/naver-map'], /Promise<any>/g)).toBeLessThanOrEqual(1);
+    expect(countTrackedSourceMatches(['src/components/naver-map'], /Map<string,\s*any>/g)).toBeLessThanOrEqual(2);
   });
 
   it('keeps wide stage prop coupling from growing before stage-local props are split', () => {
