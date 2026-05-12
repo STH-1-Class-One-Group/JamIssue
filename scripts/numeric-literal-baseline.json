@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "fc6e8b81f02e1409202c6c03fc5d377fb5503abf",
+  "generatedFrom": "bbbc572f6fd6c6869d5ba2b810d82d452e458aad",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -2094,6 +2094,41 @@
       ]
     },
     {
+      "path": "deploy/api-worker-shell/services/review-domain/read-repository.ts",
+      "count": 5,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "1",
+          "line": 45,
+          "column": 22
+        },
+        {
+          "value": "1",
+          "line": 57,
+          "column": 140
+        },
+        {
+          "value": "0",
+          "line": 59,
+          "column": 17
+        },
+        {
+          "value": "0",
+          "line": 98,
+          "column": 36
+        },
+        {
+          "value": "1",
+          "line": 111,
+          "column": 268
+        }
+      ]
+    },
+    {
       "path": "deploy/api-worker-shell/services/review-domain/repository.ts",
       "count": 10,
       "owner": "worker-backend",
@@ -2215,7 +2250,7 @@
     },
     {
       "path": "deploy/api-worker-shell/services/stamps.ts",
-      "count": 27,
+      "count": 18,
       "owner": "worker-backend",
       "category": "worker-runtime-limit-baseline",
       "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
@@ -2223,33 +2258,33 @@
       "examples": [
         {
           "value": "0",
-          "line": 8,
-          "column": 205
+          "line": 20,
+          "column": 46
         },
         {
           "value": "2",
-          "line": 9,
-          "column": 538
+          "line": 34,
+          "column": 30
         },
         {
           "value": "2",
-          "line": 9,
-          "column": 544
+          "line": 34,
+          "column": 36
         },
         {
           "value": "2",
-          "line": 9,
-          "column": 638
+          "line": 35,
+          "column": 95
         },
         {
           "value": "2",
-          "line": 9,
-          "column": 644
+          "line": 35,
+          "column": 101
         },
         {
           "value": "2",
-          "line": 9,
-          "column": 700
+          "line": 36,
+          "column": 56
         }
       ]
     },

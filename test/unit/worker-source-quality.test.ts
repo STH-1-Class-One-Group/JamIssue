@@ -86,7 +86,7 @@ describe('worker source quality gates', () => {
       {
         file: 'deploy/api-worker-shell/services/stamps.ts',
         limits: {
-          supabaseRequest: 10,
+          supabaseRequest: 0,
           implicitRequestBodyReaders: 0,
           implicitEnvSignatures: 0,
         },
@@ -237,6 +237,21 @@ describe('worker source quality gates', () => {
     expect(reviewReadSource).not.toContain('function mapReviewRows');
     expect(repositorySource).toContain('supabaseRequest');
     expect(readRepositorySource).toContain('supabaseRequest');
+  });
+
+  it('keeps stamp persistence behind the stamp repository boundary', () => {
+    const serviceSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/stamps.ts'), 'utf8');
+    const repositorySource = readFileSync(
+      join(workspaceRoot, 'deploy/api-worker-shell/services/stamp-domain/repository.ts'),
+      'utf8',
+    );
+
+    expect(serviceSource).not.toContain('supabaseRequest');
+    expect(serviceSource).not.toContain('user_stamp?select=');
+    expect(serviceSource).not.toContain('travel_session?select=');
+    expect(repositorySource).toContain('supabaseRequest');
+    expect(repositorySource).toContain('user_stamp?select=');
+    expect(repositorySource).toContain('travel_session?select=');
   });
 
   it('keeps account, community, and admin service persistence behind domain repositories', () => {
