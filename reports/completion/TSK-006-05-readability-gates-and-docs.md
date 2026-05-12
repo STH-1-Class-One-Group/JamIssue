@@ -37,7 +37,7 @@ TSK-006의 코드 구조 변경 결과를 repo 문서와 Wiki에 연결해 1.2.1
 - [x] `git diff --check` 통과
 - [x] UTF-8 integrity check 통과
 - [x] Wiki link/UTF-8 check 통과
-- [ ] PR checks
+- [x] PR checks 통과 - https://github.com/STH-1-Class-One-Group/JamIssue/pull/313
 
 ## Remaining Follow-Up Work
 
