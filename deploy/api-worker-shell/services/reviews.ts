@@ -1,21 +1,31 @@
 import { jsonResponse } from '../lib/http';
-import { buildInFilter, encodeFilterValue, parseListLimit, supabaseRequest } from '../lib/supabase';
+import { parseListLimit } from '../lib/supabase';
 import { WorkerPaginationRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
 import { createReviewMapper } from './review-domain/mapper';
-import type { SupabaseMapRow } from '../runtime/base-data-contracts';
 import type { WorkerEnv } from '../types';
 import type {
-  WorkerReviewCommentRow,
   WorkerReviewDataFilters,
-  WorkerReviewFeedRow,
-  WorkerReviewLikeRow,
   WorkerReviewPageOptions,
   WorkerReviewReadServiceDeps,
-  WorkerReviewRouteRow,
-  WorkerReviewStampRow,
   WorkerReviewUserRow,
 } from './review-domain/contracts';
+import {
+  readReviewCommentRows,
+  readReviewFeedRows,
+  readReviewLikeRows,
+  readReviewPageRows,
+  readReviewPlaceRows,
+  readReviewRouteRows,
+  readReviewStampRows,
+  readReviewUserRows,
+  readSingleReviewFeedRow,
+  readUserFeedLikeRows,
+} from './review-domain/read-repository';
+
+function indexUsersById(userRows: WorkerReviewUserRow[]) {
+  return new Map(userRows.map((row) => [row.user_id, row] as const));
+}
 
 export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, mapPlace }: WorkerReviewReadServiceDeps) {
   const { buildCommentTree, countComments, mapReviewRows } = createReviewMapper(formatVisitLabel);
@@ -25,32 +35,21 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
     const places = placeRows.map(mapPlace);
     const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
     const placeIdToPositionId = new Map(places.map((place) => [place.id, place.positionId]));
-    const reviewQuery = ['select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at', 'order=created_at.desc'];
+    let positionId: string | null = null;
     if (filters.placeId) {
-      const positionId = placeIdToPositionId.get(filters.placeId);
+      positionId = placeIdToPositionId.get(filters.placeId) ?? null;
       if (!positionId) {
         return [];
       }
-      reviewQuery.push(`position_id=eq.${encodeFilterValue(positionId)}`);
-    }
-    if (filters.userId) {
-      reviewQuery.push(`user_id=eq.${encodeFilterValue(filters.userId)}`);
     }
 
-    const feedRows = await supabaseRequest<WorkerReviewFeedRow[]>(env, `feed?${reviewQuery.join('&')}`);
-    const feedIdsFilter = buildInFilter(feedRows.map((row) => row.feed_id));
-    const reviewStampIdsFilter = buildInFilter(feedRows.map((row) => row.stamp_id).filter(Boolean));
+    const feedRows = await readReviewFeedRows(env, { positionId, userId: filters.userId });
+    const feedIds = feedRows.map((row) => row.feed_id);
     const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
-      feedIdsFilter
-        ? supabaseRequest<WorkerReviewCommentRow[]>(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=${feedIdsFilter}&order=created_at.asc`)
-        : Promise.resolve([]),
-      feedIdsFilter ? supabaseRequest<WorkerReviewLikeRow[]>(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`) : Promise.resolve([]),
-      reviewStampIdsFilter
-        ? supabaseRequest<WorkerReviewStampRow[]>(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=${reviewStampIdsFilter}`)
-        : Promise.resolve([]),
-      sessionUserId && feedIdsFilter
-        ? supabaseRequest<WorkerReviewLikeRow[]>(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=${feedIdsFilter}`)
-        : Promise.resolve([]),
+      readReviewCommentRows(env, feedIds),
+      readReviewLikeRows(env, feedIds),
+      readReviewStampRows(env, feedRows.map((row) => row.stamp_id)),
+      readUserFeedLikeRows(env, feedIds, sessionUserId),
     ]);
     const reviewTravelSessionIds = [
       ...new Set(
@@ -60,13 +59,9 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
           .map((value) => String(value)),
       ),
     ];
-    const reviewRouteRows =
-      reviewTravelSessionIds.length > 0
-        ? await supabaseRequest<WorkerReviewRouteRow[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
-        : [];
-    const userIdsFilter = buildInFilter([...feedRows.map((row) => row.user_id), ...commentRows.map((row) => row.user_id)]);
-    const userRows = userIdsFilter ? await supabaseRequest<WorkerReviewUserRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
-    const usersById = new Map(userRows.map((row) => [row.user_id, row]));
+    const reviewRouteRows = await readReviewRouteRows(env, reviewTravelSessionIds);
+    const userRows = await readReviewUserRows(env, [...feedRows.map((row) => row.user_id), ...commentRows.map((row) => row.user_id)]);
+    const usersById = indexUsersById(userRows);
     const stampRowsById = new Map((reviewStampRows ?? []).map((row) => [String(row.stamp_id), row]));
     const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
     return mapReviewRows(feedRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, reviewRouteRows, likedFeedIds);
@@ -77,27 +72,15 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
     const { placeRows } = await loadStaticBaseRows(env);
     const places = placeRows.map(mapPlace);
     const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
-    const reviewQuery = ['select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at', 'order=created_at.desc', `limit=${limit + 1}`];
-    if (cursor) {
-      reviewQuery.push(`created_at=lt.${encodeFilterValue(cursor)}`);
-    }
-
-    const feedRows = await supabaseRequest<WorkerReviewFeedRow[]>(env, `feed?${reviewQuery.join('&')}`);
+    const feedRows = await readReviewPageRows(env, { cursor, limit });
     const nextCursor = feedRows.length > limit ? String(feedRows[limit].created_at) : null;
     const pageRows = feedRows.slice(0, limit);
-    const feedIdsFilter = buildInFilter(pageRows.map((row) => row.feed_id));
-    const reviewStampIdsFilter = buildInFilter(pageRows.map((row) => row.stamp_id).filter(Boolean));
+    const feedIds = pageRows.map((row) => row.feed_id);
     const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
-      feedIdsFilter
-        ? supabaseRequest<WorkerReviewCommentRow[]>(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=${feedIdsFilter}&order=created_at.asc`)
-        : Promise.resolve([]),
-      feedIdsFilter ? supabaseRequest<WorkerReviewLikeRow[]>(env, `feed_like?select=feed_id,user_id&feed_id=${feedIdsFilter}`) : Promise.resolve([]),
-      reviewStampIdsFilter
-        ? supabaseRequest<WorkerReviewStampRow[]>(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=${reviewStampIdsFilter}`)
-        : Promise.resolve([]),
-      sessionUserId && feedIdsFilter
-        ? supabaseRequest<WorkerReviewLikeRow[]>(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=${feedIdsFilter}`)
-        : Promise.resolve([]),
+      readReviewCommentRows(env, feedIds),
+      readReviewLikeRows(env, feedIds),
+      readReviewStampRows(env, pageRows.map((row) => row.stamp_id)),
+      readUserFeedLikeRows(env, feedIds, sessionUserId),
     ]);
     const reviewTravelSessionIds = [
       ...new Set(
@@ -107,38 +90,25 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
           .map((value) => String(value)),
       ),
     ];
-    const reviewRouteRows =
-      reviewTravelSessionIds.length > 0
-        ? await supabaseRequest<WorkerReviewRouteRow[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
-        : [];
-    const userIdsFilter = buildInFilter([...pageRows.map((row) => row.user_id), ...commentRows.map((row) => row.user_id)]);
-    const userRows = userIdsFilter ? await supabaseRequest<WorkerReviewUserRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
-    const usersById = new Map(userRows.map((row) => [row.user_id, row]));
+    const reviewRouteRows = await readReviewRouteRows(env, reviewTravelSessionIds);
+    const userRows = await readReviewUserRows(env, [...pageRows.map((row) => row.user_id), ...commentRows.map((row) => row.user_id)]);
+    const usersById = indexUsersById(userRows);
     const stampRowsById = new Map((reviewStampRows ?? []).map((row) => [String(row.stamp_id), row]));
     const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
     return { items: mapReviewRows(pageRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, reviewRouteRows, likedFeedIds), nextCursor };
   }
 
   async function loadSingleReview(env: WorkerEnv, reviewId: string, sessionUserId: string | null = null) {
-    const reviewRows = await supabaseRequest<WorkerReviewFeedRow[]>(
-      env,
-      `feed?select=feed_id,position_id,user_id,stamp_id,body,mood,badge,image_url,created_at&feed_id=eq.${encodeFilterValue(reviewId)}&limit=1`,
-    );
-    const reviewRow = reviewRows?.[0] ?? null;
+    const reviewRow = await readSingleReviewFeedRow(env, reviewId);
     if (!reviewRow) {
       return null;
     }
     const [commentRows, likeRows, placeRows, stampRows, userFeedLikeRows = []] = await Promise.all([
-      supabaseRequest<WorkerReviewCommentRow[]>(env, `user_comment?select=comment_id,feed_id,user_id,parent_id,body,is_deleted,created_at&feed_id=eq.${encodeFilterValue(reviewId)}&order=created_at.asc`),
-      supabaseRequest<WorkerReviewLikeRow[]>(env, `feed_like?select=feed_id,user_id&feed_id=eq.${encodeFilterValue(reviewId)}`),
-      supabaseRequest<SupabaseMapRow[]>(
-        env,
-        `map?select=position_id,slug,name,district,category,latitude,longitude,summary,description,image_url,image_storage_path,vibe_tags,visit_time,route_hint,stamp_reward,hero_label,jam_color,accent_color,is_active&position_id=eq.${encodeFilterValue(reviewRow.position_id)}&limit=1`,
-      ),
-      reviewRow.stamp_id
-        ? supabaseRequest<WorkerReviewStampRow[]>(env, `user_stamp?select=stamp_id,user_id,position_id,travel_session_id,stamp_date,visit_ordinal,created_at&stamp_id=eq.${encodeFilterValue(reviewRow.stamp_id)}&limit=1`)
-        : Promise.resolve([]),
-      sessionUserId ? supabaseRequest<WorkerReviewLikeRow[]>(env, `feed_like?select=feed_id&user_id=eq.${encodeFilterValue(sessionUserId)}&feed_id=eq.${encodeFilterValue(reviewId)}&limit=1`) : Promise.resolve([]),
+      readReviewCommentRows(env, [reviewId]),
+      readReviewLikeRows(env, [reviewId]),
+      readReviewPlaceRows(env, reviewRow.position_id),
+      readReviewStampRows(env, [reviewRow.stamp_id]),
+      readUserFeedLikeRows(env, [reviewId], sessionUserId),
     ]);
     const reviewTravelSessionIds = [
       ...new Set(
@@ -148,15 +118,11 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
           .map((value) => String(value)),
       ),
     ];
-    const reviewRouteRows =
-      reviewTravelSessionIds.length > 0
-        ? await supabaseRequest<WorkerReviewRouteRow[]>(env, `user_route?select=route_id,travel_session_id&travel_session_id=${buildInFilter(reviewTravelSessionIds)}`)
-        : [];
-    const userIdsFilter = buildInFilter([reviewRow.user_id, ...commentRows.map((row) => row.user_id)]);
-    const userRows = userIdsFilter ? await supabaseRequest<WorkerReviewUserRow[]>(env, `user?select=user_id,nickname&user_id=${userIdsFilter}`) : [];
+    const reviewRouteRows = await readReviewRouteRows(env, reviewTravelSessionIds);
+    const userRows = await readReviewUserRows(env, [reviewRow.user_id, ...commentRows.map((row) => row.user_id)]);
     const places = placeRows.map(mapPlace);
     const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
-    const usersById = new Map(userRows.map((row) => [row.user_id, row]));
+    const usersById = indexUsersById(userRows);
     const stampRowsById = new Map((stampRows ?? []).map((row) => [String(row.stamp_id), row]));
     const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
     return mapReviewRows([reviewRow], commentRows ?? [], likeRows ?? [], usersById, placesByPositionId, stampRowsById, reviewRouteRows, likedFeedIds)[0] ?? null;

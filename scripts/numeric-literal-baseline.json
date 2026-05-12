@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "cb04022cd5fd091ddf0c61d56726f8eb1f818975",
+  "generatedFrom": "fc6e8b81f02e1409202c6c03fc5d377fb5503abf",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -1583,7 +1583,7 @@
       "examples": [
         {
           "value": "00",
-          "line": 56,
+          "line": 64,
           "column": 47
         }
       ]
@@ -2023,33 +2023,33 @@
       "examples": [
         {
           "value": "401",
-          "line": 7,
+          "line": 44,
           "column": 37
         },
         {
           "value": "1",
-          "line": 9,
-          "column": 290
+          "line": 46,
+          "column": 343
         },
         {
           "value": "0",
-          "line": 9,
-          "column": 309
+          "line": 46,
+          "column": 362
         },
         {
           "value": "0",
-          "line": 12,
-          "column": 462
+          "line": 49,
+          "column": 496
         },
         {
           "value": "0",
-          "line": 14,
-          "column": 228
+          "line": 51,
+          "column": 281
         },
         {
           "value": "1",
-          "line": 18,
-          "column": 137
+          "line": 55,
+          "column": 167
         }
       ]
     },
@@ -2175,7 +2175,7 @@
     },
     {
       "path": "deploy/api-worker-shell/services/reviews.ts",
-      "count": 15,
+      "count": 6,
       "owner": "worker-backend",
       "category": "worker-runtime-limit-baseline",
       "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
@@ -2183,33 +2183,33 @@
       "examples": [
         {
           "value": "0",
-          "line": 64,
-          "column": 39
-        },
-        {
-          "value": "1",
-          "line": 80,
-          "column": 152
-        },
-        {
-          "value": "0",
-          "line": 87,
+          "line": 77,
           "column": 37
         },
         {
           "value": "0",
-          "line": 111,
-          "column": 39
+          "line": 128,
+          "column": 151
         },
         {
-          "value": "1",
-          "line": 125,
-          "column": 142
+          "value": "200",
+          "line": 137,
+          "column": 25
         },
         {
-          "value": "0",
-          "line": 127,
-          "column": 36
+          "value": "200",
+          "line": 146,
+          "column": 25
+        },
+        {
+          "value": "404",
+          "line": 153,
+          "column": 27
+        },
+        {
+          "value": "200",
+          "line": 155,
+          "column": 25
         }
       ]
     },
@@ -2223,33 +2223,33 @@
       "examples": [
         {
           "value": "0",
-          "line": 6,
-          "column": 194
+          "line": 8,
+          "column": 205
         },
         {
           "value": "2",
-          "line": 7,
-          "column": 506
+          "line": 9,
+          "column": 538
         },
         {
           "value": "2",
-          "line": 7,
-          "column": 512
+          "line": 9,
+          "column": 544
         },
         {
           "value": "2",
-          "line": 7,
-          "column": 606
+          "line": 9,
+          "column": 638
         },
         {
           "value": "2",
-          "line": 7,
-          "column": 612
+          "line": 9,
+          "column": 644
         },
         {
           "value": "2",
-          "line": 7,
-          "column": 668
+          "line": 9,
+          "column": 700
         }
       ]
     },
@@ -3763,32 +3763,32 @@
       "examples": [
         {
           "value": "95",
-          "line": 7,
+          "line": 12,
           "column": 45
         },
         {
           "value": "70",
-          "line": 7,
+          "line": 12,
           "column": 49
         },
         {
           "value": "96",
-          "line": 7,
+          "line": 12,
           "column": 53
         },
         {
           "value": "0.18",
-          "line": 7,
+          "line": 12,
           "column": 57
         },
         {
           "value": "50%",
-          "line": 15,
+          "line": 20,
           "column": 44
         },
         {
           "value": "999px",
-          "line": 15,
+          "line": 20,
           "column": 226
         }
       ]
@@ -3823,7 +3823,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 31,
+          "line": 26,
           "column": 110
         }
       ]
@@ -3838,7 +3838,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 43,
+          "line": 44,
           "column": 56
         }
       ]
@@ -3853,32 +3853,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 54,
+          "line": 40,
           "column": 62
         },
         {
           "value": "0.82",
-          "line": 63,
+          "line": 49,
           "column": 22
         },
         {
           "value": "4",
-          "line": 64,
+          "line": 50,
           "column": 21
         },
         {
           "value": "1",
-          "line": 78,
+          "line": 64,
           "column": 53
         },
         {
           "value": "2",
-          "line": 84,
+          "line": 70,
           "column": 38
         },
         {
           "value": "1",
-          "line": 88,
+          "line": 74,
           "column": 46
         }
       ]
@@ -3893,7 +3893,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 80,
+          "line": 71,
           "column": 23
         }
       ]

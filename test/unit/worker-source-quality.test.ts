@@ -72,7 +72,7 @@ describe('worker source quality gates', () => {
       {
         file: 'deploy/api-worker-shell/services/reviews.ts',
         limits: {
-          supabaseRequest: 23,
+          supabaseRequest: 0,
         },
       },
       {
@@ -227,13 +227,16 @@ describe('worker source quality gates', () => {
   it('keeps review interaction persistence behind the review repository boundary', () => {
     const interactionSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/review-interactions.ts'), 'utf8');
     const repositorySource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/review-domain/repository.ts'), 'utf8');
+    const readRepositorySource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/review-domain/read-repository.ts'), 'utf8');
     const reviewReadSource = readFileSync(join(workspaceRoot, 'deploy/api-worker-shell/services/reviews.ts'), 'utf8');
 
     expect(interactionSource).not.toContain('supabaseRequest');
     expect(interactionSource).not.toContain('feed?select=');
     expect(reviewReadSource).toContain("import { createReviewMapper } from './review-domain/mapper';");
+    expect(reviewReadSource).not.toContain('supabaseRequest');
     expect(reviewReadSource).not.toContain('function mapReviewRows');
     expect(repositorySource).toContain('supabaseRequest');
+    expect(readRepositorySource).toContain('supabaseRequest');
   });
 
   it('keeps account, community, and admin service persistence behind domain repositories', () => {
