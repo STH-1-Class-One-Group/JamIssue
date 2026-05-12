@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-006-02-WORKER-DOMAIN-ENTRYPOINT-READABILITY`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/305
-PR: `TBD-TSK-006-02-WORKER-DOMAIN-ENTRYPOINT-READABILITY`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/310
 Branch: `worker-domain-entrypoint-readability`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/303
