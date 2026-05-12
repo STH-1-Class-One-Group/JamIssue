@@ -2,6 +2,14 @@ import type { SessionUser } from '../../types/auth';
 import type { Review, StampLog } from '../../types/review';
 import type { MyPageResponse } from '../../types/my-page';
 
+function addSessionReviews(reviewMap: Map<string, Review>, source: readonly Review[], sessionUserId: string) {
+  for (const review of source) {
+    if (review.userId === sessionUserId) {
+      reviewMap.set(review.id, review);
+    }
+  }
+}
+
 export function getKnownMyReviews({
   reviews,
   selectedPlaceReviews,
@@ -18,11 +26,10 @@ export function getKnownMyReviews({
   }
 
   const reviewMap = new Map<string, Review>();
-  for (const review of [...reviews, ...selectedPlaceReviews, ...(myPageReviews ?? [])]) {
-    if (review.userId !== sessionUser.id) {
-      continue;
-    }
-    reviewMap.set(review.id, review);
+  addSessionReviews(reviewMap, reviews, sessionUser.id);
+  addSessionReviews(reviewMap, selectedPlaceReviews, sessionUser.id);
+  if (myPageReviews) {
+    addSessionReviews(reviewMap, myPageReviews, sessionUser.id);
   }
 
   return [...reviewMap.values()];
