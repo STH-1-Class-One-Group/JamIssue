@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { SelectionMotionConfig } from '../../config/mapConfig';
+import type { NaverMapEventListener, NaverMapInstance, NaverMapsApi } from './naverMapTypes';
 
 type ViewportChangeHandler = ((lat: number, lng: number, zoom: number) => void) | undefined;
 
 type NaverViewportSyncArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: typeof window.naver.maps | undefined;
-  mapRef: React.MutableRefObject<any>;
+  mapsApi: NaverMapsApi | undefined;
+  mapRef: React.MutableRefObject<NaverMapInstance | null>;
   onViewportChangeRef: React.MutableRefObject<ViewportChangeHandler>;
 };
 
@@ -16,7 +17,7 @@ export function useNaverViewportSync({
   mapRef,
   onViewportChangeRef,
 }: NaverViewportSyncArgs) {
-  const idleListenerRef = useRef<any>(null);
+  const idleListenerRef = useRef<NaverMapEventListener | null>(null);
   const viewportDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {

@@ -2,28 +2,14 @@ import { useEffect } from 'react';
 import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { Place } from '../../types/core';
 import { routeStepMarkerContent } from './markerContent';
-
-type NaverMapInstance = {
-  fitBounds?: (bounds: unknown, padding?: Record<string, number>) => void;
-  panTo?: (position: unknown) => void;
-};
-
-type MarkerInstance = {
-  setMap: (map: unknown) => void;
-};
-
-type PolylineInstance = {
-  setMap: (map: unknown) => void;
-};
-
-type MapsApi = typeof window.naver.maps;
+import type { NaverMapInstance, NaverMapsApi, NaverMarkerInstance, NaverPolylineInstance } from './naverMapTypes';
 
 type RoutePreviewOverlayArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: MapsApi | undefined;
+  mapsApi: NaverMapsApi | undefined;
   mapRef: React.MutableRefObject<NaverMapInstance | null>;
-  routeLineRef: React.MutableRefObject<PolylineInstance | null>;
-  routeStepMarkersRef: React.MutableRefObject<MarkerInstance[]>;
+  routeLineRef: React.MutableRefObject<NaverPolylineInstance | null>;
+  routeStepMarkersRef: React.MutableRefObject<NaverMarkerInstance[]>;
   routePreviewPlaces: Place[];
   selectedPlaceId: string | null;
   selectedFestivalId: string | null;

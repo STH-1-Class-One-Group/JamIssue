@@ -2,6 +2,11 @@ import { cssPx, UiNaverMarkerVisualConfig } from '../../config/uiTokenConfig';
 import { categoryInfo } from '../../lib/categories';
 import type { FestivalItem, Place } from '../../types/core';
 
+type FestivalWithCoordinates = FestivalItem & {
+  latitude: number;
+  longitude: number;
+};
+
 export function placeMarkerContent(place: Place, isActive: boolean) {
   const info = categoryInfo[place.category];
   const ring = isActive ? '#5f4660' : 'rgba(95, 70, 96, 0.18)';
@@ -42,7 +47,7 @@ export function festivalMarkerContent(_festival: FestivalItem, isActive: boolean
   `;
 }
 
-export function hasFestivalCoordinates(festival: FestivalItem) {
+export function hasFestivalCoordinates(festival: FestivalItem): festival is FestivalWithCoordinates {
   return typeof festival.latitude === 'number'
     && Number.isFinite(festival.latitude)
     && typeof festival.longitude === 'number'

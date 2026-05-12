@@ -2,13 +2,12 @@ import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
 import { NaverMarkerConfig } from '../../config/mapConfig';
 import { currentLocationMarkerContent } from './markerContent';
-
-type MapsApi = typeof window.naver.maps;
+import type { NaverMapInstance, NaverMapsApi, NaverMarkerInstance } from './naverMapTypes';
 
 type CurrentLocationMarkerArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: MapsApi | undefined;
-  mapRef: MutableRefObject<any>;
+  mapsApi: NaverMapsApi | undefined;
+  mapRef: MutableRefObject<NaverMapInstance | null>;
   currentPosition: { latitude: number; longitude: number } | null;
 };
 
@@ -18,7 +17,7 @@ export function useNaverCurrentLocationMarker({
   mapRef,
   currentPosition,
 }: CurrentLocationMarkerArgs) {
-  const currentMarkerRef = useRef<any | null>(null);
+  const currentMarkerRef = useRef<NaverMarkerInstance | null>(null);
 
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {

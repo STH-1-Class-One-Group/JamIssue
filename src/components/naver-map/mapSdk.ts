@@ -1,16 +1,11 @@
 import { MapViewportConfig } from '../../config/mapConfig';
+import type { NaverMapsApi } from './naverMapTypes';
 
 export const DAEJEON_CENTER = MapViewportConfig.daejeonCenter;
 
-declare global {
-  interface Window {
-    naver?: any;
-  }
-}
+let naverScriptPromise: Promise<NaverMapsApi> | null = null;
 
-let naverScriptPromise: Promise<any> | null = null;
-
-export function loadNaverMaps(clientId: string) {
+export function loadNaverMaps(clientId: string): Promise<NaverMapsApi> {
   if (window.naver?.maps) {
     return Promise.resolve(window.naver.maps);
   }

@@ -6,11 +6,12 @@ import { useNaverFestivalMarkers } from './useNaverFestivalMarkers';
 import { useNaverPlaceMarkers } from './useNaverPlaceMarkers';
 import { useNaverRoutePreviewOverlay } from './useNaverRoutePreviewOverlay';
 import { useNaverSelectionSync } from './useNaverSelectionSync';
+import type { NaverMapInstance, NaverMapsApi, NaverMarkerInstance, NaverPolylineInstance } from './naverMapTypes';
 
 type MapInteractionsArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: typeof window.naver.maps | undefined;
-  mapRef: React.MutableRefObject<any>;
+  mapsApi: NaverMapsApi | undefined;
+  mapRef: React.MutableRefObject<NaverMapInstance | null>;
   mapElementRef: React.MutableRefObject<HTMLDivElement | null>;
   places: Place[];
   festivals: FestivalItem[];
@@ -38,8 +39,8 @@ export function useNaverMapInteractions({
   focusCurrentLocationKey,
   routePreviewPlaces,
 }: MapInteractionsArgs) {
-  const routeLineRef = useRef<any | null>(null);
-  const routeStepMarkersRef = useRef<any[]>([]);
+  const routeLineRef = useRef<NaverPolylineInstance | null>(null);
+  const routeStepMarkersRef = useRef<NaverMarkerInstance[]>([]);
   const lastHandledCurrentLocationFocusKeyRef = useRef(0);
 
   useNaverPlaceMarkers({

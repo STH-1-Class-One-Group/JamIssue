@@ -3,13 +3,12 @@ import type { MutableRefObject } from 'react';
 import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { FestivalItem } from '../../types/core';
 import { festivalMarkerContent, hasFestivalCoordinates } from './markerContent';
-
-type MapsApi = typeof window.naver.maps;
+import type { NaverMapInstance, NaverMapsApi, NaverMarkerInstance } from './naverMapTypes';
 
 type FestivalMarkersArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: MapsApi | undefined;
-  mapRef: MutableRefObject<any>;
+  mapsApi: NaverMapsApi | undefined;
+  mapRef: MutableRefObject<NaverMapInstance | null>;
   festivals: FestivalItem[];
   selectedFestivalId: string | null;
   onSelectFestival: (festivalId: string) => void;
@@ -23,7 +22,7 @@ export function useNaverFestivalMarkers({
   selectedFestivalId,
   onSelectFestival,
 }: FestivalMarkersArgs) {
-  const festivalMarkersRef = useRef<Map<string, any>>(new Map());
+  const festivalMarkersRef = useRef<Map<string, NaverMarkerInstance>>(new Map());
 
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {

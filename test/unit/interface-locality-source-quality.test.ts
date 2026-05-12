@@ -84,10 +84,10 @@ describe('interface locality source quality baseline', () => {
     expect(countTrackedSourceMatches(['src/types'], /from\s+['"][^'"]*\/api(?:\/|['"])/g)).toBe(0);
   });
 
-  it('keeps the Naver map SDK any baseline from growing before local contracts are added', () => {
-    expect(countTrackedSourceMatches(['src/components/naver-map'], /\bany\b/g)).toBeLessThanOrEqual(14);
-    expect(countTrackedSourceMatches(['src/components/naver-map'], /Promise<any>/g)).toBeLessThanOrEqual(1);
-    expect(countTrackedSourceMatches(['src/components/naver-map'], /Map<string,\s*any>/g)).toBeLessThanOrEqual(2);
+  it('keeps the Naver map SDK contract local and free of any fallbacks', () => {
+    expect(countTrackedSourceMatches(['src/components/naver-map'], /\bany\b/g)).toBe(0);
+    expect(countTrackedSourceMatches(['src/components/naver-map'], /Promise<any>/g)).toBe(0);
+    expect(countTrackedSourceMatches(['src/components/naver-map'], /Map<string,\s*any>/g)).toBe(0);
   });
 
   it('keeps wide stage prop coupling from growing before stage-local props are split', () => {
