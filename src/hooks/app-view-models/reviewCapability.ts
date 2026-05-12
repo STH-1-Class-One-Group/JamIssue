@@ -2,6 +2,14 @@ import type { SessionUser } from '../../types/auth';
 import type { Review, StampLog } from '../../types/review';
 import type { MyPageResponse } from '../../types/my-page';
 
+function addSessionReviews(reviewMap: Map<string, Review>, source: readonly Review[], sessionUserId: string) {
+  for (const review of source) {
+    if (review.userId === sessionUserId) {
+      reviewMap.set(review.id, review);
+    }
+  }
+}
+
 export function getKnownMyReviews({
   reviews,
   selectedPlaceReviews,
@@ -18,19 +26,10 @@ export function getKnownMyReviews({
   }
 
   const reviewMap = new Map<string, Review>();
-  // ⚡ Bolt: Performance Optimization
-  // Avoid O(N) array allocations using spread syntax [...a, ...b] just to populate a Map.
-  // Instead, process each list sequentially to maintain identical behavior with lower overhead.
-  const addReview = (review: Review) => {
-    if (review.userId === sessionUser.id) {
-      reviewMap.set(review.id, review);
-    }
-  };
-
-  for (const review of reviews) addReview(review);
-  for (const review of selectedPlaceReviews) addReview(review);
+  addSessionReviews(reviewMap, reviews, sessionUser.id);
+  addSessionReviews(reviewMap, selectedPlaceReviews, sessionUser.id);
   if (myPageReviews) {
-    for (const review of myPageReviews) addReview(review);
+    addSessionReviews(reviewMap, myPageReviews, sessionUser.id);
   }
 
   return [...reviewMap.values()];
