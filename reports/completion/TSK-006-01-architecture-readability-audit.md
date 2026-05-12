@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-006-01-ARCHITECTURE-READABILITY-AUDIT`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/304
-PR: `TBD-TSK-006-01-ARCHITECTURE-READABILITY-AUDIT`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/309
 Branch: `architecture-readability-audit`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/303
@@ -44,7 +44,7 @@ TSK-006의 첫 작업으로 human-readable architecture 기준선을 실제 코�
 - [x] `npm.cmd run build` 통과
 - [x] `git diff --check` 통과
 - [x] UTF-8 integrity check 통과: `.\.tools\python313\python.exe .tmp\check_utf8_integrity.py --staged`
-- [ ] PR checks: PR 생성 후 기록
+- [ ] PR checks: PR #309에서 기록
 
 ## Remaining Follow-Up Work
 
