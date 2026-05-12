@@ -2,15 +2,15 @@ import { jsonResponse } from '../lib/http';
 import { parseListLimit } from '../lib/supabase';
 import { WorkerPaginationRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
-import { createReviewMapper } from './review-domain/mapper';
 import type { WorkerEnv } from '../types';
 import type {
   WorkerReviewDataFilters,
   WorkerReviewPageOptions,
   WorkerReviewReadServiceDeps,
   WorkerReviewUserRow,
-} from './review-domain/contracts';
+} from './review-domain';
 import {
+  createReviewMapper,
   readReviewCommentRows,
   readReviewFeedRows,
   readReviewLikeRows,
@@ -21,7 +21,7 @@ import {
   readReviewUserRows,
   readSingleReviewFeedRow,
   readUserFeedLikeRows,
-} from './review-domain/read-repository';
+} from './review-domain';
 
 function indexUsersById(userRows: WorkerReviewUserRow[]) {
   return new Map(userRows.map((row) => [row.user_id, row] as const));

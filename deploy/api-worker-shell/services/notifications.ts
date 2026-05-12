@@ -7,9 +7,9 @@ import type {
   WorkerNotificationCreatePayload,
   WorkerNotificationInsertResult,
   WorkerNotificationRow,
-} from './notification-domain/contracts';
-import { buildNotificationRealtimeTopic, sendRealtimeBroadcast } from './notification-domain/publisher';
+} from './notification-domain';
 import {
+  buildNotificationRealtimeTopic,
   createNotification,
   deleteNotificationRow,
   markAllNotificationsRead,
@@ -19,7 +19,8 @@ import {
   readNotificationRow,
   readUnreadNotificationRows,
   readUserNotificationRows,
-} from './notification-domain/repository';
+  sendRealtimeBroadcast,
+} from './notification-domain';
 
 async function requireSessionUser(request: Request, env: WorkerEnv) {
   const sessionUser = await readSessionUser(request, env);

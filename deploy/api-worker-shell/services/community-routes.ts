@@ -1,6 +1,5 @@
 import { jsonResponse } from '../lib/http';
 import { readSessionUser } from './auth';
-import { mapCommunityRoutes } from './community-domain/mapper';
 import {
   countRouteLikes,
   createRouteLike,
@@ -15,10 +14,11 @@ import {
   readRouteRow,
   readTravelSessionForOwner,
   updateRouteLikeCount,
-} from './community-domain/repository';
+  mapCommunityRoutes,
+} from './community-domain';
 import { countUnreadNotifications, createUserNotification, loadNotificationById, publishNotificationEvent } from './notifications';
 import type { WorkerEnv, WorkerJsonRecord } from '../types';
-import type { WorkerCommunityRouteLoadOptions, WorkerCommunityRouteServiceDeps } from './community-domain/contracts';
+import type { WorkerCommunityRouteLoadOptions, WorkerCommunityRouteServiceDeps } from './community-domain';
 
 export function createCommunityRouteService({ loadStaticBaseRows }: WorkerCommunityRouteServiceDeps) {
   async function requireSessionUser(request: Request, env: WorkerEnv) {

@@ -8,11 +8,11 @@
  */
 import type { WorkerBaseData, WorkerCourse } from './base-data-contracts';
 import type { WorkerEnv } from '../types';
-import type { WorkerAdminService } from '../services/admin-domain/contracts';
-import type { WorkerCommunityRouteService } from '../services/community-domain/contracts';
-import type { WorkerMyService } from '../services/my-domain/contracts';
-import type { WorkerReviewInteractionDeps, WorkerReviewReadService } from '../services/review-domain/contracts';
-import type { WorkerStampService } from '../services/stamp-domain/contracts';
+import type { WorkerAdminService } from '../services/admin-domain';
+import type { WorkerCommunityRouteService } from '../services/community-domain';
+import type { WorkerMyService } from '../services/my-domain';
+import type { WorkerReviewInteractionDeps, WorkerReviewReadService } from '../services/review-domain';
+import type { WorkerStampService } from '../services/stamp-domain';
 
 export interface RouteRuntime {
   adminService: WorkerAdminService;

@@ -2,10 +2,9 @@ import { jsonResponse } from '../lib/http';
 import { parseListLimit } from '../lib/supabase';
 import { WorkerPaginationRuntimeConfig } from '../config/runtime';
 import { readSessionUser } from './auth';
-import { mapMyComments } from './my-domain/mapper';
-import { loadFeedsForCommentRows, loadMyCommentRows, loadMySummaryCommentRows } from './my-domain/repository';
+import { loadFeedsForCommentRows, loadMyCommentRows, loadMySummaryCommentRows, mapMyComments } from './my-domain';
 import type { WorkerEnv } from '../types';
-import type { WorkerMyServiceDeps } from './my-domain/contracts';
+import type { WorkerMyServiceDeps } from './my-domain';
 
 interface WorkerMyCommentPageOptions {
   cursor?: string | null;

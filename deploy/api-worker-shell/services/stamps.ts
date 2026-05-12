@@ -3,7 +3,7 @@ import { toSeoulDateKey } from '../lib/dates';
 import { jsonResponse } from '../lib/http';
 import type { WorkerEnv, WorkerJsonRecord } from '../types';
 import { readSessionUser } from './auth';
-import type { WorkerStampServiceDeps } from './stamp-domain/contracts';
+import type { WorkerStampServiceDeps } from './stamp-domain';
 import {
   createTravelSession,
   createUserStamp,
@@ -13,7 +13,7 @@ import {
   readTravelSessionRow,
   updateStampTravelSession,
   updateTravelSession,
-} from './stamp-domain/repository';
+} from './stamp-domain';
 
 function getStampUnlockRadius(env: WorkerEnv) {
   const parsed = Number(env.APP_STAMP_UNLOCK_RADIUS_METERS ?? WorkerStampRuntimeConfig.defaultUnlockRadiusMeters);
