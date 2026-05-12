@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "bbbc572f6fd6c6869d5ba2b810d82d452e458aad",
+  "generatedFrom": "d8eff3e8d4ed26484f1735fbf4ee9ca3ef83fe4c",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -2014,8 +2014,43 @@
       ]
     },
     {
+      "path": "deploy/api-worker-shell/services/notification-domain/repository.ts",
+      "count": 5,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "1",
+          "line": 16,
+          "column": 115
+        },
+        {
+          "value": "0",
+          "line": 19,
+          "column": 17
+        },
+        {
+          "value": "0",
+          "line": 42,
+          "column": 17
+        },
+        {
+          "value": "1",
+          "line": 69,
+          "column": 86
+        },
+        {
+          "value": "0",
+          "line": 72,
+          "column": 17
+        }
+      ]
+    },
+    {
       "path": "deploy/api-worker-shell/services/notifications.ts",
-      "count": 19,
+      "count": 12,
       "owner": "worker-backend",
       "category": "worker-runtime-limit-baseline",
       "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
@@ -2023,33 +2058,33 @@
       "examples": [
         {
           "value": "401",
-          "line": 44,
+          "line": 27,
           "column": 37
         },
         {
-          "value": "1",
-          "line": 46,
-          "column": 343
+          "value": "200",
+          "line": 109,
+          "column": 23
         },
         {
-          "value": "0",
-          "line": 46,
-          "column": 362
+          "value": "200",
+          "line": 119,
+          "column": 23
         },
         {
-          "value": "0",
-          "line": 49,
-          "column": 496
+          "value": "404",
+          "line": 130,
+          "column": 25
         },
         {
-          "value": "0",
-          "line": 51,
-          "column": 281
+          "value": "403",
+          "line": 133,
+          "column": 25
         },
         {
-          "value": "1",
-          "line": 55,
-          "column": 167
+          "value": "200",
+          "line": 145,
+          "column": 23
         }
       ]
     },
@@ -2245,6 +2280,46 @@
           "value": "200",
           "line": 155,
           "column": 25
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/stamp-domain/repository.ts",
+      "count": 8,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "1",
+          "line": 28,
+          "column": 60
+        },
+        {
+          "value": "0",
+          "line": 31,
+          "column": 17
+        },
+        {
+          "value": "1",
+          "line": 50,
+          "column": 36
+        },
+        {
+          "value": "0",
+          "line": 53,
+          "column": 17
+        },
+        {
+          "value": "1",
+          "line": 62,
+          "column": 113
+        },
+        {
+          "value": "0",
+          "line": 65,
+          "column": 17
         }
       ]
     },
