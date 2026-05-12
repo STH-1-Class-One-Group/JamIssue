@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 const workspaceRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const maxWorkerLineLength = 3_500;
+const maxWorkerSemicolonsPerLine = 6;
 
 function countSourceMatches(file: string, pattern: RegExp): number {
   const source = readFileSync(join(workspaceRoot, file), 'utf8');
@@ -34,6 +35,7 @@ describe('worker source quality gates', () => {
       const source = readFileSync(file, 'utf8');
       const lines = source.split(/\r?\n/);
       const longestLine = Math.max(...lines.map((line) => line.length));
+      const mostSemicolonsOnLine = Math.max(...lines.map((line) => [...line.matchAll(/;/g)].length));
       const relativePath = relative(workspaceRoot, file);
 
       expect(relativePath, 'worker quality gate must inspect tracked source only').not.toContain('.wrangler');
@@ -41,6 +43,9 @@ describe('worker source quality gates', () => {
         expect(lines.length, `${relativePath} should stay reviewable`).toBeGreaterThan(1);
       }
       expect(longestLine, `${relativePath} has a suspiciously long line`).toBeLessThanOrEqual(maxWorkerLineLength);
+      expect(mostSemicolonsOnLine, `${relativePath} has too many statements on one line`).toBeLessThanOrEqual(
+        maxWorkerSemicolonsPerLine,
+      );
     }
   });
 
@@ -62,6 +67,12 @@ describe('worker source quality gates', () => {
           any: 0,
           envAny: 0,
           categoryAny: 0,
+        },
+      },
+      {
+        file: 'deploy/api-worker-shell/services/reviews.ts',
+        limits: {
+          supabaseRequest: 23,
         },
       },
       {
