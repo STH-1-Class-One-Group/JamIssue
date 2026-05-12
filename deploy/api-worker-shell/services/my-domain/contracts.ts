@@ -8,7 +8,7 @@
  */
 import type { WorkerEnv, WorkerJsonRecord } from '../../types';
 import type { WorkerBaseData, WorkerStaticBaseRows } from '../../runtime/base-data-contracts';
-import type { WorkerCommunityRouteService } from '../community-domain/contracts';
+import type { WorkerCommunityRouteService } from '../community-domain';
 
 export interface WorkerMyCommentRow extends WorkerJsonRecord {
   comment_id: string | number;

@@ -232,7 +232,7 @@ describe('worker source quality gates', () => {
 
     expect(interactionSource).not.toContain('supabaseRequest');
     expect(interactionSource).not.toContain('feed?select=');
-    expect(reviewReadSource).toContain("import { createReviewMapper } from './review-domain/mapper';");
+    expect(reviewReadSource).toContain("from './review-domain';");
     expect(reviewReadSource).not.toContain('supabaseRequest');
     expect(reviewReadSource).not.toContain('function mapReviewRows');
     expect(repositorySource).toContain('supabaseRequest');
@@ -302,6 +302,19 @@ describe('worker source quality gates', () => {
     expect(testImportSource).not.toMatch(
       /RouteRuntime|WorkerBaseData|WorkerStaticBaseRows|WorkerReviewInteractionDeps|Supabase[A-Za-z]+Row/,
     );
+  });
+
+  it('keeps Worker domain internals behind domain entrypoints for external callers', () => {
+    const internalDomainImportLines = collectTrackedWorkerTsFiles().flatMap((file) => {
+      const relativePath = relative(workspaceRoot, file);
+      const source = readFileSync(file, 'utf8');
+      return source
+        .split(/\r?\n/)
+        .filter((line) => /from\s+['"][^'"]+-domain\/[^'"]+['"]/.test(line))
+        .map((line) => `${relativePath}: ${line.trim()}`);
+    });
+
+    expect(internalDomainImportLines).toEqual([]);
   });
 
   it('keeps Worker service constructor dependency contracts explicit', () => {

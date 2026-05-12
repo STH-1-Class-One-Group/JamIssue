@@ -22,7 +22,7 @@ import {
   normalizePlaceCategory,
 } from './runtime/base-data';
 import { createRouteRequest } from './runtime/routing';
-import type { WorkerReviewInteractionDeps } from './services/review-domain/contracts';
+import type { WorkerReviewInteractionDeps } from './services/review-domain';
 import type { WorkerEnv } from './types';
 
 const reviewReadService = createReviewReadService({

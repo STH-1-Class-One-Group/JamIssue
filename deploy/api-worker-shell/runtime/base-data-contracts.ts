@@ -7,7 +7,7 @@
  * Dependencies: Shared JSON records and review read-model contracts.
  */
 import type { WorkerJsonRecord } from '../types';
-import type { WorkerReview } from '../services/review-domain/read-model';
+import type { WorkerReview } from '../services/review-domain';
 
 export interface SupabaseMapRow extends WorkerJsonRecord {
   position_id: string | number;

@@ -22,7 +22,7 @@ import type {
   WorkerReviewRouteRow,
   WorkerReviewStampRow,
   WorkerReviewUserRow,
-} from '../services/review-domain/contracts';
+} from '../services/review-domain';
 
 const STATIC_BASE_CACHE_TTL_MS = WorkerBaseDataRuntimeConfig.staticBaseCacheTtlMs;
 

@@ -6,9 +6,9 @@ import {
   loadPlaceReviewRows,
   loadPublicDataSource,
   updateAdminPlaceVisibility,
-} from './admin-domain/repository';
+} from './admin-domain';
 import type { WorkerEnv, WorkerJsonRecord } from '../types';
-import type { WorkerAdminServiceDeps } from './admin-domain/contracts';
+import type { WorkerAdminServiceDeps } from './admin-domain';
 
 export function createAdminService({ normalizePlaceCategory }: WorkerAdminServiceDeps) {
   async function requireAdmin(request: Request, env: WorkerEnv) {

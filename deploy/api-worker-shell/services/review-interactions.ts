@@ -1,8 +1,7 @@
 import { jsonResponse } from '../lib/http';
 import { getSupabaseKey } from '../lib/supabase';
 import type { WorkerEnv, WorkerJsonRecord, WorkerSessionUser } from '../types';
-import type { WorkerReviewInteractionDeps } from './review-domain/contracts';
-import { publishReviewNotification } from './review-domain/notifications';
+import type { WorkerReviewInteractionDeps } from './review-domain';
 import {
   countReviewLikes,
   createCommentRow,
@@ -14,10 +13,11 @@ import {
   readFeedRow,
   readReviewLikeRow,
   readStampRow,
+  publishReviewNotification,
   softDeleteCommentRow,
   updateCommentRow,
   updateReviewRow,
-} from './review-domain/repository';
+} from './review-domain';
 
 function sanitizeFileName(fileName: string) {
   return String(fileName || 'upload.jpg').replace(/[^a-zA-Z0-9._-]+/g, '-');
