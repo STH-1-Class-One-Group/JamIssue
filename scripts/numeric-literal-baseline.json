@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "d8eff3e8d4ed26484f1735fbf4ee9ca3ef83fe4c",
+  "generatedFrom": "1e43c298a381548637e3b27d3b3022dd240f3fab",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -1804,46 +1804,6 @@
       ]
     },
     {
-      "path": "deploy/api-worker-shell/services/festival-domain/mapper.ts",
-      "count": 32,
-      "owner": "worker-backend",
-      "category": "worker-runtime-limit-baseline",
-      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
-      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
-      "examples": [
-        {
-          "value": "0",
-          "line": 37,
-          "column": 51
-        },
-        {
-          "value": "2",
-          "line": 55,
-          "column": 18
-        },
-        {
-          "value": "00",
-          "line": 68,
-          "column": 34
-        },
-        {
-          "value": "00",
-          "line": 68,
-          "column": 37
-        },
-        {
-          "value": "09",
-          "line": 68,
-          "column": 40
-        },
-        {
-          "value": "00",
-          "line": 68,
-          "column": 43
-        }
-      ]
-    },
-    {
       "path": "deploy/api-worker-shell/services/festival-domain/read-service.ts",
       "count": 5,
       "owner": "worker-backend",
@@ -1928,32 +1888,32 @@
       "examples": [
         {
           "value": "1",
-          "line": 26,
+          "line": 30,
           "column": 24
         },
         {
           "value": "200",
-          "line": 40,
+          "line": 44,
           "column": 23
         },
         {
           "value": "200",
-          "line": 47,
+          "line": 51,
           "column": 23
         },
         {
           "value": "503",
-          "line": 56,
+          "line": 60,
           "column": 25
         },
         {
           "value": "401",
-          "line": 61,
+          "line": 65,
           "column": 25
         },
         {
           "value": "400",
-          "line": 66,
+          "line": 70,
           "column": 25
         }
       ]
@@ -1983,32 +1943,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 20,
+          "line": 19,
           "column": 40
         },
         {
           "value": "0",
-          "line": 22,
+          "line": 21,
           "column": 29
         },
         {
           "value": "401",
-          "line": 34,
+          "line": 33,
           "column": 27
         },
         {
           "value": "200",
-          "line": 40,
+          "line": 39,
           "column": 25
         },
         {
           "value": "401",
-          "line": 46,
+          "line": 45,
           "column": 27
         },
         {
           "value": "200",
-          "line": 61,
+          "line": 60,
           "column": 7
         }
       ]
@@ -2058,32 +2018,32 @@
       "examples": [
         {
           "value": "401",
-          "line": 27,
+          "line": 28,
           "column": 37
         },
         {
           "value": "200",
-          "line": 109,
+          "line": 110,
           "column": 23
         },
         {
           "value": "200",
-          "line": 119,
+          "line": 120,
           "column": 23
         },
         {
           "value": "404",
-          "line": 130,
+          "line": 131,
           "column": 25
         },
         {
           "value": "403",
-          "line": 133,
+          "line": 134,
           "column": 25
         },
         {
           "value": "200",
-          "line": 145,
+          "line": 146,
           "column": 23
         }
       ]
@@ -2200,46 +2160,6 @@
           "value": "0",
           "line": 25,
           "column": 17
-        }
-      ]
-    },
-    {
-      "path": "deploy/api-worker-shell/services/review-interactions.ts",
-      "count": 39,
-      "owner": "worker-backend",
-      "category": "worker-runtime-limit-baseline",
-      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
-      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
-      "examples": [
-        {
-          "value": "9",
-          "line": 23,
-          "column": 62
-        },
-        {
-          "value": "9_",
-          "line": 41,
-          "column": 67
-        },
-        {
-          "value": "401",
-          "line": 72,
-          "column": 37
-        },
-        {
-          "value": "400",
-          "line": 86,
-          "column": 25
-        },
-        {
-          "value": "400",
-          "line": 89,
-          "column": 25
-        },
-        {
-          "value": "5242880",
-          "line": 91,
-          "column": 66
         }
       ]
     },
@@ -4449,6 +4369,21 @@
       ]
     },
     {
+      "path": "src/hooks/app-stage-props/useAppShellStageProps.ts",
+      "count": 1,
+      "owner": "frontend-ui",
+      "category": "frontend-ui-inline-token-baseline",
+      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
+      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 25,
+          "column": 74
+        }
+      ]
+    },
+    {
       "path": "src/hooks/useAppAuthActions.ts",
       "count": 1,
       "owner": "frontend-ui",
@@ -4550,21 +4485,6 @@
           "value": "1",
           "line": 61,
           "column": 63
-        }
-      ]
-    },
-    {
-      "path": "src/hooks/app-stage-props/useAppShellStageProps.ts",
-      "count": 1,
-      "owner": "frontend-ui",
-      "category": "frontend-ui-inline-token-baseline",
-      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
-      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
-      "examples": [
-        {
-          "value": "0",
-          "line": 25,
-          "column": 74
         }
       ]
     },
