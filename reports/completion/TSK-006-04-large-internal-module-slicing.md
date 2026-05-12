@@ -36,7 +36,7 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/307
 - [x] `npm.cmd run build` 통과
 - [x] `git diff --check` 통과
 - [x] UTF-8 integrity check 통과
-- [ ] PR checks - pending
+- [x] PR checks 통과 - https://github.com/STH-1-Class-One-Group/JamIssue/pull/312
 
 ## Remaining Follow-Up Work
 
