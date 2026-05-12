@@ -1,7 +1,7 @@
-import { useAppAdminActions } from './useAppAdminActions';
-import { useAppMapActions } from './useAppMapActions';
-import { useAppReviewActions } from './useAppReviewActions';
-import { useAppRouteActions } from './useAppRouteActions';
+import { useAppAdminActions } from '../useAppAdminActions';
+import { useAppMapActions } from '../useAppMapActions';
+import { useAppReviewActions } from '../useAppReviewActions';
+import { useAppRouteActions } from '../app-route/useAppRouteActions';
 import { formatCoordinatorErrorMessage } from './useAppCoordinatorActionUtils';
 import type {
   DataState,

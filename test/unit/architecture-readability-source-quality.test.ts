@@ -55,8 +55,8 @@ describe('architecture readability source quality baseline', () => {
     const tinyDirectRootHookFiles = directRootHookFiles.filter((path) => countLines(path) <= 15);
 
     expect(hookFiles.length).toBeLessThanOrEqual(87);
-    expect(directRootHookFiles.length).toBeLessThanOrEqual(62);
-    expect(tinyDirectRootHookFiles.length).toBeLessThanOrEqual(13);
+    expect(directRootHookFiles.length).toBeLessThanOrEqual(35);
+    expect(tinyDirectRootHookFiles.length).toBeLessThanOrEqual(9);
   });
 
   it('keeps large production TypeScript files explicit before business-language slicing', () => {
@@ -84,8 +84,8 @@ describe('architecture readability source quality baseline', () => {
       { path: 'deploy/api-worker-shell/index.ts', imports: 12 },
       { path: 'src/App.tsx', imports: 18 },
       { path: 'src/components/MyPagePanel.tsx', imports: 11 },
-      { path: 'src/hooks/useAppBootstrapLifecycle.ts', imports: 11 },
-      { path: 'src/hooks/useAppTabDataLoaders.ts', imports: 11 },
+      { path: 'src/hooks/app-bootstrap/useAppBootstrapLifecycle.ts', imports: 11 },
+      { path: 'src/hooks/app-tab-loaders/useAppTabDataLoaders.ts', imports: 11 },
     ]);
   });
 

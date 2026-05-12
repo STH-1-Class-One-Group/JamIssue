@@ -1,5 +1,5 @@
-import { updateMapViewportInUrl } from './useAppRouteState';
-import type { useAppShellCoordinator } from './useAppShellCoordinator';
+import { updateMapViewportInUrl } from '../app-route/useAppRouteState';
+import type { useAppShellCoordinator } from '../app-coordinator/useAppShellCoordinator';
 
 type AppShellCoordinatorState = ReturnType<typeof useAppShellCoordinator>;
 

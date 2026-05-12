@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { FeedbackRuntimeConfig } from '../config/runtimeLimitConfig';
-import { getInitialNotice } from './useAppRouteState';
-import { useAppFeedbackEffects } from './useAppFeedbackEffects';
-import { useAppBootstrapLifecycle } from './useAppBootstrapLifecycle';
+import { FeedbackRuntimeConfig } from '../../config/runtimeLimitConfig';
+import { getInitialNotice } from '../app-route/useAppRouteState';
+import { useAppFeedbackEffects } from '../useAppFeedbackEffects';
+import { useAppBootstrapLifecycle } from '../app-bootstrap/useAppBootstrapLifecycle';
 import type {
   DataState,
   DomainState,

@@ -1,7 +1,7 @@
 import type { DrawerState, MyPageTabKey, RoutePreview, Tab } from '../types/core';
 import type { SessionUser } from '../types/auth';
 import type { ReturnViewState } from '../store/app-ui-store';
-import type { RouteStateCommitOptions } from './useAppRouteState';
+import type { RouteStateCommitOptions } from './app-route/useAppRouteState';
 import { createNavigateBackHandler } from './app-navigation/shellBackNavigation';
 import { createBottomNavChangeHandler } from './app-navigation/shellBottomNav';
 

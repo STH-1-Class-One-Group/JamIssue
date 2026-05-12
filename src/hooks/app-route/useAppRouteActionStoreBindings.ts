@@ -1,7 +1,7 @@
-import { useAuthStore } from '../store/auth-store';
-import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
-import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
-import { useMyPageStore } from '../store/my-page-store';
+import { useAuthStore } from '../../store/auth-store';
+import { useAppPageRuntimeStore } from '../../store/app-page-runtime-store';
+import { useAppShellRuntimeStore } from '../../store/app-shell-runtime-store';
+import { useMyPageStore } from '../../store/my-page-store';
 
 export function useAppRouteActionStoreBindings() {
   const sessionUser = useAuthStore((state) => state.sessionUser);

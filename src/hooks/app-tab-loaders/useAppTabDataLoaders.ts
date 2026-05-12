@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import type { CommunityRouteSort, Course, Tab } from '../types/core';
-import type { SessionUser } from '../types/auth';
-import type { Review, UserRoute } from '../types/review';
-import type { MyPageResponse } from '../types/my-page';
-import type { AdminSummaryResponse } from '../types/admin';
-import { createCommunityRouteLoader } from './app-tab-loaders/communityRouteLoader';
-import { createFeedReviewLoader } from './app-tab-loaders/feedReviewLoader';
-import { createAdminSummaryLoader, createMyPageSummaryLoader } from './app-tab-loaders/summaryLoaders';
+import type { CommunityRouteSort, Course, Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { Review, UserRoute } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
+import type { AdminSummaryResponse } from '../../types/admin';
+import { createCommunityRouteLoader } from './communityRouteLoader';
+import { createFeedReviewLoader } from './feedReviewLoader';
+import { createAdminSummaryLoader, createMyPageSummaryLoader } from './summaryLoaders';
 import { useAppTabLoaderBindings } from './useAppTabLoaderBindings';
 
 type CommunityRoutesCache = Partial<Record<CommunityRouteSort, UserRoute[]>>;

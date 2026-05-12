@@ -1,6 +1,6 @@
-import { useAppPageStageActions } from './useAppPageStageActions';
-import { useAppShellNavigation } from './useAppShellNavigation';
-import { useAppStageActions } from './useAppStageActions';
+import { useAppPageStageActions } from '../useAppPageStageActions';
+import { useAppShellNavigation } from '../useAppShellNavigation';
+import { useAppStageActions } from '../useAppStageActions';
 import {
   reportCoordinatorBackgroundError,
 } from './useAppCoordinatorActionUtils';

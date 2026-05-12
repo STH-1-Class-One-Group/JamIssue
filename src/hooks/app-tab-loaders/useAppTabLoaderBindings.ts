@@ -1,4 +1,4 @@
-import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
+import { useAppPageRuntimeStore } from '../../store/app-page-runtime-store';
 
 export function useAppTabLoaderBindings() {
   const setFeedHasMore = useAppPageRuntimeStore((state) => state.setFeedHasMore);

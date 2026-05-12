@@ -6,7 +6,7 @@ import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
 import type { DrawerState, Place, Tab } from '../types/core';
 import type { SessionUser } from '../types/auth';
 import type { StampState } from '../types/review';
-import type { RouteStateCommitOptions } from './useAppRouteState';
+import type { RouteStateCommitOptions } from './app-route/useAppRouteState';
 
 type HistoryMode = 'push' | 'replace';
 type SetState<T> = Dispatch<SetStateAction<T>>;

@@ -95,7 +95,7 @@ describe('interface locality source quality baseline', () => {
       gitGrepCount('Pick<AppPageStageProps\\|AppPageStageProps', [
         'src/components/page-stage',
         'src/components/AppPageStage.tsx',
-        'src/hooks/usePageStageProps.ts',
+        'src/hooks/app-stage-props/usePageStageProps.ts',
       ]),
     ).toBeLessThanOrEqual(5);
     expect(gitGrepCount('Pick<AppPageStageProps', ['src/components/page-stage'])).toBe(0);

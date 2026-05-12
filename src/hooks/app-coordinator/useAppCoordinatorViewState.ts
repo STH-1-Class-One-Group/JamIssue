@@ -1,6 +1,6 @@
-import { useActiveReviewComments } from './useActiveReviewComments';
-import { useAppPagePaginationActions } from './useAppPagePaginationActions';
-import { useAppViewModels } from './useAppViewModels';
+import { useActiveReviewComments } from '../useActiveReviewComments';
+import { useAppPagePaginationActions } from '../useAppPagePaginationActions';
+import { useAppViewModels } from '../useAppViewModels';
 import {
   formatCoordinatorErrorMessage,
   reportCoordinatorBackgroundError,

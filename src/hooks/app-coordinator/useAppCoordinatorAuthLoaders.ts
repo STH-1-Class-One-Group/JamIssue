@@ -1,5 +1,5 @@
-import { useAppAuthActions } from './useAppAuthActions';
-import { useAppTabDataLoaders } from './useAppTabDataLoaders';
+import { useAppAuthActions } from '../useAppAuthActions';
+import { useAppTabDataLoaders } from '../app-tab-loaders/useAppTabDataLoaders';
 import { formatCoordinatorErrorMessage } from './useAppCoordinatorActionUtils';
 import type { CoordinatorServicesArgs } from './useAppCoordinatorServices.types';
 

@@ -8,12 +8,12 @@ import { GlobalStatusBanner } from './components/GlobalStatusBanner';
 import {
   useAppRouteState,
   getInitialMapViewport,
-} from './hooks/useAppRouteState';
+} from './hooks/app-route/useAppRouteState';
 import { useAppDataState } from './hooks/useAppDataState';
 import { useAppPageRuntimeState } from './hooks/useAppPageRuntimeState';
 import { useAppShellRuntimeState } from './hooks/useAppShellRuntimeState';
-import { useAppShellCoordinator } from './hooks/useAppShellCoordinator';
-import { useAppStageProps } from './hooks/useAppStageProps';
+import { useAppShellCoordinator } from './hooks/app-coordinator/useAppShellCoordinator';
+import { useAppStageProps } from './hooks/app-stage-props/useAppStageProps';
 import { useAuthDomainState } from './hooks/useAuthDomainState';
 import { useMapDomainState } from './hooks/useMapDomainState';
 import { useMyPageDomainState } from './hooks/useMyPageDomainState';

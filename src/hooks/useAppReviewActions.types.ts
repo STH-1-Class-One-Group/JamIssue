@@ -1,5 +1,5 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import type { RouteStateCommitOptions } from './useAppRouteState';
+import type { RouteStateCommitOptions } from './app-route/useAppRouteState';
 import type { DrawerState, Place, Tab } from '../types/core';
 import type { SessionUser } from '../types/auth';
 import type { Comment, Review } from '../types/review';

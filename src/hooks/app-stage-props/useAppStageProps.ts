@@ -1,4 +1,4 @@
-import type { useAppShellCoordinator } from './useAppShellCoordinator';
+import type { useAppShellCoordinator } from '../app-coordinator/useAppShellCoordinator';
 import { useAppShellStageProps } from './useAppShellStageProps';
 import { useMapStageProps } from './useMapStageProps';
 import { usePageStageProps } from './usePageStageProps';
