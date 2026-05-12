@@ -68,8 +68,6 @@ describe('architecture readability source quality baseline', () => {
     expect(largeFiles).toEqual([
       'deploy/api-worker-shell/services/auth.ts',
       'deploy/api-worker-shell/services/auth/session.ts',
-      'deploy/api-worker-shell/services/festival-domain/mapper.ts',
-      'deploy/api-worker-shell/services/review-interactions.ts',
     ]);
   });
 
