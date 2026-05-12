@@ -1,14 +1,9 @@
 import { useEffect } from 'react';
-
-type NaverMapInstance = {
-  panTo?: (position: unknown) => void;
-};
-
-type MapsApi = typeof window.naver.maps;
+import type { NaverMapInstance, NaverMapsApi } from './naverMapTypes';
 
 type CurrentLocationFocusArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: MapsApi | undefined;
+  mapsApi: NaverMapsApi | undefined;
   mapRef: React.MutableRefObject<NaverMapInstance | null>;
   currentPosition: { latitude: number; longitude: number } | null;
   focusCurrentLocationKey: number;

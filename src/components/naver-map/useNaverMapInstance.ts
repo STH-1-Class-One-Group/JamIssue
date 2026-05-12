@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MapViewportConfig } from '../../config/mapConfig';
 import { DAEJEON_CENTER, loadNaverMaps } from './mapSdk';
+import type { NaverMapInstance } from './naverMapTypes';
 
 type MapInstanceArgs = {
   clientId: string;
@@ -15,7 +16,7 @@ export function useNaverMapInstance({
   initialCenter,
   initialZoom,
 }: MapInstanceArgs) {
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<NaverMapInstance | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

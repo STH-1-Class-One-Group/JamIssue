@@ -2,21 +2,12 @@ import { useEffect } from 'react';
 import { MapViewportConfig, SelectionMotionConfig } from '../../config/mapConfig';
 import type { FestivalItem, Place } from '../../types/core';
 import { hasFestivalCoordinates } from './markerContent';
+import type { NaverMapInstance, NaverMapsApi } from './naverMapTypes';
 import { getSelectionVerticalOffset } from './selectionOffset';
-
-type NaverMapInstance = {
-  getZoom?: () => number;
-  setZoom?: (zoom: number, effect?: boolean) => void;
-  panTo?: (position: unknown) => void;
-  setCenter?: (position: unknown) => void;
-  panBy?: (x: number, y: number) => void;
-};
-
-type MapsApi = typeof window.naver.maps;
 
 type SelectionSyncArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: MapsApi | undefined;
+  mapsApi: NaverMapsApi | undefined;
   mapRef: React.MutableRefObject<NaverMapInstance | null>;
   mapElementRef: React.MutableRefObject<HTMLDivElement | null>;
   places: Place[];

@@ -3,13 +3,12 @@ import type { MutableRefObject } from 'react';
 import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { Place } from '../../types/core';
 import { placeMarkerContent } from './markerContent';
-
-type MapsApi = typeof window.naver.maps;
+import type { NaverMapInstance, NaverMapsApi, NaverMarkerInstance } from './naverMapTypes';
 
 type PlaceMarkersArgs = {
   status: 'loading' | 'ready' | 'error';
-  mapsApi: MapsApi | undefined;
-  mapRef: MutableRefObject<any>;
+  mapsApi: NaverMapsApi | undefined;
+  mapRef: MutableRefObject<NaverMapInstance | null>;
   places: Place[];
   selectedPlaceId: string | null;
   onSelectPlace: (placeId: string) => void;
@@ -23,7 +22,7 @@ export function useNaverPlaceMarkers({
   selectedPlaceId,
   onSelectPlace,
 }: PlaceMarkersArgs) {
-  const placeMarkersRef = useRef<Map<string, any>>(new Map());
+  const placeMarkersRef = useRef<Map<string, NaverMarkerInstance>>(new Map());
 
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {
