@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "1e43c298a381548637e3b27d3b3022dd240f3fab",
+  "generatedFrom": "bfb636ae83ca2447030669d81e132a5cda4c1047",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -1789,6 +1789,116 @@
       ]
     },
     {
+      "path": "deploy/api-worker-shell/services/festival-domain/festival-date.ts",
+      "count": 21,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "8",
+          "line": 30,
+          "column": 12
+        },
+        {
+          "value": "0",
+          "line": 31,
+          "column": 36
+        },
+        {
+          "value": "4",
+          "line": 31,
+          "column": 39
+        },
+        {
+          "value": "4",
+          "line": 32,
+          "column": 37
+        },
+        {
+          "value": "6",
+          "line": 32,
+          "column": 40
+        },
+        {
+          "value": "6",
+          "line": 33,
+          "column": 35
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/festival-id.ts",
+      "count": 1,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 29,
+          "column": 51
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/festival-series.ts",
+      "count": 9,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "2",
+          "line": 19,
+          "column": 18
+        },
+        {
+          "value": "00",
+          "line": 32,
+          "column": 34
+        },
+        {
+          "value": "00",
+          "line": 32,
+          "column": 37
+        },
+        {
+          "value": "09",
+          "line": 32,
+          "column": 40
+        },
+        {
+          "value": "00",
+          "line": 32,
+          "column": 43
+        },
+        {
+          "value": "1",
+          "line": 42,
+          "column": 41
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/festival-domain/festival-text.ts",
+      "count": 1,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "1",
+          "line": 69,
+          "column": 26
+        }
+      ]
+    },
+    {
       "path": "deploy/api-worker-shell/services/festival-domain/import-service.ts",
       "count": 1,
       "owner": "worker-backend",
@@ -2049,6 +2159,46 @@
       ]
     },
     {
+      "path": "deploy/api-worker-shell/services/review-comment-handlers.ts",
+      "count": 14,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "404",
+          "line": 30,
+          "column": 25
+        },
+        {
+          "value": "400",
+          "line": 37,
+          "column": 25
+        },
+        {
+          "value": "400",
+          "line": 42,
+          "column": 27
+        },
+        {
+          "value": "200",
+          "line": 83,
+          "column": 23
+        },
+        {
+          "value": "404",
+          "line": 94,
+          "column": 25
+        },
+        {
+          "value": "404",
+          "line": 98,
+          "column": 25
+        }
+      ]
+    },
+    {
       "path": "deploy/api-worker-shell/services/review-domain/mapper.ts",
       "count": 6,
       "owner": "worker-backend",
@@ -2160,6 +2310,121 @@
           "value": "0",
           "line": 25,
           "column": 17
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/review-interaction-shared.ts",
+      "count": 1,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "401",
+          "line": 24,
+          "column": 37
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/review-like-handler.ts",
+      "count": 2,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "404",
+          "line": 29,
+          "column": 25
+        },
+        {
+          "value": "200",
+          "line": 39,
+          "column": 23
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/review-upload-handler.ts",
+      "count": 7,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "9",
+          "line": 16,
+          "column": 62
+        },
+        {
+          "value": "9_",
+          "line": 34,
+          "column": 67
+        },
+        {
+          "value": "400",
+          "line": 63,
+          "column": 25
+        },
+        {
+          "value": "400",
+          "line": 66,
+          "column": 25
+        },
+        {
+          "value": "5242880",
+          "line": 68,
+          "column": 66
+        },
+        {
+          "value": "413",
+          "line": 70,
+          "column": 25
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/review-write-handlers.ts",
+      "count": 15,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "400",
+          "line": 35,
+          "column": 25
+        },
+        {
+          "value": "400",
+          "line": 38,
+          "column": 25
+        },
+        {
+          "value": "400",
+          "line": 41,
+          "column": 25
+        },
+        {
+          "value": "404",
+          "line": 47,
+          "column": 25
+        },
+        {
+          "value": "404",
+          "line": 51,
+          "column": 25
+        },
+        {
+          "value": "403",
+          "line": 54,
+          "column": 25
         }
       ]
     },
