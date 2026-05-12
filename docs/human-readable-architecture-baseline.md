@@ -2,9 +2,9 @@
 
 Scope-ID: `TSK-006-01-ARCHITECTURE-READABILITY-AUDIT`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/304
-PR: `TBD-TSK-006-01-ARCHITECTURE-READABILITY-AUDIT`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/309
 Branch: `architecture-readability-audit`
-Status: `baseline`
+Status: `completed`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/303
 Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/304
 
@@ -53,14 +53,14 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/304
 
 ## Gate
 
-`test/unit/architecture-readability-source-quality.test.ts` freezes the current baseline so later work must either improve it or update the evidence intentionally.
+`test/unit/architecture-readability-source-quality.test.ts`는 기준선을 고정해 이후 작업이 개선 없이 구조를 악화시키지 못하게 합니다.
 
 The gate currently protects:
 
 - Worker tracked TS max depth 4.
-- `src/hooks` direct root file count 62.
-- `src/hooks` tiny direct root file count 13.
-- Production TS/TSX files above 250 lines remain limited to the four known files.
+- `src/hooks` direct root file count 35.
+- `src/hooks` tiny direct root file count 9.
+- Production TS/TSX files above 250 lines remain limited to the two known auth boundary files.
 - Import hot spots above 10 imports remain limited to the five known files.
 - `src`, Worker, FastAPI, and unit-test tracked source depth do not spike.
 
@@ -71,3 +71,10 @@ The gate currently protects:
 - No API path, response shape, DB schema, or OAuth success-path change.
 - No global barrel or central type surface expansion.
 - No mass file movement in this audit slice.
+
+## 최신 반영
+
+- #306에서 `src/hooks` direct root files를 62개에서 35개로 줄였습니다.
+- #306에서 15라인 이하 direct root tiny hook을 13개에서 9개로 줄였습니다.
+- #307에서 `festival-domain/mapper.ts`와 `review-interactions.ts`를 얇은 facade로 축소했습니다.
+- 250라인 초과 production TS/TSX 파일은 `auth.ts`, `auth/session.ts`만 남겼고, 두 파일은 보안 boundary 예외로 기록했습니다.

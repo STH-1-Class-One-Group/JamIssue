@@ -18,6 +18,7 @@
 | `1.2.8` | 정식 릴리즈 | Worker-first SOLID hardening 이전 안정화 | `ee7bde3f76f0d700ff774e2527b2061ce68d0108` |
 | `1.2.9` | 정식 릴리즈 | repo-wide numeric/config hardening, interface-locality hardening | `6385c2172d17bb3e22794dd21619409ebef00acd` |
 | `1.2.10` | 정식 릴리즈 | Worker residual boundary hardening, architecture/interface-locality regression hardening, review allocation 최적화 | `3984be45ca5b292c4e0bef7482f87fdf74159e86` |
+| `1.2.11` | 후보 | Human-readable architecture hardening | `bfb636ae83ca2447030669d81e132a5cda4c1047` 기준 진행 중 |
 
 ## TSK-004 Worker Residual Boundary Hardening
 
@@ -76,6 +77,31 @@ TSK-004까지 정리한 Worker-first backend와 interface-locality 경계가 이
 | --- | --- | --- |
 | #278 | `c5f4f1e` | review collection 상태 업데이트에서 불필요한 React state update 우회 |
 | #301 | `3984be45ca5b292c4e0bef7482f87fdf74159e86` | `getKnownMyReviews` 중간 배열 allocation 제거와 precedence 회귀 테스트 |
+
+## TSK-006 Human-Readable Architecture Hardening
+
+Status: in progress
+Release: `1.2.11 후보`
+Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/303
+
+### 목적
+
+`1.2.10` 이후 구조는 interface-locality와 회귀 방지 gate가 강화됐지만, 사람이 읽을 때 어디서 시작해야 하는지 파악하기 어려운 진입점이 남아 있었습니다. TSK-006은 호출자가 보는 surface는 얕게 유지하고, 내부 구현은 업무 언어 기준으로 나눠 navigation cost를 줄입니다.
+
+### 현재 완료 범위
+
+| Issue | PR | Main merge SHA | 완료 근거 |
+| --- | --- | --- | --- |
+| #304 | #309 | `4f72cc9fac577ff28a6e9896184ba8507d765e17` | architecture readability 기준선과 source-quality gate 작성 |
+| #305 | #310 | `a2ca1376f081fd5a900e5b98977c44ad3d1491e6` | Worker domain public entrypoint 정리 |
+| #306 | #311 | `1e43c298a381548637e3b27d3b3022dd240f3fab` | `src/hooks` direct root 62 -> 35, tiny direct root 13 -> 9 |
+| #307 | #312 | `bfb636ae83ca2447030669d81e132a5cda4c1047` | `festival-domain/mapper.ts`, `review-interactions.ts` facade화 |
+| #308 | TBD | TBD | Wiki, README, release candidate traceability 정리 |
+
+### 기준 문서
+
+- [human-readable-architecture-baseline.md](human-readable-architecture-baseline.md)
+- [human-readable-architecture-traceability.md](human-readable-architecture-traceability.md)
 
 ## 1.2.10 최종 검증 근거
 
