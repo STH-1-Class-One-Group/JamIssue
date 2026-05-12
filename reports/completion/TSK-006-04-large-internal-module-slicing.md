@@ -2,9 +2,9 @@
 
 Scope-ID: `TSK-006-04-LARGE-INTERNAL-MODULE-SLICING`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/307
-PR: `TBD-TSK-006-04-LARGE-INTERNAL-MODULE-SLICING`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/312
 Branch: `large-internal-module-slicing`
-Status: `validated-local`
+Status: `validated-remote`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/303
 Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/307
 
@@ -36,7 +36,7 @@ Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/307
 - [x] `npm.cmd run build` 통과
 - [x] `git diff --check` 통과
 - [x] UTF-8 integrity check 통과
-- [ ] PR checks
+- [ ] PR checks - pending
 
 ## Remaining Follow-Up Work
 
