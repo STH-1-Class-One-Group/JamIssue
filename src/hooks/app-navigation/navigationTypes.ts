@@ -1,7 +1,7 @@
 import type { ReturnViewState } from '../../store/app-ui-store';
 import type { DrawerState, MyPageTabKey, RoutePreview, Tab } from '../../types/core';
 import type { Review } from '../../types/review';
-import type { RouteStateCommitOptions } from '../useAppRouteState';
+import type { RouteStateCommitOptions } from '../app-route/useAppRouteState';
 
 export interface UseAppNavigationHelpersParams {
   activeTab: Tab;

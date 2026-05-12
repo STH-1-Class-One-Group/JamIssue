@@ -1,12 +1,12 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import type { Tab } from '../types/core';
-import type { SessionUser } from '../types/auth';
-import type { UserRoute } from '../types/review';
-import type { MyPageResponse } from '../types/my-page';
-import { createPublishRouteHandler } from './app-route-actions/publishRouteAction';
-import { createToggleRouteLikeHandler } from './app-route-actions/routeLikeAction';
+import type { Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { UserRoute } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
+import { createPublishRouteHandler } from '../app-route-actions/publishRouteAction';
+import { createToggleRouteLikeHandler } from '../app-route-actions/routeLikeAction';
 import { useAppRouteActionStoreBindings } from './useAppRouteActionStoreBindings';
-import { useEventCallback } from './useEventCallback';
+import { useEventCallback } from '../useEventCallback';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
 type CommunityRoutesCache = Partial<Record<'popular' | 'latest', UserRoute[]>>;

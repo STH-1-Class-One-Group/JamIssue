@@ -1,5 +1,5 @@
 import type { DrawerState, RoutePreview, Tab } from '../../types/core';
-import type { RouteStateCommitOptions } from '../useAppRouteState';
+import type { RouteStateCommitOptions } from '../app-route/useAppRouteState';
 
 interface CreateBottomNavChangeHandlerParams {
   selectedPlaceId: string | null;

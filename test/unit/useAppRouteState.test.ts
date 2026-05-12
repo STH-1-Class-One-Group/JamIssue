@@ -4,7 +4,7 @@ import {
   getInitialNotice,
   getRoutePreviewFromHistoryState,
   type RouteState,
-} from '../../src/hooks/useAppRouteState';
+} from '../../src/hooks/app-route/useAppRouteState';
 import type { RoutePreview } from '../../src/types';
 
 const routeState: RouteState = {

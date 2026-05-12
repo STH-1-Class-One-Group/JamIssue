@@ -1,18 +1,18 @@
 import { useCallback, useEffect } from 'react';
-import { useAppMapStore } from '../store/app-map-store';
-import { useAppRouteStore } from '../store/app-route-store';
-import type { Tab } from '../types/core';
+import { useAppMapStore } from '../../store/app-map-store';
+import { useAppRouteStore } from '../../store/app-route-store';
+import type { Tab } from '../../types/core';
 import {
   clearAuthQueryParams,
   getInitialRouteState,
   getInitialNotice,
   getLoginReturnUrl,
-} from './app-route/authQueryState';
+} from './authQueryState';
 import {
   getInitialMapViewport,
   updateMapViewportInUrl,
   type MapViewport,
-} from './app-route/mapViewportState';
+} from './mapViewportState';
 import {
   buildHistoryState,
   buildRouteUrl,
@@ -20,9 +20,9 @@ import {
   type AppHistoryState,
   type RouteState,
   type RouteStateCommitOptions,
-} from './app-route/routeHistoryState';
-import { buildCommitRouteState } from './app-route/routeStateActions';
-import { initializeRouteStore } from './app-route/routeStoreInitialization';
+} from './routeHistoryState';
+import { buildCommitRouteState } from './routeStateActions';
+import { initializeRouteStore } from './routeStoreInitialization';
 
 export {
   buildHistoryState,

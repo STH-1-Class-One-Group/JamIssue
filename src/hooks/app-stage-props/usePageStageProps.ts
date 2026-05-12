@@ -1,4 +1,4 @@
-import type { useAppShellCoordinator } from './useAppShellCoordinator';
+import type { useAppShellCoordinator } from '../app-coordinator/useAppShellCoordinator';
 
 type AppShellCoordinatorState = ReturnType<typeof useAppShellCoordinator>;
 

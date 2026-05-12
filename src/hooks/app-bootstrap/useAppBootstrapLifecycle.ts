@@ -1,14 +1,14 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { useAppTabWarmup } from './useAppTabWarmup';
-import { useSelectedPlaceReviewSync } from './useSelectedPlaceReviewSync';
+import { useAppTabWarmup } from '../app-tab-loaders/useAppTabWarmup';
+import { useSelectedPlaceReviewSync } from '../useSelectedPlaceReviewSync';
 import { useAppBootstrapSharedRefs } from './useAppBootstrapSharedRefs';
 import { useFestivalBootstrapEffect, useMapBootstrapEffect } from './useAppBootstrapEffects';
 import { useAppBootstrapStoreBindings } from './useAppBootstrapStoreBindings';
-import type { FestivalItem, Place, Tab } from '../types/core';
-import type { SessionUser } from '../types/auth';
-import type { Review, StampState } from '../types/review';
-import type { MyPageResponse } from '../types/my-page';
-import type { AdminSummaryResponse } from '../types/admin';
+import type { FestivalItem, Place, Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { Review, StampState } from '../../types/review';
+import type { MyPageResponse } from '../../types/my-page';
+import type { AdminSummaryResponse } from '../../types/admin';
 
 interface UseAppBootstrapLifecycleParams {
   activeTab: Tab;

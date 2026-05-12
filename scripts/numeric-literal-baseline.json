@@ -4554,7 +4554,7 @@
       ]
     },
     {
-      "path": "src/hooks/useAppShellStageProps.ts",
+      "path": "src/hooks/app-stage-props/useAppShellStageProps.ts",
       "count": 1,
       "owner": "frontend-ui",
       "category": "frontend-ui-inline-token-baseline",

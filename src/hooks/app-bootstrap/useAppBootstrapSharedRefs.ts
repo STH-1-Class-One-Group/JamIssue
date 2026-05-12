@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { MutableRefObject } from 'react';
-import type { Tab } from '../types/core';
-import type { SessionUser } from '../types/auth';
-import type { MyPageResponse } from '../types/my-page';
+import type { Tab } from '../../types/core';
+import type { SessionUser } from '../../types/auth';
+import type { MyPageResponse } from '../../types/my-page';
 
 type RefreshMyPageForUser = (user: SessionUser | null, force?: boolean) => Promise<MyPageResponse | null>;
 type ResetReviewCaches = () => void;

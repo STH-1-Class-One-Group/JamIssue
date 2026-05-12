@@ -1,7 +1,7 @@
 import type { DrawerState, MyPageTabKey, RoutePreview, Tab } from '../../types/core';
 import type { SessionUser } from '../../types/auth';
 import type { ReturnViewState } from '../../store/app-ui-store';
-import type { RouteStateCommitOptions } from '../useAppRouteState';
+import type { RouteStateCommitOptions } from '../app-route/useAppRouteState';
 
 interface CreateNavigateBackHandlerParams {
   sessionUser: SessionUser | null;

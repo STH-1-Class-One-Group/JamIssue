@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { RouteStateCommitOptions } from './useAppRouteState';
+import type { RouteStateCommitOptions } from './app-route/useAppRouteState';
 import type { DrawerState, Place, RoutePreview } from '../types/core';
 
 interface UseAppStageActionsParams {

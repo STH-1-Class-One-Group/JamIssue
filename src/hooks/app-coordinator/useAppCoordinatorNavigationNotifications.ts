@@ -1,5 +1,5 @@
-import { useAppNavigationHelpers } from './useAppNavigationHelpers';
-import { useGlobalNotifications } from './useGlobalNotifications';
+import { useAppNavigationHelpers } from '../useAppNavigationHelpers';
+import { useGlobalNotifications } from '../useGlobalNotifications';
 import type { CoordinatorServicesArgs } from './useAppCoordinatorServices.types';
 import type { useAppCoordinatorAuthLoaders } from './useAppCoordinatorAuthLoaders';
 
