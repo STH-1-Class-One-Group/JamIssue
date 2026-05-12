@@ -18,11 +18,19 @@ export function getKnownMyReviews({
   }
 
   const reviewMap = new Map<string, Review>();
-  for (const review of [...reviews, ...selectedPlaceReviews, ...(myPageReviews ?? [])]) {
-    if (review.userId !== sessionUser.id) {
-      continue;
+  // ⚡ Bolt: Performance Optimization
+  // Avoid O(N) array allocations using spread syntax [...a, ...b] just to populate a Map.
+  // Instead, process each list sequentially to maintain identical behavior with lower overhead.
+  const addReview = (review: Review) => {
+    if (review.userId === sessionUser.id) {
+      reviewMap.set(review.id, review);
     }
-    reviewMap.set(review.id, review);
+  };
+
+  for (const review of reviews) addReview(review);
+  for (const review of selectedPlaceReviews) addReview(review);
+  if (myPageReviews) {
+    for (const review of myPageReviews) addReview(review);
   }
 
   return [...reviewMap.values()];
