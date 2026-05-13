@@ -48,7 +48,10 @@ export function useAppPagePaginationActions({
     try {
       const page = await getReviewFeedPage({ cursor: feedNextCursor, limit: PaginationRuntimeConfig.pageSize });
       setReviews((current) => {
-        const existingIds = new Set(current.map((review) => review.id));
+        const existingIds = new Set<string>();
+        for (const review of current) {
+          existingIds.add(review.id);
+        }
         const nextItems = toReviewSummaryList(page.items).filter((review) => !existingIds.has(review.id));
         return [...current, ...nextItems];
       });
@@ -90,7 +93,10 @@ export function useAppPagePaginationActions({
           return current;
         }
         const base = initial ? [] : current.comments;
-        const existingIds = new Set(base.map((comment) => comment.id));
+        const existingIds = new Set<string>();
+        for (const comment of base) {
+          existingIds.add(comment.id);
+        }
         const nextItems = page.items.filter((comment) => !existingIds.has(comment.id));
         return {
           ...current,
