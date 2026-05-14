@@ -10,3 +10,4 @@ cryptography==46.0.7
 PyJWT==2.12.0
 python-multipart==0.0.27
 pytest==9.0.3
+pytest-cov==7.0.0
