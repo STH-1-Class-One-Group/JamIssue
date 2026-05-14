@@ -64,3 +64,5 @@ backend/pytest-cache-files-*/
 coverage/
 backend/.coverage
 backend/coverage.json
+playwright-report/
+test-results/
