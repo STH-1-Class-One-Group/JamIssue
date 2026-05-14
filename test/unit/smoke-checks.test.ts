@@ -15,6 +15,14 @@ import {
   createProtectedSmokeChecks,
   runProtectedSmokeSuite,
 } from '../../scripts/run-protected-smoke-checks';
+import {
+  getProtectedWriteSmokeConfig,
+  getProtectedWriteSmokeSkipReason,
+  isProtectedWriteSmokeEnabled,
+} from '../../scripts/smoke/protected-write';
+import {
+  runProtectedWriteSmokeSuite,
+} from '../../scripts/run-protected-write-smoke-checks';
 
 describe('run-smoke-checks helpers', () => {
   it('parses runtime app config from the bootstrap script', () => {
@@ -133,5 +141,53 @@ describe('run-smoke-checks helpers', () => {
     });
     expect(loadRuntimeConfigImpl).not.toHaveBeenCalled();
     expect(runSmokeSuiteImpl).not.toHaveBeenCalled();
+  });
+
+  it('keeps protected write smoke disabled unless explicitly opted in', async () => {
+    const loadRuntimeConfigImpl = vi.fn();
+    const runSmokeSuiteImpl = vi.fn();
+
+    const result = await runProtectedWriteSmokeSuite({
+      env: {},
+      loadRuntimeConfigImpl,
+      runSmokeSuiteImpl,
+    });
+
+    expect(result).toMatchObject({
+      suite: 'protected-write',
+      skipped: true,
+      reason: 'SMOKE_WRITE_ENABLED is not true',
+      endpoints: ['api-review-write-roundtrip'],
+    });
+    expect(loadRuntimeConfigImpl).not.toHaveBeenCalled();
+    expect(runSmokeSuiteImpl).not.toHaveBeenCalled();
+  });
+
+  it('requires explicit protected write smoke identifiers after opt-in', () => {
+    expect(isProtectedWriteSmokeEnabled({ SMOKE_WRITE_ENABLED: 'true' })).toBe(true);
+    expect(getProtectedWriteSmokeSkipReason({
+      SMOKE_WRITE_ENABLED: 'true',
+      SMOKE_AUTH_BEARER_TOKEN: 'token-123',
+    })).toBe('SMOKE_WRITE_PLACE_ID and SMOKE_WRITE_STAMP_ID are required for protected write smoke checks');
+    expect(getProtectedWriteSmokeSkipReason({
+      SMOKE_WRITE_ENABLED: 'true',
+      SMOKE_AUTH_BEARER_TOKEN: 'token-123',
+      SMOKE_WRITE_PLACE_ID: 'bread-house',
+      SMOKE_WRITE_STAMP_ID: '11',
+    })).toBeNull();
+  });
+
+  it('builds protected write smoke config from explicit env only', () => {
+    expect(getProtectedWriteSmokeConfig({
+      SMOKE_WRITE_PLACE_ID: 'bread-house',
+      SMOKE_WRITE_STAMP_ID: '11',
+      SMOKE_WRITE_REVIEW_BODY: 'review body',
+      SMOKE_WRITE_COMMENT_BODY: 'comment body',
+    })).toEqual({
+      placeId: 'bread-house',
+      stampId: '11',
+      reviewBody: 'review body',
+      commentBody: 'comment body',
+    });
   });
 });

@@ -64,7 +64,9 @@ export async function handleCreateReview(request: Request, env: WorkerEnv, deps:
     image_url: imageUrl,
   });
   const createdReviewId = insertedRow?.feed_id as string | number | undefined;
-  const createdReview = await deps.loadSingleReview(env, createdReviewId as string, sessionResult.sessionUser.id);
+  const createdReview = createdReviewId == null
+    ? null
+    : await deps.loadSingleReview(env, String(createdReviewId), sessionResult.sessionUser.id);
 
   await publishReviewNotification(env, deps, {
     userId: sessionResult.sessionUser.id,
