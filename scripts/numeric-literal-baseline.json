@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "bfb636ae83ca2447030669d81e132a5cda4c1047",
+  "generatedFrom": "1522b336acd675e8b8358a4d03a8d4400c94913d",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -3025,6 +3025,46 @@
           "value": "1",
           "line": 64,
           "column": 24
+        }
+      ]
+    },
+    {
+      "path": "scripts/run-protected-write-smoke-checks.ts",
+      "count": 9,
+      "owner": "tooling",
+      "category": "tooling-script-baseline",
+      "scopeId": "TSK-002-01-HARDCODED-VALUE-AUDIT",
+      "reason": "Build, smoke, sync, and data scripts are tracked by the audit baseline before later extraction decisions.",
+      "examples": [
+        {
+          "value": "201",
+          "line": 49,
+          "column": 50
+        },
+        {
+          "value": "201",
+          "line": 49,
+          "column": 79
+        },
+        {
+          "value": "200",
+          "line": 58,
+          "column": 51
+        },
+        {
+          "value": "200",
+          "line": 58,
+          "column": 81
+        },
+        {
+          "value": "200",
+          "line": 66,
+          "column": 52
+        },
+        {
+          "value": "200",
+          "line": 66,
+          "column": 82
         }
       ]
     },

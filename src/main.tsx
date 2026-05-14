@@ -2,6 +2,7 @@
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { RoadmapBannerPreview } from './components/RoadmapBannerPreview';
+import { resolveViewportMetrics, type ViewportMetricsState } from './lib/viewportMetrics';
 import './index.css';
 import './styles/refinements.css';
 
@@ -9,15 +10,26 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';
 }
 
+let viewportMetricsState: ViewportMetricsState | undefined;
+
 function syncViewportMetrics() {
   if (typeof window === 'undefined') {
     return;
   }
 
-  const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-  const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
-  document.documentElement.style.setProperty('--app-height', `${Math.round(viewportHeight)}px`);
-  document.documentElement.style.setProperty('--app-width', `${Math.round(viewportWidth)}px`);
+  const activeElement = document.activeElement;
+  const metrics = resolveViewportMetrics({
+    innerHeight: window.innerHeight,
+    innerWidth: window.innerWidth,
+    visualViewportHeight: window.visualViewport?.height,
+    visualViewportWidth: window.visualViewport?.width,
+    activeElementTagName: activeElement instanceof HTMLElement ? activeElement.tagName : undefined,
+    activeElementIsContentEditable: activeElement instanceof HTMLElement ? activeElement.isContentEditable : undefined,
+  }, viewportMetricsState);
+
+  viewportMetricsState = metrics;
+  document.documentElement.style.setProperty('--app-height', `${metrics.appHeight}px`);
+  document.documentElement.style.setProperty('--app-width', `${metrics.appWidth}px`);
 }
 
 if (typeof window !== 'undefined') {
