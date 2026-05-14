@@ -29,7 +29,10 @@ export function useNaverPlaceMarkers({
       return;
     }
 
-    const nextIds = new Set(places.map((place) => place.id));
+    const nextIds = new Set<string>();
+    for (const place of places) {
+      nextIds.add(place.id);
+    }
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     for (const [placeId, marker] of placeMarkersRef.current.entries()) {

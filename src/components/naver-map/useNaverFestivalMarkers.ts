@@ -29,7 +29,12 @@ export function useNaverFestivalMarkers({
       return;
     }
 
-    const nextIds = new Set(festivals.filter(hasFestivalCoordinates).map((festival) => festival.id));
+    const nextIds = new Set<string>();
+    for (const festival of festivals) {
+      if (hasFestivalCoordinates(festival)) {
+        nextIds.add(festival.id);
+      }
+    }
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     for (const [festivalId, marker] of festivalMarkersRef.current.entries()) {
