@@ -4,6 +4,8 @@
 
 TSK-009는 UI/UX 기대 동작을 테스트와 QA 근거로 추적하고, 최종적으로 TypeScript와 FastAPI Python 모두 95% 커버리지 게이트를 적용하기 위한 작업이다.
 
+UI/UX 기대 동작은 [UI/UX 기대 동작 QA 매트릭스](ui-ux-qa-matrix.md)의 `UIUX-###` ID와 연결한다.
+
 ## 현재 단계
 
 현재 단계는 `TSK-009-01` baseline 측정이다. 이 단계에서는 커버리지 도구와 명령을 추가하지만, 95% hard gate는 아직 켜지 않는다.
