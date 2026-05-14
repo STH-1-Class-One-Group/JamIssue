@@ -59,3 +59,8 @@ preview/local-preview*
 .pytest_cache/
 pytest-cache-files-*/
 backend/pytest-cache-files-*/
+
+# coverage artifacts
+coverage/
+backend/.coverage
+backend/coverage.json
