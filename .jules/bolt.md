@@ -1,3 +1,0 @@
-## 2024-03-08 - Intermediate Array Allocations during Set Construction
-**Learning:** Initializing a `Set` by mapping an array inline (`new Set(array.map(item => item.id))`) causes the browser to allocate unnecessary intermediate arrays in memory. If this is done inside heavily used hooks (like pagination) or React hooks that run often (like Naver Marker updates on re-render), it can lead to memory pressure and potential garbage collection stutter.
-**Action:** Always construct Sets using a `for...of` loop with `Set.add()` when you need to extract properties from a large array of objects. This avoids the `O(N)` memory overhead of intermediate mapped arrays.
