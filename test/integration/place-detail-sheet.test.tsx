@@ -86,4 +86,41 @@ describe('PlaceDetailSheet integration', () => {
 
     expect(screen.getByRole('button', { name: '오늘 스탬프 완료' })).toBeDisabled();
   });
+
+  it('keeps the review composer inside the scrollable drawer content in full mode', () => {
+    render(
+      <PlaceDetailSheet
+        place={placeFixture}
+        reviews={[reviewFixture]}
+        isOpen={true}
+        drawerState="full"
+        loggedIn={true}
+        visitCount={2}
+        latestStamp={todayStampFixture}
+        todayStamp={todayStampFixture}
+        hasCreatedReviewToday={false}
+        stampActionStatus="ready"
+        stampActionMessage="오늘 스탬프를 이미 찍었어요."
+        reviewProofMessage="방문 후 피드를 작성해 주세요."
+        reviewError={null}
+        reviewSubmitting={false}
+        canCreateReview={true}
+        onOpenFeedReview={vi.fn()}
+        onClose={vi.fn()}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+        onRequestLogin={vi.fn()}
+        onClaimStamp={vi.fn().mockResolvedValue(undefined)}
+        onCreateReview={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    const textarea = screen.getByRole('textbox');
+    const drawerContent = textarea.closest('.place-drawer__content');
+    const drawer = textarea.closest('.place-drawer');
+
+    expect(textarea).toBeEnabled();
+    expect(drawerContent).not.toBeNull();
+    expect(drawer).toHaveClass('place-drawer--full');
+  });
 });
