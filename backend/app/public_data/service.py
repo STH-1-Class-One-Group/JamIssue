@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from sqlalchemy import delete, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from ..config import Settings
 from ..db_models import Course, CoursePlace, MapPlace, PublicDataSource, PublicPlace, PublicPlaceMapLink
@@ -38,10 +38,15 @@ def upsert_public_source(db: Session, source_payload: PublicSourcePayload, now: 
     return source
 
 
-def upsert_map_place(db: Session, map_payload: dict, now: datetime) -> tuple[MapPlace, bool]:
+def upsert_map_place(
+    db: Session,
+    map_payload: dict,
+    now: datetime,
+    existing_place: MapPlace | None = None,
+) -> tuple[MapPlace, bool]:
     """Create or update a map place from normalized public data."""
 
-    place = db.scalars(select(MapPlace).where(MapPlace.slug == map_payload["slug"])).first()
+    place = existing_place or db.scalars(select(MapPlace).where(MapPlace.slug == map_payload["slug"])).first()
     created = False
     if not place:
         place = MapPlace(slug=map_payload["slug"], created_at=now)
@@ -81,12 +86,10 @@ def upsert_public_place_link(
         existing_link.is_primary = existing_link.position_id == map_place.position_id
         existing_link.updated_at = now
 
-    link = db.scalars(
-        select(PublicPlaceMapLink).where(
-            PublicPlaceMapLink.public_place_id == public_place.public_place_id,
-            PublicPlaceMapLink.position_id == map_place.position_id,
-        )
-    ).first()
+    link = next(
+        (lk for lk in public_place.map_links if lk.position_id == map_place.position_id),
+        None,
+    )
     if not link:
         link = PublicPlaceMapLink(
             public_place_id=public_place.public_place_id,
@@ -95,6 +98,7 @@ def upsert_public_place_link(
             created_at=now,
         )
         db.add(link)
+        public_place.map_links.append(link)
 
     link.match_method = "slug"
     link.confidence_score = 1.0
@@ -102,10 +106,16 @@ def upsert_public_place_link(
     link.updated_at = now
 
 
-def mark_stale_public_places(db: Session, source_id: int, seen_external_ids: set[str], now: datetime) -> None:
+def mark_stale_public_places(
+    db: Session,
+    source_id: int,
+    seen_external_ids: set[str],
+    now: datetime,
+    existing_places: list[PublicPlace] | None = None,
+) -> None:
     """Mark missing records from the last import as stale."""
 
-    stale_places = db.scalars(select(PublicPlace).where(PublicPlace.source_id == source_id)).all()
+    stale_places = existing_places or db.scalars(select(PublicPlace).where(PublicPlace.source_id == source_id)).all()
     for place in stale_places:
         if place.external_id in seen_external_ids:
             continue
@@ -113,14 +123,19 @@ def mark_stale_public_places(db: Session, source_id: int, seen_external_ids: set
         place.updated_at = now
 
 
-def sync_courses(db: Session, bundle: PublicDataBundle) -> int:
+def sync_courses(
+    db: Session,
+    bundle: PublicDataBundle,
+    existing_map_places: dict[str, MapPlace] | None = None,
+) -> int:
     """Sync course definitions using current map-place rows."""
 
     imported_courses = 0
-    place_by_slug = {place.slug: place for place in db.scalars(select(MapPlace)).all()}
+    place_by_slug = existing_map_places or {place.slug: place for place in db.scalars(select(MapPlace)).all()}
+    course_by_slug = {c.slug: c for c in db.scalars(select(Course)).all()}
 
     for item in bundle.courses:
-        course = db.scalars(select(Course).where(Course.slug == item.slug)).first()
+        course = course_by_slug.get(item.slug)
         if not course:
             course = Course(
                 slug=item.slug,
@@ -132,6 +147,7 @@ def sync_courses(db: Session, bundle: PublicDataBundle) -> int:
                 display_order=item.display_order,
             )
             db.add(course)
+            course_by_slug[item.slug] = course
             imported_courses += 1
         else:
             course.title = item.title
@@ -166,14 +182,17 @@ def import_public_bundle(db: Session, settings: Settings) -> PublicImportRespons
     imported_places = 0
     seen_external_ids: set[str] = set()
 
+    existing_public_places = db.scalars(
+        select(PublicPlace)
+        .where(PublicPlace.source_id == source.source_id)
+        .options(selectinload(PublicPlace.map_links))
+    ).all()
+    public_place_by_ext_id = {p.external_id: p for p in existing_public_places}
+    map_place_by_slug = {p.slug: p for p in db.scalars(select(MapPlace)).all()}
+
     for raw_place in bundle.places:
         normalized = normalize_public_place(raw_place)
-        public_place = db.scalars(
-            select(PublicPlace).where(
-                PublicPlace.source_id == source.source_id,
-                PublicPlace.external_id == normalized.external_id,
-            )
-        ).first()
+        public_place = public_place_by_ext_id.get(normalized.external_id)
         if not public_place:
             public_place = PublicPlace(
                 source_id=source.source_id,
@@ -181,6 +200,8 @@ def import_public_bundle(db: Session, settings: Settings) -> PublicImportRespons
                 created_at=now,
             )
             db.add(public_place)
+            public_place_by_ext_id[normalized.external_id] = public_place
+            existing_public_places.append(public_place)
 
         public_place.map_slug = normalized.map_slug
         public_place.display_name = normalized.display_name
@@ -203,16 +224,29 @@ def import_public_bundle(db: Session, settings: Settings) -> PublicImportRespons
         db.flush()
 
         if normalized.map_payload:
-            map_place, created = upsert_map_place(db, normalized.map_payload, now)
+            map_place, created = upsert_map_place(
+                db,
+                normalized.map_payload,
+                now,
+                existing_place=map_place_by_slug.get(normalized.map_payload["slug"]),
+            )
             if created:
                 imported_places += 1
+                map_place_by_slug[normalized.map_payload["slug"]] = map_place
+
             upsert_public_place_link(db, public_place, map_place, now)
             public_place.sync_status = "linked"
 
         seen_external_ids.add(normalized.external_id)
 
-    mark_stale_public_places(db, source.source_id, seen_external_ids, now)
-    imported_courses = sync_courses(db, bundle)
+    mark_stale_public_places(
+        db,
+        source.source_id,
+        seen_external_ids,
+        now,
+        existing_places=existing_public_places,
+    )
+    imported_courses = sync_courses(db, bundle, existing_map_places=map_place_by_slug)
     source.last_imported_at = now
     source.updated_at = now
     db.commit()
