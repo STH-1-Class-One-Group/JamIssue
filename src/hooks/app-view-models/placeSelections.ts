@@ -48,5 +48,9 @@ export function getSelectedFestival(festivals: FestivalItem[], selectedFestivalI
 }
 
 export function buildPlaceNameById(places: Place[]) {
-  return Object.fromEntries(places.map((place) => [place.id, place.name]));
+  const placeNameById: Record<string, string> = {};
+  for (const place of places) {
+    placeNameById[place.id] = place.name;
+  }
+  return placeNameById;
 }
