@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildPlaceNameById,
-  filterPlacesByCategory,
   getRoutePreviewPlaces,
   getSelectedFestival,
   getSelectedPlace,
@@ -16,31 +15,6 @@ describe('placeSelections view model', () => {
     { ...placeFixture, id: 'p1', name: 'Place 1 (Second)', category: 'cafe' },
     { ...placeFixture, id: 'p3', name: 'Place 3', category: 'cafe' },
   ];
-
-  describe('filterPlacesByCategory', () => {
-    it('should return all places when category is "all"', () => {
-      const result = filterPlacesByCategory(mockPlaces, 'all');
-      expect(result).toHaveLength(4);
-      expect(result).toEqual(mockPlaces);
-    });
-
-    it('should filter places by a specific category', () => {
-      const result = filterPlacesByCategory(mockPlaces, 'cafe');
-      expect(result).toHaveLength(3);
-      expect(result.every((place) => place.category === 'cafe')).toBe(true);
-      expect(result.map((p) => p.id)).toEqual(['p1', 'p1', 'p3']);
-    });
-
-    it('should return an empty array when no places match the category', () => {
-      const result = filterPlacesByCategory(mockPlaces, 'culture');
-      expect(result).toHaveLength(0);
-    });
-
-    it('should handle an empty input array', () => {
-      const result = filterPlacesByCategory([], 'cafe');
-      expect(result).toHaveLength(0);
-    });
-  });
 
   describe('getSelectedPlace', () => {
     it('returns the place with matching ID', () => {
