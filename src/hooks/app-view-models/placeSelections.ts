@@ -48,7 +48,7 @@ export function getSelectedFestival(festivals: FestivalItem[], selectedFestivalI
 }
 
 export function buildPlaceNameById(places: Place[]) {
-  // ⚡ Bolt optimization: Use a single for...of loop instead of Object.fromEntries(array.map(...))
+  // Use a single for...of loop instead of Object.fromEntries(array.map(...))
   // to avoid O(N) memory allocation for intermediate tuple arrays.
   const placeNameById: Record<string, string> = {};
   for (const place of places) {
