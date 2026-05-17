@@ -1,79 +1,151 @@
 import { describe, expect, it } from 'vitest';
-import { getRoutePreviewPlaces } from '../../src/hooks/app-view-models/placeSelections';
-import type { Place, RoutePreview } from '../../src/types';
+import {
+  buildPlaceNameById,
+  getRoutePreviewPlaces,
+  getSelectedFestival,
+  getSelectedPlace,
+} from '../../src/hooks/app-view-models/placeSelections';
+import type { FestivalItem, Place, RoutePreview } from '../../src/types';
+import { placeFixture } from '../fixtures/app-fixtures';
 
-describe('getRoutePreviewPlaces', () => {
+describe('placeSelections view model', () => {
   const mockPlaces: Place[] = [
-    { id: 'p1', name: 'Place 1 (First)' } as Place,
-    { id: 'p2', name: 'Place 2' } as Place,
-    { id: 'p1', name: 'Place 1 (Second)' } as Place,
-    { id: 'p3', name: 'Place 3' } as Place,
+    { ...placeFixture, id: 'p1', name: 'Place 1 (First)', category: 'cafe' },
+    { ...placeFixture, id: 'p2', name: 'Place 2', category: 'restaurant' },
+    { ...placeFixture, id: 'p1', name: 'Place 1 (Second)', category: 'cafe' },
+    { ...placeFixture, id: 'p3', name: 'Place 3', category: 'cafe' },
   ];
 
-  it('maintains the order of placeIds in the result', () => {
-    const routePreview: RoutePreview = {
-      placeIds: ['p3', 'p2'],
-    } as RoutePreview;
+  describe('getSelectedPlace', () => {
+    it('returns the place with matching ID', () => {
+      const result = getSelectedPlace(mockPlaces, 'p2');
+      expect(result).not.toBeNull();
+      expect(result?.id).toBe('p2');
+      expect(result?.name).toBe('Place 2');
+    });
 
-    const result = getRoutePreviewPlaces(mockPlaces, routePreview);
-    expect(result).toHaveLength(2);
-    expect(result[0].id).toBe('p3');
-    expect(result[1].id).toBe('p2');
+    it('returns null if no ID matches', () => {
+      const result = getSelectedPlace(mockPlaces, 'non-existent');
+      expect(result).toBeNull();
+    });
+
+    it('returns null if selectedPlaceId is null', () => {
+      const result = getSelectedPlace(mockPlaces, null);
+      expect(result).toBeNull();
+    });
+
+    it('returns the first match when multiple places have same ID', () => {
+      const result = getSelectedPlace(mockPlaces, 'p1');
+      expect(result?.name).toBe('Place 1 (First)');
+    });
   });
 
-  it('handles repeating IDs in the route preview', () => {
-    const routePreview: RoutePreview = {
-      placeIds: ['p2', 'p2', 'p3'],
-    } as RoutePreview;
+  describe('getRoutePreviewPlaces', () => {
+    it('maintains the order of placeIds in the result', () => {
+      const routePreview: RoutePreview = {
+        placeIds: ['p3', 'p2'],
+      } as RoutePreview;
 
-    const result = getRoutePreviewPlaces(mockPlaces, routePreview);
-    expect(result).toHaveLength(3);
-    expect(result[0].id).toBe('p2');
-    expect(result[1].id).toBe('p2');
-    expect(result[2].id).toBe('p3');
+      const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe('p3');
+      expect(result[1].id).toBe('p2');
+    });
+
+    it('handles repeating IDs in the route preview', () => {
+      const routePreview: RoutePreview = {
+        placeIds: ['p2', 'p2', 'p3'],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+      expect(result).toHaveLength(3);
+      expect(result[0].id).toBe('p2');
+      expect(result[1].id).toBe('p2');
+      expect(result[2].id).toBe('p3');
+    });
+
+    it('skips missing IDs', () => {
+      const routePreview: RoutePreview = {
+        placeIds: ['p1', 'missing', 'p3'],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe('p1');
+      expect(result[1].id).toBe('p3');
+    });
+
+    it('preserves first-match behavior for duplicate IDs in source places', () => {
+      const routePreview: RoutePreview = {
+        placeIds: ['p1'],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Place 1 (First)');
+    });
+
+    it('returns an empty array if routePreview.placeIds is empty', () => {
+      const routePreview: RoutePreview = {
+        placeIds: [],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+      expect(result).toEqual([]);
+    });
+
+    it('returns an empty array if selectedRoutePreview is null', () => {
+      const result = getRoutePreviewPlaces(mockPlaces, null);
+      expect(result).toEqual([]);
+    });
+
+    it('returns an empty array when places is empty', () => {
+      const routePreview: RoutePreview = {
+        placeIds: ['p1', 'p2'],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces([], routePreview);
+      expect(result).toEqual([]);
+    });
   });
 
-  it('skips missing IDs', () => {
-    const routePreview: RoutePreview = {
-      placeIds: ['p1', 'missing', 'p3'],
-    } as RoutePreview;
+  describe('getSelectedFestival', () => {
+    const mockFestivals: FestivalItem[] = [
+      { id: 'f1', title: 'Festival 1' } as FestivalItem,
+      { id: 'f2', title: 'Festival 2' } as FestivalItem,
+    ];
 
-    const result = getRoutePreviewPlaces(mockPlaces, routePreview);
-    expect(result).toHaveLength(2);
-    expect(result[0].id).toBe('p1');
-    expect(result[1].id).toBe('p3');
+    it('returns the festival with matching ID', () => {
+      const result = getSelectedFestival(mockFestivals, 'f1');
+      expect(result).not.toBeNull();
+      expect(result?.id).toBe('f1');
+      expect(result?.title).toBe('Festival 1');
+    });
+
+    it('returns null if no ID matches', () => {
+      const result = getSelectedFestival(mockFestivals, 'non-existent');
+      expect(result).toBeNull();
+    });
+
+    it('returns null if selectedFestivalId is null', () => {
+      const result = getSelectedFestival(mockFestivals, null);
+      expect(result).toBeNull();
+    });
   });
 
-  it('preserves first-match behavior for duplicate IDs in source places', () => {
-    const routePreview: RoutePreview = {
-      placeIds: ['p1'],
-    } as RoutePreview;
+  describe('buildPlaceNameById', () => {
+    it('returns a map of names by ID', () => {
+      const result = buildPlaceNameById(mockPlaces);
+      expect(result).toEqual({
+        p1: 'Place 1 (Second)', // Because Object.fromEntries will take the last one if keys duplicate
+        p2: 'Place 2',
+        p3: 'Place 3',
+      });
+    });
 
-    const result = getRoutePreviewPlaces(mockPlaces, routePreview);
-    expect(result).toHaveLength(1);
-    expect(result[0].name).toBe('Place 1 (First)');
-  });
-
-  it('returns an empty array if routePreview.placeIds is empty', () => {
-    const routePreview: RoutePreview = {
-      placeIds: [],
-    } as RoutePreview;
-
-    const result = getRoutePreviewPlaces(mockPlaces, routePreview);
-    expect(result).toEqual([]);
-  });
-
-  it('returns an empty array if selectedRoutePreview is null', () => {
-    const result = getRoutePreviewPlaces(mockPlaces, null);
-    expect(result).toEqual([]);
-  });
-
-  it('returns an empty array when places is empty', () => {
-    const routePreview: RoutePreview = {
-      placeIds: ['p1', 'p2'],
-    } as RoutePreview;
-
-    const result = getRoutePreviewPlaces([], routePreview);
-    expect(result).toEqual([]);
+    it('handles empty array', () => {
+      const result = buildPlaceNameById([]);
+      expect(result).toEqual({});
+    });
   });
 });
