@@ -113,6 +113,14 @@ class Settings(BaseSettings):
             if not jwt_secret or jwt_secret == insecure_jwt_secret:
                 raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value in production")
 
+        # Wildcard origins are insecure when allow_credentials=True.
+        # FastAPI's CORSMiddleware also blocks ["*"] + allow_credentials=True at runtime.
+        cors_origins = data.get("cors_origins", "")
+        if isinstance(cors_origins, str):
+            origins = [o.strip() for o in cors_origins.split(",") if o.strip()]
+            if "*" in origins:
+                raise ValueError("Wildcard '*' in APP_CORS_ORIGINS is not allowed when credentials are enabled")
+
         return data
 
     @property
