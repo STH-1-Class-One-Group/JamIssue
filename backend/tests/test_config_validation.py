@@ -30,7 +30,7 @@ def test_production_validation_passes_on_secure_secrets():
 
 def test_production_validation_fails_on_empty_secrets():
     with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set to a secure value of at least 32 characters in production"):
-        Settings(env="staging", session_secret="", jwt_secret="very-secure-jwt-secret-that-is-long-enough")
+        Settings(env="staging", session_secret="", jwt_secret="Very-secure-jwt-secret-1234567890")
 
 def test_production_validation_fails_on_low_complexity_secrets():
     with pytest.raises(ValueError, match="APP_SESSION_SECRET must include at least 3 of: uppercase, lowercase, digit, special character"):
