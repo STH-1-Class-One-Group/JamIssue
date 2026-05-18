@@ -50,3 +50,16 @@ def test_production_validation_supports_secret_files(tmp_path):
 
     assert settings.session_secret == "Very-secure-session-secret-1234567890"
     assert settings.jwt_secret == "Very-secure-jwt-secret-1234567890"
+
+def test_production_validation_applies_quality_rules_to_secret_files(tmp_path):
+    session_secret_path = tmp_path / "session.secret"
+    jwt_secret_path = tmp_path / "jwt.secret"
+    session_secret_path.write_text("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", encoding="utf-8")
+    jwt_secret_path.write_text("Very-secure-jwt-secret-1234567890", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="APP_SESSION_SECRET must include at least 3 of: uppercase, lowercase, digit, special character"):
+        Settings(
+            env="production",
+            session_secret_file=str(session_secret_path),
+            jwt_secret_file=str(jwt_secret_path),
+        )
