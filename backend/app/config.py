@@ -141,6 +141,7 @@ class Settings(BaseSettings):
 
     @staticmethod
     def _resolve_secret_value(secret_value: Any, secret_file_path: Any, *, secret_name: str, secret_file_name: str) -> str:
+        """Resolve secret from direct value first, then optional secret file path."""
         if secret_value:
             return str(secret_value).strip()
         if not secret_file_path:
@@ -156,6 +157,7 @@ class Settings(BaseSettings):
 
     @staticmethod
     def _has_minimum_secret_complexity(secret: str) -> bool:
+        """Require at least 3 of 4 classes: uppercase, lowercase, digit, special."""
         classes = (
             bool(re.search(r"[A-Z]", secret)),
             bool(re.search(r"[a-z]", secret)),

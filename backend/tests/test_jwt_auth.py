@@ -4,7 +4,7 @@ from app.models import SessionUser
 
 
 def test_issue_and_read_access_token_round_trip():
-    settings = Settings(jwt_secret='Unit-test-secret-that-is-at-least-32-chars-1', jwt_access_token_minutes=10)
+    settings = Settings(jwt_secret='Very-secure-jwt-secret-1234567890', jwt_access_token_minutes=10)
     user = SessionUser(
         id='user-tester',
         nickname='테스터',
@@ -24,7 +24,7 @@ def test_issue_and_read_access_token_round_trip():
 
 
 def test_expired_access_token_returns_none():
-    settings = Settings(jwt_secret='Unit-test-secret-that-is-at-least-32-chars-1', jwt_access_token_minutes=-1)
+    settings = Settings(jwt_secret='Very-secure-jwt-secret-1234567890', jwt_access_token_minutes=-1)
     user = SessionUser(
         id='user-expired',
         nickname='만료테스트',
@@ -39,8 +39,8 @@ def test_expired_access_token_returns_none():
 
 def test_auth_cookie_settings_share_jwt_expiration_window():
     settings = Settings(
-        jwt_secret='Unit-test-secret-that-is-at-least-32-chars-1',
-        session_secret='Unit-test-session-secret-that-is-at-least-32-chars-1',
+        jwt_secret='Very-secure-jwt-secret-1234567890',
+        session_secret='Very-secure-session-secret-1234567890',
         jwt_access_token_minutes=10,
         env='production',
     )
@@ -53,10 +53,10 @@ def test_auth_cookie_settings_share_jwt_expiration_window():
 
 
 def test_auth_cookie_settings_secure_by_environment():
-    dev_settings = Settings(jwt_secret='Unit-test-secret-that-is-at-least-32-chars-1', jwt_access_token_minutes=10, env='development', session_https=True)
+    dev_settings = Settings(jwt_secret='Very-secure-jwt-secret-1234567890', jwt_access_token_minutes=10, env='development', session_https=True)
     prod_settings = Settings(
-        jwt_secret='Unit-test-secret-that-is-at-least-32-chars-1',
-        session_secret='Unit-test-session-secret-that-is-at-least-32-chars-1',
+        jwt_secret='Very-secure-jwt-secret-1234567890',
+        session_secret='Very-secure-session-secret-1234567890',
         jwt_access_token_minutes=10,
         env='production',
         session_https=True,
@@ -72,7 +72,7 @@ def test_auth_cookie_settings_secure_by_environment():
 def test_access_token_with_unknown_crit_header_is_rejected():
     import jwt
 
-    settings = Settings(jwt_secret='Unit-test-secret-that-is-at-least-32-chars-1', jwt_access_token_minutes=10)
+    settings = Settings(jwt_secret='Very-secure-jwt-secret-1234567890', jwt_access_token_minutes=10)
     token = jwt.encode(
         {"sub": "user-crit", "nickname": "tester", "provider": "naver"},
         settings.jwt_secret,
