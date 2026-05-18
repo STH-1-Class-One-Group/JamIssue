@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "7e3820dfeb5d739fe65ec1ba7b41f7a27c6ab3cb",
+  "generatedFrom": "934357ff0da3fc21f4cb9936110404fac5a92a75",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -523,32 +523,32 @@
       "examples": [
         {
           "value": "1.0",
-          "line": 100,
+          "line": 104,
           "column": 29
         },
         {
           "value": "0",
-          "line": 119,
+          "line": 133,
           "column": 24
         },
         {
           "value": "1",
-          "line": 135,
+          "line": 151,
           "column": 33
         },
         {
           "value": "1",
-          "line": 146,
+          "line": 162,
           "column": 62
         },
         {
           "value": "0",
-          "line": 166,
+          "line": 182,
           "column": 23
         },
         {
           "value": "1",
-          "line": 208,
+          "line": 234,
           "column": 36
         }
       ]
@@ -3878,7 +3878,7 @@
       "examples": [
         {
           "value": "100%",
-          "line": 41,
+          "line": 43,
           "column": 17
         }
       ]
@@ -4213,7 +4213,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 44,
+          "line": 48,
           "column": 56
         }
       ]
@@ -4268,7 +4268,7 @@
       "examples": [
         {
           "value": "0",
-          "line": 71,
+          "line": 75,
           "column": 23
         }
       ]
@@ -4283,12 +4283,12 @@
       "examples": [
         {
           "value": "100%",
-          "line": 45,
+          "line": 49,
           "column": 13
         },
         {
           "value": "100%",
-          "line": 92,
+          "line": 98,
           "column": 49
         }
       ]
@@ -4664,6 +4664,36 @@
       ]
     },
     {
+      "path": "src/hooks/app-data/useReviewCollectionState.ts",
+      "count": 4,
+      "owner": "frontend-ui",
+      "category": "frontend-ui-inline-token-baseline",
+      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
+      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
+      "examples": [
+        {
+          "value": "-1",
+          "line": 26,
+          "column": 19
+        },
+        {
+          "value": "-1",
+          "line": 34,
+          "column": 19
+        },
+        {
+          "value": "-1",
+          "line": 46,
+          "column": 21
+        },
+        {
+          "value": "-1",
+          "line": 59,
+          "column": 19
+        }
+      ]
+    },
+    {
       "path": "src/hooks/app-navigation/shellBackNavigation.ts",
       "count": 2,
       "owner": "frontend-ui",
@@ -4798,22 +4828,22 @@
       "examples": [
         {
           "value": "0",
-          "line": 30,
+          "line": 31,
           "column": 58
         },
         {
           "value": "0",
-          "line": 32,
+          "line": 33,
           "column": 42
         },
         {
           "value": "1",
-          "line": 32,
+          "line": 33,
           "column": 88
         },
         {
           "value": "-1",
-          "line": 32,
+          "line": 33,
           "column": 92
         }
       ]

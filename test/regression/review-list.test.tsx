@@ -39,7 +39,7 @@ describe('ReviewList regression', () => {
     expect(article).toHaveClass('review-card--feed');
 
     fireEvent.click(getByRole('button', { name: String(review.likeCount) }));
-    expect(onToggleLike).toHaveBeenCalledWith(review.id);
+    expect(onToggleLike).toHaveBeenCalledWith(review.id, review);
 
     fireEvent.click(getByRole('button', { name: /댓글 4개/ }));
     expect(onOpenComments).toHaveBeenCalledWith(review.id);

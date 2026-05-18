@@ -12,6 +12,8 @@ interface NaverMapProps {
   festivals: FestivalItem[];
   selectedPlaceId: string | null;
   selectedFestivalId: string | null;
+  selectedPlace?: Place | null;
+  selectedFestival?: FestivalItem | null;
   onSelectPlace: (placeId: string) => void;
   onSelectFestival: (festivalId: string) => void;
   currentPosition: { latitude: number; longitude: number } | null;
@@ -31,6 +33,8 @@ export function NaverMap({
   festivals,
   selectedPlaceId,
   selectedFestivalId,
+  selectedPlace = null,
+  selectedFestival = null,
   onSelectPlace,
   onSelectFestival,
   currentPosition,
@@ -71,6 +75,8 @@ export function NaverMap({
     festivals,
     selectedPlaceId,
     selectedFestivalId,
+    selectedPlace,
+    selectedFestival,
     onSelectPlace,
     onSelectFestival,
     currentPosition,

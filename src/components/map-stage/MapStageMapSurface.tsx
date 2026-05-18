@@ -27,6 +27,8 @@ export function MapStageMapSurface({
         festivals={mapData.festivals}
         selectedPlaceId={placeSheet.selectedPlace?.id ?? null}
         selectedFestivalId={festivalSheet.selectedFestival?.id ?? null}
+        selectedPlace={placeSheet.selectedPlace ?? null}
+        selectedFestival={festivalSheet.selectedFestival ?? null}
         onSelectPlace={placeSheet.onOpenPlace}
         onSelectFestival={festivalSheet.onOpenFestival}
         currentPosition={mapData.currentPosition}

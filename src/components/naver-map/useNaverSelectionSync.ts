@@ -14,6 +14,8 @@ type SelectionSyncArgs = {
   festivals: FestivalItem[];
   selectedPlaceId: string | null;
   selectedFestivalId: string | null;
+  selectedPlace?: Place | null;
+  selectedFestival?: FestivalItem | null;
 };
 
 export function useNaverSelectionSync({
@@ -25,19 +27,21 @@ export function useNaverSelectionSync({
   festivals,
   selectedPlaceId,
   selectedFestivalId,
+  selectedPlace,
+  selectedFestival,
 }: SelectionSyncArgs) {
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {
       return;
     }
 
-    const selectedPlace = selectedPlaceId ? places.find((place) => place.id === selectedPlaceId) : null;
-    const selectedFestival = selectedFestivalId ? festivals.find((festival) => festival.id === selectedFestivalId) : null;
-    const targetType = selectedPlace ? 'place' : selectedFestival ? 'festival' : null;
-    const target = selectedPlace
-      ? { latitude: selectedPlace.latitude, longitude: selectedPlace.longitude }
-      : selectedFestival && hasFestivalCoordinates(selectedFestival)
-        ? { latitude: selectedFestival.latitude, longitude: selectedFestival.longitude }
+    const targetPlace = selectedPlace || (selectedPlaceId ? places.find((place) => place.id === selectedPlaceId) : null);
+    const targetFestival = selectedFestival || (selectedFestivalId ? festivals.find((festival) => festival.id === selectedFestivalId) : null);
+    const targetType = targetPlace ? 'place' : targetFestival ? 'festival' : null;
+    const target = targetPlace
+      ? { latitude: targetPlace.latitude, longitude: targetPlace.longitude }
+      : targetFestival && hasFestivalCoordinates(targetFestival)
+        ? { latitude: targetFestival.latitude, longitude: targetFestival.longitude }
         : null;
 
     if (!target || !targetType) {
@@ -72,5 +76,5 @@ export function useNaverSelectionSync({
         }
       }, panDelayMs);
     }
-  }, [festivals, mapElementRef, mapRef, mapsApi, places, selectedFestivalId, selectedPlaceId, status]);
+  }, [festivals, mapElementRef, mapRef, mapsApi, places, selectedFestival, selectedFestivalId, selectedPlace, selectedPlaceId, status]);
 }
