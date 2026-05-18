@@ -39,8 +39,8 @@ def test_expired_access_token_returns_none():
 
 def test_auth_cookie_settings_share_jwt_expiration_window():
     settings = Settings(
-        jwt_secret='unit-test-secret',
-        session_secret='unit-test-session-secret',
+        jwt_secret='unit-test-secret-that-is-at-least-32-chars',
+        session_secret='unit-test-session-secret-that-is-at-least-32-chars',
         jwt_access_token_minutes=10,
         env='production',
     )
@@ -55,8 +55,8 @@ def test_auth_cookie_settings_share_jwt_expiration_window():
 def test_auth_cookie_settings_secure_by_environment():
     dev_settings = Settings(jwt_secret='unit-test-secret', jwt_access_token_minutes=10, env='development', session_https=True)
     prod_settings = Settings(
-        jwt_secret='unit-test-secret',
-        session_secret='unit-test-session-secret',
+        jwt_secret='unit-test-secret-that-is-at-least-32-chars',
+        session_secret='unit-test-session-secret-that-is-at-least-32-chars',
         jwt_access_token_minutes=10,
         env='production',
         session_https=True,
