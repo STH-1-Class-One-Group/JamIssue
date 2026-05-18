@@ -9,30 +9,57 @@ def test_secrets_default_factory():
     assert settings.jwt_secret is not None
     assert len(settings.jwt_secret) >= 32
 
-    # Subsequent calls should (ideally) get different secrets if they were re-instantiated
-    # but here we just check they are not the old hardcoded ones
-    assert settings.session_secret != "jamissue-local-session-secret"
-    assert settings.jwt_secret != "jamissue-local-jwt-secret"
-
 def test_production_validation_fails_on_missing_secrets():
     # Production mode should fail if secrets are not provided
-    with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set"):
+    with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set to a secure value of at least 32 characters in production"):
         Settings(env="production")
 
-def test_production_validation_fails_on_insecure_defaults():
-    # Production mode should fail if using old insecure defaults
-    with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set"):
-        Settings(env="production", session_secret="jamissue-local-session-secret", jwt_secret="secure-jwt")
+def test_production_validation_fails_on_short_secrets():
+    # Production mode should fail if using short insecure secrets
+    with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set to a secure value of at least 32 characters in production"):
+        Settings(env="production", session_secret="short-session-secret", jwt_secret="very-secure-jwt-secret-that-is-long-enough")
 
-    with pytest.raises(ValueError, match="APP_JWT_SECRET must be explicitly set"):
-        Settings(env="prod", session_secret="secure-session", jwt_secret="jamissue-local-jwt-secret")
+    with pytest.raises(ValueError, match="APP_JWT_SECRET must be explicitly set to a secure value of at least 32 characters in production"):
+        Settings(env="prod", session_secret="very-secure-session-secret-that-is-long-enough", jwt_secret="short-jwt")
 
 def test_production_validation_passes_on_secure_secrets():
-    # Production mode should pass if using secure secrets
-    settings = Settings(env="production", session_secret="very-secure-session-secret-12345", jwt_secret="very-secure-jwt-secret-12345")
-    assert settings.session_secret == "very-secure-session-secret-12345"
-    assert settings.jwt_secret == "very-secure-jwt-secret-12345"
+    # Production mode should pass if using secure secrets (>= 32 chars)
+    settings = Settings(env="production", session_secret="very-secure-session-secret-1234567890A", jwt_secret="very-secure-jwt-secret-1234567890A")
+    assert settings.session_secret == "very-secure-session-secret-1234567890A"
+    assert settings.jwt_secret == "very-secure-jwt-secret-1234567890A"
 
 def test_production_validation_fails_on_empty_secrets():
-    with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set"):
-        Settings(env="staging", session_secret="", jwt_secret="secure-jwt")
+    with pytest.raises(ValueError, match="APP_SESSION_SECRET must be explicitly set to a secure value of at least 32 characters in production"):
+        Settings(env="staging", session_secret="", jwt_secret="very-secure-jwt-secret-1234567890A")
+
+def test_production_validation_fails_on_low_complexity_secrets():
+    with pytest.raises(ValueError, match="APP_SESSION_SECRET must include at least 3 of: uppercase, lowercase, digit, special character"):
+        Settings(env="production", session_secret="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", jwt_secret="very-secure-jwt-secret-1234567890A")
+
+def test_production_validation_supports_secret_files(tmp_path):
+    session_secret_path = tmp_path / "session.secret"
+    jwt_secret_path = tmp_path / "jwt.secret"
+    session_secret_path.write_text("very-secure-session-secret-1234567890A", encoding="utf-8")
+    jwt_secret_path.write_text("very-secure-jwt-secret-1234567890A", encoding="utf-8")
+
+    settings = Settings(
+        env="production",
+        session_secret_file=str(session_secret_path),
+        jwt_secret_file=str(jwt_secret_path),
+    )
+
+    assert settings.session_secret == "very-secure-session-secret-1234567890A"
+    assert settings.jwt_secret == "very-secure-jwt-secret-1234567890A"
+
+def test_production_validation_applies_quality_rules_to_secret_files(tmp_path):
+    session_secret_path = tmp_path / "session.secret"
+    jwt_secret_path = tmp_path / "jwt.secret"
+    session_secret_path.write_text("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", encoding="utf-8")
+    jwt_secret_path.write_text("very-secure-jwt-secret-1234567890A", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="APP_SESSION_SECRET must include at least 3 of: uppercase, lowercase, digit, special character"):
+        Settings(
+            env="production",
+            session_secret_file=str(session_secret_path),
+            jwt_secret_file=str(jwt_secret_path),
+        )

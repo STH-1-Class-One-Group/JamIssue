@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from functools import lru_cache
+import re
 import secrets
 from pathlib import Path
 from typing import Any, Literal
@@ -44,8 +45,10 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000"
     frontend_url: str = "http://localhost:8000"
     session_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(FastApiAuthRuntimeConfig.default_secret_token_urlsafe_bytes))
+    session_secret_file: str = ""
     session_https: bool = False
     jwt_secret: str = Field(default_factory=lambda: secrets.token_urlsafe(FastApiAuthRuntimeConfig.default_secret_token_urlsafe_bytes))
+    jwt_secret_file: str = ""
     jwt_algorithm: str = "HS256"
     jwt_access_token_minutes: int = FastApiAuthRuntimeConfig.default_jwt_access_token_minutes
     admin_user_ids: str = ""
@@ -94,9 +97,6 @@ class Settings(BaseSettings):
         if not isinstance(data, dict):
             return data
 
-        insecure_session_secret = "jamissue-local-session-secret"
-        insecure_jwt_secret = "jamissue-local-jwt-secret"
-
         # Settings collects from env vars etc. before passing to validator
         env = data.get("env", "development")
         if isinstance(env, str):
@@ -105,13 +105,29 @@ class Settings(BaseSettings):
         is_production = env in {"production", "prod", "staging"}
 
         if is_production:
-            session_secret = data.get("session_secret")
-            jwt_secret = data.get("jwt_secret")
+            session_secret = cls._resolve_secret_value(
+                data.get("session_secret"),
+                data.get("session_secret_file"),
+                secret_name="APP_SESSION_SECRET",
+                secret_file_name="APP_SESSION_SECRET_FILE",
+            )
+            jwt_secret = cls._resolve_secret_value(
+                data.get("jwt_secret"),
+                data.get("jwt_secret_file"),
+                secret_name="APP_JWT_SECRET",
+                secret_file_name="APP_JWT_SECRET_FILE",
+            )
+            data["session_secret"] = session_secret
+            data["jwt_secret"] = jwt_secret
 
-            if not session_secret or session_secret == insecure_session_secret:
-                raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value in production")
-            if not jwt_secret or jwt_secret == insecure_jwt_secret:
-                raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value in production")
+            if not session_secret or len(str(session_secret)) < 32:
+                raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value of at least 32 characters in production")
+            if not jwt_secret or len(str(jwt_secret)) < 32:
+                raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value of at least 32 characters in production")
+            if not cls._has_minimum_secret_complexity(str(session_secret)):
+                raise ValueError("APP_SESSION_SECRET must include at least 3 of: uppercase, lowercase, digit, special character")
+            if not cls._has_minimum_secret_complexity(str(jwt_secret)):
+                raise ValueError("APP_JWT_SECRET must include at least 3 of: uppercase, lowercase, digit, special character")
 
         # Wildcard origins are insecure when allow_credentials=True.
         # FastAPI's CORSMiddleware also blocks ["*"] + allow_credentials=True at runtime.
@@ -122,6 +138,33 @@ class Settings(BaseSettings):
                 raise ValueError("Wildcard '*' in APP_CORS_ORIGINS is not allowed when credentials are enabled")
 
         return data
+
+    @staticmethod
+    def _resolve_secret_value(secret_value: Any, secret_file_path: Any, *, secret_name: str, secret_file_name: str) -> str:
+        """Resolve secret from direct value first, then optional secret file path."""
+        if secret_value:
+            return str(secret_value).strip()
+        if not secret_file_path:
+            return ""
+        file_path = Path(str(secret_file_path))
+        try:
+            loaded = file_path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise ValueError(f"{secret_file_name} could not be read: {exc}") from exc
+        if not loaded:
+            raise ValueError(f"{secret_file_name} must point to a non-empty file when {secret_name} is not set")
+        return loaded
+
+    @staticmethod
+    def _has_minimum_secret_complexity(secret: str) -> bool:
+        """Require at least 3 of 4 classes: uppercase, lowercase, digit, special."""
+        classes = (
+            bool(re.search(r"[A-Z]", secret)),
+            bool(re.search(r"[a-z]", secret)),
+            bool(re.search(r"\d", secret)),
+            bool(re.search(r"[^A-Za-z0-9]", secret)),
+        )
+        return sum(classes) >= 3
 
     @property
     def backend_dir(self) -> Path:
