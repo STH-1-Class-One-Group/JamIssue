@@ -94,9 +94,6 @@ class Settings(BaseSettings):
         if not isinstance(data, dict):
             return data
 
-        insecure_session_secret = "jamissue-local-session-secret"
-        insecure_jwt_secret = "jamissue-local-jwt-secret"
-
         # Settings collects from env vars etc. before passing to validator
         env = data.get("env", "development")
         if isinstance(env, str):
@@ -108,10 +105,10 @@ class Settings(BaseSettings):
             session_secret = data.get("session_secret")
             jwt_secret = data.get("jwt_secret")
 
-            if not session_secret or session_secret == insecure_session_secret:
-                raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value in production")
-            if not jwt_secret or jwt_secret == insecure_jwt_secret:
-                raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value in production")
+            if not session_secret or len(str(session_secret)) < 32:
+                raise ValueError("APP_SESSION_SECRET must be explicitly set to a secure value of at least 32 characters in production")
+            if not jwt_secret or len(str(jwt_secret)) < 32:
+                raise ValueError("APP_JWT_SECRET must be explicitly set to a secure value of at least 32 characters in production")
 
         # Wildcard origins are insecure when allow_credentials=True.
         # FastAPI's CORSMiddleware also blocks ["*"] + allow_credentials=True at runtime.
