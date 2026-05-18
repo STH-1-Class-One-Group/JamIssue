@@ -12,7 +12,7 @@ interface ReviewListProps {
   highlightedReviewId?: string | null;
   likingReviewId: string | null;
   submittingReviewId: string | null;
-  onToggleLike: (reviewId: string) => Promise<void>;
+  onToggleLike: (reviewId: string, knownReview?: Review) => Promise<void>;
   onSubmitComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
   onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
   onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;

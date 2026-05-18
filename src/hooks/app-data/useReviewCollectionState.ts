@@ -12,29 +12,54 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
   const coursesLoadedRef = useRef(false);
 
   function patchReviewCollections(reviewId: string, updater: (review: ReviewSummary) => ReviewSummary) {
-    const patchFn = (r: ReviewSummary) => (r.id === reviewId ? toReviewSummary(updater(r)) : r);
     const hasReview = (r: ReviewSummary) => r.id === reviewId;
+    let patchedReview: ReviewSummary | null = null;
+    const getPatched = (original: ReviewSummary) => {
+      if (!patchedReview) {
+        patchedReview = toReviewSummary(updater(original));
+      }
+      return patchedReview;
+    };
 
-    setReviews((current) => (current.some(hasReview) ? current.map(patchFn) : current));
-    setSelectedPlaceReviews((current) => (current.some(hasReview) ? current.map(patchFn) : current));
+    setReviews((current) => {
+      const idx = current.findIndex(hasReview);
+      if (idx === -1) return current;
+      const next = [...current];
+      next[idx] = getPatched(current[idx]);
+      return next;
+    });
 
-    const existingReview =
-      reviews.find(hasReview) || selectedPlaceReviews.find(hasReview);
+    setSelectedPlaceReviews((current) => {
+      const idx = current.findIndex(hasReview);
+      if (idx === -1) return current;
+      const next = [...current];
+      next[idx] = getPatched(current[idx]);
+      return next;
+    });
 
+    const existingReview = reviews.find(hasReview) || selectedPlaceReviews.find(hasReview);
     if (existingReview) {
       const { placeId } = existingReview;
       const collection = placeReviewsCacheRef.current[placeId];
-      if (collection && collection.some(hasReview)) {
-        placeReviewsCacheRef.current[placeId] = collection.map(patchFn);
-        return;
+      if (collection) {
+        const idx = collection.findIndex(hasReview);
+        if (idx !== -1) {
+          const next = [...collection];
+          next[idx] = getPatched(collection[idx]);
+          placeReviewsCacheRef.current[placeId] = next;
+          return;
+        }
       }
     }
 
     const cache = placeReviewsCacheRef.current;
     for (const placeId of Object.keys(cache)) {
       const collection = cache[placeId];
-      if (collection.some(hasReview)) {
-        cache[placeId] = collection.map(patchFn);
+      const idx = collection.findIndex(hasReview);
+      if (idx !== -1) {
+        const next = [...collection];
+        next[idx] = getPatched(collection[idx]);
+        cache[placeId] = next;
         break;
       }
     }

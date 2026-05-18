@@ -2,6 +2,7 @@ import { useEventCallback } from './useEventCallback';
 import { toggleReviewLike } from '../api/reviewsClient';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import type { UseAppReviewActionsParams } from './useAppReviewActions.types';
+import type { Review } from '../types/review';
 
 export function useAppReviewLikeActions({
   sessionUser,
@@ -15,14 +16,15 @@ export function useAppReviewLikeActions({
 }: UseAppReviewActionsParams) {
   const setReviewLikeUpdatingId = useAppPageRuntimeStore((state) => state.setReviewLikeUpdatingId);
 
-  const handleToggleReviewLike = useEventCallback(async (reviewId: string) => {
+  const handleToggleReviewLike = useEventCallback(async (reviewId: string, knownReview?: Review) => {
     if (!sessionUser) {
       goToTab('my');
       setNotice('좋아요를 누르려면 먼저 로그인해 주세요.');
       return;
     }
 
-    const targetReview = reviews.find((review) => review.id === reviewId)
+    const targetReview = knownReview
+      ?? reviews.find((review) => review.id === reviewId)
       ?? selectedPlaceReviews.find((review) => review.id === reviewId)
       ?? myPage?.reviews.find((review) => review.id === reviewId)
       ?? null;

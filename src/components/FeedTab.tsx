@@ -33,7 +33,7 @@ interface FeedTabProps {
   };
   feedActions: {
     onLoadMore: () => Promise<void>;
-    onToggleReviewLike: (reviewId: string) => Promise<void>;
+    onToggleReviewLike: (reviewId: string, knownReview?: Review) => Promise<void>;
     onCreateComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
     onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
     onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;

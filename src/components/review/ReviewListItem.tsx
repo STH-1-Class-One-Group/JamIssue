@@ -14,7 +14,7 @@ interface ReviewListItemProps {
   canToggleLike: boolean;
   isLiking: boolean;
   isSubmitting: boolean;
-  onToggleLike: (reviewId: string) => Promise<void>;
+  onToggleLike: (reviewId: string, knownReview?: Review) => Promise<void>;
   onSubmitComment: (reviewId: string, body: string, parentId?: string) => Promise<void>;
   onUpdateComment: (reviewId: string, commentId: string, body: string) => Promise<void>;
   onDeleteComment: (reviewId: string, commentId: string) => Promise<void>;
@@ -69,7 +69,7 @@ export const ReviewListItem = memo(function ReviewListItem({
             type="button"
             className={review.likedByMe ? 'review-action-button is-active' : 'review-action-button'}
             disabled={isLiking}
-            onClick={() => (canToggleLike ? onToggleLike(review.id) : onRequestLogin())}
+            onClick={() => (canToggleLike ? onToggleLike(review.id, review) : onRequestLogin())}
             aria-pressed={review.likedByMe}
           >
             <span className="review-action-button__icon" aria-hidden="true">
