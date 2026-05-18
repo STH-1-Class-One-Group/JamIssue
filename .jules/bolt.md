@@ -1,0 +1,7 @@
+## 2024-05-18 - Passing Down Objects Prevents Redundant Lookups
+**Learning:** In deeply nested component trees like `NaverMap`, passing only an ID (`selectedPlaceId`) requires child components or hooks to repeatedly iterate over large state arrays (`places.find`) on every render or state change. This causes redundant $O(N)$ lookups. Similarly, action handlers like `onToggleReviewLike` can bypass finding the targeted object entirely if the list item component itself passes the already-known object reference as an argument.
+**Action:** When designing component props or event handler signatures in list views or heavily memoized trees, prefer passing the fully resolved object reference (e.g., `selectedPlace`, `knownReview`) alongside the ID, or use it directly instead of performing repeated lookups.
+
+## 2024-05-18 - Array Updates: findIndex vs some + map
+**Learning:** Using `current.some(condition) ? current.map(updateFn) : current` to update an array involves two $O(N)$ passes and creates a full array copy where every element runs through the map function.
+**Action:** For targeted array updates, use `const idx = current.findIndex(condition)` first. If found, copy the array `const next = [...current]` and update only the targeted element `next[idx] = updateFn(current[idx])`. This executes a single $O(N)$ search and an $O(1)$ update operation, bypassing unnecessary iteration while maintaining referential stability.
