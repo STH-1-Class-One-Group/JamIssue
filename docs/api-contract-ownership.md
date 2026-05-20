@@ -33,13 +33,13 @@ Backend API 구현, Cloudflare Worker handler, DB schema/migration, provider-sid
 | 위치 | 책임 |
 | --- | --- |
 | [../src/api/core.ts](../src/api/core.ts) | `fetchJson`, API base URL, cache, `ApiError`, 인증 만료 이벤트 |
-| [../src/api/bootstrapClient.ts](../src/api/bootstrapClient.ts) | bootstrap, map bootstrap, curated courses, festivals, public event banner 호출 |
+| [../src/api/bootstrapClient.ts](../src/api/bootstrapClient.ts) | bootstrap, map bootstrap, curated courses 호출 + 초기 화면에 필요한 event 계열(festivals, public event banner) 호출 |
 | [../src/api/authClient.ts](../src/api/authClient.ts) | provider login URL 생성, logout, profile update 호출 |
 | [../src/api/reviewsClient.ts](../src/api/reviewsClient.ts) | review, feed, comment, like, upload 호출 |
 | [../src/api/myClient.ts](../src/api/myClient.ts) | my page summary, notification, my comments 호출 |
 | [../src/api/routesClient.ts](../src/api/routesClient.ts) | community route 생성/조회/like 호출 |
 | [../src/api/stampClient.ts](../src/api/stampClient.ts) | stamp claim 호출 |
-| [../src/api/adminClient.ts](../src/api/adminClient.ts) | Web Front에서 남아 있는 admin import/visibility 호출부 |
+| [../src/api/adminClient.ts](../src/api/adminClient.ts) | Web Front에서 남아 있는 admin import/public-data, places/{placeId} 호출부 |
 | [../src/types.ts](../src/types.ts) | Web Front consumer DTO barrel |
 | [../src/types](../src/types) | auth, core, review, my-page, admin DTO |
 
@@ -55,8 +55,8 @@ Backend API 구현, Cloudflare Worker handler, DB schema/migration, provider-sid
 | Review | `GET /api/reviews`, `GET /api/review-feed`, `GET /api/reviews/{reviewId}`, `POST /api/reviews`, `PATCH /api/reviews/{reviewId}`, `DELETE /api/reviews/{reviewId}` |
 | Review interaction | `POST /api/reviews/{reviewId}/like`, `GET /api/reviews/{reviewId}/comments`, `POST /api/reviews/{reviewId}/comments`, `PATCH /api/reviews/{reviewId}/comments/{commentId}`, `DELETE /api/reviews/{reviewId}/comments/{commentId}` |
 | Upload | `POST /api/reviews/upload` |
-| My page | `GET /api/my/summary`, `GET /api/my/notifications`, `GET /api/my/notifications/realtime-channel`, `GET /api/my/comments` |
-| Notification | `PATCH /api/notifications/{notificationId}/read`, `PATCH /api/notifications/read-all`, `DELETE /api/notifications/{notificationId}` |
+| My page | `GET /api/my/summary`, `GET /api/my/comments` |
+| Notification | `GET /api/my/notifications`, `GET /api/my/notifications/realtime-channel`, `PATCH /api/notifications/{notificationId}/read`, `PATCH /api/notifications/read-all`, `DELETE /api/notifications/{notificationId}` |
 | Stamp | `POST /api/stamps/toggle` |
 | Route | `GET /api/community-routes`, `POST /api/community-routes`, `POST /api/community-routes/{routeId}/like` |
 | Admin-facing client | `PATCH /api/admin/places/{placeId}`, `POST /api/admin/import/public-data` |

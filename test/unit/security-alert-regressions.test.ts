@@ -6,6 +6,7 @@ import { decodeHtml, parseSamplePlaceRows } from '../../scripts/sample-place/par
 describe('security alert regressions', () => {
   it('does not double-unescape encoded sample place cell content into markup', () => {
     expect(decodeHtml('&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
+    expect(decodeHtml('&lt;script&gt;alert(1)&lt;/script&gt;')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
 
     const rows = parseSamplePlaceRows(`
       <table>
@@ -20,6 +21,7 @@ describe('security alert regressions', () => {
     `);
 
     expect(rows[0]?.name).toBe('&lt;script&gt;Jam&lt;/script&gt;');
+    expect(rows[0]?.name).not.toContain('<script');
   });
 
   it('does not double-unescape encoded public event cell content into markup', () => {
@@ -41,5 +43,8 @@ describe('security alert regressions', () => {
     expect(rows[0]?.title).toBe('&lt;script&gt;Jam&lt;/script&gt;');
     expect(rows[0]?.summary).toContain('&lt;img src=x&gt;');
     expect(rows[0]?.summary).not.toContain('<img');
+    expect(rows[0]?.venueName).not.toContain('<');
+    expect(rows[0]?.rawPayload.startDate).not.toContain('<');
+    expect(rows[0]?.rawPayload.endDate).not.toContain('<');
   });
 });

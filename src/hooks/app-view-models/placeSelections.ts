@@ -23,9 +23,7 @@ export function getRoutePreviewPlaces(places: Place[], selectedRoutePreview: Rou
 
   const placeMap = new Map<string, Place>();
   for (const place of places) {
-    if (!placeMap.has(place.id)) {
-      placeMap.set(place.id, place);
-    }
+    placeMap.set(place.id, place);
   }
 
   const routePlaces: Place[] = [];

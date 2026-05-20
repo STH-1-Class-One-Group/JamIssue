@@ -106,13 +106,13 @@ export function resolveApiBaseUrl({ runtimeConfig, configuredApiBaseUrl: configu
   return normalizeUrl(defaultApiBaseUrl);
 }
 
-export function assert(condition, message) {
+export function assert(condition: unknown, message: string) {
   if (!condition) {
     throw new Error(message);
   }
 }
 
-export async function runCheck(name, fn) {
+export async function runCheck(name: string, fn: () => Promise<void>) {
   const startedAt = Date.now();
   try {
     await fn();
@@ -131,15 +131,27 @@ export async function runCheck(name, fn) {
   }
 }
 
-async function runChecksSequentially(checks) {
-  const results = [];
+type SmokeCheckResult = {
+  name: string;
+  ok: boolean;
+  durationMs: number;
+  error?: string;
+};
+
+type SmokeCheck = {
+  name: string;
+  run: () => Promise<SmokeCheckResult>;
+};
+
+async function runChecksSequentially(checks: SmokeCheck[]): Promise<SmokeCheckResult[]> {
+  const results: SmokeCheckResult[] = [];
   for (const check of checks) {
     results.push(await check.run());
   }
   return results;
 }
 
-export async function runChecksWithRetries(checks) {
+export async function runChecksWithRetries(checks: SmokeCheck[]) {
   let attempt = 1;
   let pendingChecks = checks;
   const finalResults = new Map();
@@ -211,7 +223,21 @@ export async function loadRuntimeConfig() {
   }
 }
 
-export async function runSmokeSuite({ suiteName, checks, runtimeConfig, appConfigResult, apiBaseUrl }) {
+type RunSmokeSuiteParams = {
+  suiteName: string;
+  checks: SmokeCheck[];
+  runtimeConfig: { apiBaseUrl?: string | null } | null;
+  appConfigResult: unknown;
+  apiBaseUrl: string;
+};
+
+export async function runSmokeSuite({
+  suiteName,
+  checks,
+  runtimeConfig,
+  appConfigResult,
+  apiBaseUrl,
+}: RunSmokeSuiteParams) {
   if (deployWaitMs > 0) {
     console.log(`[smoke] waiting ${deployWaitMs}ms before checks...`);
     await sleep(deployWaitMs);
