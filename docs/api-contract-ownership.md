@@ -1,6 +1,6 @@
 # API Contract Ownership
 
-이 문서는 backend 제거 이후 `STH-1-Class-One-Group/JamIssue` Web Front 레포에 남아 있는 API 관련 책임과, `ClarusIubar/JamIssue_admin`으로 이관된 backend/API 책임을 분리합니다.
+이 문서는 MSA 전환을 위해 레포를 분리한 뒤 `STH-1-Class-One-Group/JamIssue` Web Front service에 남아 있는 API 책임과, `ClarusIubar/JamIssue_admin`으로 이관된 backend/API 책임을 구분합니다.
 
 ## 결론
 
@@ -8,13 +8,23 @@
 
 Backend API 구현, Cloudflare Worker handler, DB schema/migration, provider-side contract test, OAuth/backend secret은 `ClarusIubar/JamIssue_admin`이 소유합니다.
 
+## MSA 서비스 분리 기준
+
+| 서비스 | 소유 레포 | 책임 |
+| --- | --- | --- |
+| Web Front service | `STH-1-Class-One-Group/JamIssue` | React Web Front, Pages 배포, public env, consumer-side API contract |
+| Backend/API service | `ClarusIubar/JamIssue_admin` | Worker/API 구현, OAuth/session, provider-side API contract, runtime secret |
+| Admin/Data service | `ClarusIubar/JamIssue_admin` | 관리자 기능, DB schema/migration, 데이터 운영, service-role 작업 |
+
+`SPA`는 Web Front service의 구현 방식입니다. API contract 소유권은 MSA 서비스 경계를 기준으로 판단합니다.
+
 ## 소유권 구분
 
 | 구분 | 소유 레포 | 의미 |
 | --- | --- | --- |
 | Consumer-side API client | `STH-1-Class-One-Group/JamIssue` | Web Front가 호출하는 endpoint, request payload, response DTO 기대값 |
 | Consumer-side DTO/type | `STH-1-Class-One-Group/JamIssue` | React 화면과 hook이 사용하는 TypeScript 타입 |
-| Provider-side API contract | `ClarusIubar/JamIssue_admin` | Worker/FastAPI가 실제로 보장해야 하는 endpoint, status, response shape |
+| Provider-side API contract | `ClarusIubar/JamIssue_admin` | Worker/API가 실제로 보장해야 하는 endpoint, status, response shape |
 | Backend implementation | `ClarusIubar/JamIssue_admin` | Cloudflare Worker, DB access, OAuth, admin API, migration |
 | Runtime secret | `ClarusIubar/JamIssue_admin` | OAuth secret, service-role key, Worker runtime secret |
 
@@ -35,7 +45,7 @@ Backend API 구현, Cloudflare Worker handler, DB schema/migration, provider-sid
 
 ## 주요 consumer endpoint 목록
 
-이 목록은 Web Front가 기대하는 호출면입니다. Provider-side 정본은 `ClarusIubar/JamIssue_admin`에서 관리합니다.
+이 목록은 Web Front service가 기대하는 호출면입니다. Provider-side 정본은 `ClarusIubar/JamIssue_admin`에서 관리합니다.
 
 | 영역 | Endpoint |
 | --- | --- |
@@ -55,7 +65,7 @@ Backend API 구현, Cloudflare Worker handler, DB schema/migration, provider-sid
 
 Web Front에서 API client나 DTO를 변경할 때는 아래 기준을 따릅니다.
 
-1. UI 내부 상태 이름 변경은 Web Front 레포에서 처리할 수 있습니다.
+1. UI 내부 상태 이름 변경은 Web Front service 레포에서 처리할 수 있습니다.
 2. Endpoint path, request payload, response DTO shape 변경은 provider-side contract 변경이므로 `ClarusIubar/JamIssue_admin`에서 먼저 확정해야 합니다.
 3. Web Front는 provider-side 변경이 병합된 뒤 consumer client와 DTO를 맞춥니다.
 4. DB schema, migration, OAuth secret, Worker runtime config는 이 레포에 추가하지 않습니다.
@@ -63,7 +73,7 @@ Web Front에서 API client나 DTO를 변경할 때는 아래 기준을 따릅니
 
 ## 검증 기준
 
-Web Front 레포에서 API 관련 변경을 할 때 최소 검증은 아래와 같습니다.
+Web Front service 레포에서 API 관련 변경을 할 때 최소 검증은 아래와 같습니다.
 
 ```powershell
 npm.cmd run typecheck

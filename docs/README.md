@@ -1,11 +1,11 @@
 # Docs Guide
 
-JamIssue Web Front 문서는 아래 기준으로 관리합니다.
+JamIssue Web Front service 문서는 아래 기준으로 관리합니다.
 
 ## 1. 현재 정본 문서
 
 - [api-contract-ownership.md](api-contract-ownership.md)
-  - Web Front가 소유하는 consumer-side API contract
+  - MSA 분리 이후 Web Front service가 소유하는 consumer-side API contract
   - `ClarusIubar/JamIssue_admin`이 소유하는 provider-side API contract
   - backend 제거 이후 이 레포에 남아 있는 API 관련 파일 위치
 - [prd-compliance.md](prd-compliance.md)
@@ -16,7 +16,7 @@ JamIssue Web Front 문서는 아래 기준으로 관리합니다.
   - 자동 테스트와 수동 QA 근거 연결
 - [testing-coverage.md](testing-coverage.md)
   - 테스트/커버리지 기준
-  - Web Front 검증 명령
+  - Web Front service 검증 명령
 
 ## 2. 배포 기준 문서
 
@@ -28,7 +28,7 @@ JamIssue Web Front 문서는 아래 기준으로 관리합니다.
   - 장소, 이미지, 공공데이터 운영 수정 절차
   - 전체 리셋 및 재적재 절차
 
-주의: Backend/API/Worker/DB/admin 운영 절차의 정본은 `ClarusIubar/JamIssue_admin`입니다. 이 레포의 runbook은 Web Front 관점에서 필요한 참조만 유지합니다.
+주의: Backend/API/Worker/DB/admin 운영 절차의 정본은 `ClarusIubar/JamIssue_admin`입니다. 이 레포의 runbook은 MSA 중 Web Front service 관점에서 필요한 참조만 유지합니다.
 
 ## 3. 화면/기능 설계 문서
 
@@ -62,4 +62,4 @@ JamIssue Web Front 문서는 아래 기준으로 관리합니다.
 - [comment-performance-fix.md](comment-performance-fix.md)
 - [review-image-loading.md](review-image-loading.md)
 
-이 문서들에 `backend/`, Worker, DB schema, migration 경로가 남아 있어도 현재 Web Front 레포의 소유권을 의미하지 않습니다. 최신 구현과 운영 정본은 `ClarusIubar/JamIssue_admin`에서 확인합니다.
+이 문서들에 `backend/`, Worker, DB schema, migration 경로가 남아 있어도 현재 Web Front service 레포의 소유권을 의미하지 않습니다. 최신 구현과 운영 정본은 `ClarusIubar/JamIssue_admin`에서 확인합니다.
