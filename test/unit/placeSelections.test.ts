@@ -12,8 +12,8 @@ describe('placeSelections view model', () => {
   const mockPlaces: Place[] = [
     { ...placeFixture, id: 'p1', name: 'Place 1 (First)', category: 'cafe' },
     { ...placeFixture, id: 'p2', name: 'Place 2', category: 'restaurant' },
-    { ...placeFixture, id: 'p1', name: 'Place 1 (Second)', category: 'cafe' },
     { ...placeFixture, id: 'p3', name: 'Place 3', category: 'cafe' },
+    { ...placeFixture, id: 'p4', name: 'Place 1 (Second)', category: 'cafe' }
   ];
 
   describe('getSelectedPlace', () => {
@@ -34,7 +34,7 @@ describe('placeSelections view model', () => {
       expect(result).toBeNull();
     });
 
-    it('returns the first match when multiple places have same ID', () => {
+    it('returns the matching place when ID exists', () => {
       const result = getSelectedPlace(mockPlaces, 'p1');
       expect(result?.name).toBe('Place 1 (First)');
     });
@@ -75,12 +75,26 @@ describe('placeSelections view model', () => {
       expect(result[1].id).toBe('p3');
     });
 
-    it('preserves first-match behavior for duplicate IDs in source places', () => {
+    it('returns matching place when a route ID exists once in source places', () => {
       const routePreview: RoutePreview = {
         placeIds: ['p1'],
       } as RoutePreview;
 
       const result = getRoutePreviewPlaces(mockPlaces, routePreview);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Place 1 (First)');
+    });
+
+    it('keeps first-match semantics when source places contain duplicate IDs', () => {
+      const placesWithDuplicateId: Place[] = [
+        ...mockPlaces,
+        { ...placeFixture, id: 'p1', name: 'Place 1 (Duplicate Later)', category: 'cafe' },
+      ];
+      const routePreview: RoutePreview = {
+        placeIds: ['p1'],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces(placesWithDuplicateId, routePreview);
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe('Place 1 (First)');
     });
@@ -137,9 +151,10 @@ describe('placeSelections view model', () => {
     it('returns a map of names by ID', () => {
       const result = buildPlaceNameById(mockPlaces);
       expect(result).toEqual({
-        p1: 'Place 1 (Second)', // Because Object.fromEntries will take the last one if keys duplicate
+        p1: 'Place 1 (First)',
         p2: 'Place 2',
         p3: 'Place 3',
+        p4: 'Place 1 (Second)',
       });
     });
 

@@ -21,18 +21,18 @@ export function getRoutePreviewPlaces(places: Place[], selectedRoutePreview: Rou
     return [];
   }
 
-  const placeMap = new Map<string, Place>();
+  const firstPlaceById = new Map<string, Place>();
   for (const place of places) {
-    if (!placeMap.has(place.id)) {
-      placeMap.set(place.id, place);
+    if (!firstPlaceById.has(place.id)) {
+      firstPlaceById.set(place.id, place);
     }
   }
 
   const routePlaces: Place[] = [];
   for (const placeId of selectedRoutePreview.placeIds) {
-    const place = placeMap.get(placeId);
-    if (place) {
-      routePlaces.push(place);
+    const matchedPlace = firstPlaceById.get(placeId);
+    if (matchedPlace) {
+      routePlaces.push(matchedPlace);
     }
   }
 
