@@ -12,8 +12,8 @@ describe('placeSelections view model', () => {
   const mockPlaces: Place[] = [
     { ...placeFixture, id: 'p1', name: 'Place 1 (First)', category: 'cafe' },
     { ...placeFixture, id: 'p2', name: 'Place 2', category: 'restaurant' },
-    { ...placeFixture, id: 'p4', name: 'Place 1 (Second)', category: 'cafe' },
     { ...placeFixture, id: 'p3', name: 'Place 3', category: 'cafe' },
+    { ...placeFixture, id: 'p4', name: 'Place 1 (Second)', category: 'cafe' }
   ];
 
   describe('getSelectedPlace', () => {
