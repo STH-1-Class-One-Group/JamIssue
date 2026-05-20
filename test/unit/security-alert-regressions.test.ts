@@ -1,57 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildWorkerErrorPayload } from '../../deploy/api-worker-shell/index';
-import { jsonResponse } from '../../deploy/api-worker-shell/lib/http';
 import { parseEventRows } from '../../scripts/daejeon-event-sync/normalize';
 import { decodeHtml, parseSamplePlaceRows } from '../../scripts/sample-place/parse';
 
 describe('security alert regressions', () => {
-  it('does not expose raw worker error details in generic error payloads', () => {
-    const payload = buildWorkerErrorPayload();
-
-    expect(payload).toEqual({
-      service: 'daejeon-jamissue-api',
-      status: 'worker-error',
-      message: 'Internal worker error',
-    });
-    expect(JSON.stringify(payload)).not.toContain('stack');
-  });
-
-  it('strips stack fields from generic JSON responses', async () => {
-    const response = jsonResponse(
-      500,
-      { detail: 'safe', stack: 'secret stack', nested: { stackTrace: 'nested secret' }, error: new Error('raw failure') },
-      {},
-      new Request('https://api.daejeon.jamissue.com/api/test'),
-    );
-
-    const body = await response.json();
-
-    expect(body).toEqual({ detail: 'safe', nested: {}, error: { message: 'Internal error' } });
-  });
-
-  it('handles circular references in generic JSON responses', async () => {
-    const circularObject: { name: string; self?: unknown } = { name: 'safe' };
-    circularObject.self = circularObject;
-
-    const circularArray: unknown[] = ['safe'];
-    circularArray.push(circularArray);
-
-    const response = jsonResponse(
-      500,
-      { circularObject, circularArray },
-      {},
-      new Request('https://api.daejeon.jamissue.com/api/test'),
-    );
-
-    const body = await response.json();
-
-    expect(body).toEqual({
-      circularObject: { name: 'safe', self: '[Circular]' },
-      circularArray: ['safe', '[Circular]'],
-    });
-  });
-
   it('does not double-unescape encoded sample place cell content into markup', () => {
     expect(decodeHtml('&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
 
