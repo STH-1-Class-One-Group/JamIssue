@@ -9,6 +9,7 @@ export const timeoutMs = Number(process.env.SMOKE_TIMEOUT_MS || 15000);
 export const deployWaitMs = Number(process.env.SMOKE_DEPLOY_WAIT_MS || 0);
 export const retryAttempts = Math.max(1, Number(process.env.SMOKE_RETRY_ATTEMPTS || 4));
 export const retryDelayMs = Number(process.env.SMOKE_RETRY_DELAY_MS || 15000);
+export const allowCloudflareChallenge = process.env.SMOKE_ALLOW_CLOUDFLARE_CHALLENGE === "1";
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -235,6 +236,20 @@ export async function runSmokeSuite({ suiteName, checks, runtimeConfig, appConfi
   }, null, 2));
 
   if (failed.length > 0) {
+    const challengeFailures = failed.filter((result) =>
+      /status 403/i.test(result.error || "")
+      && /Just a moment/i.test(result.error || "")
+      && String(result.name || "").startsWith("api-"),
+    );
+
+    if (allowCloudflareChallenge && challengeFailures.length === failed.length) {
+      console.warn(
+        `[smoke] ${failed.length} API check(s) received Cloudflare challenge 403 from the GitHub Actions runner. `
+        + "Treating this run as deploy verification only; run the API smoke from an allowed network for endpoint evidence.",
+      );
+      return { results, failed: [], appConfigResult };
+    }
+
     process.exitCode = 1;
   }
 
