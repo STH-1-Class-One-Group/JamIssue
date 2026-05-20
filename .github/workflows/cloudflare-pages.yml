@@ -34,7 +34,21 @@ jobs:
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
       - run: npm ci --prefer-offline --no-audit
+      - name: Resolve Cloudflare deployment availability
+        id: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -n "${CLOUDFLARE_API_TOKEN}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID}" ]; then
+            echo "can_deploy=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "can_deploy=false" >> "${GITHUB_OUTPUT}"
+            echo "Cloudflare credentials are unavailable; running build-only Pages validation."
+          fi
       - name: Ensure Pages project exists and production branch is main
+        if: steps.cloudflare.outputs.can_deploy == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -65,6 +79,7 @@ jobs:
       - name: Build static frontend
         run: npm run build
       - name: Publish to Cloudflare Pages
+        if: steps.cloudflare.outputs.can_deploy == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
