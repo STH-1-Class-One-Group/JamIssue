@@ -69,33 +69,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npx --yes wrangler@4.74.0 pages deploy infra/nginx/site --project-name "${CLOUDFLARE_PAGES_PROJECT_NAME}" --branch "${CF_PAGES_BRANCH}"
 
-  deploy-worker:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: deploy/api-worker-shell
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/prime-node-tooling
-        with:
-          node-version: "22"
-          ghcr-image: ghcr.io/${{ github.repository_owner }}/jamissue-node-cache:node22-latest
-          registry-username: ${{ github.actor }}
-          registry-password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Deploy production worker
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@4.74.0 deploy
-
   smoke:
     needs:
       - deploy-pages
-      - deploy-worker
     runs-on: ubuntu-latest
     env:
       SMOKE_BASE_URL: https://daejeon-jamissue-pages.pages.dev
-      SMOKE_API_BASE_URL: https://daejeon-jamissue-api.yhh4433.workers.dev
+      SMOKE_API_BASE_URL: https://api.daejeon.jamissue.com
       SMOKE_FORCE_API_BASE_URL: 1
       SMOKE_DEPLOY_WAIT_MS: 0
       SMOKE_RETRY_ATTEMPTS: 5
@@ -115,11 +95,10 @@ jobs:
   protected-smoke:
     needs:
       - deploy-pages
-      - deploy-worker
     runs-on: ubuntu-latest
     env:
       SMOKE_BASE_URL: https://daejeon-jamissue-pages.pages.dev
-      SMOKE_API_BASE_URL: https://daejeon-jamissue-api.yhh4433.workers.dev
+      SMOKE_API_BASE_URL: https://api.daejeon.jamissue.com
       SMOKE_FORCE_API_BASE_URL: 1
       SMOKE_DEPLOY_WAIT_MS: 0
       SMOKE_RETRY_ATTEMPTS: 5

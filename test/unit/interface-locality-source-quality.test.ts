@@ -34,11 +34,6 @@ function gitGrepCount(pattern: string, paths: string[]) {
  * Counts matches in a single source file when a regex is clearer than a Git grep
  * expression, especially for export-surface baselines.
  */
-function countSourceMatches(file: string, pattern: RegExp) {
-  const source = readFileSync(join(workspaceRoot, file), 'utf8');
-  return [...source.matchAll(pattern)].length;
-}
-
 function collectTrackedFiles(paths: string[]) {
   const output = execFileSync('git', ['ls-files', ...paths], {
     cwd: workspaceRoot,
@@ -56,22 +51,6 @@ function countTrackedSourceMatches(paths: string[], pattern: RegExp) {
 }
 
 describe('interface locality source quality baseline', () => {
-  it('keeps Worker central type surface from growing before locality splits', () => {
-    expect(countSourceMatches('deploy/api-worker-shell/types.ts', /^export (type|interface) /gm)).toBeLessThanOrEqual(4);
-    expect(
-      gitGrepCount(
-        'WorkerReviewReadService\\|WorkerCommunityRouteService\\|WorkerMyService\\|WorkerAdminService\\|WorkerStampService\\|WorkerReviewInteractionDeps\\|RouteRuntime',
-        ['deploy/api-worker-shell/types.ts'],
-      ),
-    ).toBe(0);
-    expect(
-      gitGrepCount(
-        'SupabaseMapRow\\|SupabaseCourseRow\\|SupabaseCoursePlaceRow\\|SupabaseIdentityRow\\|SupabaseUserRow\\|WorkerBaseData\\|WorkerPlace\\|WorkerReview',
-        ['deploy/api-worker-shell/types.ts'],
-      ),
-    ).toBe(0);
-  });
-
   it('keeps frontend root type barrel usage from growing before locality splits', () => {
     const rootTypeImportPattern = "from '../types';\\|from '../../types';\\|from \"../types\";\\|from \"../../types\";";
 
@@ -101,7 +80,4 @@ describe('interface locality source quality baseline', () => {
     expect(gitGrepCount('Pick<AppPageStageProps', ['src/components/page-stage'])).toBe(0);
   });
 
-  it('keeps FastAPI compatibility model facade imports from growing', () => {
-    expect(gitGrepCount('from \\.models import', ['backend/app'])).toBe(0);
-  });
 });
