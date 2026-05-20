@@ -85,6 +85,20 @@ describe('placeSelections view model', () => {
       expect(result[0].name).toBe('Place 1 (First)');
     });
 
+    it('keeps first-match semantics when source places contain duplicate IDs', () => {
+      const placesWithDuplicateId: Place[] = [
+        ...mockPlaces,
+        { ...placeFixture, id: 'p1', name: 'Place 1 (Duplicate Later)', category: 'cafe' },
+      ];
+      const routePreview: RoutePreview = {
+        placeIds: ['p1'],
+      } as RoutePreview;
+
+      const result = getRoutePreviewPlaces(placesWithDuplicateId, routePreview);
+      expect(result).toHaveLength(1);
+      expect(result[0].name).toBe('Place 1 (First)');
+    });
+
     it('returns an empty array if routePreview.placeIds is empty', () => {
       const routePreview: RoutePreview = {
         placeIds: [],
