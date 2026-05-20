@@ -1,8 +1,8 @@
 # JamIssue Web Front
 
-`STH-1-Class-One-Group/JamIssue`는 JamIssue의 공개 Web Front SPA 레포입니다.
+`STH-1-Class-One-Group/JamIssue`는 JamIssue 공개 Web Front SPA 레포입니다.
 
-이 레포는 사용자가 접속하는 React 기반 Web Front와 Cloudflare Pages 배포만 담당합니다. Backend API, Cloudflare Worker, DB schema/migration, 관리자 페이지, provider-side API contract의 정본은 `ClarusIubar/JamIssue_admin`입니다.
+이 레포는 사용자가 접속하는 React 기반 Web Front와 Cloudflare Pages 배포만 담당합니다. Backend API 구현, Cloudflare Worker, DB schema/migration, 관리자 페이지, provider-side API contract의 정본은 `ClarusIubar/JamIssue_admin`에서 관리합니다.
 
 ## 이 레포가 소유하는 것
 
@@ -10,8 +10,9 @@
 - 사용자-facing React UI
 - Cloudflare Pages 배포 설정
 - public client environment 설정
-- Web Front build, typecheck, smoke, UI 테스트
+- Web Front build, typecheck, lint, smoke, UI test
 - API consumer-side compatibility 확인
+- 프론트가 기대하는 API request/response 타입
 
 ## 이 레포가 소유하지 않는 것
 
@@ -24,6 +25,17 @@
 - provider-side API contract test
 
 위 항목은 `ClarusIubar/JamIssue_admin`에서 관리합니다.
+
+## API Contract 기준
+
+이 레포에는 backend 구현이 없습니다. 대신 Web Front가 소비하는 API 계약만 남아 있습니다.
+
+- API client: [src/api](src/api)
+- Consumer-side DTO/type: [src/types.ts](src/types.ts), [src/types](src/types)
+- API base URL 설정: [src/config](src/config)
+- API contract 소유권 문서: [docs/api-contract-ownership.md](docs/api-contract-ownership.md)
+
+Provider-side API contract, Worker handler, DB row/schema, migration, OAuth runtime contract는 `ClarusIubar/JamIssue_admin`이 정본입니다.
 
 ## Runtime Configuration
 
@@ -43,7 +55,7 @@ PUBLIC_SUPABASE_URL=
 PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-이 레포에는 public client env만 둡니다. service-role key, OAuth secret, Worker runtime secret, DB migration credential은 두지 않습니다.
+이 레포에는 public client env만 둡니다. service-role key, OAuth secret, Worker runtime secret, DB migration credential은 저장하지 않습니다.
 
 ## Cloudflare
 
@@ -65,9 +77,10 @@ npm.cmd run smoke:public
 
 ## 문서 기준
 
-- Web Front 개발/배포/SPA 운영 문서: [이 레포의 Wiki](https://github.com/STH-1-Class-One-Group/JamIssue/wiki)
+- Web Front 개발/배포/SPA 운영 문서: [docs/README.md](docs/README.md)
+- Web Front Wiki: [JamIssue Wiki](https://github.com/STH-1-Class-One-Group/JamIssue/wiki)
 - Backend/API/Worker/DB/admin 문서: [`ClarusIubar/JamIssue_admin` Wiki](https://github.com/ClarusIubar/JamIssue_admin/wiki)
-- 이관 이슈와 완료 evidence: [`ClarusIubar/JamIssue_admin` issue tree](https://github.com/ClarusIubar/JamIssue_admin/issues)
+- Backend/API 완료 evidence: [`ClarusIubar/JamIssue_admin` issue tree](https://github.com/ClarusIubar/JamIssue_admin/issues)
 
 관련 이관 이슈:
 
