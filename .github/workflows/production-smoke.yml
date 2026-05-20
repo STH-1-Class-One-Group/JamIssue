@@ -80,6 +80,7 @@ jobs:
       SMOKE_DEPLOY_WAIT_MS: 0
       SMOKE_RETRY_ATTEMPTS: 5
       SMOKE_RETRY_DELAY_MS: 15000
+      SMOKE_ALLOW_CLOUDFLARE_CHALLENGE: 1
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/prime-node-tooling
@@ -103,6 +104,7 @@ jobs:
       SMOKE_DEPLOY_WAIT_MS: 0
       SMOKE_RETRY_ATTEMPTS: 5
       SMOKE_RETRY_DELAY_MS: 15000
+      SMOKE_ALLOW_CLOUDFLARE_CHALLENGE: 1
       SMOKE_AUTH_BEARER_TOKEN: ${{ secrets.SMOKE_AUTH_BEARER_TOKEN || '' }}
     steps:
       - uses: actions/checkout@v4
