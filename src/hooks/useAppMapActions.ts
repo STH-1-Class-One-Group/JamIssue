@@ -78,11 +78,13 @@ export function useAppMapActions({
       });
       // 스탬프 성공 후 지도 상태와 마이페이지를 함께 맞춘다.
       setStampState(nextStampState);
-      setPlaces((current) => current.map((item) => (
-        item.id === place.id
-          ? { ...item, totalVisitCount: (item.totalVisitCount ?? 0) + 1 }
-          : item
-      )));
+      setPlaces((current) => {
+        const idx = current.findIndex((item) => item.id === place.id);
+        if (idx === -1) return current;
+        const next = [...current];
+        next[idx] = { ...next[idx], totalVisitCount: (next[idx].totalVisitCount ?? 0) + 1 };
+        return next;
+      });
       setNotice(`${place.name}에서 오늘 스탬프를 찍었어요.`);
       commitRouteState(
         {

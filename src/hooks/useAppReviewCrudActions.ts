@@ -105,14 +105,32 @@ export function useAppReviewCrudActions({
       if (!current) {
         return current;
       }
-      return {
-        ...current,
-        reviews: current.reviews.map((review) => (review.id === reviewId ? summarizedReview : review)),
-        comments: current.comments.map((comment) => (
+      const reviewIdx = current.reviews.findIndex((review) => review.id === reviewId);
+      let nextReviews = current.reviews;
+      if (reviewIdx !== -1) {
+        nextReviews = [...current.reviews];
+        nextReviews[reviewIdx] = summarizedReview;
+      }
+
+      const commentIdx = current.comments.findIndex((comment) => comment.reviewId === reviewId);
+      let nextComments = current.comments;
+      if (commentIdx !== -1) {
+        // Find all comments for this review since multiple comments might belong to the same review
+        nextComments = current.comments.map((comment) => (
           comment.reviewId === reviewId
             ? { ...comment, reviewBody: updatedReview.body }
             : comment
-        )),
+        ));
+      }
+
+      if (reviewIdx === -1 && commentIdx === -1) {
+        return current;
+      }
+
+      return {
+        ...current,
+        reviews: nextReviews,
+        comments: nextComments,
       };
     });
     setNotice('피드를 수정했어요.');

@@ -44,10 +44,17 @@ export function useAppAdminActions({
     setAdminBusyPlaceId(placeId);
     try {
       const updated = await updatePlaceVisibility(placeId, { isActive: nextValue });
-      setAdminSummary((current) => current ? {
-        ...current,
-        places: current.places.map((place) => place.id === placeId ? updated : place),
-      } : current);
+      setAdminSummary((current) => {
+        if (!current) return current;
+        const idx = current.places.findIndex((place) => place.id === placeId);
+        if (idx === -1) return current;
+        const nextPlaces = [...current.places];
+        nextPlaces[idx] = updated;
+        return {
+          ...current,
+          places: nextPlaces,
+        };
+      });
       const nextMap = await getMapBootstrap();
       setPlaces(nextMap.places);
       setStampState(nextMap.stamps);
@@ -68,10 +75,17 @@ export function useAppAdminActions({
     setAdminBusyPlaceId(placeId);
     try {
       const updated = await updatePlaceVisibility(placeId, { isManualOverride: nextValue });
-      setAdminSummary((current) => current ? {
-        ...current,
-        places: current.places.map((place) => place.id === placeId ? updated : place),
-      } : current);
+      setAdminSummary((current) => {
+        if (!current) return current;
+        const idx = current.places.findIndex((place) => place.id === placeId);
+        if (idx === -1) return current;
+        const nextPlaces = [...current.places];
+        nextPlaces[idx] = updated;
+        return {
+          ...current,
+          places: nextPlaces,
+        };
+      });
       setNotice(nextValue ? '공공데이터 자동 동기화에서 보호해둘게요.' : '공공데이터 자동 동기화 보호를 해제했어요.');
     } catch (error) {
       setNotice(formatErrorMessage(error));
