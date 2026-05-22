@@ -1,0 +1,7 @@
+## 2026-05-22 - [Performance] Targeted Array Updates with findIndex
+**Learning:** In React applications, doing `array.map(...)` over a whole array just to update a single item is an anti-pattern. It creates unnecessary O(N) array allocations every time. Furthermore, if the updated item is not found, mapping over the array produces a *new* array reference. This triggers unnecessary downstream React reconciliations and re-renders because `prev !== next` (even though the contents are identical).
+**Action:** When updating targeted objects inside an array (e.g. replacing a single element based on ID), use `findIndex()`. If the index is not found (-1), return the EXACT original array reference (`return current`). This immediately skips React re-renders. If found, only then make a shallow clone (`[...current]`), mutate that specific index (`next[idx] = updated`), and return the new array.
+
+## 2026-05-22 - [Performance] Targeted Multi-Item Array Updates
+**Learning:** For 1-to-many React state array updates (e.g., updating multiple comments belonging to one review), using an unconditional `.map()` creates unnecessary O(N) array allocations every time. Furthermore, a 2-pass approach using `findIndex` + `.map()` requires iterating over the array twice.
+**Action:** Instead, use a single `for` loop that checks for matches and shallow copies the array (`[...current]`) only once upon encountering the first match. If no match is found, the loop finishes without allocating a new array, returning the exact original array reference to skip React re-renders efficiently.

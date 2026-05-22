@@ -112,18 +112,20 @@ export function useAppReviewCrudActions({
         nextReviews[reviewIdx] = summarizedReview;
       }
 
-      const commentIdx = current.comments.findIndex((comment) => comment.reviewId === reviewId);
       let nextComments = current.comments;
-      if (commentIdx !== -1) {
-        // Find all comments for this review since multiple comments might belong to the same review
-        nextComments = current.comments.map((comment) => (
-          comment.reviewId === reviewId
-            ? { ...comment, reviewBody: updatedReview.body }
-            : comment
-        ));
+      let hasCommentUpdate = false;
+
+      for (let i = 0; i < current.comments.length; i++) {
+        if (current.comments[i].reviewId === reviewId) {
+          if (!hasCommentUpdate) {
+            nextComments = [...current.comments];
+            hasCommentUpdate = true;
+          }
+          nextComments[i] = { ...nextComments[i], reviewBody: updatedReview.body };
+        }
       }
 
-      if (reviewIdx === -1 && commentIdx === -1) {
+      if (reviewIdx === -1 && !hasCommentUpdate) {
         return current;
       }
 
