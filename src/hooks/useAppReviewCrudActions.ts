@@ -105,14 +105,31 @@ export function useAppReviewCrudActions({
       if (!current) {
         return current;
       }
+      // Optimization: Use findIndex instead of map to avoid O(N) memory allocation and maintain referential stability for single items
+      let nextReviews = current.reviews;
+      const reviewIdx = current.reviews.findIndex((review) => review.id === reviewId);
+      if (reviewIdx !== -1) {
+        nextReviews = [...current.reviews];
+        nextReviews[reviewIdx] = summarizedReview;
+      }
+
+      // Optimization: Deferred array cloning for 1-to-many state array updates
+      // Avoids O(N) allocation when no comments match the reviewId
+      let nextComments = current.comments;
+      for (let i = 0; i < current.comments.length; i++) {
+        const comment = current.comments[i];
+        if (comment.reviewId === reviewId) {
+          if (nextComments === current.comments) {
+            nextComments = [...current.comments];
+          }
+          nextComments[i] = { ...comment, reviewBody: updatedReview.body };
+        }
+      }
+
       return {
         ...current,
-        reviews: current.reviews.map((review) => (review.id === reviewId ? summarizedReview : review)),
-        comments: current.comments.map((comment) => (
-          comment.reviewId === reviewId
-            ? { ...comment, reviewBody: updatedReview.body }
-            : comment
-        )),
+        reviews: nextReviews,
+        comments: nextComments,
       };
     });
     setNotice('피드를 수정했어요.');
