@@ -105,25 +105,28 @@ export function useAppReviewCrudActions({
       if (!current) {
         return current;
       }
-      // Optimization: Use findIndex instead of map to avoid O(N) memory allocation and maintain referential stability for single items
-      let nextReviews = current.reviews;
       const reviewIdx = current.reviews.findIndex((review) => review.id === reviewId);
+      let nextReviews = current.reviews;
       if (reviewIdx !== -1) {
         nextReviews = [...current.reviews];
         nextReviews[reviewIdx] = summarizedReview;
       }
 
-      // Optimization: Deferred array cloning for 1-to-many state array updates
-      // Avoids O(N) allocation when no comments match the reviewId
       let nextComments = current.comments;
+      let hasCommentUpdate = false;
+
       for (let i = 0; i < current.comments.length; i++) {
-        const comment = current.comments[i];
-        if (comment.reviewId === reviewId) {
-          if (nextComments === current.comments) {
+        if (current.comments[i].reviewId === reviewId) {
+          if (!hasCommentUpdate) {
             nextComments = [...current.comments];
+            hasCommentUpdate = true;
           }
-          nextComments[i] = { ...comment, reviewBody: updatedReview.body };
+          nextComments[i] = { ...nextComments[i], reviewBody: updatedReview.body };
         }
+      }
+
+      if (reviewIdx === -1 && !hasCommentUpdate) {
+        return current;
       }
 
       return {

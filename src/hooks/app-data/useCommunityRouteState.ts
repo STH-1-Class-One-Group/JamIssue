@@ -19,24 +19,22 @@ export function useCommunityRouteState() {
       if (!routes) {
         continue;
       }
-      // Optimization: Use findIndex instead of map to avoid O(N) memory allocation and maintain referential stability
       const idx = routes.findIndex((route) => route.id === routeId);
-      if (idx === -1) {
-        nextCache[sortKey] = routes;
-      } else {
+      if (idx !== -1) {
         const nextRoutes = [...routes];
-        nextRoutes[idx] = updater(routes[idx]);
+        nextRoutes[idx] = updater(nextRoutes[idx]);
         nextCache[sortKey] = nextRoutes;
+      } else {
+        nextCache[sortKey] = routes;
       }
     }
     communityRoutesCacheRef.current = nextCache;
     setCommunityRoutes((current) => {
-      // Optimization: Use findIndex instead of map to avoid O(N) memory allocation and maintain referential stability
       const idx = current.findIndex((route) => route.id === routeId);
       if (idx === -1) return current;
-      const nextRoutes = [...current];
-      nextRoutes[idx] = updater(current[idx]);
-      return nextRoutes;
+      const next = [...current];
+      next[idx] = updater(next[idx]);
+      return next;
     });
   }
 

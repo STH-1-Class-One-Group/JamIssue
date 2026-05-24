@@ -46,12 +46,14 @@ export function useAppAdminActions({
       const updated = await updatePlaceVisibility(placeId, { isActive: nextValue });
       setAdminSummary((current) => {
         if (!current) return current;
-        // Optimization: Use findIndex instead of map to avoid O(N) memory allocation and maintain referential stability
         const idx = current.places.findIndex((place) => place.id === placeId);
         if (idx === -1) return current;
         const nextPlaces = [...current.places];
         nextPlaces[idx] = updated;
-        return { ...current, places: nextPlaces };
+        return {
+          ...current,
+          places: nextPlaces,
+        };
       });
       const nextMap = await getMapBootstrap();
       setPlaces(nextMap.places);
@@ -75,12 +77,14 @@ export function useAppAdminActions({
       const updated = await updatePlaceVisibility(placeId, { isManualOverride: nextValue });
       setAdminSummary((current) => {
         if (!current) return current;
-        // Optimization: Use findIndex instead of map to avoid O(N) memory allocation and maintain referential stability
         const idx = current.places.findIndex((place) => place.id === placeId);
         if (idx === -1) return current;
         const nextPlaces = [...current.places];
         nextPlaces[idx] = updated;
-        return { ...current, places: nextPlaces };
+        return {
+          ...current,
+          places: nextPlaces,
+        };
       });
       setNotice(nextValue ? '공공데이터 자동 동기화에서 보호해둘게요.' : '공공데이터 자동 동기화 보호를 해제했어요.');
     } catch (error) {
