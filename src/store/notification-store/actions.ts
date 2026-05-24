@@ -124,16 +124,12 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
     async markRead(notificationId) {
       await markNotificationReadRequest(notificationId);
       set((state) => {
-        const notificationIdx = state.notifications.findIndex((n) => n.id === notificationId);
-        if (notificationIdx === -1) {
-          return {
-            unreadCount: Math.max(0, state.notifications.filter((notification) => !notification.isRead).length),
-          };
+        const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
+        if (idx === -1) {
+          return state;
         }
-
         const nextNotifications = [...state.notifications];
-        nextNotifications[notificationIdx] = { ...nextNotifications[notificationIdx], isRead: true };
-
+        nextNotifications[idx] = { ...nextNotifications[idx], isRead: true };
         return {
           notifications: nextNotifications,
           unreadCount: Math.max(0, state.notifications.filter((notification) => !notification.isRead && notification.id !== notificationId).length),

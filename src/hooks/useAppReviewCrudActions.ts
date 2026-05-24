@@ -105,30 +105,27 @@ export function useAppReviewCrudActions({
       if (!current) {
         return current;
       }
-
-      // Optimize single item replace with findIndex instead of .map()
+      const reviewIdx = current.reviews.findIndex((review) => review.id === reviewId);
       let nextReviews = current.reviews;
-      const reviewIdx = current.reviews.findIndex((r) => r.id === reviewId);
       if (reviewIdx !== -1) {
         nextReviews = [...current.reviews];
         nextReviews[reviewIdx] = summarizedReview;
       }
 
-      // 1-to-many lookup lazy copying optimization
       let nextComments = current.comments;
-      let commentsCopied = false;
+      let hasCommentUpdate = false;
+
       for (let i = 0; i < current.comments.length; i++) {
         if (current.comments[i].reviewId === reviewId) {
-          if (!commentsCopied) {
+          if (!hasCommentUpdate) {
             nextComments = [...current.comments];
-            commentsCopied = true;
+            hasCommentUpdate = true;
           }
           nextComments[i] = { ...nextComments[i], reviewBody: updatedReview.body };
         }
       }
 
-      // Skip reconciliation entirely if no changes were needed
-      if (nextReviews === current.reviews && nextComments === current.comments) {
+      if (reviewIdx === -1 && !hasCommentUpdate) {
         return current;
       }
 

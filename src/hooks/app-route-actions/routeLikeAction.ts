@@ -45,17 +45,19 @@ export function createToggleRouteLikeHandler({
         if (!current) {
           return current;
         }
+        const idx = current.routes.findIndex((route) => route.id === routeId);
+        if (idx === -1) {
+          return current;
+        }
+        const nextRoutes = [...current.routes];
+        nextRoutes[idx] = {
+          ...nextRoutes[idx],
+          likeCount: result.likeCount,
+          likedByMe: result.likedByMe,
+        };
         return {
           ...current,
-          routes: current.routes.map((route) =>
-            route.id === routeId
-              ? {
-                  ...route,
-                  likeCount: result.likeCount,
-                  likedByMe: result.likedByMe,
-                }
-              : route,
-          ),
+          routes: nextRoutes,
         };
       });
     } catch (error) {

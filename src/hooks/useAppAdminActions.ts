@@ -46,11 +46,10 @@ export function useAppAdminActions({
       const updated = await updatePlaceVisibility(placeId, { isActive: nextValue });
       setAdminSummary((current) => {
         if (!current) return current;
-        const placeIdx = current.places.findIndex((place) => place.id === placeId);
-        if (placeIdx === -1) return current;
-
+        const idx = current.places.findIndex((place) => place.id === placeId);
+        if (idx === -1) return current;
         const nextPlaces = [...current.places];
-        nextPlaces[placeIdx] = updated;
+        nextPlaces[idx] = updated;
         return {
           ...current,
           places: nextPlaces,
@@ -78,11 +77,10 @@ export function useAppAdminActions({
       const updated = await updatePlaceVisibility(placeId, { isManualOverride: nextValue });
       setAdminSummary((current) => {
         if (!current) return current;
-        const placeIdx = current.places.findIndex((place) => place.id === placeId);
-        if (placeIdx === -1) return current;
-
+        const idx = current.places.findIndex((place) => place.id === placeId);
+        if (idx === -1) return current;
         const nextPlaces = [...current.places];
-        nextPlaces[placeIdx] = updated;
+        nextPlaces[idx] = updated;
         return {
           ...current,
           places: nextPlaces,
