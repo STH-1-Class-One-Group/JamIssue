@@ -1,3 +1,0 @@
-## 2024-06-25 - Replace unconditional map with findIndex for state array updates
-**Learning:** In heavily updated state stores (Zustand) and hooks, using unconditional `.map()` for single-item updates causes unnecessary O(N) object allocations and breaks referential equality (reconciliation).
-**Action:** Always use `.findIndex()` to locate the target. If `idx === -1`, return the exact original array to skip re-renders. If found, copy only the array and the modified item, leaving the rest referentially identical. For 1-to-N updates, use a single `for` loop with lazy shallow copying upon the first match.
