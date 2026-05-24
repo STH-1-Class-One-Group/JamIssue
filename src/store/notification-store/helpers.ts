@@ -40,12 +40,19 @@ export function applyReadNotification(
   state: NotificationStoreState,
   { notificationId, unreadCount }: NotificationReadPayload,
 ): Partial<NotificationStoreState> {
+  const notificationIdx = state.notifications.findIndex((n) => n.id === notificationId);
+  if (notificationIdx === -1) {
+    return {
+      unreadCount,
+      connected: true,
+    };
+  }
+
+  const nextNotifications = [...state.notifications];
+  nextNotifications[notificationIdx] = { ...nextNotifications[notificationIdx], isRead: true };
+
   return {
-    notifications: state.notifications.map((notification) => (
-      notification.id === notificationId
-        ? { ...notification, isRead: true }
-        : notification
-    )),
+    notifications: nextNotifications,
     unreadCount,
     connected: true,
   };

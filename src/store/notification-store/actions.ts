@@ -123,14 +123,22 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
     },
     async markRead(notificationId) {
       await markNotificationReadRequest(notificationId);
-      set((state) => ({
-        notifications: state.notifications.map((notification) => (
-          notification.id === notificationId
-            ? { ...notification, isRead: true }
-            : notification
-        )),
-        unreadCount: Math.max(0, state.notifications.filter((notification) => !notification.isRead && notification.id !== notificationId).length),
-      }));
+      set((state) => {
+        const notificationIdx = state.notifications.findIndex((n) => n.id === notificationId);
+        if (notificationIdx === -1) {
+          return {
+            unreadCount: Math.max(0, state.notifications.filter((notification) => !notification.isRead).length),
+          };
+        }
+
+        const nextNotifications = [...state.notifications];
+        nextNotifications[notificationIdx] = { ...nextNotifications[notificationIdx], isRead: true };
+
+        return {
+          notifications: nextNotifications,
+          unreadCount: Math.max(0, state.notifications.filter((notification) => !notification.isRead && notification.id !== notificationId).length),
+        };
+      });
     },
     async markAllRead() {
       await markAllNotificationsReadRequest();
