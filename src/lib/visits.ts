@@ -32,7 +32,14 @@ export function getTodayStampLog(stampLogs: StampLog[], placeId: string) {
 }
 
 export function getPlaceVisitCount(stampLogs: StampLog[], placeId: string) {
-  return stampLogs.filter((stampLog) => stampLog.placeId === placeId).length;
+  // Optimization: use a for...of loop to avoid O(N) array allocation from .filter()
+  let count = 0;
+  for (const stampLog of stampLogs) {
+    if (stampLog.placeId === placeId) {
+      count++;
+    }
+  }
+  return count;
 }
 
 export function getLatestPlaceStamp(stampLogs: StampLog[], placeId: string) {

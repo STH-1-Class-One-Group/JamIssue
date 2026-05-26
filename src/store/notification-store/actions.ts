@@ -130,9 +130,18 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
         }
         const nextNotifications = [...state.notifications];
         nextNotifications[idx] = { ...nextNotifications[idx], isRead: true };
+
+        // Optimization: use a for...of loop to avoid O(N) array allocation from .filter()
+        let unreadCount = 0;
+        for (const notification of state.notifications) {
+          if (!notification.isRead && notification.id !== notificationId) {
+            unreadCount++;
+          }
+        }
+
         return {
           notifications: nextNotifications,
-          unreadCount: Math.max(0, state.notifications.filter((notification) => !notification.isRead && notification.id !== notificationId).length),
+          unreadCount: Math.max(0, unreadCount),
         };
       });
     },

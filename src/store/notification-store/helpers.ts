@@ -14,7 +14,14 @@ type NotificationReadPayload = {
 type NotificationAllReadPayload = { unreadCount: number };
 
 export function countUnread(notifications: UserNotification[]) {
-  return notifications.filter((notification) => !notification.isRead).length;
+  // Optimization: use a for...of loop to avoid O(N) array allocation from .filter()
+  let count = 0;
+  for (const notification of notifications) {
+    if (!notification.isRead) {
+      count++;
+    }
+  }
+  return count;
 }
 
 export function clearReconnectTimer(timer: number | null) {
