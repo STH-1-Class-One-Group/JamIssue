@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { FeedTab } from '../FeedTab';
 import type { PageStageFeedViewProps } from './appPageStageTypes';
 
-export function PageStageFeedView({
+import { memo } from 'react';
+
+export const PageStageFeedView = memo(function PageStageFeedView({
   sharedData,
   feedData,
   sharedActions,
@@ -86,4 +88,4 @@ export function PageStageFeedView({
       sharedActions={sharedFeedActions}
     />
   );
-}
+});

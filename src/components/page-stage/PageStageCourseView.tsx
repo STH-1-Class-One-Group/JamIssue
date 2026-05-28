@@ -1,7 +1,9 @@
 import { CourseTab } from '../CourseTab';
 import type { PageStageCourseViewProps } from './appPageStageTypes';
 
-export function PageStageCourseView({
+import { memo } from 'react';
+
+export const PageStageCourseView = memo(function PageStageCourseView({
   sharedData,
   courseData,
   sharedActions,
@@ -23,4 +25,4 @@ export function PageStageCourseView({
       onRequestLogin={sharedActions.onRequestLogin}
     />
   );
-}
+});
