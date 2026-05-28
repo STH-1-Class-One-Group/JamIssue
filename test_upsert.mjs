@@ -1,4 +1,5 @@
 const n = 10000;
+let current = Array.from({ length: n }, (_, i) => ({ id: "id-" + i }));
 const review = { id: 'id-5000' };
 
 let current4 = Array.from({ length: n }, (_, i) => ({ id: "id-" + i }));
