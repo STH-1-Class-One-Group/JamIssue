@@ -3,6 +3,7 @@
 `STH-1-Class-One-Group/JamIssue`는 MSA 전환을 위해 분리된 JamIssue Web Front 서비스 레포입니다.
 
 이 레포는 사용자가 접속하는 React 기반 Web Front와 Cloudflare Pages 배포를 담당합니다. Backend API 구현, Cloudflare Worker, DB schema/migration, 관리자 서비스, provider-side API contract의 정본은 별도 서비스 레포인 `ClarusIubar/JamIssue_admin`에서 관리합니다.
+
 ** 아키텍처 변경 이전 코드는 <1.3버전의 release 혹은 https://github.com/ClarusIubar/JamIssue_fork 를 참조하세요.
 
 ## MSA 서비스 분리 기준
