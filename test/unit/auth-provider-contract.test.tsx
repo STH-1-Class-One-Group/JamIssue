@@ -113,9 +113,13 @@ describe('provider login and account-link controls', () => {
 
     expect(screen.getByText(KAKAO_LABEL)).toBeInTheDocument();
     expect(screen.getByText(CONNECTED_LABEL)).toBeInTheDocument();
+    expect(screen.getByLabelText(`${KAKAO_LABEL} ${CONNECTED_LABEL}`)).toHaveClass('settings-card__social-row');
     expect(screen.queryByRole('button', { name: new RegExp(KAKAO_LABEL) })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: new RegExp(`${NAVER_LABEL}.*${LINK_ACCOUNT_LABEL}`) }));
+    const linkButton = screen.getByRole('button', { name: `${NAVER_LABEL} ${LINK_ACCOUNT_LABEL}` });
+    expect(linkButton).toHaveClass('settings-card__social-action');
+
+    await user.click(linkButton);
 
     expect(onLinkProvider).toHaveBeenCalledWith(naverProvider);
   });

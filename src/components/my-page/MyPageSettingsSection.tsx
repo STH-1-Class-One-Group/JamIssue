@@ -57,38 +57,41 @@ export function MyPageSettingsSection({
         )}
       </div>
       {socialProviderKeys.length > 0 && (
-        <div className="settings-card__links" aria-label={'\uC5F0\uACB0\uB41C \uC18C\uC15C \uACC4\uC815'}>
+        <div className="settings-card__social" aria-label={'\uC5F0\uACB0\uB41C \uC18C\uC15C \uACC4\uC815'}>
           <p className="eyebrow">{'\uC18C\uC15C \uACC4\uC815'}</p>
-          {socialProviderKeys.map((providerKey) => {
-            const provider = providerByKey.get(providerKey);
-            const isLinked = linkedProviders.includes(providerKey);
-            const providerLabel = getAuthProviderDisplayLabel({ key: providerKey });
+          <div className="settings-card__social-list">
+            {socialProviderKeys.map((providerKey) => {
+              const provider = providerByKey.get(providerKey);
+              const isLinked = linkedProviders.includes(providerKey);
+              const providerLabel = getAuthProviderDisplayLabel({ key: providerKey });
 
-            if (isLinked) {
+              if (isLinked) {
+                return (
+                  <div key={providerKey} className="settings-card__social-row" aria-label={`${providerLabel} \uC5F0\uACB0\uB428`}>
+                    <span className="settings-card__social-provider">{providerLabel}</span>
+                    <span className="settings-card__social-status">{'\uC5F0\uACB0\uB428'}</span>
+                  </div>
+                );
+              }
+
+              if (!provider) {
+                return null;
+              }
+
               return (
-                <div key={providerKey} className="settings-card__link-button secondary-button is-complete" aria-label={`${providerLabel} \uC5F0\uACB0\uB428`}>
-                  <span>{providerLabel}</span>
-                  <span className="soft-tag is-complete">{'\uC5F0\uACB0\uB428'}</span>
-                </div>
+                <button
+                  key={providerKey}
+                  type="button"
+                  className="settings-card__social-action"
+                  onClick={() => onLinkProvider(provider)}
+                  aria-label={`${providerLabel} \uACC4\uC815 \uC5F0\uB3D9`}
+                >
+                  <span className="settings-card__social-provider">{providerLabel}</span>
+                  <span className="settings-card__social-action-label">{'\uACC4\uC815 \uC5F0\uB3D9'}</span>
+                </button>
               );
-            }
-
-            if (!provider) {
-              return null;
-            }
-
-            return (
-              <button
-                key={providerKey}
-                type="button"
-                className="settings-card__link-button secondary-button"
-                onClick={() => onLinkProvider(provider)}
-              >
-                <span>{providerLabel}</span>
-                <span>{'\uACC4\uC815 \uC5F0\uB3D9'}</span>
-              </button>
-            );
-          })}
+            })}
+          </div>
         </div>
       )}
       <form className="route-builder-form" onSubmit={(event) => void onSubmit(event)}>
