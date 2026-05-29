@@ -1,9 +1,9 @@
-import type { AuthProvider, ProviderKey } from '../../types/auth';
+import type { AuthProvider } from '../../types/auth';
 import { ProviderButtons } from '../ProviderButtons';
 
 interface MyPageGuestStateProps {
   providers: AuthProvider[];
-  onLogin: (provider: ProviderKey) => void;
+  onLogin: (provider: AuthProvider) => void;
 }
 
 export function MyPageGuestState({ providers, onLogin }: MyPageGuestStateProps) {

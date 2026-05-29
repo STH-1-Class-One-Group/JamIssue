@@ -41,6 +41,7 @@ export function MyPagePanel({
   const {
     onChangeTab,
     onLogin,
+    onLinkProvider,
     onRetry,
     onLogout,
     onSaveNickname,
@@ -106,11 +107,14 @@ export function MyPagePanel({
       />
 
       <MyPageSettingsSection
+        sessionUser={sessionUser}
+        providers={providers}
         nickname={nickname}
         showSettings={showSettings}
         profileCompletedAt={sessionUser.profileCompletedAt}
         profileSaving={profileSaving}
         profileError={profileError}
+        onLinkProvider={onLinkProvider}
         onNicknameChange={setNickname}
         onClose={() => setShowSettings(false)}
         onSubmit={handleNicknameSubmit}

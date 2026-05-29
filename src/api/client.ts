@@ -1,5 +1,5 @@
 export { ApiError, fetchJson, getApiBaseUrl, invalidateApiCache } from './core';
-export { getProviderLoginUrl, logout, updateProfile } from './authClient';
+export { buildProviderAuthUrl, getProviderLinkUrl, getProviderLoginUrl, logout, updateProfile } from './authClient';
 export { getBootstrap, getCuratedCourses, getFestivals, getMapBootstrap, getPublicEventBanner } from './bootstrapClient';
 export { createUserRoute, getCommunityRoutes, toggleCommunityRouteLike } from './routesClient';
 export {

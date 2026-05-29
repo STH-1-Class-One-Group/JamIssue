@@ -27,7 +27,7 @@ export function useAppCoordinatorAuthLoaders({
     setReviews,
   } = dataState;
 
-  const { startProviderLogin, handleUpdateProfile, handleLogout } = useAppAuthActions({
+  const { startProviderLogin, startProviderLink, handleUpdateProfile, handleLogout } = useAppAuthActions({
     setMyPage,
     formatErrorMessage: formatCoordinatorErrorMessage,
   });
@@ -53,6 +53,7 @@ export function useAppCoordinatorAuthLoaders({
     sessionUser,
     myPage,
     startProviderLogin,
+    startProviderLink,
     handleUpdateProfile,
     handleLogout,
     dataLoaders,

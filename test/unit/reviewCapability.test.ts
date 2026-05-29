@@ -8,6 +8,7 @@ const sessionUser = {
   nickname: 'tester',
   email: null,
   provider: 'kakao',
+  linkedProviders: ['kakao'],
   profileImage: null,
   isAdmin: false,
   profileCompletedAt: null,

@@ -31,7 +31,8 @@ export interface MyPagePanelProps {
   };
   panelActions: {
     onChangeTab: (nextTab: MyPageTabKey) => void;
-    onLogin: (provider: 'naver' | 'kakao') => void;
+    onLogin: (provider: AuthProvider) => void;
+    onLinkProvider: (provider: AuthProvider) => void;
     onRetry: () => Promise<void>;
     onLogout: () => Promise<void>;
     onSaveNickname: (nickname: string) => Promise<void>;

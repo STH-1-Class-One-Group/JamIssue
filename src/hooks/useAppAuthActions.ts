@@ -1,9 +1,10 @@
-import { getProviderLoginUrl, logout, updateProfile } from '../api/authClient';
+import { getProviderLinkUrl, getProviderLoginUrl, logout, updateProfile } from '../api/authClient';
 import { getLoginReturnUrl } from './app-route/useAppRouteState';
 import type { Dispatch, SetStateAction } from 'react';
 import { useAuthStore } from '../store/auth-store';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useAppShellRuntimeStore } from '../store/app-shell-runtime-store';
+import type { AuthProvider } from '../types/auth';
 import type { MyPageResponse } from '../types/my-page';
 
 type SetState<T> = Dispatch<SetStateAction<T>>;
@@ -24,8 +25,18 @@ export function useAppAuthActions({
   const setProfileSaving = useAppPageRuntimeStore((state) => state.setProfileSaving);
   const setProfileError = useAppPageRuntimeStore((state) => state.setProfileError);
 
-  function startProviderLogin(provider: 'naver' | 'kakao') {
-    window.location.assign(getProviderLoginUrl(provider, getLoginReturnUrl()));
+  function startProviderLogin(provider: AuthProvider) {
+    const loginUrl = getProviderLoginUrl(provider, getLoginReturnUrl());
+    if (loginUrl) {
+      window.location.assign(loginUrl);
+    }
+  }
+
+  function startProviderLink(provider: AuthProvider) {
+    const linkUrl = getProviderLinkUrl(provider, getLoginReturnUrl());
+    if (linkUrl) {
+      window.location.assign(linkUrl);
+    }
   }
 
   async function handleUpdateProfile(nextNickname: string) {
@@ -68,6 +79,7 @@ export function useAppAuthActions({
 
   return {
     startProviderLogin,
+    startProviderLink,
     handleUpdateProfile,
     handleLogout,
   };

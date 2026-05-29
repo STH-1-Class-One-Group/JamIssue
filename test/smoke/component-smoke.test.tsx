@@ -90,6 +90,7 @@ describe('component smoke', () => {
         panelActions={{
           onChangeTab: vi.fn(),
           onLogin: vi.fn(),
+          onLinkProvider: vi.fn(),
           onRetry: vi.fn().mockResolvedValue(undefined),
           onLogout: vi.fn().mockResolvedValue(undefined),
           onSaveNickname: vi.fn().mockResolvedValue(undefined),

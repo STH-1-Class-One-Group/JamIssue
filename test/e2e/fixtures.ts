@@ -9,6 +9,7 @@ export const e2eUser: SessionUser = {
   nickname: '테스터',
   email: 'tester@example.com',
   provider: 'kakao',
+  linkedProviders: ['kakao'],
   profileImage: null,
   isAdmin: false,
   profileCompletedAt: '2026-05-14T10:00:00.000Z',
@@ -176,8 +177,8 @@ function authPayload(state: E2EAppState) {
     isAuthenticated: Boolean(state.user),
     user: state.user,
     providers: [
-      { key: 'naver', label: 'Naver', isEnabled: false, loginUrl: null },
-      { key: 'kakao', label: 'Kakao', isEnabled: false, loginUrl: null },
+      { key: 'naver', label: 'Naver', isEnabled: false, loginUrl: null, linkUrl: null },
+      { key: 'kakao', label: 'Kakao', isEnabled: false, loginUrl: null, linkUrl: null },
     ],
   };
 }

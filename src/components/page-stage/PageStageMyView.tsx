@@ -37,6 +37,7 @@ export function PageStageMyView({
       panelActions={{
         onChangeTab: myPageActions.onChangeMyPageTab,
         onLogin: myPageActions.onLogin,
+        onLinkProvider: myPageActions.onLinkProvider,
         onRetry: myPageActions.onRetryMyPage,
         onLogout: myPageActions.onLogout,
         onSaveNickname: myPageActions.onSaveNickname,

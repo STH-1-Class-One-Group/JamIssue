@@ -15,6 +15,7 @@ export const sessionUserFixture: SessionUser = {
   nickname: '테스터',
   email: 'tester@example.com',
   provider: 'kakao',
+  linkedProviders: ['kakao'],
   profileImage: null,
   isAdmin: false,
   profileCompletedAt: '2026-03-28T10:00:00.000Z',
