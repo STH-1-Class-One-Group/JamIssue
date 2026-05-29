@@ -1,6 +1,6 @@
-type SetProviders = (
-  providers: Array<{ key: 'naver' | 'kakao'; label: string; isEnabled: boolean; loginUrl: string | null }>
-) => void;
+import type { AuthProvider } from '../../types/auth';
+
+type SetProviders = (providers: AuthProvider[]) => void;
 
 interface ResetBootstrapRuntimeParams {
   setFeedNextCursor: (cursor: string | null) => void;

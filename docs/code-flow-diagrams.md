@@ -151,10 +151,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["MyPagePanel -> onLogin(provider)"] --> B["App.startProviderLogin()"]
-    B --> C["window.location.assign(getProviderLoginUrl(...))"]
+    A["Guest ProviderButtons -> onLogin(provider)"] --> B["App.startProviderLogin(provider.loginUrl)"]
+    A2["MyPageSettingsSection -> onLinkProvider(provider)"] --> B2["App.startProviderLink(provider.linkUrl)"]
+    B --> C["window.location.assign(getProviderLoginUrl(provider))"]
+    B2 --> C2["window.location.assign(getProviderLinkUrl(provider))"]
     C --> D["GET /api/auth/{provider}/login"]
+    C2 --> D2["GET /api/auth/{provider}/link"]
     D --> E["main.start_login()"]
+    D2 --> E2["main.start_link()"]
+    E2 --> G
     E --> F["request.session['post_login_redirect']"]
     E --> G["generate_oauth_state()"]
     G --> H["build_naver_login_url()"]

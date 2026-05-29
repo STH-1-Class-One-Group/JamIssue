@@ -2,13 +2,13 @@ import type * as React from 'react';
 
 import { getMapBootstrap } from '../../api/bootstrapClient';
 import type { Place } from '../../types/core';
-import type { SessionUser } from '../../types/auth';
+import type { AuthProvider, SessionUser } from '../../types/auth';
 import type { StampState } from '../../types/review';
 import type { MyPageResponse } from '../../types/my-page';
 import { handleBootstrapAuthNotice } from './bootstrapAuthNotice';
 import { applyBootstrapSelections, resetBootstrapRuntime } from './bootstrapRuntimeReset';
 
-type SetProviders = (providers: Array<{ key: 'naver' | 'kakao'; label: string; isEnabled: boolean; loginUrl: string | null }>) => void;
+type SetProviders = (providers: AuthProvider[]) => void;
 
 interface BootstrapSharedRefs {
   refreshMyPageForUserRef: { current: (user: SessionUser | null, force?: boolean) => Promise<MyPageResponse | null> };

@@ -76,7 +76,8 @@ export interface AppPageStageCourseActions {
 
 export interface AppPageStageMyPageActions {
   onChangeMyPageTab: (tab: MyPageTabKey) => void;
-  onLogin: (provider: 'naver' | 'kakao') => void;
+  onLogin: (provider: AuthProvider) => void;
+  onLinkProvider: (provider: AuthProvider) => void;
   onRetryMyPage: () => Promise<void>;
   onLogout: () => Promise<void>;
   onSaveNickname: (nickname: string) => Promise<void>;

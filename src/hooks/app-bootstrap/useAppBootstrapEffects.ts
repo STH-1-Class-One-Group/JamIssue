@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
 import type { FestivalItem, Place } from '../../types/core';
-import type { SessionUser } from '../../types/auth';
+import type { AuthProvider, SessionUser } from '../../types/auth';
 import type { StampState } from '../../types/review';
 import type { MyPageResponse } from '../../types/my-page';
 import { bootstrapFestivalLoader } from './bootstrapFestivalLoader';
@@ -10,7 +10,7 @@ import { bootstrapMapSession } from './bootstrapMapSession';
 import { clearAuthQueryParams } from '../app-route/useAppRouteState';
 import type { AppBootstrapSharedRefs } from './useAppBootstrapSharedRefs';
 
-type SetProviders = (providers: Array<{ key: 'naver' | 'kakao'; label: string; isEnabled: boolean; loginUrl: string | null }>) => void;
+type SetProviders = (providers: AuthProvider[]) => void;
 
 interface UseMapBootstrapEffectParams extends AppBootstrapSharedRefs {
   setBootstrapStatus: (status: 'idle' | 'loading' | 'ready' | 'error') => void;

@@ -1,24 +1,29 @@
-﻿import type { AuthProvider, ProviderKey } from '../types/auth';
+import type { AuthProvider } from '../types/auth';
+import { getAuthProviderDisplayLabel } from '../utils/authProviderDisplay';
 
 interface ProviderButtonsProps {
   providers: AuthProvider[];
-  onLogin: (provider: ProviderKey) => void;
+  onLogin: (provider: AuthProvider) => void;
 }
 
 export function ProviderButtons({ providers, onLogin }: ProviderButtonsProps) {
   return (
     <div className="provider-button-list">
-      {providers.map((provider) => (
-        <button
-          key={provider.key}
-          type="button"
-          className={provider.isEnabled ? 'primary-button provider-button' : 'secondary-button provider-button is-disabled'}
-          disabled={!provider.isEnabled}
-          onClick={() => onLogin(provider.key)}
-        >
-          {provider.isEnabled ? `${provider.label}로 로그인` : `${provider.label} 준비 중`}
-        </button>
-      ))}
+      {providers.map((provider) => {
+        const canLogin = provider.isEnabled && Boolean(provider.loginUrl);
+        const providerLabel = getAuthProviderDisplayLabel(provider);
+        return (
+          <button
+            key={provider.key}
+            type="button"
+            className={canLogin ? 'primary-button provider-button' : 'secondary-button provider-button is-disabled'}
+            disabled={!canLogin}
+            onClick={() => onLogin(provider)}
+          >
+            {canLogin ? `${providerLabel}\uB85C \uB85C\uADF8\uC778` : `${providerLabel} \uC900\uBE44 \uC911`}
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -119,6 +119,7 @@ export function usePageStageProps(state: AppShellCoordinatorState) {
     myPageActions: {
       onChangeMyPageTab: setMyPageTab,
       onLogin: state.startProviderLogin,
+      onLinkProvider: state.startProviderLink,
       onRetryMyPage: pageStageActions.handleRetryMyPage,
       onLogout: state.handleLogout,
       onSaveNickname: state.handleUpdateProfile,

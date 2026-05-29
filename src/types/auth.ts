@@ -5,6 +5,7 @@ export interface SessionUser {
   nickname: string;
   email: string | null;
   provider: string;
+  linkedProviders: ProviderKey[];
   profileImage: string | null;
   isAdmin: boolean;
   profileCompletedAt: string | null;
@@ -15,6 +16,7 @@ export interface AuthProvider {
   label: string;
   isEnabled: boolean;
   loginUrl: string | null;
+  linkUrl?: string | null;
 }
 
 export interface AuthSessionResponse {
