@@ -1,4 +1,0 @@
-
-## 2024-05-30 - Prevent O(N) memory allocations when prepending items
-**Learning:** When adding a new item to the beginning of a React state array using the spread operator (`[nextItem, ...current.filter(...)]`), `array.filter(...)` creates an intermediate array in memory that is immediately discarded after the spread syntax is executed. In large lists (like feed reviews or comments), this causes an unnecessary $O(N)$ memory allocation and subsequent GC pressure during common list updates (upserts).
-**Action:** Instead of combining the spread operator with `filter` for prepending and filtering simultaneously, build the new array in a single pass using a standard `for...of` loop (e.g., `const next = [nextItem]; for (const item of current) { if (item.id !== nextItem.id) next.push(item); }`). This performs the update strictly in one allocation while avoiding intermediate GC garbage.
