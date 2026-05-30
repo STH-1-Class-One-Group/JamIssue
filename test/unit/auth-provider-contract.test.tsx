@@ -84,6 +84,19 @@ describe('auth provider contract', () => {
     expect(getProviderLinkUrl({ ...naverProvider, linkUrl: null }, FRONTEND_RETURN_URL)).toBeNull();
   });
 
+  it('does not use loginUrl as an authenticated account-link fallback', () => {
+    const guardedLoginProvider: AuthProvider = {
+      ...naverProvider,
+      loginUrl: '/api/auth/naver/login',
+      linkUrl: null,
+    };
+
+    expect(getProviderLoginUrl(guardedLoginProvider, FRONTEND_RETURN_URL)).toBe(
+      `${API_BASE_URL}/api/auth/naver/login?next=https%3A%2F%2Fdaejeon.jamissue.com%2F%3Ftab%3Dmy`,
+    );
+    expect(getProviderLinkUrl(guardedLoginProvider, FRONTEND_RETURN_URL)).toBeNull();
+  });
+
   it('preserves absolute provider origins while adding the return URL', () => {
     expect(buildProviderAuthUrl('https://oauth.example.test/auth/link?prompt=login', FRONTEND_RETURN_URL)).toBe(
       'https://oauth.example.test/auth/link?prompt=login&next=https%3A%2F%2Fdaejeon.jamissue.com%2F%3Ftab%3Dmy',
@@ -156,6 +169,22 @@ describe('provider login and account-link controls', () => {
     expect(screen.getByText(KAKAO_LABEL)).toBeInTheDocument();
     expect(screen.queryByText(NAVER_LABEL)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: new RegExp(LINK_ACCOUNT_LABEL) })).not.toBeInTheDocument();
+  });
+
+  it('does not expose backend login guard paths as account-link buttons', () => {
+    renderSettingsSection({
+      providers: [
+        kakaoProvider,
+        {
+          ...naverProvider,
+          loginUrl: '/api/auth/naver/login',
+          linkUrl: null,
+        },
+      ],
+    });
+
+    expect(screen.getByLabelText(`${KAKAO_LABEL} ${CONNECTED_LABEL}`)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: `${NAVER_LABEL} ${LINK_ACCOUNT_LABEL}` })).not.toBeInTheDocument();
   });
 
 });
