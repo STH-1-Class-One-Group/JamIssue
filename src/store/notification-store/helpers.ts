@@ -1,5 +1,5 @@
-import type { NotificationStoreState } from './types';
-import type { UserNotification } from '../../types';
+import type { NotificationStoreState } from "./types";
+import type { UserNotification } from "../../types";
 
 type NotificationCreatedPayload = {
   notification: UserNotification;
@@ -25,7 +25,7 @@ export function countUnread(notifications: UserNotification[]) {
 }
 
 export function clearReconnectTimer(timer: number | null) {
-  if (timer !== null && typeof window !== 'undefined') {
+  if (timer !== null && typeof window !== "undefined") {
     window.clearTimeout(timer);
   }
 }
@@ -34,11 +34,18 @@ export function applyCreatedNotification(
   state: NotificationStoreState,
   { notification, unreadCount }: NotificationCreatedPayload,
 ): Partial<NotificationStoreState> {
+  // Optimization: Using for...of instead of spread+filter to avoid intermediate array allocation
+  const notifications = [notification];
+  for (const item of state.notifications) {
+    if (item.id !== notification.id) {
+      notifications.push(item);
+    }
+  }
   return {
-    notifications: [notification, ...state.notifications.filter((item) => item.id !== notification.id)],
+    notifications,
     unreadCount,
     connected: true,
-    status: 'ready',
+    status: "ready",
     error: null,
   };
 }
@@ -47,7 +54,9 @@ export function applyReadNotification(
   state: NotificationStoreState,
   { notificationId, unreadCount }: NotificationReadPayload,
 ): Partial<NotificationStoreState> {
-  const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
+  const idx = state.notifications.findIndex(
+    (notification) => notification.id === notificationId,
+  );
   if (idx === -1) {
     return {
       unreadCount,
@@ -91,7 +100,9 @@ export function applyDeletedNotification(
   { notificationId, unreadCount }: NotificationReadPayload,
 ): Partial<NotificationStoreState> {
   return {
-    notifications: state.notifications.filter((notification) => notification.id !== notificationId),
+    notifications: state.notifications.filter(
+      (notification) => notification.id !== notificationId,
+    ),
     unreadCount,
     connected: true,
   };
@@ -101,7 +112,7 @@ export const initialNotificationStoreState: NotificationStoreState = {
   notifications: [],
   unreadCount: 0,
   connected: false,
-  status: 'idle',
+  status: "idle",
   error: null,
   channel: null,
   reconnectTimer: null,

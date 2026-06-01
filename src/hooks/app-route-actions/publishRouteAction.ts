@@ -1,12 +1,12 @@
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { createUserRoute } from '../../api/routesClient';
-import type { MyPageTabKey, Tab } from '../../types/core';
-import type { SessionUser } from '../../types/auth';
-import type { UserRoute } from '../../types/review';
-import type { MyPageResponse } from '../../types/my-page';
+import type { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { createUserRoute } from "../../api/routesClient";
+import type { MyPageTabKey, Tab } from "../../types/core";
+import type { SessionUser } from "../../types/auth";
+import type { UserRoute } from "../../types/review";
+import type { MyPageResponse } from "../../types/my-page";
 
-type CommunityRoutesCache = Partial<Record<'popular' | 'latest', UserRoute[]>>;
-type HistoryMode = 'push' | 'replace';
+type CommunityRoutesCache = Partial<Record<"popular" | "latest", UserRoute[]>>;
+type HistoryMode = "push" | "replace";
 
 interface CreatePublishRouteHandlerParams {
   sessionUser: SessionUser | null;
@@ -16,7 +16,10 @@ interface CreatePublishRouteHandlerParams {
   setMyPageTab: (value: MyPageTabKey) => void;
   setMyPage: Dispatch<SetStateAction<MyPageResponse | null>>;
   communityRoutesCacheRef: MutableRefObject<CommunityRoutesCache>;
-  refreshMyPageForUser: (user: SessionUser | null, force?: boolean) => Promise<MyPageResponse | null>;
+  refreshMyPageForUser: (
+    user: SessionUser | null,
+    force?: boolean,
+  ) => Promise<MyPageResponse | null>;
   formatErrorMessage: (error: unknown) => string;
   goToTab: (nextTab: Tab, historyMode?: HistoryMode) => void;
 }
@@ -40,8 +43,8 @@ export function createPublishRouteHandler({
     mood: string;
   }) {
     if (!sessionUser) {
-      goToTab('my');
-      setRouteError('로그인하면 여행 세션을 코스로 발행할 수 있어요.');
+      goToTab("my");
+      setRouteError("로그인하면 여행 세션을 코스로 발행할 수 있어요.");
       return;
     }
 
@@ -55,30 +58,51 @@ export function createPublishRouteHandler({
         mood: payload.mood,
         isPublic: true,
       });
+      // Optimization: Using for...of instead of spread+filter to avoid intermediate array allocation
+      const nextLatest = [createdRoute];
+      const currentLatest = communityRoutesCacheRef.current.latest ?? [];
+      for (const route of currentLatest) {
+        if (route.id !== createdRoute.id) {
+          nextLatest.push(route);
+        }
+      }
+
       communityRoutesCacheRef.current = {
         ...communityRoutesCacheRef.current,
-        latest: [createdRoute, ...(communityRoutesCacheRef.current.latest ?? []).filter((route) => route.id !== createdRoute.id)],
+        latest: nextLatest,
       };
       delete communityRoutesCacheRef.current.popular;
       setMyPage((current) => {
         if (!current) {
           return current;
         }
-        const routeExists = current.routes.some((route) => route.id === createdRoute.id);
+        const routeExists = current.routes.some(
+          (route) => route.id === createdRoute.id,
+        );
+        const nextRoutes = [createdRoute];
+        for (const route of current.routes) {
+          if (route.id !== createdRoute.id) {
+            nextRoutes.push(route);
+          }
+        }
         return {
           ...current,
-          routes: [createdRoute, ...current.routes.filter((route) => route.id !== createdRoute.id)],
+          routes: nextRoutes,
           travelSessions: current.travelSessions.map((session) =>
-            session.id === payload.travelSessionId ? { ...session, publishedRouteId: createdRoute.id } : session,
+            session.id === payload.travelSessionId
+              ? { ...session, publishedRouteId: createdRoute.id }
+              : session,
           ),
           stats: {
             ...current.stats,
-            routeCount: routeExists ? current.stats.routeCount : current.stats.routeCount + 1,
+            routeCount: routeExists
+              ? current.stats.routeCount
+              : current.stats.routeCount + 1,
           },
         };
       });
-      setNotice('코스를 발행했어요. 공개 경로 탭에서 바로 확인할 수 있어요.');
-      setMyPageTab('routes');
+      setNotice("코스를 발행했어요. 공개 경로 탭에서 바로 확인할 수 있어요.");
+      setMyPageTab("routes");
       await refreshMyPageForUser(sessionUser, true);
     } catch (error) {
       setRouteError(formatErrorMessage(error));

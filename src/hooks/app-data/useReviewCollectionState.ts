@@ -1,17 +1,24 @@
-import { useRef, useState } from 'react';
-import { toReviewSummary } from '../../lib/reviews';
-import type { BootstrapResponse } from '../../types/review';
+import { useRef, useState } from "react";
+import { toReviewSummary } from "../../lib/reviews";
+import type { BootstrapResponse } from "../../types/review";
 
-type ReviewSummary = BootstrapResponse['reviews'][number];
+type ReviewSummary = BootstrapResponse["reviews"][number];
 
 export function useReviewCollectionState(selectedPlaceId: string | null) {
-  const [reviews, setReviews] = useState<BootstrapResponse['reviews']>([]);
-  const [selectedPlaceReviews, setSelectedPlaceReviews] = useState<BootstrapResponse['reviews']>([]);
-  const placeReviewsCacheRef = useRef<Record<string, BootstrapResponse['reviews']>>({});
+  const [reviews, setReviews] = useState<BootstrapResponse["reviews"]>([]);
+  const [selectedPlaceReviews, setSelectedPlaceReviews] = useState<
+    BootstrapResponse["reviews"]
+  >([]);
+  const placeReviewsCacheRef = useRef<
+    Record<string, BootstrapResponse["reviews"]>
+  >({});
   const feedLoadedRef = useRef(false);
   const coursesLoadedRef = useRef(false);
 
-  function patchReviewCollections(reviewId: string, updater: (review: ReviewSummary) => ReviewSummary) {
+  function patchReviewCollections(
+    reviewId: string,
+    updater: (review: ReviewSummary) => ReviewSummary,
+  ) {
     const hasReview = (r: ReviewSummary) => r.id === reviewId;
     let patchedReview: ReviewSummary | null = null;
     const getPatched = (original: ReviewSummary) => {
@@ -37,7 +44,8 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
       return next;
     });
 
-    const existingReview = reviews.find(hasReview) || selectedPlaceReviews.find(hasReview);
+    const existingReview =
+      reviews.find(hasReview) || selectedPlaceReviews.find(hasReview);
     if (existingReview) {
       const { placeId } = existingReview;
       const collection = placeReviewsCacheRef.current[placeId];
@@ -67,18 +75,37 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
 
   function upsertReviewCollections(review: ReviewSummary) {
     const nextReview = toReviewSummary(review);
-    setReviews((current) => [nextReview, ...current.filter((currentReview) => currentReview.id !== review.id)]);
+    // Optimization: Using for...of instead of spread+filter to avoid intermediate array allocation
+    setReviews((current) => {
+      const next = [nextReview];
+      for (const currentReview of current) {
+        if (currentReview.id !== review.id) {
+          next.push(currentReview);
+        }
+      }
+      return next;
+    });
     if (selectedPlaceId === review.placeId) {
-      setSelectedPlaceReviews((current) => [
-        nextReview,
-        ...current.filter((currentReview) => currentReview.id !== review.id),
-      ]);
+      // Optimization: Using for...of instead of spread+filter to avoid intermediate array allocation
+      setSelectedPlaceReviews((current) => {
+        const next = [nextReview];
+        for (const currentReview of current) {
+          if (currentReview.id !== review.id) {
+            next.push(currentReview);
+          }
+        }
+        return next;
+      });
     }
-    const cachedPlaceReviews = placeReviewsCacheRef.current[review.placeId] ?? [];
-    placeReviewsCacheRef.current[review.placeId] = [
-      nextReview,
-      ...cachedPlaceReviews.filter((currentReview) => currentReview.id !== review.id),
-    ];
+    const cachedPlaceReviews =
+      placeReviewsCacheRef.current[review.placeId] ?? [];
+    const nextCached = [nextReview];
+    for (const currentReview of cachedPlaceReviews) {
+      if (currentReview.id !== review.id) {
+        nextCached.push(currentReview);
+      }
+    }
+    placeReviewsCacheRef.current[review.placeId] = nextCached;
   }
 
   function resetReviewCaches() {
