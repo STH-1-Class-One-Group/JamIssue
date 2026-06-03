@@ -55,9 +55,19 @@ export function createPublishRouteHandler({
         mood: payload.mood,
         isPublic: true,
       });
+
+      const nextLatest = [createdRoute];
+      if (communityRoutesCacheRef.current.latest) {
+        for (const route of communityRoutesCacheRef.current.latest) {
+          if (route.id !== createdRoute.id) {
+            nextLatest.push(route);
+          }
+        }
+      }
+
       communityRoutesCacheRef.current = {
         ...communityRoutesCacheRef.current,
-        latest: [createdRoute, ...(communityRoutesCacheRef.current.latest ?? []).filter((route) => route.id !== createdRoute.id)],
+        latest: nextLatest,
       };
       delete communityRoutesCacheRef.current.popular;
       setMyPage((current) => {
@@ -65,9 +75,17 @@ export function createPublishRouteHandler({
           return current;
         }
         const routeExists = current.routes.some((route) => route.id === createdRoute.id);
+
+        const nextRoutes = [createdRoute];
+        for (const route of current.routes) {
+          if (route.id !== createdRoute.id) {
+            nextRoutes.push(route);
+          }
+        }
+
         return {
           ...current,
-          routes: [createdRoute, ...current.routes.filter((route) => route.id !== createdRoute.id)],
+          routes: nextRoutes,
           travelSessions: current.travelSessions.map((session) =>
             session.id === payload.travelSessionId ? { ...session, publishedRouteId: createdRoute.id } : session,
           ),

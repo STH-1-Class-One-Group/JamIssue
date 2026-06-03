@@ -34,8 +34,15 @@ export function applyCreatedNotification(
   state: NotificationStoreState,
   { notification, unreadCount }: NotificationCreatedPayload,
 ): Partial<NotificationStoreState> {
+  const nextNotifications = [notification];
+  for (const item of state.notifications) {
+    if (item.id !== notification.id) {
+      nextNotifications.push(item);
+    }
+  }
+
   return {
-    notifications: [notification, ...state.notifications.filter((item) => item.id !== notification.id)],
+    notifications: nextNotifications,
     unreadCount,
     connected: true,
     status: 'ready',

@@ -1,0 +1,3 @@
+## 2024-06-03 - Avoid O(N) memory allocation with filter inside map/spread
+**Learning:** When prepending or appending items to an array (e.g. `[item, ...arr.filter(condition)]`), creating the intermediate array via `.filter()` triggers unnecessary memory allocation and GC pressure. This is a common performance bottleneck in React state array updates when dealing with lists like reviews, routes, and notifications.
+**Action:** Replace `[item, ...arr.filter()]` with a sequential `for...of` loop and a mutable target array. This constructs the new array in a single pass without creating an intermediate filtered array copy.
