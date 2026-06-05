@@ -67,18 +67,36 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
 
   function upsertReviewCollections(review: ReviewSummary) {
     const nextReview = toReviewSummary(review);
-    setReviews((current) => [nextReview, ...current.filter((currentReview) => currentReview.id !== review.id)]);
+    setReviews((current) => {
+      const next = [nextReview];
+      for (const currentReview of current) {
+        if (currentReview.id !== review.id) {
+          next.push(currentReview);
+        }
+      }
+      return next;
+    });
+
     if (selectedPlaceId === review.placeId) {
-      setSelectedPlaceReviews((current) => [
-        nextReview,
-        ...current.filter((currentReview) => currentReview.id !== review.id),
-      ]);
+      setSelectedPlaceReviews((current) => {
+        const next = [nextReview];
+        for (const currentReview of current) {
+          if (currentReview.id !== review.id) {
+            next.push(currentReview);
+          }
+        }
+        return next;
+      });
     }
+
     const cachedPlaceReviews = placeReviewsCacheRef.current[review.placeId] ?? [];
-    placeReviewsCacheRef.current[review.placeId] = [
-      nextReview,
-      ...cachedPlaceReviews.filter((currentReview) => currentReview.id !== review.id),
-    ];
+    const nextCache = [nextReview];
+    for (const currentReview of cachedPlaceReviews) {
+      if (currentReview.id !== review.id) {
+        nextCache.push(currentReview);
+      }
+    }
+    placeReviewsCacheRef.current[review.placeId] = nextCache;
   }
 
   function resetReviewCaches() {
