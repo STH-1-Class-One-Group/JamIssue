@@ -52,8 +52,14 @@ export function useAppPagePaginationActions({
         for (const review of current) {
           existingIds.add(review.id);
         }
-        const nextItems = toReviewSummaryList(page.items).filter((review) => !existingIds.has(review.id));
-        return [...current, ...nextItems];
+        const nextItems = toReviewSummaryList(page.items);
+        const next = [...current];
+        for (const review of nextItems) {
+          if (!existingIds.has(review.id)) {
+            next.push(review);
+          }
+        }
+        return next;
       });
       setFeedNextCursor(page.nextCursor);
       setFeedHasMore(Boolean(page.nextCursor));
@@ -97,10 +103,15 @@ export function useAppPagePaginationActions({
         for (const comment of base) {
           existingIds.add(comment.id);
         }
-        const nextItems = page.items.filter((comment) => !existingIds.has(comment.id));
+        const nextComments = [...base];
+        for (const comment of page.items) {
+          if (!existingIds.has(comment.id)) {
+            nextComments.push(comment);
+          }
+        }
         return {
           ...current,
-          comments: [...base, ...nextItems],
+          comments: nextComments,
         };
       });
       setMyCommentsNextCursor(page.nextCursor);
