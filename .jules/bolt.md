@@ -1,0 +1,3 @@
+## 2024-06-06 - [Prevent intermediate array creation on pagination]
+**Learning:** Found an instance in `src/hooks/useAppPagePaginationActions.ts` where arrays were spread and combined with `.filter()` during pagination updates (`[...current, ...next.filter(...)]`). While safe, this constructs an unnecessary intermediate array before appending it, which triggers additional memory allocations and GC pressure.
+**Action:** Replace `[...a, ...b.filter()]` constructions with sequential `for...of` loops, iterating and appending to a shallow copy of the base array (`next.push(item)`) to keep memory complexity to O(1) for the operation relative to the appended items.
