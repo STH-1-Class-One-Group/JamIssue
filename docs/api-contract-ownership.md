@@ -33,13 +33,13 @@ Backend API 구현, Cloudflare Worker handler, DB schema/migration, provider-sid
 | 위치 | 책임 |
 | --- | --- |
 | [../src/api/core.ts](../src/api/core.ts) | `fetchJson`, API base URL, cache, `ApiError`, 인증 만료 이벤트 |
-| [../src/api/bootstrapClient.ts](../src/api/bootstrapClient.ts) | bootstrap, map bootstrap, curated courses 호출 + 초기 화면에 필요한 event 계열(festivals, public event banner) 호출 |
+| [../src/api/bootstrapClient.ts](../src/api/bootstrapClient.ts) | bootstrap, map bootstrap, curated courses, event 계열 호출 |
 | [../src/api/authClient.ts](../src/api/authClient.ts) | provider login URL 생성, logout, profile update 호출 |
 | [../src/api/reviewsClient.ts](../src/api/reviewsClient.ts) | review, feed, comment, like, upload 호출 |
 | [../src/api/myClient.ts](../src/api/myClient.ts) | my page summary, notification, my comments 호출 |
 | [../src/api/routesClient.ts](../src/api/routesClient.ts) | community route 생성/조회/like 호출 |
 | [../src/api/stampClient.ts](../src/api/stampClient.ts) | stamp claim 호출 |
-| [../src/api/adminClient.ts](../src/api/adminClient.ts) | Web Front에서 남아 있는 admin import/public-data, places/{placeId} 호출부 |
+| [../src/api/adminClient.ts](../src/api/adminClient.ts) | Web Front에 남아 있는 admin import/public-data, places 호출부 |
 | [../src/types.ts](../src/types.ts) | Web Front consumer DTO barrel |
 | [../src/types](../src/types) | auth, core, review, my-page, admin DTO |
 
@@ -84,7 +84,7 @@ npm.cmd run build
 
 Provider-side API contract 검증, DB migration 검증, Worker route integration test는 `ClarusIubar/JamIssue_admin`에서 수행합니다.
 
-## 현재 남은 문서 리스크
+## Legacy/Reference 문서 기준
 
 이 레포의 일부 `docs` 문서는 Web Front와 backend가 같은 레포에 있던 시기의 경로를 포함합니다. 예를 들어 `backend/app`, Worker, DB migration 경로가 남아 있을 수 있습니다.
 

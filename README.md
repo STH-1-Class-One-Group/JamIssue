@@ -1,10 +1,10 @@
 # JamIssue Web Front
 
-`STH-1-Class-One-Group/JamIssue`는 MSA 전환을 위해 분리된 JamIssue Web Front 서비스 레포입니다.
+`STH-1-Class-One-Group/JamIssue`는 MSA 전환을 위해 분리한 JamIssue Web Front service 레포입니다.
 
 이 레포는 사용자가 접속하는 React 기반 Web Front와 Cloudflare Pages 배포를 담당합니다. Backend API 구현, Cloudflare Worker, DB schema/migration, 관리자 서비스, provider-side API contract의 정본은 별도 서비스 레포인 `ClarusIubar/JamIssue_admin`에서 관리합니다.
 
-** 아키텍처 변경 이전 코드는 <1.3버전의 release 혹은 https://github.com/ClarusIubar/JamIssue_fork 를 참조하세요.
+아키텍처 변경 이전 코드와 release 맥락은 `ClarusIubar/JamIssue_fork`와 이전 release 기록을 참고합니다. 현재 이 레포의 소유권 판단 기준은 과거 same-repo 구조가 아니라 Web Front service 경계입니다.
 
 ## MSA 서비스 분리 기준
 
@@ -14,7 +14,7 @@
 | Backend/API service | Cloudflare Worker/API 구현, OAuth/session, provider-side API contract, runtime secret |
 | Admin/Data service | 관리자 기능, DB schema/migration, 데이터 운영, service-role 작업 |
 
-`SPA`는 이 레포의 프론트 구현 형태입니다. 레포의 소유권과 아키텍처 기준은 `Web Front service`입니다.
+`SPA`는 이 레포의 프론트 구현 방식입니다. 레포의 소유권과 아키텍처 기준은 `Web Front service`입니다.
 
 ## 이 레포가 소유하는 것
 
@@ -57,9 +57,9 @@ Provider-side API contract, Worker handler, DB row/schema, migration, OAuth runt
 PUBLIC_APP_BASE_URL=https://api.daejeon.jamissue.com
 ```
 
-`PUBLIC_APP_BASE_URL`은 이름에 `APP`이 들어가지만, 현재 Web Front에서는 API base URL로 사용합니다.
+`PUBLIC_APP_BASE_URL`은 이름에 `APP`가 들어가지만 현재 Web Front에서는 API base URL로 사용합니다.
 
-선택 public env:
+주요 public env:
 
 ```env
 PUBLIC_NAVER_MAP_CLIENT_ID=
@@ -67,7 +67,7 @@ PUBLIC_SUPABASE_URL=
 PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-이 레포에는 public client env만 둡니다. service-role key, OAuth secret, Worker runtime secret, DB migration credential은 저장하지 않습니다.
+이 레포에는 public client env만 둡니다. service-role key, OAuth secret, Worker runtime secret, DB migration credential은 두지 않습니다.
 
 ## Cloudflare
 
