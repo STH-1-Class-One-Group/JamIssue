@@ -52,8 +52,17 @@ export function useAppPagePaginationActions({
         for (const review of current) {
           existingIds.add(review.id);
         }
-        const nextItems = toReviewSummaryList(page.items).filter((review) => !existingIds.has(review.id));
-        return [...current, ...nextItems];
+
+        // Optimize memory allocations: Use a for...of loop to append new items
+        // directly instead of using .filter() with the spread operator.
+        // This avoids creating an intermediate array and reduces GC pressure.
+        const nextReviews = [...current];
+        for (const review of toReviewSummaryList(page.items)) {
+          if (!existingIds.has(review.id)) {
+            nextReviews.push(review);
+          }
+        }
+        return nextReviews;
       });
       setFeedNextCursor(page.nextCursor);
       setFeedHasMore(Boolean(page.nextCursor));
@@ -97,10 +106,20 @@ export function useAppPagePaginationActions({
         for (const comment of base) {
           existingIds.add(comment.id);
         }
-        const nextItems = page.items.filter((comment) => !existingIds.has(comment.id));
+
+        // Optimize memory allocations: Use a for...of loop to append new items
+        // directly instead of using .filter() with the spread operator.
+        // This avoids creating an intermediate array and reduces GC pressure.
+        const nextComments = [...base];
+        for (const comment of page.items) {
+          if (!existingIds.has(comment.id)) {
+            nextComments.push(comment);
+          }
+        }
+
         return {
           ...current,
-          comments: [...base, ...nextItems],
+          comments: nextComments,
         };
       });
       setMyCommentsNextCursor(page.nextCursor);
