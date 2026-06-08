@@ -68,8 +68,6 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
   function upsertReviewCollections(review: ReviewSummary) {
     const nextReview = toReviewSummary(review);
 
-    // Performance optimization: Avoid intermediate array allocations and GC pressure
-    // by using a single for...of loop instead of [...array.filter()]
     const insertOrMoveToFront = (collection: ReviewSummary[]) => {
       const next = [nextReview];
       for (const item of collection) {
@@ -84,6 +82,7 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
     if (selectedPlaceId === review.placeId) {
       setSelectedPlaceReviews(insertOrMoveToFront);
     }
+
     const cachedPlaceReviews = placeReviewsCacheRef.current[review.placeId] ?? [];
     placeReviewsCacheRef.current[review.placeId] = insertOrMoveToFront(cachedPlaceReviews);
   }

@@ -147,10 +147,23 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
     },
     async markAllRead() {
       await markAllNotificationsReadRequest();
-      set((state) => ({
-        notifications: state.notifications.map((notification) => ({ ...notification, isRead: true })),
-        unreadCount: 0,
-      }));
+      set((state) => {
+        let hasChanges = false;
+        let nextNotifications = state.notifications;
+        for (let i = 0; i < state.notifications.length; i++) {
+          if (!state.notifications[i].isRead) {
+            if (!hasChanges) {
+              nextNotifications = [...state.notifications];
+              hasChanges = true;
+            }
+            nextNotifications[i] = { ...nextNotifications[i], isRead: true };
+          }
+        }
+        return {
+          notifications: nextNotifications,
+          unreadCount: 0,
+        };
+      });
     },
     async deleteNotification(notificationId) {
       await deleteNotificationRequest(notificationId);

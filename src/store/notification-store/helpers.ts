@@ -34,8 +34,15 @@ export function applyCreatedNotification(
   state: NotificationStoreState,
   { notification, unreadCount }: NotificationCreatedPayload,
 ): Partial<NotificationStoreState> {
+  const nextNotifications = [notification];
+  for (const item of state.notifications) {
+    if (item.id !== notification.id) {
+      nextNotifications.push(item);
+    }
+  }
+
   return {
-    notifications: [notification, ...state.notifications.filter((item) => item.id !== notification.id)],
+    notifications: nextNotifications,
     unreadCount,
     connected: true,
     status: 'ready',
@@ -67,8 +74,20 @@ export function applyAllReadNotifications(
   state: NotificationStoreState,
   { unreadCount }: NotificationAllReadPayload,
 ): Partial<NotificationStoreState> {
+  let hasChanges = false;
+  let nextNotifications = state.notifications;
+  for (let i = 0; i < state.notifications.length; i++) {
+    if (!state.notifications[i].isRead) {
+      if (!hasChanges) {
+        nextNotifications = [...state.notifications];
+        hasChanges = true;
+      }
+      nextNotifications[i] = { ...nextNotifications[i], isRead: true };
+    }
+  }
+
   return {
-    notifications: state.notifications.map((notification) => ({ ...notification, isRead: true })),
+    notifications: nextNotifications,
     unreadCount,
     connected: true,
   };
