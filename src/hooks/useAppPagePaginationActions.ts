@@ -53,9 +53,6 @@ export function useAppPagePaginationActions({
           existingIds.add(review.id);
         }
 
-        // Optimize memory allocations: Use a for...of loop to append new items
-        // directly instead of using .filter() with the spread operator.
-        // This avoids creating an intermediate array and reduces GC pressure.
         const nextReviews = [...current];
         for (const review of toReviewSummaryList(page.items)) {
           if (!existingIds.has(review.id)) {
@@ -107,9 +104,6 @@ export function useAppPagePaginationActions({
           existingIds.add(comment.id);
         }
 
-        // Optimize memory allocations: Use a for...of loop to append new items
-        // directly instead of using .filter() with the spread operator.
-        // This avoids creating an intermediate array and reduces GC pressure.
         const nextComments = [...base];
         for (const comment of page.items) {
           if (!existingIds.has(comment.id)) {
