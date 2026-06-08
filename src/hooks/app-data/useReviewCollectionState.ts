@@ -67,36 +67,24 @@ export function useReviewCollectionState(selectedPlaceId: string | null) {
 
   function upsertReviewCollections(review: ReviewSummary) {
     const nextReview = toReviewSummary(review);
-    setReviews((current) => {
+
+    const insertOrMoveToFront = (collection: ReviewSummary[]) => {
       const next = [nextReview];
-      for (const currentReview of current) {
-        if (currentReview.id !== review.id) {
-          next.push(currentReview);
+      for (const item of collection) {
+        if (item.id !== nextReview.id) {
+          next.push(item);
         }
       }
       return next;
-    });
+    };
 
+    setReviews(insertOrMoveToFront);
     if (selectedPlaceId === review.placeId) {
-      setSelectedPlaceReviews((current) => {
-        const next = [nextReview];
-        for (const currentReview of current) {
-          if (currentReview.id !== review.id) {
-            next.push(currentReview);
-          }
-        }
-        return next;
-      });
+      setSelectedPlaceReviews(insertOrMoveToFront);
     }
 
     const cachedPlaceReviews = placeReviewsCacheRef.current[review.placeId] ?? [];
-    const nextCache = [nextReview];
-    for (const currentReview of cachedPlaceReviews) {
-      if (currentReview.id !== review.id) {
-        nextCache.push(currentReview);
-      }
-    }
-    placeReviewsCacheRef.current[review.placeId] = nextCache;
+    placeReviewsCacheRef.current[review.placeId] = insertOrMoveToFront(cachedPlaceReviews);
   }
 
   function resetReviewCaches() {
