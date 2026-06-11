@@ -83,12 +83,23 @@ export function createPublishRouteHandler({
           }
         }
 
+        // Optimization: Use findIndex instead of unconditional .map()
+        // to prevent O(N) memory allocation and maintain referential
+        // equality when the target session is not found, reducing React re-renders.
+        let nextTravelSessions = current.travelSessions;
+        const sessionIndex = current.travelSessions.findIndex((session) => session.id === payload.travelSessionId);
+        if (sessionIndex !== -1) {
+          nextTravelSessions = [...current.travelSessions];
+          nextTravelSessions[sessionIndex] = {
+            ...current.travelSessions[sessionIndex],
+            publishedRouteId: createdRoute.id,
+          };
+        }
+
         return {
           ...current,
           routes: nextRoutes,
-          travelSessions: current.travelSessions.map((session) =>
-            session.id === payload.travelSessionId ? { ...session, publishedRouteId: createdRoute.id } : session,
-          ),
+          travelSessions: nextTravelSessions,
           stats: {
             ...current.stats,
             routeCount: routeExists ? current.stats.routeCount : current.stats.routeCount + 1,
