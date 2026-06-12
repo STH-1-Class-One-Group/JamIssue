@@ -1,72 +1,67 @@
 # JamIssue 앱 전환 UI/UX 개편 기준선
 
-기준일: 2026-06-12  
-Scope-ID: `TSK-012-01`  
-Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/380  
-Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/381
+기준일: 2026-06-12
+Scope-ID: `TSK-012`
+Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/380
 
 ## 목적
 
-`JAM_ISSUE_UIUX_개편안.docx`를 기준으로 앱 전환 UI/UX 개편 전에 현재 구현 상태와 후속 작업 기준을 고정한다.
-
-이 문서는 구현 문서가 아니라 기준선 문서다. 실제 앱 셸, 바텀시트, 5탭 IA, 디자인 토큰 변경은 #382~#386에서 수행한다.
+`JAM_ISSUE_UIUX_개편안.docx`를 기준으로 현재 Web Front를 앱 셸 구조에 맞춰 정리한다. 이 문서는 구현 세부가 아니라 기준선과 추적 기준을 고정한다.
 
 ## 문서 우선 결정
 
-개편안의 정보구조를 우선 기준으로 한다.
+앱 전환 UI/UX 개편안의 정보 구조를 우선 기준으로 둔다.
 
-| 항목 | 현재 기준 | 개편안 기준 | 후속 이슈 |
+| 항목 | 기존 상태 | 개편 기준 | 담당 issue |
 | --- | --- | --- | --- |
-| 앱 셸 | `phone-shell` 안에 status, utility, body, bottom nav가 절대 배치됨 | `Status Safe Area -> App Header -> Sub Navigation -> Content -> Bottom Tab Bar` | #382 |
-| 하단 탭 | `map / event / feed / course / my` 타입은 이미 5탭이지만 기존 `screen-spec.md`는 4탭으로 남아 있음 | `지도 / 행사 / 피드 / 코스 / 마이` 5탭을 공식 기준으로 고정 | #384 |
-| 설정 진입 | `phone-shell__utility-slot`에 전역 floating 설정 메뉴 배치 | 마이 탭 안으로 통합하고 헤더는 화면 타이틀 책임으로 단순화 | #384, #385 |
-| 지도 필터 | 지도 내부 `map-filter-strip`로 배치 | 고정 Sub Navigation 영역으로 이동 | #382, #384 |
-| 장소/행사 시트 | `closed / partial / full` | `hidden / peek / half / full` | #383 |
-| 탭바/시트 충돌 | `bottom-nav-offset`과 absolute bottom 값으로 회피 | Peek은 탭바 위 floating, Half/Full은 탭바 숨김 | #383 |
-| 디자인 토큰 | CSS 변수와 config가 일부 존재하나 shell/sheet/tab 기준이 분산됨 | spacing/color/type/layout token을 역할별로 정리 | #386 |
+| 앱 셸 | `phone-shell` 내부에 status, utility, body, bottom nav가 섞여 있음 | `Status Safe Area -> App Header -> Sub Navigation -> Content -> Bottom Tab Bar` | #382 |
+| 하단 탭 | 타입은 5탭을 지원했지만 일부 문서가 4탭 기준으로 남아 있었음 | `지도 / 행사 / 피드 / 코스 / 마이` 5탭 | #384 |
+| 설정 진입 | 전역 floating utility slot 중심 | 앱 셸 slot과 마이 탭 설정 진입을 충돌 없이 유지 | #382, #385 |
+| 지도 필터 | 지도 내부 `map-filter-strip` | Sub Navigation 성격으로 유지 | #382, #384 |
+| 장소/행사 시트 | `closed / partial / full` 중심 | `hidden / peek / half / full` 앱 시트 상태 계약 | #383 |
+| 탭 콘텐츠 | 일부 탭 surface 검증이 약함 | 각 탭 content surface를 E2E로 고정 | #385 |
+| 디자인 토큰 | CSS 변수와 config가 일부 존재하지만 반복 layout literal이 남아 있었음 | bottom nav, sheet gap, 기본 sheet height token/gate | #386 |
 
-## 현재 구현 기준선
+## 현재 구현 기준
 
-| 영역 | 현재 구현 근거 | 기준선 판단 |
+| 영역 | 구현 근거 | 판단 |
 | --- | --- | --- |
-| Tab type | `src/types/core.ts`의 `Tab = 'map' | 'event' | 'feed' | 'course' | 'my'` | 타입은 5탭을 지원하지만 문서 기준이 뒤처져 있음 |
-| BottomNav | `src/components/BottomNav.tsx`가 5개 탭 버튼을 렌더링 | 개편안의 5탭 방향과 일치 |
-| App shell | `src/App.tsx`가 `map-app-shell`, `phone-shell`, `phone-shell__utility-slot`, `phone-shell__body`를 조립 | 앱 셸 책임이 header/subnav/content/tabbar로 명확히 분리되어 있지 않음 |
-| Settings | `GlobalSettingsMenu`가 전역 utility slot에 있음 | 개편안의 마이 탭 통합 기준과 충돌 |
-| Map header | `MapStageBrandHeader`가 지도 탭 내부 header 역할 수행 | 전체 앱 header가 아니라 지도 화면 전용 header |
-| Category filter | `MapStageCategoryStrip`와 `.map-filter-strip` | 개편안은 Sub Navigation 고정 영역으로 이동 요구 |
-| Map surface | `.map-surface-frame`의 absolute inset과 하단 계산값 사용 | 폭/높이 기준이 앱 셸 단위로 통일되어 있지 않음 |
-| Drawer state | `DrawerState = 'closed' | 'partial' | 'full'` | 개편안의 `hidden / peek / half / full`로 재정의 필요 |
-| Place/Festival drawer | `PlaceDetailSheet`, `FestivalDetailSheet`가 `place-drawer` class 공유 | 장소와 행사 시트 모두 새 state machine 영향을 받음 |
-| E2E | `test/e2e/app-shell.spec.ts`, `test/e2e/critical-ui-flow.spec.ts` 존재 | 일부 테스트 문자열이 mojibake 상태라 QA 근거로 쓰기 전 복구 필요 |
+| Tab type | `src/types/core.ts`의 `Tab = 'map' | 'event' | 'feed' | 'course' | 'my'` | 5탭을 지원 |
+| BottomNav | `src/components/BottomNav.tsx` | 5탭 버튼 렌더링 |
+| App shell | `src/components/app-shell/AppShell.tsx` | slot 기반 앱 셸 구조 |
+| Map sheet | `src/components/map-stage/mapSheetState.ts` | 앱 sheet state와 legacy drawer state adapter |
+| Tab surfaces | `data-page-surface` E2E contract | 행사/피드/코스/마이 content slot 검증 |
+| Layout token | `src/index.css`, `src/styles/refinements.css` | 반복 bottom/sheet spacing token화 |
+| QA gate | `test/e2e/app-shell.spec.ts`, `test/e2e/critical-ui-flow.spec.ts`, `test/unit/layout-token-source-quality.test.ts` | 핵심 UX regression 고정 |
 
-## 개편안 요구사항 매핑
+## TSK-012 구현 추적
 
-| 요구사항 | 구현 축 | 완료 판단 |
-| --- | --- | --- |
-| safe area 포함 5단 앱 셸 | #382 | 모바일 viewport에서 header/subnav/content/tabbar 폭과 padding이 일관됨 |
-| 지도 바텀시트 상태 전환 | #383 | Peek/Half/Full 전환과 탭바 표시 규칙이 E2E로 고정됨 |
-| 행사 독립 탭과 설정 위치 정리 | #384 | 5탭 IA와 마이 탭 설정 진입이 테스트로 고정됨 |
-| 행사/피드/코스/마이 콘텐츠 polish | #385 | 각 탭이 앱 셸 안에서 지도 배경 없이 독립 페이지처럼 동작함 |
-| 디자인 토큰 정리 | #386 | 새 numeric literal이 config/token 또는 allowlist로 분류됨 |
-| QA/문서 추적성 | #387 | Wiki, `screen-spec.md`, `ui-ux-qa-matrix.md`가 같은 IA를 가리킴 |
+| Child issue | Branch | PR | Merge SHA | 결과 |
+| --- | --- | --- | --- | --- |
+| #381 | `uiux-redesign-audit` | #396 | `c7f4c71` | 기준선과 UIUX matrix 추가 |
+| #382 | `app-shell-safe-area-layout` | #397 | `8d85a67` | 앱 셸 safe-area layout |
+| #383 | `map-bottom-sheet-state-machine` | #398 | `ed5b817` | 시트 상태 계약 |
+| #384 | `five-tab-information-architecture` | #399 | `e3f8481` | 5탭 IA 회귀 방지 |
+| #385 | `tab-content-layout-polish` | #400 | `7ed1af2` | 탭 content surface E2E |
+| #386 | `design-token-layout-system` | #401 | `90f6cec` | design token/layout constant gate |
+| #387 | `uiux-redesign-traceability-docs` | #402 | TBD | 문서와 Wiki traceability |
 
 ## 후속 PR 체크리스트
 
 UI/UX 개편 PR은 PR 본문에 아래 항목을 기록한다.
 
 - 영향받는 `UIUX-###` ID
-- 변경한 앱 셸/탭/시트/토큰 영역
+- 변경한 앱 셸/탭/시트/token 영역
 - 사용자-facing copy 변경 여부와 사유
-- API/DB/OAuth 무변경 확인
+- API/DB/OAuth 변경 없음 확인
 - 실행한 검증 명령
 - Playwright 또는 수동 QA 근거
 - 관련 child issue와 parent #380 링크
 
-## #381 완료 기준
+## 완료 기준
 
-- 이 기준선 문서가 repo에 추가됨
-- `ui-ux-qa-matrix.md`가 UTF-8 한국어 문서로 복구됨
-- `screen-spec.md`가 문서 우선 5탭 기준과 충돌하지 않게 갱신됨
-- `testing-coverage.md`가 읽을 수 있는 한국어 문서로 복구됨
-- PR과 CI 근거가 #381에 기록됨
+- [x] 앱 전환 기준선 문서가 repo에 추가됨
+- [x] `screen-spec.md`가 5탭 기준과 충돌하지 않게 갱신됨
+- [x] `ui-ux-qa-matrix.md`가 `UIUX-###` ID 기준으로 정리됨
+- [x] 앱 셸, 시트, 5탭, tab surface, token gate가 PR/merge SHA로 추적됨
+- [ ] Wiki와 release candidate 문서가 #387에서 최종 갱신됨
