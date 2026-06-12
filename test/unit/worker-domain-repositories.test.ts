@@ -58,6 +58,22 @@ import {
   readUnreadNotificationRows,
   readUserNotificationRows,
 } from '../../deploy/api-worker-shell/services/notification-domain/repository';
+import {
+  deleteStaleFestivalRows,
+  ensureImportedFestivalSource,
+  loadExistingFestivalRows,
+  loadFestivalRows,
+  loadFestivalSourceMetadata,
+  updateFestivalSourceMetadata,
+  upsertFestivalRows,
+} from '../../deploy/api-worker-shell/services/festival-domain/repository';
+import {
+  loadAdminSummaryRows,
+  loadPlaceReviewRows,
+  loadPublicDataSource,
+  supabaseCount,
+  updateAdminPlaceVisibility,
+} from '../../deploy/api-worker-shell/services/admin-domain/repository';
 
 const supabaseMock = vi.hoisted(() => ({
   supabaseRequest: vi.fn(),
@@ -69,6 +85,7 @@ vi.mock('../../deploy/api-worker-shell/lib/supabase', () => ({
     return filtered.length > 0 ? `in.(${filtered.map((value) => String(value)).join(',')})` : null;
   },
   encodeFilterValue: (value: unknown) => encodeURIComponent(String(value)),
+  getSupabaseKey: (env: WorkerEnv) => env.APP_SUPABASE_SERVICE_ROLE_KEY ?? env.APP_SUPABASE_ANON_KEY ?? '',
   supabaseRequest: supabaseMock.supabaseRequest,
 }));
 
@@ -346,5 +363,90 @@ describe('worker community, my-page, and notification repositories', () => {
       review_id: null,
       route_id: null,
     });
+  });
+});
+
+describe('worker festival and admin repositories', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('keeps festival repository source creation, upsert, stale delete, and metadata update behind Supabase helpers', async () => {
+    supabaseMock.supabaseRequest
+      .mockResolvedValueOnce([{ source_id: 7, source_key: 'jamissue-public-event-feed' }])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ source_id: 8, source_key: 'jamissue-public-event-feed' }])
+      .mockResolvedValueOnce([{ public_event_id: 11, external_id: 'event-1' }])
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce([{ public_event_id: 12 }])
+      .mockResolvedValueOnce([{ source_id: 7, name: 'Official', last_imported_at: '2026-05-14T00:00:00Z' }]);
+
+    await expect(ensureImportedFestivalSource(env, 'https://source.test', 'Official')).resolves.toEqual({
+      source_id: 7,
+      source_key: 'jamissue-public-event-feed',
+    });
+    await expect(ensureImportedFestivalSource(env, 'https://source.test', 'Official')).resolves.toEqual({
+      source_id: 8,
+      source_key: 'jamissue-public-event-feed',
+    });
+    await expect(loadExistingFestivalRows(env, 7)).resolves.toEqual([{ public_event_id: 11, external_id: 'event-1' }]);
+    await upsertFestivalRows(env, [{ source_id: 7, external_id: 'event-1', title: 'Event' }]);
+    await upsertFestivalRows(env, []);
+    await deleteStaleFestivalRows(env, [11, 12]);
+    await deleteStaleFestivalRows(env, []);
+    await updateFestivalSourceMetadata(env, 7, 'Official', 'https://source.test', '2026-05-14T00:00:00Z', '2026-05-14T01:00:00Z');
+    await expect(loadFestivalRows(env, 7, '2026-05-14T00:00:00Z', '2026-06-14T00:00:00Z', 20)).resolves.toEqual([{ public_event_id: 12 }]);
+    await expect(loadFestivalSourceMetadata(env)).resolves.toEqual([
+      { source_id: 7, name: 'Official', last_imported_at: '2026-05-14T00:00:00Z' },
+    ]);
+
+    expect(supabaseMock.supabaseRequest.mock.calls.map(([, query, options]) => ({ query: String(query), method: options?.method }))).toEqual(
+      expect.arrayContaining([
+        { query: expect.stringContaining('public_data_source?select=source_id,source_key'), method: undefined },
+        { query: 'public_data_source', method: 'POST' },
+        { query: expect.stringContaining('public_event?select=public_event_id,external_id'), method: undefined },
+        { query: 'public_event?on_conflict=source_id,external_id', method: 'POST' },
+        { query: 'public_event?public_event_id=in.(11,12)', method: 'DELETE' },
+        { query: expect.stringContaining('public_data_source?source_id=eq.7'), method: 'PATCH' },
+        { query: expect.stringContaining('public_event?select=public_event_id,title'), method: undefined },
+        { query: expect.stringContaining('public_data_source?select=source_id,name,last_imported_at'), method: undefined },
+      ]),
+    );
+  });
+
+  it('normalizes admin repository counts, rows, visibility updates, and source lookups', async () => {
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue(new Response(null, { status: 200, headers: { 'content-range': '0-0/0' } }));
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 200, headers: { 'content-range': '0-0/3' } }))
+      .mockResolvedValueOnce(new Response('denied', { status: 403 }))
+      .mockResolvedValueOnce(new Response(null, { status: 200, headers: { 'content-range': '0-0/not-a-number' } }));
+    supabaseMock.supabaseRequest
+      .mockResolvedValueOnce([{ position_id: 101 }])
+      .mockResolvedValueOnce([{ position_id: 101 }])
+      .mockResolvedValueOnce([{ slug: 'place-1' }])
+      .mockResolvedValueOnce([{ feed_id: 7 }])
+      .mockResolvedValueOnce([{ name: 'Official', last_imported_at: '2026-05-14T00:00:00Z' }])
+      .mockResolvedValueOnce([]);
+
+    await expect(supabaseCount({ ...env, APP_SUPABASE_URL: 'https://supabase.test', APP_SUPABASE_SERVICE_ROLE_KEY: 'key' }, 'feed')).resolves.toBe(3);
+    await expect(supabaseCount({ ...env, APP_SUPABASE_URL: '', APP_SUPABASE_SERVICE_ROLE_KEY: 'key' }, 'feed')).rejects.toThrow('APP_SUPABASE_URL is empty.');
+    await expect(supabaseCount({ ...env, APP_SUPABASE_URL: 'https://supabase.test' }, 'feed')).rejects.toThrow('Supabase API key is missing.');
+    await expect(supabaseCount({ ...env, APP_SUPABASE_URL: 'https://supabase.test', APP_SUPABASE_SERVICE_ROLE_KEY: 'key' }, 'feed')).rejects.toThrow('Supabase count failed (403): denied');
+    await expect(supabaseCount({ ...env, APP_SUPABASE_URL: 'https://supabase.test', APP_SUPABASE_SERVICE_ROLE_KEY: 'key' }, 'feed')).resolves.toBe(0);
+
+    const adminEnv = { ...env, APP_SUPABASE_URL: 'https://supabase.test', APP_SUPABASE_SERVICE_ROLE_KEY: 'key' };
+    const summary = await loadAdminSummaryRows(adminEnv);
+    expect(summary).toMatchObject({
+      placeRows: [{ position_id: 101 }],
+      feedRows: [{ position_id: 101 }],
+    });
+    await expect(updateAdminPlaceVisibility(adminEnv, 'place-1', { is_active: false })).resolves.toEqual({ slug: 'place-1' });
+    await expect(loadPlaceReviewRows(adminEnv, 101)).resolves.toEqual([{ feed_id: 7 }]);
+    await expect(loadPublicDataSource(adminEnv, 'source-key')).resolves.toEqual({ name: 'Official', last_imported_at: '2026-05-14T00:00:00Z' });
+    await expect(loadPublicDataSource(adminEnv, 'missing')).resolves.toBeNull();
   });
 });

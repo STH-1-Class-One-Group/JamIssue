@@ -284,6 +284,51 @@ describe('fetchJson', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(4);
     expect(new Headers(calls.at(-1)?.init?.headers).has('Content-Type')).toBe(false);
   });
+
+  it('does not cache JSON mutations and preserves caller-provided content type headers', async () => {
+    let mutationCount = 0;
+    const { calls, fetchSpy } = stubFetch(() => jsonResponse({ value: ++mutationCount }));
+
+    await expect(fetchJson<{ value: number }>('/api/mutate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/merge-patch+json' },
+      body: JSON.stringify({ ok: true }),
+    })).resolves.toEqual({ value: 1 });
+    await expect(fetchJson<{ value: number }>('/api/mutate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/merge-patch+json' },
+      body: JSON.stringify({ ok: true }),
+    })).resolves.toEqual({ value: 2 });
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(new Headers(calls[0].init?.headers).get('Content-Type')).toBe('application/merge-patch+json');
+    expect(new Headers(calls[1].init?.headers).get('Content-Type')).toBe('application/merge-patch+json');
+  });
+
+  it('uses JSON cloning for cached payloads when structuredClone is unavailable', async () => {
+    const originalStructuredClone = globalThis.structuredClone;
+    vi.stubGlobal('structuredClone', undefined);
+    const { fetchSpy } = stubFetch(() => jsonResponse({ nested: { count: 1 } }));
+
+    try {
+      const first = await fetchJson<{ nested: { count: number } }>('/api/json-clone-fallback');
+      first.nested.count = 99;
+      const second = await fetchJson<{ nested: { count: number } }>('/api/json-clone-fallback');
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(second).toEqual({ nested: { count: 1 } });
+    } finally {
+      vi.stubGlobal('structuredClone', originalStructuredClone);
+    }
+  });
+
+  it('keeps the default API error message when an error payload has no detail field', async () => {
+    stubFetch(() => jsonResponse({ error: 'no detail' }, { status: 422, statusText: 'Unprocessable Content' }));
+
+    await expect(fetchJson('/api/no-detail-error')).rejects.toMatchObject<ApiError>({
+      status: 422,
+    });
+  });
 });
 
 describe('bootstrap clients', () => {

@@ -141,6 +141,77 @@ describe('worker base data repository', () => {
       ]),
     );
   });
+
+  it('keeps anonymous base data reads narrow when there are no reviews or session rows', async () => {
+    const supabaseRequest = installSupabaseMock([
+      [placeRow],
+      [courseRow],
+      [coursePlaceRow],
+      [],
+      [{ position_id: 101 }],
+    ]);
+    const { loadBaseDataRows } = await import('../../deploy/api-worker-shell/runtime/base-data-repository');
+
+    const rows = await loadBaseDataRows(env);
+
+    expect(rows.feedRows).toEqual([]);
+    expect(rows.commentRows).toEqual([]);
+    expect(rows.likeRows).toEqual([]);
+    expect(rows.reviewStampRows).toEqual([]);
+    expect(rows.userFeedLikeRows).toEqual([]);
+    expect(rows.userSessionRows).toEqual([]);
+    expect(rows.ownerRouteRows).toEqual([]);
+    expect(rows.userStampRows).toEqual([]);
+    expect(rows.allPlaceStampRows).toEqual([{ position_id: 101 }]);
+    expect(rows.reviewRouteRows).toEqual([]);
+    expect(rows.userRows).toEqual([]);
+    expect(supabaseRequest.mock.calls.map(([, query]) => String(query))).toEqual([
+      expect.stringContaining('map?select=position_id'),
+      expect.stringContaining('course?select=course_id'),
+      expect.stringContaining('course_place?select=course_id'),
+      expect.stringContaining('feed?select=feed_id'),
+      'user_stamp?select=position_id',
+    ]);
+  });
+
+  it('loads session rows without feed-scoped lookups when the public feed is empty', async () => {
+    const supabaseRequest = installSupabaseMock([
+      [placeRow],
+      [courseRow],
+      [coursePlaceRow],
+      [],
+      [{ travel_session_id: 55, user_id: 'user-1', started_at: '2026-05-14T00:00:00Z', ended_at: null, last_stamp_at: null, stamp_count: 0, created_at: '2026-05-14T00:00:00Z' }],
+      [{ route_id: 99, travel_session_id: 55 }],
+      [{ stamp_id: 12, user_id: 'user-1', position_id: 101, travel_session_id: 55, stamp_date: '2026-05-14', visit_ordinal: 1, created_at: '2026-05-14T00:00:00Z' }],
+      [{ position_id: 101 }],
+      [{ user_id: 'user-1', nickname: 'Author' }],
+    ]);
+    const { loadBaseDataRows } = await import('../../deploy/api-worker-shell/runtime/base-data-repository');
+
+    const rows = await loadBaseDataRows(env, 'user-1');
+
+    expect(rows.feedRows).toEqual([]);
+    expect(rows.commentRows).toEqual([]);
+    expect(rows.likeRows).toEqual([]);
+    expect(rows.reviewStampRows).toEqual([]);
+    expect(rows.userFeedLikeRows).toEqual([]);
+    expect(rows.userSessionRows).toHaveLength(1);
+    expect(rows.ownerRouteRows).toHaveLength(1);
+    expect(rows.userStampRows).toHaveLength(1);
+    expect(rows.reviewRouteRows).toEqual([]);
+    expect(rows.userRows).toEqual([{ user_id: 'user-1', nickname: 'Author' }]);
+    expect(supabaseRequest.mock.calls.map(([, query]) => String(query))).toEqual([
+      expect.stringContaining('map?select=position_id'),
+      expect.stringContaining('course?select=course_id'),
+      expect.stringContaining('course_place?select=course_id'),
+      expect.stringContaining('feed?select=feed_id'),
+      expect.stringContaining('travel_session?select=travel_session_id'),
+      expect.stringContaining('user_route?select=route_id,travel_session_id&user_id=eq.user-1'),
+      expect.stringContaining('user_stamp?select=stamp_id,user_id'),
+      'user_stamp?select=position_id',
+      expect.stringContaining('user?select=user_id,nickname'),
+    ]);
+  });
 });
 
 describe('worker base data assembler', () => {

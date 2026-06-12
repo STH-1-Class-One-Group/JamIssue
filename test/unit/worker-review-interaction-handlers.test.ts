@@ -247,6 +247,37 @@ describe('worker review comment handlers', () => {
     }));
   });
 
+  it('creates root comments without duplicate self notifications and falls back to an empty reload result', async () => {
+    reviewDomainMocks.readFeedRow.mockResolvedValueOnce({ feed_id: 1, user_id: 'user-1' });
+    const deps = createDeps({ loadSingleReview: vi.fn(async () => null) });
+
+    const response = await handleCreateComment(jsonRequest({ body: ' root comment ' }), env, '1', deps);
+    const payload = await readJson(response);
+
+    expect(response.status).toBe(200);
+    expect(payload).toEqual([]);
+    expect(reviewDomainMocks.createCommentRow).toHaveBeenCalledWith(env, expect.objectContaining({
+      parent_id: null,
+      body: 'root comment',
+    }));
+    expect(reviewDomainMocks.publishReviewNotification).not.toHaveBeenCalled();
+  });
+
+  it('does not notify the review owner twice when replying to the review owner comment', async () => {
+    reviewDomainMocks.readFeedRow.mockResolvedValueOnce({ feed_id: 1, user_id: 'review-owner' });
+    reviewDomainMocks.readCommentRow.mockResolvedValueOnce({ comment_id: 2, feed_id: 1, user_id: 'review-owner', parent_id: null, is_deleted: false });
+    const deps = createDeps();
+
+    const response = await handleCreateComment(jsonRequest({ body: ' reply ', parentId: '2' }), env, '1', deps);
+
+    expect(response.status).toBe(200);
+    expect(reviewDomainMocks.publishReviewNotification).toHaveBeenCalledTimes(1);
+    expect(reviewDomainMocks.publishReviewNotification).toHaveBeenCalledWith(env, deps, expect.objectContaining({
+      userId: 'review-owner',
+      type: 'comment-reply',
+    }));
+  });
+
   it('validates comment creation target, body, and parent ownership', async () => {
     const deps = createDeps();
     const unauthorized = await handleCreateComment(jsonRequest({ body: 'comment' }), env, '1', createDeps({ readSessionUser: vi.fn(async () => null) }));
@@ -282,6 +313,17 @@ describe('worker review comment handlers', () => {
     expect((await handleDeleteComment(new Request('https://api.test/api/reviews/1/comments/comment-1'), env, '1', 'comment-1', deps)).status).toBe(404);
     reviewDomainMocks.readCommentRow.mockResolvedValueOnce({ comment_id: 1, feed_id: 1, user_id: 'other-user', is_deleted: false });
     expect((await handleDeleteComment(new Request('https://api.test/api/reviews/1/comments/comment-1'), env, '1', 'comment-1', deps)).status).toBe(403);
+  });
+
+  it('falls back to empty comment lists when update and delete reloads cannot find the review', async () => {
+    reviewDomainMocks.readCommentRow.mockResolvedValue({ comment_id: 1, feed_id: 1, user_id: 'user-1', is_deleted: false });
+    const deps = createDeps({ loadSingleReview: vi.fn(async () => null) });
+
+    await expect(readJson(await handleUpdateComment(jsonRequest({ body: 'updated' }), env, '1', 'comment-1', deps))).resolves.toEqual([]);
+    await expect(readJson(await handleDeleteComment(new Request('https://api.test/api/reviews/1/comments/comment-1'), env, '1', 'comment-1', deps))).resolves.toEqual([]);
+
+    expect(reviewDomainMocks.updateCommentRow).toHaveBeenCalledWith(env, 'comment-1', expect.objectContaining({ body: 'updated' }));
+    expect(reviewDomainMocks.softDeleteCommentRow).toHaveBeenCalledWith(env, 'comment-1');
   });
 });
 

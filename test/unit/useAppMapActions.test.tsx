@@ -140,6 +140,19 @@ describe('useAppMapActions', () => {
     }, 'replace');
     expect(params.refreshMyPageForUser).toHaveBeenCalledWith(sessionUser);
     expect(runtimeState.setStampActionStatus).toHaveBeenLastCalledWith('ready');
+
+    const updatePlaces = vi.mocked(params.setPlaces).mock.calls[0][0];
+    expect(typeof updatePlaces).toBe('function');
+    const nextPlaces = typeof updatePlaces === 'function'
+      ? updatePlaces([
+        { ...place, totalVisitCount: undefined },
+        { ...place, id: 'other-place', totalVisitCount: 5 },
+      ])
+      : [];
+    expect(nextPlaces).toEqual([
+      expect.objectContaining({ id: 'place-1', totalVisitCount: 1 }),
+      expect.objectContaining({ id: 'other-place', totalVisitCount: 5 }),
+    ]);
   });
 
   it('reports stamp claim failures and still resets action status', async () => {

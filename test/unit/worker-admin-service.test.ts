@@ -107,6 +107,46 @@ describe('worker admin service', () => {
     }));
   });
 
+  it('maps empty admin summary rows and category slug fallbacks without leaking null data', async () => {
+    adminDomainMocks.loadAdminSummaryRows.mockResolvedValueOnce({
+      userCount: 0,
+      placeCount: 1,
+      reviewCount: 0,
+      commentCount: 0,
+      stampCount: 0,
+      placeRows: [
+        {
+          position_id: 102,
+          slug: null,
+          name: 'Place 2',
+          district: 'District',
+          category: 'event',
+          is_active: 0,
+          is_manual_override: 1,
+          updated_at: null,
+        },
+      ],
+      feedRows: null,
+    });
+    const service = createService();
+
+    const response = await service.handleAdminSummary(new Request('https://api.test/api/admin/summary'), env);
+    const payload = await readJson(response);
+
+    expect(response.status).toBe(200);
+    expect(payload).toEqual(expect.objectContaining({
+      places: [
+        expect.objectContaining({
+          id: null,
+          category: 'event:none',
+          isActive: false,
+          isManualOverride: true,
+          reviewCount: 0,
+        }),
+      ],
+    }));
+  });
+
   it('updates place visibility with only supported body fields and returns the mapped row', async () => {
     vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2026-05-14T01:00:00Z');
     const service = createService();
@@ -134,6 +174,22 @@ describe('worker admin service', () => {
     }));
   });
 
+  it('updates place visibility with an invalid or empty JSON body by only touching updated_at', async () => {
+    vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2026-05-14T02:00:00Z');
+    const service = createService();
+    const request = new Request('https://api.test/api/admin/places/place-1', {
+      method: 'PATCH',
+      body: '{not-json',
+    });
+
+    const response = await service.handleAdminPlaceVisibility(request, env, 'place-1');
+
+    expect(response.status).toBe(200);
+    expect(adminDomainMocks.updateAdminPlaceVisibility).toHaveBeenCalledWith(env, 'place-1', {
+      updated_at: '2026-05-14T02:00:00Z',
+    });
+  });
+
   it('returns not found when a place visibility target is missing', async () => {
     adminDomainMocks.updateAdminPlaceVisibility.mockResolvedValueOnce(null);
     const service = createService();
@@ -158,5 +214,18 @@ describe('worker admin service', () => {
       mode: 'scheduled',
       importedAt: '2026-05-14T00:00:00Z',
     }));
+  });
+
+  it('reports null import timestamps and rejects import state reads for anonymous users', async () => {
+    const service = createService();
+
+    authMocks.readSessionUser.mockResolvedValueOnce(null);
+    expect((await service.handleAdminImportPublicData(new Request('https://api.test/api/admin/import-public-data'), env)).status).toBe(403);
+
+    adminDomainMocks.loadPublicDataSource.mockResolvedValueOnce(null);
+    const response = await service.handleAdminImportPublicData(new Request('https://api.test/api/admin/import-public-data'), env);
+
+    expect(response.status).toBe(200);
+    await expect(readJson(response)).resolves.toEqual(expect.objectContaining({ importedAt: null }));
   });
 });
