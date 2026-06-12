@@ -13,12 +13,15 @@ This release note does not claim that the work is merged into `main`.
 | --- | --- |
 | Version | `1.3.2` |
 | Date | 2026-06-12 |
-| Status | Documentation release note for merged feature branch work |
+| Status | GitHub Release |
+| Tag | `release-v1.3.2` |
 | Base branch | `typescript-coverage-95` |
 | Implementation commit | `cb7e858112d3eadb0556065401167270d1532709` |
-| Merge commit | `514a6689f0d217548c3cf6af473af12ba11aae54` |
+| Implementation merge commit | `514a6689f0d217548c3cf6af473af12ba11aae54` |
+| Release target commit | `e6fd3517e5ea1a8f98ba2793037b092d0efc086b` |
 | Pull request | https://github.com/STH-1-Class-One-Group/JamIssue/pull/391 |
 | Tracking issue | https://github.com/STH-1-Class-One-Group/JamIssue/issues/390 |
+| GitHub Release | https://github.com/STH-1-Class-One-Group/JamIssue/releases/tag/release-v1.3.2 |
 
 ## Included Changes
 
