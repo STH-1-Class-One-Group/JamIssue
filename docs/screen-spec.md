@@ -1,4 +1,4 @@
-﻿# JamIssue 화면 설계 기준
+# JamIssue 화면 설계 기준
 
 기준일: 2026-03-18  
 기준 브랜치: `main`
@@ -6,6 +6,12 @@
 이 문서는 PRD 방향과 현재 UI 구조를 맞추기 위한 화면 설계 기준입니다.
 
 UI/UX 버그와 QA 추적은 [UI/UX 기대 동작 QA 매트릭스](ui-ux-qa-matrix.md)의 `UIUX-###` ID를 기준으로 연결합니다.
+
+## 0. 앱 전환 개편 기준
+
+`TSK-012` 이후의 UI/UX 개편은 [JamIssue 앱 전환 UI/UX 개편 기준선](ui-ux-redesign-baseline.md)을 우선 기준으로 합니다.
+
+이 문서의 기존 4탭 서술은 과거 기준선입니다. 앱 전환 개편에서는 `지도 / 행사 / 피드 / 코스 / 마이` 5탭 구조와 `Status Safe Area -> App Header -> Sub Navigation -> Content -> Bottom Tab Bar` 앱 셸 구조를 공식 목표로 둡니다.
 
 ## 1. 전역 규칙
 
@@ -18,9 +24,10 @@ UI/UX 버그와 QA 추적은 [UI/UX 기대 동작 QA 매트릭스](ui-ux-qa-matr
 
 ## 2. 네비게이션 구조
 
-하단 탭은 4개입니다.
+앱 전환 개편 기준의 하단 탭은 5개입니다.
 
 - `지도`
+- `행사`
 - `피드`
 - `코스`
 - `마이`
