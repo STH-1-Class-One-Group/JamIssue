@@ -338,4 +338,64 @@ describe('daejeon event normalizer', () => {
     expect(normalized.every((event) => event.externalId.startsWith('festival-'))).toBe(true);
     expect(normalized.every((event) => event.rawPayload.mergedEventSeqs?.length === 0)).toBe(true);
   });
+
+  it('keeps existing series end and summary when later matching rows do not extend them', () => {
+    const [merged] = normalizeCollectedEvents([
+      eventFixture({
+        externalId: 'series-1',
+        title: 'Stable Series',
+        startsAt: '2026-10-01T00:00:00+09:00',
+        endsAt: '2026-10-10T23:59:59+09:00',
+        summary: 'kept summary',
+        rawPayload: { eventSeq: 'series-1', theme: 'kept theme', venueName: 'Venue', startDate: '2026-10-01', endDate: '2026-10-10' },
+      }),
+      eventFixture({
+        externalId: 'series-2',
+        title: 'Stable Series',
+        startsAt: '2026-10-03T00:00:00+09:00',
+        endsAt: '2026-10-05T23:59:59+09:00',
+        summary: 'ignored summary',
+        rawPayload: { eventSeq: '', theme: 'ignored theme', venueName: '', startDate: '2026-10-03', endDate: '2026-10-05' },
+      }),
+    ]);
+
+    expect(merged).toMatchObject({
+      endsAt: '2026-10-10T23:59:59+09:00',
+      summary: 'kept summary',
+    });
+    expect(merged.rawPayload).toMatchObject({
+      eventSeq: 'series-1',
+      theme: 'kept theme',
+      venueName: 'Venue',
+      mergedEventSeqs: ['series-1'],
+    });
+  });
+
+  it('keeps deduplicated event windows and summaries unchanged when duplicates add no stronger data', () => {
+    const first = eventFixture({
+      externalId: 'duplicate',
+      title: 'Duplicate Series',
+      startsAt: '2026-11-01T00:00:00+09:00',
+      endsAt: '2026-11-05T23:59:59+09:00',
+      summary: 'existing summary',
+      rawPayload: { eventSeq: 'duplicate-1', theme: 'theme', venueName: 'Venue', startDate: '2026-11-01', endDate: '2026-11-05' },
+    });
+    const second = eventFixture({
+      externalId: 'duplicate',
+      title: 'Duplicate Series',
+      startsAt: '2026-11-03T00:00:00+09:00',
+      endsAt: '2026-11-04T23:59:59+09:00',
+      summary: '',
+      rawPayload: { eventSeq: 'duplicate-2', theme: '', venueName: '', startDate: '2026-11-03', endDate: '2026-11-04' },
+    });
+
+    const [deduped] = normalizeCollectedEvents([first, second]);
+
+    expect(deduped).toMatchObject({
+      startsAt: '2026-11-01T00:00:00+09:00',
+      endsAt: '2026-11-05T23:59:59+09:00',
+      summary: 'existing summary',
+    });
+    expect(deduped.rawPayload.mergedEventSeqs).toContain('duplicate-2');
+  });
 });

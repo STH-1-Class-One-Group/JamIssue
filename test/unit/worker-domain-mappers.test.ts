@@ -405,6 +405,48 @@ describe('worker base-data mappers', () => {
 
     expect(mapCourses([{ course_id: 8, title: 'Empty', mood: 'mood', duration: 'short', note: 'note', color: '#000' }], [], new Map()))
       .toEqual([expect.objectContaining({ id: '8', placeIds: [] })]);
+
+    expect(mapPlace({
+      position_id: 203,
+      slug: 'restaurant-place',
+      name: 'Restaurant Place',
+      district: 'District',
+      category: 'restaurant',
+      latitude: 36.36,
+      longitude: 127.39,
+      summary: 'summary',
+      description: 'description',
+      image_url: null,
+      vibe_tags: [],
+      visit_time: '1h',
+      route_hint: 'hint',
+      stamp_reward: 'reward',
+      hero_label: null,
+      jam_color: null,
+      accent_color: null,
+      total_visit_count: null,
+    })).toMatchObject({ category: 'restaurant', heroLabel: 'Bakery Bite' });
+
+    expect(mapPlace({
+      position_id: 204,
+      slug: 'cafe-place',
+      name: 'Cafe Place',
+      district: 'District',
+      category: 'cafe',
+      latitude: 36.36,
+      longitude: 127.39,
+      summary: 'summary',
+      description: 'description',
+      image_url: null,
+      vibe_tags: [],
+      visit_time: '1h',
+      route_hint: 'hint',
+      stamp_reward: 'reward',
+      hero_label: null,
+      jam_color: null,
+      accent_color: null,
+      total_visit_count: null,
+    })).toMatchObject({ category: 'cafe', heroLabel: 'Cafe Mood' });
   });
 
   it('builds stamp logs and travel sessions with unique ordered places and route publication metadata', () => {
@@ -456,8 +498,12 @@ describe('worker base-data mappers', () => {
 
     const sessions = buildTravelSessions(
       [{ travel_session_id: 77, user_id: 'user-1', started_at: '2026-05-14T01:00:00Z', ended_at: '2026-05-14T01:30:00Z', last_stamp_at: '2026-05-14T01:30:00Z', stamp_count: null, created_at: '2026-05-14T01:00:00Z' }],
-      [{ stamp_id: 10, user_id: 'user-1', position_id: 999, travel_session_id: 77, stamp_date: '2026-05-14', visit_ordinal: null, created_at: '2026-05-14T01:00:00Z' }],
+      [
+        { stamp_id: 10, user_id: 'user-1', position_id: 999, travel_session_id: 77, stamp_date: '2026-05-14', visit_ordinal: null, created_at: '2026-05-14T01:00:00Z' },
+        { stamp_id: 11, user_id: 'user-1', position_id: 101, travel_session_id: null, stamp_date: '2026-05-14', visit_ordinal: null, created_at: '2026-05-14T02:00:00Z' },
+      ],
       new Map(),
+      [{ route_id: 100, travel_session_id: null }],
     );
 
     expect(sessions[0]).toMatchObject({

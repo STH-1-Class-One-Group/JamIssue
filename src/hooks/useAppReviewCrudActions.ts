@@ -9,6 +9,11 @@ import { toReviewSummary } from '../lib/reviews';
 import { useAppPageRuntimeStore } from '../store/app-page-runtime-store';
 import { useReviewUIStore } from '../store/review-ui-store';
 import type { ReviewMood } from '../types/core';
+import {
+  applyReviewUpdateToMyPage,
+  removeReviewFromMyPage,
+  removeReviewFromPlaceReviewCache,
+} from './reviewCrudCollectionUpdates';
 import type { UseAppReviewActionsParams } from './useAppReviewActions.types';
 
 export function useAppReviewCrudActions({
@@ -101,20 +106,7 @@ export function useAppReviewCrudActions({
     });
     const summarizedReview = toReviewSummary(updatedReview);
     patchReviewCollections(reviewId, () => summarizedReview);
-    setMyPage((current) => {
-      if (!current) {
-        return current;
-      }
-      return {
-        ...current,
-        reviews: current.reviews.map((review) => (review.id === reviewId ? summarizedReview : review)),
-        comments: current.comments.map((comment) => (
-          comment.reviewId === reviewId
-            ? { ...comment, reviewBody: updatedReview.body }
-            : comment
-        )),
-      };
-    });
+    setMyPage((current) => applyReviewUpdateToMyPage(current, reviewId, summarizedReview, updatedReview.body));
     setNotice('피드를 수정했어요.');
   });
 
@@ -134,23 +126,8 @@ export function useAppReviewCrudActions({
       clearReviewComments(reviewId);
       setReviews((current) => current.filter((review) => review.id !== reviewId));
       setSelectedPlaceReviews((current) => current.filter((review) => review.id !== reviewId));
-      for (const placeId of Object.keys(placeReviewsCacheRef.current)) {
-        placeReviewsCacheRef.current[placeId] = placeReviewsCacheRef.current[placeId].filter((review) => review.id !== reviewId);
-      }
-      setMyPage((current) => {
-        if (!current) {
-          return current;
-        }
-        return {
-          ...current,
-          reviews: current.reviews.filter((review) => review.id !== reviewId),
-          comments: current.comments.filter((comment) => comment.reviewId !== reviewId),
-          stats: {
-            ...current.stats,
-            reviewCount: Math.max(0, current.stats.reviewCount - 1),
-          },
-        };
-      });
+      removeReviewFromPlaceReviewCache(placeReviewsCacheRef.current, reviewId);
+      setMyPage((current) => removeReviewFromMyPage(current, reviewId));
       if (activeCommentReviewId === reviewId) {
         handleCloseReviewComments();
       }

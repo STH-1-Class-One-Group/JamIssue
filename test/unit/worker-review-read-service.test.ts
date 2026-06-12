@@ -3,7 +3,9 @@ import { createReviewReadService } from '../../deploy/api-worker-shell/services/
 import type { WorkerEnv } from '../../deploy/api-worker-shell/types';
 
 const reviewDomainMocks = vi.hoisted(() => ({
+  buildReviewPlaceContext: vi.fn(),
   createReviewMapper: vi.fn(),
+  loadReviewMappingContext: vi.fn(),
   mapReviewRows: vi.fn(),
   readReviewCommentRows: vi.fn(),
   readReviewFeedRows: vi.fn(),
@@ -22,7 +24,9 @@ const authMocks = vi.hoisted(() => ({
 }));
 
 vi.mock('../../deploy/api-worker-shell/services/review-domain', () => ({
+  buildReviewPlaceContext: reviewDomainMocks.buildReviewPlaceContext,
   createReviewMapper: reviewDomainMocks.createReviewMapper,
+  loadReviewMappingContext: reviewDomainMocks.loadReviewMappingContext,
   readReviewCommentRows: reviewDomainMocks.readReviewCommentRows,
   readReviewFeedRows: reviewDomainMocks.readReviewFeedRows,
   readReviewLikeRows: reviewDomainMocks.readReviewLikeRows,
@@ -101,6 +105,43 @@ describe('worker review read service', () => {
       buildCommentTree: vi.fn(),
       countComments: vi.fn(),
       mapReviewRows: reviewDomainMocks.mapReviewRows,
+    });
+    reviewDomainMocks.buildReviewPlaceContext.mockImplementation((placeRows: Array<typeof placeRow>, mapPlace: (row: typeof placeRow) => typeof workerPlace) => {
+      const places = placeRows.map(mapPlace);
+      return {
+        placeIdToPositionId: new Map(places.map((place) => [place.id, place.positionId])),
+        placesByPositionId: new Map(places.map((place) => [place.positionId, place])),
+      };
+    });
+    reviewDomainMocks.loadReviewMappingContext.mockImplementation(async (mockEnv: WorkerEnv, feedRows: Array<{ feed_id: string; user_id: string; stamp_id?: string | null }>, sessionUserId: string | null) => {
+      const feedIds = feedRows.map((row) => row.feed_id);
+      const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
+        reviewDomainMocks.readReviewCommentRows(mockEnv, feedIds),
+        reviewDomainMocks.readReviewLikeRows(mockEnv, feedIds),
+        reviewDomainMocks.readReviewStampRows(mockEnv, feedRows.map((row) => row.stamp_id)),
+        reviewDomainMocks.readUserFeedLikeRows(mockEnv, feedIds, sessionUserId),
+      ]);
+      const reviewTravelSessionIds = [
+        ...new Set(
+          (reviewStampRows ?? [])
+            .map((row: { travel_session_id?: string | null }) => row.travel_session_id)
+            .filter(Boolean)
+            .map((value: string) => String(value)),
+        ),
+      ];
+      const reviewRouteRows = await reviewDomainMocks.readReviewRouteRows(mockEnv, reviewTravelSessionIds);
+      const userRows = await reviewDomainMocks.readReviewUserRows(mockEnv, [
+        ...feedRows.map((row) => row.user_id),
+        ...commentRows.map((row: { user_id: string }) => row.user_id),
+      ]);
+      return {
+        commentRows,
+        likeRows,
+        likedFeedIds: new Set((userFeedLikeRows ?? []).map((row: { feed_id: string }) => String(row.feed_id))),
+        reviewRouteRows,
+        stampRowsById: new Map((reviewStampRows ?? []).map((row: { stamp_id: string }) => [String(row.stamp_id), row])),
+        usersById: new Map(userRows.map((row: { user_id: string }) => [row.user_id, row] as const)),
+      };
     });
     reviewDomainMocks.mapReviewRows.mockImplementation((feedRows: Array<{ feed_id: string }>) =>
       feedRows.map((row) => ({ id: String(row.feed_id), mapped: true })),

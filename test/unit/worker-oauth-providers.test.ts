@@ -29,6 +29,8 @@ describe('worker OAuth provider adapters', () => {
   it('builds provider login URLs with the configured REST callback contract', () => {
     const kakaoUrl = new URL(buildKakaoLoginUrl(env, 'state-1'));
     const naverUrl = new URL(buildNaverLoginUrl(env, 'state-2'));
+    const emptyKakaoUrl = new URL(buildKakaoLoginUrl({}, 'state-3'));
+    const emptyNaverUrl = new URL(buildNaverLoginUrl({}, 'state-4'));
 
     expect(kakaoUrl.origin + kakaoUrl.pathname).toBe('https://kauth.kakao.com/oauth/authorize');
     expect(kakaoUrl.searchParams.get('client_id')).toBe('kakao-client');
@@ -38,6 +40,10 @@ describe('worker OAuth provider adapters', () => {
     expect(naverUrl.searchParams.get('client_id')).toBe('naver-client');
     expect(naverUrl.searchParams.get('redirect_uri')).toBe('https://api.test/api/auth/naver/callback');
     expect(naverUrl.searchParams.get('state')).toBe('state-2');
+    expect(emptyKakaoUrl.searchParams.get('client_id')).toBe('');
+    expect(emptyKakaoUrl.searchParams.get('redirect_uri')).toBe('');
+    expect(emptyNaverUrl.searchParams.get('client_id')).toBe('');
+    expect(emptyNaverUrl.searchParams.get('redirect_uri')).toBe('');
   });
 
   it('exchanges Kakao codes and maps Kakao profile payloads', async () => {
@@ -100,6 +106,24 @@ describe('worker OAuth provider adapters', () => {
       profile_image: 'https://image.test/property.png',
     });
     await expect(fetchKakaoProfile('bad-profile')).rejects.toThrow(/\S+/u);
+  });
+
+  it('uses Kakao default failures and empty profile fallbacks when provider payloads omit optional fields', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(Response.json({}, { status: 200 }))
+      .mockResolvedValueOnce(Response.json({ id: 777 }, { status: 200 }))
+      .mockResolvedValueOnce(Response.json({}, { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(exchangeKakaoCode(env, 'missing-token')).rejects.toThrow(/\S+/u);
+    await expect(fetchKakaoProfile('profile-token')).resolves.toEqual({
+      id: '777',
+      nickname: '',
+      email: null,
+      profile_image: null,
+    });
+    await expect(fetchKakaoProfile('missing-id')).rejects.toThrow(/\S+/u);
   });
 
   it('exchanges Naver codes and maps Naver profile payloads', async () => {
@@ -169,5 +193,24 @@ describe('worker OAuth provider adapters', () => {
       profile_image: null,
     });
     await expect(fetchNaverProfile('bad-profile')).rejects.toThrow(/\S+/u);
+  });
+
+  it('uses Naver default failures and empty id fallback when provider payloads omit optional fields', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(Response.json({}, { status: 200 }))
+      .mockResolvedValueOnce(Response.json({ resultcode: '00', response: {} }, { status: 200 }))
+      .mockResolvedValueOnce(Response.json({ resultcode: '00' }, { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(exchangeNaverCode(env, 'missing-token', 'state')).rejects.toThrow(/\S+/u);
+    await expect(fetchNaverProfile('profile-token')).resolves.toEqual({
+      id: '',
+      email: null,
+      name: null,
+      nickname: null,
+      profile_image: null,
+    });
+    await expect(fetchNaverProfile('missing-response')).rejects.toThrow(/\S+/u);
   });
 });

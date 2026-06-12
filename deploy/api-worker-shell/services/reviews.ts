@@ -7,34 +7,23 @@ import type {
   WorkerReviewDataFilters,
   WorkerReviewPageOptions,
   WorkerReviewReadServiceDeps,
-  WorkerReviewUserRow,
 } from './review-domain';
 import {
+  buildReviewPlaceContext,
   createReviewMapper,
-  readReviewCommentRows,
+  loadReviewMappingContext,
   readReviewFeedRows,
-  readReviewLikeRows,
   readReviewPageRows,
   readReviewPlaceRows,
-  readReviewRouteRows,
-  readReviewStampRows,
-  readReviewUserRows,
   readSingleReviewFeedRow,
-  readUserFeedLikeRows,
 } from './review-domain';
-
-function indexUsersById(userRows: WorkerReviewUserRow[]) {
-  return new Map(userRows.map((row) => [row.user_id, row] as const));
-}
 
 export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, mapPlace }: WorkerReviewReadServiceDeps) {
   const { buildCommentTree, countComments, mapReviewRows } = createReviewMapper(formatVisitLabel);
 
   async function loadReviewData(env: WorkerEnv, sessionUserId: string | null = null, filters: WorkerReviewDataFilters = {}) {
     const { placeRows } = await loadStaticBaseRows(env);
-    const places = placeRows.map(mapPlace);
-    const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
-    const placeIdToPositionId = new Map(places.map((place) => [place.id, place.positionId]));
+    const { placeIdToPositionId, placesByPositionId } = buildReviewPlaceContext(placeRows, mapPlace);
     let positionId: string | null = null;
     if (filters.placeId) {
       positionId = placeIdToPositionId.get(filters.placeId) ?? null;
@@ -44,57 +33,18 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
     }
 
     const feedRows = await readReviewFeedRows(env, { positionId, userId: filters.userId });
-    const feedIds = feedRows.map((row) => row.feed_id);
-    const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
-      readReviewCommentRows(env, feedIds),
-      readReviewLikeRows(env, feedIds),
-      readReviewStampRows(env, feedRows.map((row) => row.stamp_id)),
-      readUserFeedLikeRows(env, feedIds, sessionUserId),
-    ]);
-    const reviewTravelSessionIds = [
-      ...new Set(
-        (reviewStampRows ?? [])
-          .map((row) => row.travel_session_id)
-          .filter(Boolean)
-          .map((value) => String(value)),
-      ),
-    ];
-    const reviewRouteRows = await readReviewRouteRows(env, reviewTravelSessionIds);
-    const userRows = await readReviewUserRows(env, [...feedRows.map((row) => row.user_id), ...commentRows.map((row) => row.user_id)]);
-    const usersById = indexUsersById(userRows);
-    const stampRowsById = new Map((reviewStampRows ?? []).map((row) => [String(row.stamp_id), row]));
-    const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
+    const { commentRows, likeRows, likedFeedIds, reviewRouteRows, stampRowsById, usersById } = await loadReviewMappingContext(env, feedRows, sessionUserId);
     return mapReviewRows(feedRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, reviewRouteRows, likedFeedIds);
   }
 
   async function loadReviewPageData(env: WorkerEnv, sessionUserId: string | null = null, options: WorkerReviewPageOptions = {}) {
     const { cursor = null, limit = WorkerPaginationRuntimeConfig.reviewFeedPageSize } = options;
     const { placeRows } = await loadStaticBaseRows(env);
-    const places = placeRows.map(mapPlace);
-    const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
+    const { placesByPositionId } = buildReviewPlaceContext(placeRows, mapPlace);
     const feedRows = await readReviewPageRows(env, { cursor, limit });
     const nextCursor = feedRows.length > limit ? String(feedRows[limit].created_at) : null;
     const pageRows = feedRows.slice(0, limit);
-    const feedIds = pageRows.map((row) => row.feed_id);
-    const [commentRows, likeRows, reviewStampRows, userFeedLikeRows = []] = await Promise.all([
-      readReviewCommentRows(env, feedIds),
-      readReviewLikeRows(env, feedIds),
-      readReviewStampRows(env, pageRows.map((row) => row.stamp_id)),
-      readUserFeedLikeRows(env, feedIds, sessionUserId),
-    ]);
-    const reviewTravelSessionIds = [
-      ...new Set(
-        (reviewStampRows ?? [])
-          .map((row) => row.travel_session_id)
-          .filter(Boolean)
-          .map((value) => String(value)),
-      ),
-    ];
-    const reviewRouteRows = await readReviewRouteRows(env, reviewTravelSessionIds);
-    const userRows = await readReviewUserRows(env, [...pageRows.map((row) => row.user_id), ...commentRows.map((row) => row.user_id)]);
-    const usersById = indexUsersById(userRows);
-    const stampRowsById = new Map((reviewStampRows ?? []).map((row) => [String(row.stamp_id), row]));
-    const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
+    const { commentRows, likeRows, likedFeedIds, reviewRouteRows, stampRowsById, usersById } = await loadReviewMappingContext(env, pageRows, sessionUserId);
     return { items: mapReviewRows(pageRows, commentRows, likeRows, usersById, placesByPositionId, stampRowsById, reviewRouteRows, likedFeedIds), nextCursor };
   }
 
@@ -103,28 +53,12 @@ export function createReviewReadService({ formatVisitLabel, loadStaticBaseRows, 
     if (!reviewRow) {
       return null;
     }
-    const [commentRows, likeRows, placeRows, stampRows, userFeedLikeRows = []] = await Promise.all([
-      readReviewCommentRows(env, [reviewId]),
-      readReviewLikeRows(env, [reviewId]),
+    const [placeRows, mappingContext] = await Promise.all([
       readReviewPlaceRows(env, reviewRow.position_id),
-      readReviewStampRows(env, [reviewRow.stamp_id]),
-      readUserFeedLikeRows(env, [reviewId], sessionUserId),
+      loadReviewMappingContext(env, [reviewRow], sessionUserId),
     ]);
-    const reviewTravelSessionIds = [
-      ...new Set(
-        (stampRows ?? [])
-          .map((row) => row.travel_session_id)
-          .filter(Boolean)
-          .map((value) => String(value)),
-      ),
-    ];
-    const reviewRouteRows = await readReviewRouteRows(env, reviewTravelSessionIds);
-    const userRows = await readReviewUserRows(env, [reviewRow.user_id, ...commentRows.map((row) => row.user_id)]);
-    const places = placeRows.map(mapPlace);
-    const placesByPositionId = new Map(places.map((place) => [place.positionId, place]));
-    const usersById = indexUsersById(userRows);
-    const stampRowsById = new Map((stampRows ?? []).map((row) => [String(row.stamp_id), row]));
-    const likedFeedIds = new Set((userFeedLikeRows ?? []).map((row) => String(row.feed_id)));
+    const { placesByPositionId } = buildReviewPlaceContext(placeRows, mapPlace);
+    const { commentRows, likeRows, likedFeedIds, reviewRouteRows, stampRowsById, usersById } = mappingContext;
     return mapReviewRows([reviewRow], commentRows ?? [], likeRows ?? [], usersById, placesByPositionId, stampRowsById, reviewRouteRows, likedFeedIds)[0] ?? null;
   }
 

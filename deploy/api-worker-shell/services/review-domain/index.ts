@@ -23,6 +23,7 @@ export type {
 } from './contracts';
 export type { WorkerReview, WorkerReviewComment } from './read-model';
 export { createReviewMapper } from './mapper';
+export { buildReviewPlaceContext, loadReviewMappingContext } from './read-context';
 export { publishReviewNotification } from './notifications';
 export {
   countReviewLikes,
