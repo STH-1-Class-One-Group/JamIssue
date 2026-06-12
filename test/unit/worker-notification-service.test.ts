@@ -120,6 +120,31 @@ describe('worker notification service', () => {
     expect(notificationDomainMocks.readNotificationActorRows).toHaveBeenCalledWith(env, ['actor-1']);
   });
 
+  it('maps notifications without actors to null actor names and empty optional ids', async () => {
+    notificationDomainMocks.readUserNotificationRows.mockResolvedValueOnce([
+      notificationRow({
+        actor_user_id: null,
+        body: null,
+        review_id: null,
+        comment_id: null,
+        route_id: 'route-1',
+        is_read: true,
+      }),
+    ]);
+    notificationDomainMocks.readNotificationActorRows.mockResolvedValueOnce([]);
+
+    await expect(loadUserNotifications(env, 'user-1')).resolves.toEqual([
+      expect.objectContaining({
+        actorName: null,
+        body: '',
+        reviewId: null,
+        commentId: null,
+        routeId: 'route-1',
+        isRead: true,
+      }),
+    ]);
+  });
+
   it('loads a single notification with its actor and returns null for missing rows', async () => {
     await expect(loadNotificationById(env, 'notification-1')).resolves.toEqual(expect.objectContaining({
       id: 'notification-1',
@@ -128,6 +153,17 @@ describe('worker notification service', () => {
 
     notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(null);
     await expect(loadNotificationById(env, 'missing')).resolves.toBeNull();
+  });
+
+  it('loads a single notification without an actor lookup when the actor id is absent', async () => {
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(notificationRow({ actor_user_id: null }));
+
+    await expect(loadNotificationById(env, 'notification-1')).resolves.toEqual(expect.objectContaining({
+      id: 'notification-1',
+      actorName: null,
+    }));
+
+    expect(notificationDomainMocks.readNotificationActorRow).not.toHaveBeenCalled();
   });
 
   it('publishes realtime notification events to the computed topic', async () => {
@@ -188,6 +224,20 @@ describe('worker notification service', () => {
     notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(notificationRow({ user_id: 'other-user' }));
     const forbidden = await handleMarkNotificationRead(new Request('https://api.test/api/my/notifications/notification-1/read'), env, 'notification-1');
     expect(forbidden.status).toBe(403);
+  });
+
+  it('guards notification write handlers behind session auth', async () => {
+    authMocks.readSessionUser.mockResolvedValue(null);
+
+    const markOne = await handleMarkNotificationRead(new Request('https://api.test/api/my/notifications/notification-1/read'), env, 'notification-1');
+    const markAll = await handleMarkAllNotificationsRead(new Request('https://api.test/api/my/notifications/read-all'), env);
+    const deleted = await handleDeleteNotification(new Request('https://api.test/api/my/notifications/notification-1'), env, 'notification-1');
+
+    expect(markOne.status).toBe(401);
+    expect(markAll.status).toBe(401);
+    expect(deleted.status).toBe(401);
+    expect(notificationDomainMocks.readNotificationRow).not.toHaveBeenCalled();
+    expect(notificationDomainMocks.readUnreadNotificationRows).not.toHaveBeenCalled();
   });
 
   it('marks all unread notifications and reports zero updates when there is nothing to mark', async () => {

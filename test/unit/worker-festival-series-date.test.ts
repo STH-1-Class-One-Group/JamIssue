@@ -255,4 +255,87 @@ describe('festival series policy', () => {
       longitude: '127.38',
     });
   });
+
+  it('keeps invalid imported periods separate and preserves already populated merge fields', () => {
+    const [merged] = mergeImportedFestivalItems([
+      importedFestivalFixture({
+        externalId: 'base',
+        startsAt: '2026-05-14T00:00:00+09:00',
+        endsAt: '2026-05-15T23:59:59+09:00',
+        summary: 'base summary',
+        homepageUrl: 'https://festival.test/base',
+        roadAddress: 'Base Road',
+        address: 'Base Address',
+        latitude: 36.35,
+        longitude: 127.38,
+        rawPayload: { mergedExternalIds: ['base'] },
+      }),
+      importedFestivalFixture({
+        externalId: 'source',
+        startsAt: '2026-05-15T12:00:00+09:00',
+        endsAt: '2026-05-16T23:59:59+09:00',
+        summary: 'source summary',
+        homepageUrl: 'https://festival.test/source',
+        roadAddress: 'Source Road',
+        address: 'Source Address',
+        latitude: 36.36,
+        longitude: 127.39,
+        rawPayload: { mergedExternalIds: ['source'] },
+      }),
+    ]);
+
+    expect(merged).toMatchObject({
+      startsAt: '2026-05-14T00:00:00+09:00',
+      endsAt: '2026-05-16T23:59:59+09:00',
+      summary: 'base summary',
+      homepageUrl: 'https://festival.test/base',
+      roadAddress: 'Base Road',
+      address: 'Base Address',
+      latitude: 36.35,
+      longitude: 127.38,
+    });
+    expect(merged.rawPayload).toMatchObject({ mergedExternalIds: ['base', 'source'] });
+  });
+
+  it('uses venue fallback text while grouping and preserves populated Supabase row fields', () => {
+    const grouped = groupFestivalRowsBySeries([
+      festivalRowFixture({
+        public_event_id: 'base',
+        title: 'Jam Festival (A)',
+        venue_name: null,
+        road_address: null,
+        address: 'Shared Address',
+        starts_at: '2026-05-14T00:00:00+09:00',
+        ends_at: '2026-05-15T23:59:59+09:00',
+        summary: 'base summary',
+        source_page_url: 'https://festival.test/base',
+        latitude: '36.35',
+        longitude: '127.38',
+      }),
+      festivalRowFixture({
+        public_event_id: 'source',
+        title: 'Jam Festival [B]',
+        venue_name: null,
+        road_address: null,
+        address: 'Shared Address',
+        starts_at: '2026-05-15T12:00:00+09:00',
+        ends_at: '2026-05-16T23:59:59+09:00',
+        summary: 'source summary',
+        source_page_url: 'https://festival.test/source',
+        latitude: '36.36',
+        longitude: '127.39',
+      }),
+    ]);
+
+    expect(grouped).toHaveLength(1);
+    expect(grouped[0]).toMatchObject({
+      public_event_id: 'base',
+      ends_at: '2026-05-16T23:59:59+09:00',
+      summary: 'base summary',
+      source_page_url: 'https://festival.test/base',
+      address: 'Shared Address',
+      latitude: '36.35',
+      longitude: '127.38',
+    });
+  });
 });

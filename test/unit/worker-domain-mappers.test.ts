@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createReviewMapper } from '../../deploy/api-worker-shell/services/review-domain/mapper';
 import { mapCommunityRoutes } from '../../deploy/api-worker-shell/services/community-domain/mapper';
 import { mapMyComments } from '../../deploy/api-worker-shell/services/my-domain/mapper';
+import { mapTourismPlace } from '../../deploy/api-worker-shell/services/tourism-domain/mapper';
 import {
   buildPlaceVisitCountMap,
   buildStampLogs,
@@ -214,6 +215,112 @@ describe('worker community and my page mappers', () => {
       new Map(),
     );
     expect(mappedFromMap[0]).toMatchObject({ placeId: 'manual-place', placeName: 'Manual Place', parentId: '1' });
+
+    const missingFeedComments = mapMyComments(
+      [
+        { comment_id: 4, feed_id: 404, parent_id: null, body: 'missing feed', is_deleted: false, created_at: '2026-05-14T00:03:00Z' },
+        { comment_id: 5, feed_id: 405, parent_id: null, body: null, is_deleted: false, created_at: '2026-05-14T00:04:00Z' },
+        { comment_id: 6, feed_id: 406, parent_id: null, body: 'deleted text', is_deleted: true, created_at: '2026-05-14T00:05:00Z' },
+      ],
+      [],
+      new Map(),
+    );
+    expect(missingFeedComments).toEqual([
+      expect.objectContaining({ id: '4', placeId: '', placeName: expect.any(String), reviewBody: '' }),
+      expect.objectContaining({ id: '5', body: null, placeId: '', reviewBody: '' }),
+    ]);
+  });
+});
+
+describe('worker tourism mapper', () => {
+  it('maps nullable tourism rows and rejects invalid curated links without leaking raw data', () => {
+    const invalidCurated = mapTourismPlace({
+      external_id: 123,
+      display_name: 'Tourism Place',
+      category: 'tourism',
+      district: 'District',
+      content_type_id: null,
+      content_type_label: null,
+      cat1: null,
+      cat1_label: null,
+      cat2: null,
+      cat2_label: null,
+      cat3: null,
+      cat3_label: null,
+      kto_facet: null,
+      address: null,
+      road_address: null,
+      summary: null,
+      image_url: null,
+      source_page_url: null,
+      latitude: 'not-a-number',
+      longitude: undefined,
+      source_updated_at: null,
+      kto_place_map_link: [
+        null,
+        { map: null },
+        { map: { position_id: null, slug: 'missing-id', name: 'Missing Id' } },
+        { map: { position_id: 'bad-id', slug: 'bad-id', name: 'Bad Id' } },
+      ],
+    });
+
+    expect(invalidCurated).toEqual({
+      id: '123',
+      name: 'Tourism Place',
+      category: 'tourism',
+      ktoContentTypeId: null,
+      ktoContentTypeLabel: null,
+      ktoCategoryCode1: null,
+      ktoCategoryLabel1: null,
+      ktoCategoryCode2: null,
+      ktoCategoryLabel2: null,
+      ktoCategoryCode3: null,
+      ktoCategoryLabel3: null,
+      ktoFacet: null,
+      district: 'District',
+      address: null,
+      roadAddress: null,
+      summary: '',
+      imageUrl: null,
+      sourcePageUrl: null,
+      latitude: null,
+      longitude: null,
+      sourceUpdatedAt: null,
+      isCurated: false,
+      curatedPlace: null,
+    });
+
+    const validCurated = mapTourismPlace({
+      external_id: 'kto-2',
+      display_name: 'Curated',
+      category: 'food',
+      district: 'District',
+      content_type_id: '39',
+      content_type_label: 'Food',
+      cat1: 'A05',
+      cat1_label: 'Food Root',
+      cat2: 'A0502',
+      cat2_label: 'Restaurant',
+      cat3: 'A05020100',
+      cat3_label: 'Local',
+      kto_facet: 'restaurant',
+      address: 'Address',
+      road_address: 'Road',
+      summary: 'Summary',
+      image_url: 'https://image.test/kto.jpg',
+      source_page_url: 'https://kto.example.test',
+      latitude: 36.35,
+      longitude: '127.38',
+      source_updated_at: '2026-06-01T00:00:00Z',
+      kto_place_map_link: [{ map: { position_id: '101', slug: 'place-1', name: 'Place 1' } }],
+    });
+    expect(validCurated).toMatchObject({
+      id: 'kto-2',
+      isCurated: true,
+      latitude: 36.35,
+      longitude: 127.38,
+      curatedPlace: { positionId: 101, slug: 'place-1', name: 'Place 1' },
+    });
   });
 });
 

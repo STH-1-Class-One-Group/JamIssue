@@ -169,6 +169,23 @@ describe('worker auth service', () => {
     expect(payload).toEqual(expect.objectContaining({ user: expect.objectContaining({ nickname: 'Stored Nick' }) }));
   });
 
+  it('updates profile using submitted values when the stored user row is absent', async () => {
+    socialUserMocks.readUserRow.mockResolvedValueOnce(null);
+    const response = await handleUpdateProfile(new Request('https://api.test/api/auth/profile', {
+      method: 'PATCH',
+      body: JSON.stringify({ nickname: 'Fallback Nick' }),
+    }), env);
+    const payload = await readJson(response);
+
+    expect(response.status).toBe(200);
+    expect(sessionMocks.issueSessionCookie).toHaveBeenCalledWith(expect.objectContaining({
+      nickname: 'New Nick',
+      email: 'user@example.com',
+      profileCompletedAt: expect.any(String),
+    }), expect.any(Request), env);
+    expect(payload).toEqual(expect.objectContaining({ isAuthenticated: true }));
+  });
+
   it('maps profile update auth, validation, duplicate, and missing-secret failures', async () => {
     sessionMocks.requireSessionUser.mockResolvedValueOnce({ response: new Response('unauthorized', { status: 401 }) });
     const unauthorized = await handleUpdateProfile(new Request('https://api.test/api/auth/profile'), env);
@@ -186,6 +203,15 @@ describe('worker auth service', () => {
     sessionMocks.isMissingSigningSecretError.mockReturnValueOnce(true);
     const missingSecret = await handleUpdateProfile(new Request('https://api.test/api/auth/profile', { method: 'PATCH', body: '{}' }), env);
     expect(missingSecret.status).toBe(503);
+
+    socialUserMocks.ensureUniqueNickname.mockRejectedValueOnce({ status: 422 });
+    const unknownProfileError = await handleUpdateProfile(new Request('https://api.test/api/auth/profile', { method: 'PATCH', body: '{}' }), env);
+    expect(unknownProfileError.status).toBe(422);
+
+    await expect(handleUpdateProfile(new Request('https://api.test/api/auth/profile', {
+      method: 'PATCH',
+      body: '{',
+    }), env)).rejects.toThrow();
   });
 
   it('starts configured social logins and returns 503 for unconfigured or missing-secret providers', async () => {
@@ -203,6 +229,10 @@ describe('worker auth service', () => {
     const unconfigured = await handleStartKakaoLogin(new Request('https://api.test/api/auth/kakao/start'), env, new URL('https://api.test/api/auth/kakao/start'));
     expect(unconfigured.status).toBe(503);
 
+    providerConfigMocks.naverConfigured.mockReturnValueOnce(false);
+    const naverUnconfigured = await handleStartNaverLogin(new Request('https://api.test/api/auth/naver/start'), env, new URL('https://api.test/api/auth/naver/start'));
+    expect(naverUnconfigured.status).toBe(503);
+
     sessionMocks.createOAuthStateCookie.mockRejectedValueOnce(new Error('missing secret'));
     sessionMocks.isMissingSigningSecretError.mockReturnValueOnce(true);
     const missingSecret = await handleStartNaverLogin(new Request('https://api.test/api/auth/naver/start'), env, new URL('https://api.test/api/auth/naver/start'));
@@ -218,6 +248,13 @@ describe('worker auth service', () => {
     expect(providerError.headers.get('location')).toContain('auth=kakao-error');
     expect(providerError.headers.get('location')).toContain('reason=denied');
 
+    const providerErrorFallback = await handleKakaoCallback(
+      new Request('https://api.test/api/auth/kakao/callback?error=access_denied'),
+      env,
+      new URL('https://api.test/api/auth/kakao/callback?error=access_denied'),
+    );
+    expect(providerErrorFallback.headers.get('location')).toContain('reason=access_denied');
+
     const mismatch = await handleNaverCallback(
       new Request('https://api.test/api/auth/naver/callback?code=code&state=wrong'),
       env,
@@ -225,6 +262,21 @@ describe('worker auth service', () => {
     );
     expect(mismatch.headers.get('location')).toContain('state-mismatch');
     expect(providerMocks.exchangeNaverCode).not.toHaveBeenCalled();
+
+    const missingCode = await handleKakaoCallback(
+      new Request('https://api.test/api/auth/kakao/callback?state=state-1'),
+      env,
+      new URL('https://api.test/api/auth/kakao/callback?state=state-1'),
+    );
+    expect(missingCode.headers.get('location')).toContain('state-mismatch');
+
+    sessionMocks.readOAuthStatePayload.mockResolvedValueOnce({ state: 'state-1', next: '', exp: 50 });
+    const expiredState = await handleNaverCallback(
+      new Request('https://api.test/api/auth/naver/callback?code=code&state=state-1'),
+      env,
+      new URL('https://api.test/api/auth/naver/callback?code=code&state=state-1'),
+    );
+    expect(expiredState.headers.get('location')).toContain('state-mismatch');
   });
 
   it('finishes Naver and Kakao callbacks through token exchange, profile fetch, user upsert, and session issue', async () => {

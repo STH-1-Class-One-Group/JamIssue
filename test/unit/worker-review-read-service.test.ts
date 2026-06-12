@@ -161,6 +161,55 @@ describe('worker review read service', () => {
     );
   });
 
+  it('loads review data with default filters and empty optional dependency rows', async () => {
+    reviewDomainMocks.readReviewFeedRows.mockResolvedValueOnce([
+      feedRow({ feed_id: 'feed-empty', stamp_id: null }),
+    ]);
+    reviewDomainMocks.readReviewCommentRows.mockResolvedValueOnce([]);
+    reviewDomainMocks.readReviewLikeRows.mockResolvedValueOnce([]);
+    reviewDomainMocks.readReviewStampRows.mockResolvedValueOnce(undefined);
+    reviewDomainMocks.readUserFeedLikeRows.mockResolvedValueOnce(undefined);
+    reviewDomainMocks.readReviewRouteRows.mockResolvedValueOnce([]);
+    reviewDomainMocks.readReviewUserRows.mockResolvedValueOnce([{ user_id: 'user-1', nickname: 'Author' }]);
+    const service = createService();
+
+    const reviews = await service.loadReviewData(env);
+
+    expect(reviews).toEqual([{ id: 'feed-empty', mapped: true }]);
+    expect(reviewDomainMocks.readReviewFeedRows).toHaveBeenCalledWith(env, { positionId: null, userId: undefined });
+    expect(reviewDomainMocks.readReviewRouteRows).toHaveBeenCalledWith(env, []);
+    expect(reviewDomainMocks.readUserFeedLikeRows).toHaveBeenCalledWith(env, ['feed-empty'], null);
+    expect(reviewDomainMocks.mapReviewRows).toHaveBeenCalledWith(
+      [expect.objectContaining({ feed_id: 'feed-empty' })],
+      [],
+      [],
+      expect.any(Map),
+      expect.any(Map),
+      expect.any(Map),
+      [],
+      new Set(),
+    );
+  });
+
+  it('loads page data with default options and no next cursor when the page is not overfilled', async () => {
+    reviewDomainMocks.readReviewPageRows.mockResolvedValueOnce([
+      feedRow({ feed_id: 'feed-only', created_at: '2026-05-14T00:00:00Z', stamp_id: null }),
+    ]);
+    reviewDomainMocks.readReviewCommentRows.mockResolvedValueOnce([]);
+    reviewDomainMocks.readReviewLikeRows.mockResolvedValueOnce([]);
+    reviewDomainMocks.readReviewStampRows.mockResolvedValueOnce(undefined);
+    reviewDomainMocks.readUserFeedLikeRows.mockResolvedValueOnce(undefined);
+    reviewDomainMocks.readReviewRouteRows.mockResolvedValueOnce([]);
+    reviewDomainMocks.readReviewUserRows.mockResolvedValueOnce([{ user_id: 'user-1', nickname: 'Author' }]);
+    const service = createService();
+
+    const page = await service.loadReviewPageData(env);
+
+    expect(page).toEqual({ items: [{ id: 'feed-only', mapped: true }], nextCursor: null });
+    expect(reviewDomainMocks.readReviewPageRows).toHaveBeenCalledWith(env, { cursor: null, limit: expect.any(Number) });
+    expect(reviewDomainMocks.readUserFeedLikeRows).toHaveBeenCalledWith(env, ['feed-only'], null);
+  });
+
   it('loads single review details from the point lookup path and returns null when missing', async () => {
     const service = createService();
 
@@ -192,6 +241,21 @@ describe('worker review read service', () => {
     });
     await expect(readJson(detailResponse)).resolves.toEqual({ id: 'feed-1', mapped: true });
     expect(authMocks.readSessionUser).toHaveBeenCalledTimes(3);
+  });
+
+  it('serves review route handlers without a session user', async () => {
+    authMocks.readSessionUser.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+    const service = createService();
+    const listRequest = new Request('https://api.test/api/reviews');
+    const feedRequest = new Request('https://api.test/api/reviews/feed?cursor=older&limit=9999');
+
+    const listResponse = await service.handleReviews(listRequest, env, new URL(listRequest.url));
+    const feedResponse = await service.handleReviewFeed(feedRequest, env, new URL(feedRequest.url));
+
+    expect(listResponse.status).toBe(200);
+    expect(feedResponse.status).toBe(200);
+    expect(reviewDomainMocks.readUserFeedLikeRows).toHaveBeenNthCalledWith(1, env, ['feed-1'], null);
+    expect(reviewDomainMocks.readReviewPageRows).toHaveBeenCalledWith(env, { cursor: 'older', limit: expect.any(Number) });
   });
 
   it('returns a not-found response when a review detail row is absent', async () => {

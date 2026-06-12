@@ -70,6 +70,9 @@ describe('smoke shared helpers', () => {
       if (url.endsWith('/json')) {
         return new Response('{"ok":true}', { status: 200, headers: { 'content-type': 'application/json' } });
       }
+      if (url.endsWith('/empty-json')) {
+        return new Response(null, { status: 204 });
+      }
       if (url.endsWith('/bad-json')) {
         return new Response('<html>bad json</html>', { status: 200, headers: { 'content-type': 'text/html' } });
       }
@@ -83,6 +86,10 @@ describe('smoke shared helpers', () => {
     await expect(shared.fetchJson('https://app.test/json')).resolves.toMatchObject({
       json: { ok: true },
       text: '{"ok":true}',
+    });
+    await expect(shared.fetchJson('https://app.test/empty-json')).resolves.toMatchObject({
+      json: null,
+      text: '',
     });
     await expect(shared.fetchJson('https://app.test/bad-json')).rejects.toThrow('returned invalid JSON');
   });
@@ -101,6 +108,14 @@ describe('smoke shared helpers', () => {
       name: 'bad-check',
       ok: false,
       error: 'failed assertion',
+    }));
+    shared.assert(true, 'not thrown');
+    await expect(shared.runCheck('string-check', async () => {
+      throw 'string failure';
+    })).resolves.toEqual(expect.objectContaining({
+      name: 'string-check',
+      ok: false,
+      error: 'string failure',
     }));
   });
 
@@ -125,6 +140,16 @@ describe('smoke shared helpers', () => {
     ]);
   });
 
+  it('stops retrying after the configured attempt count', async () => {
+    const shared = await importSharedWithEnv({ SMOKE_RETRY_ATTEMPTS: '2', SMOKE_RETRY_DELAY_MS: '0' });
+    const alwaysFail = vi.fn(async () => ({ name: 'always-fail', ok: false, durationMs: 1, error: 'still bad' }));
+
+    const results = await shared.runChecksWithRetries([{ name: 'always-fail', run: alwaysFail }]);
+
+    expect(alwaysFail).toHaveBeenCalledTimes(2);
+    expect(results).toEqual([expect.objectContaining({ name: 'always-fail', ok: false, attempt: 2 })]);
+  });
+
   it('loads runtime config from app-config.js and falls back when config fetching fails', async () => {
     let shared = await importSharedWithEnv({ SMOKE_API_BASE_URL: 'https://override.test' });
     vi.stubGlobal('fetch', vi.fn(async () => new Response('window.__JAMISSUE_CONFIG__ = {"apiBaseUrl":"https://runtime.test"};', { status: 200 })));
@@ -132,6 +157,14 @@ describe('smoke shared helpers', () => {
     await expect(shared.loadRuntimeConfig()).resolves.toMatchObject({
       runtimeConfig: { apiBaseUrl: 'https://runtime.test' },
       apiBaseUrl: 'https://runtime.test',
+    });
+
+    shared = await importSharedWithEnv({ SMOKE_API_BASE_URL: 'https://override.test' });
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('not found', { status: 404 })));
+
+    await expect(shared.loadRuntimeConfig()).resolves.toMatchObject({
+      runtimeConfig: null,
+      apiBaseUrl: 'https://override.test',
     });
 
     shared = await importSharedWithEnv({ SMOKE_API_BASE_URL: 'https://override.test' });

@@ -165,6 +165,25 @@ describe('worker review repository boundaries', () => {
       ]),
     );
   });
+
+  it('normalizes empty review repository responses to null results', async () => {
+    supabaseMock.supabaseRequest
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    await expect(readFeedRow(env, 'missing')).resolves.toBeNull();
+    await expect(readCommentRow(env, 'missing')).resolves.toBeNull();
+    await expect(readStampRow(env, 'missing')).resolves.toBeNull();
+    await expect(createReviewRow(env, {})).resolves.toBeNull();
+    await expect(createCommentRow(env, {})).resolves.toBeNull();
+    await expect(readReviewLikeRow(env, 'review-1', 'user-1')).resolves.toBeNull();
+    await expect(countReviewLikes(env, 'review-1')).resolves.toBe(0);
+  });
 });
 
 describe('worker community, my-page, and notification repositories', () => {
@@ -222,6 +241,30 @@ describe('worker community, my-page, and notification repositories', () => {
         'user_route_place?select=user_route_place_id',
       ]),
     );
+  });
+
+  it('normalizes empty community route repository responses to null and empty detail rows', async () => {
+    supabaseMock.supabaseRequest
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    await expect(readRouteRow(env, 'missing')).resolves.toBeNull();
+    await expect(loadRouteRows(env, { sort: 'latest' })).resolves.toEqual([]);
+    await expect(loadRouteDetailRows(env, [{ route_id: '', user_id: '', title: 'Empty', created_at: '2026-05-14T00:00:00Z' }], null)).resolves.toEqual({
+      routePlaceRows: [],
+      userRouteLikeRows: [],
+      userRows: [],
+    });
+    await expect(readTravelSessionForOwner(env, 'missing', 'user-1')).resolves.toBeNull();
+    await expect(readExistingRouteForSession(env, 'missing', 'user-1')).resolves.toBeNull();
+    await expect(loadSessionStampRows(env, 'missing', 'user-1')).resolves.toEqual([]);
+    await expect(createUserRoute(env, {})).resolves.toBeNull();
+    await expect(readRouteLikeRow(env, 'route-1', 'user-1')).resolves.toBeNull();
   });
 
   it('loads my-page comment rows and notification rows through domain repositories', async () => {

@@ -37,6 +37,16 @@ describe('worker auth social-user boundary', () => {
     await expect(findUserByNickname(env, 'jamuser', 'user-1')).resolves.toBeNull();
   });
 
+  it('returns null for missing user rows and empty nickname query responses', async () => {
+    const { findUserByNickname, readUserRow } = await import('../../deploy/api-worker-shell/services/auth/social-user');
+
+    supabaseMocks.supabaseRequest.mockResolvedValueOnce(undefined);
+    await expect(findUserByNickname(env, 'missing')).resolves.toBeNull();
+
+    supabaseMocks.supabaseRequest.mockResolvedValueOnce([]);
+    await expect(readUserRow(env, 'missing-user')).resolves.toBeNull();
+  });
+
   it('validates profile nickname length and duplicate ownership through ensureUniqueNickname', async () => {
     const { ensureUniqueNickname } = await import('../../deploy/api-worker-shell/services/auth/social-user');
 
@@ -47,6 +57,9 @@ describe('worker auth social-user boundary', () => {
 
     supabaseMocks.supabaseRequest.mockResolvedValueOnce([{ user_id: 'user-1', nickname: 'Taken' }]);
     await expect(ensureUniqueNickname(env, ' Taken ', 'user-1')).resolves.toBe('Taken');
+
+    supabaseMocks.supabaseRequest.mockResolvedValueOnce([]);
+    await expect(ensureUniqueNickname(env, ' Fresh ')).resolves.toBe('Fresh');
   });
 
   it('updates existing social identities and preserves stored profile completion fields', async () => {
@@ -83,6 +96,33 @@ describe('worker auth social-user boundary', () => {
     expect(supabaseMocks.supabaseRequest).toHaveBeenCalledWith(env, 'user_identity?identity_id=eq.7', expect.objectContaining({ method: 'PATCH' }));
   });
 
+  it('uses provider profile fallback when an existing identity has no user row', async () => {
+    const { upsertSocialUser } = await import('../../deploy/api-worker-shell/services/auth/social-user');
+    supabaseMocks.supabaseRequest
+      .mockResolvedValueOnce([{ identity_id: 'identity-1', user_id: 'user-1', email: null, profile_image: null }])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    const sessionUser = await upsertSocialUser(env, {
+      id: 'provider-1',
+      email: 'profile@example.com',
+      name: 'Profile Name',
+      nickname: null,
+      profile_image: null,
+    }, 'kakao');
+
+    expect(sessionUser).toMatchObject({
+      id: 'user-1',
+      nickname: 'Profile Name',
+      email: 'profile@example.com',
+      provider: 'kakao',
+      profileImage: null,
+      isAdmin: false,
+      profileCompletedAt: null,
+    });
+  });
+
   it('creates new social users with fallback names and suffixes duplicate nicknames', async () => {
     vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000123');
     const { upsertSocialUser } = await import('../../deploy/api-worker-shell/services/auth/social-user');
@@ -112,5 +152,33 @@ describe('worker auth social-user boundary', () => {
     });
     expect(supabaseMocks.supabaseRequest).toHaveBeenCalledWith(env, 'user', expect.objectContaining({ method: 'POST' }));
     expect(supabaseMocks.supabaseRequest).toHaveBeenCalledWith(env, 'user_identity', expect.objectContaining({ method: 'POST' }));
+  });
+
+  it('creates new social users without suffixing unique provider names', async () => {
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000456');
+    const { upsertSocialUser } = await import('../../deploy/api-worker-shell/services/auth/social-user');
+    supabaseMocks.supabaseRequest
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    const sessionUser = await upsertSocialUser(env, {
+      id: 'provider-3',
+      email: 'unique@example.com',
+      name: 'Provider Name',
+      nickname: 'Provider Nick',
+      profile_image: 'https://image.test/unique.png',
+    }, 'kakao');
+
+    expect(sessionUser).toMatchObject({
+      id: '00000000-0000-4000-8000-000000000456',
+      nickname: 'Provider Nick',
+      email: 'unique@example.com',
+      provider: 'kakao',
+      profileImage: 'https://image.test/unique.png',
+      isAdmin: false,
+      profileCompletedAt: null,
+    });
   });
 });

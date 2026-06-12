@@ -34,4 +34,21 @@ describe('ReviewImageFrame', () => {
     rerender(<ReviewImageFrame src="/images/review-next.jpg" thumbnailSrc={null} alt="plain image" />);
     expect(screen.getByAltText('plain image').getAttribute('src')).toBe('/images/review-next.jpg');
   });
+
+  it('rotates tall images and keeps the original source when it is already resolved', () => {
+    const { container } = render(<ReviewImageFrame src="/images/tall.jpg" thumbnailSrc={null} alt="tall image" />);
+    const frame = container.querySelector<HTMLDivElement>('.review-card__image-frame');
+    Object.defineProperty(frame, 'clientWidth', { configurable: true, value: 120 });
+    Object.defineProperty(frame, 'clientHeight', { configurable: true, value: 200 });
+
+    const image = screen.getByAltText('tall image');
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 100 });
+    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 300 });
+
+    fireEvent.load(image);
+    fireEvent.error(screen.getByAltText('tall image'));
+
+    expect(container.querySelector('.review-card__image-frame--rotated')).not.toBeNull();
+    expect(screen.getByAltText('tall image').getAttribute('src')).toBe('/images/tall.jpg');
+  });
 });
