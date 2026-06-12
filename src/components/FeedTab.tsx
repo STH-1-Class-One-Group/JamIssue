@@ -103,7 +103,7 @@ export const FeedTab = memo(function FeedTab({
 
   return (
     <>
-      <section ref={scrollRef} className="page-panel page-panel--scrollable">
+      <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="feed">
         <FeedTabHeader placeFilterName={placeFilterName} onClearPlaceFilter={onClearPlaceFilter} />
         <ReviewList
           reviews={visibleReviews}

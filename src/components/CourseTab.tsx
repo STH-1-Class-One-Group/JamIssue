@@ -25,7 +25,7 @@ export const CourseTab = memo(function CourseTab({
   void courses;
 
   return (
-    <section ref={scrollRef} className="page-panel page-panel--scrollable">
+    <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="course">
       <CourseTabHeader />
 
       <section className="sheet-card stack-gap">

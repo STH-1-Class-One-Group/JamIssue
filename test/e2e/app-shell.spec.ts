@@ -75,3 +75,23 @@ test('UIUX-013 keeps five-tab IA and hides map stage on non-map tabs', async ({ 
   await expect(bottomNav.locator('[data-tab-key="map"]')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('.map-stage')).toBeVisible();
 });
+
+test('UIUX-014 keeps tab content surfaces accessible inside the app shell', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState());
+
+  await page.goto('/');
+
+  const bottomNav = page.getByRole('navigation');
+
+  for (const tabKey of ['event', 'feed', 'course', 'my']) {
+    await bottomNav.locator(`[data-tab-key="${tabKey}"]`).click();
+    const surface = page.locator(`[data-page-surface="${tabKey}"]`);
+    await expect(surface).toBeVisible();
+    await expect(surface).toHaveClass(/page-panel--scrollable/);
+
+    const surfaceBox = await requireBoundingBox(surface);
+    const contentSlotBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
+    expect(surfaceBox.x).toBeGreaterThanOrEqual(contentSlotBox.x - 1);
+    expect(surfaceBox.x + surfaceBox.width).toBeLessThanOrEqual(contentSlotBox.x + contentSlotBox.width + 1);
+  }
+});
