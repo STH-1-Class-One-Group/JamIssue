@@ -8,7 +8,21 @@ import {
   handleStartNaverLogin,
 } from '../../deploy/api-worker-shell/services/auth';
 import { buildAuthProviders } from '../../deploy/api-worker-shell/services/auth/provider-config';
-import { createOAuthStateCookie, issueSessionCookie } from '../../deploy/api-worker-shell/services/auth/session';
+import {
+  buildSessionUser,
+  createOAuthCleanupCookie,
+  createOAuthStateCookie,
+  createSessionCleanupCookie,
+  getSecureCookieFlag,
+  getSigningSecret,
+  issueSessionCookie,
+  parseCookies,
+  readOAuthStatePayload,
+  readSessionUser,
+  requireSessionUser,
+  serializeCookie,
+  sha256Base64Url,
+} from '../../deploy/api-worker-shell/services/auth/session';
 import { createAdminService } from '../../deploy/api-worker-shell/services/admin';
 import type { WorkerEnv, WorkerSessionUser } from '../../deploy/api-worker-shell/types';
 
@@ -131,6 +145,59 @@ describe('worker OAuth session security', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('set-cookie')).toContain('jamissue_worker_session=');
     expect(response.headers.get('set-cookie')).toContain('Secure');
+  });
+
+  it('signs, reads, rejects, and clears Worker session cookies through the public session helpers', async () => {
+    const env = buildConfiguredEnv({ APP_ADMIN_USER_IDS: 'user-1', APP_SESSION_HTTPS: 'false' });
+    const request = new Request(`${apiUrl}/api/auth/me`);
+    const sessionUser = buildSessionUser('user-1', 'tester', undefined, 'kakao', undefined, env);
+    const sessionCookie = await issueSessionCookie(sessionUser, request, env);
+    const authenticatedRequest = new Request(`${apiUrl}/api/auth/me`, {
+      headers: { Cookie: `${sessionCookie}; other=value=with=equals` },
+    });
+
+    await expect(readSessionUser(authenticatedRequest, env)).resolves.toEqual(expect.objectContaining({
+      id: 'user-1',
+      email: null,
+      profileImage: null,
+      profileCompletedAt: null,
+      isAdmin: true,
+    }));
+    await expect(requireSessionUser(authenticatedRequest, env)).resolves.toEqual({
+      sessionUser: expect.objectContaining({ id: 'user-1', isAdmin: true }),
+    });
+    await expect(readSessionUser(new Request(`${apiUrl}/api/auth/me`, { headers: { Cookie: 'jamissue_worker_session=bad.token' } }), env))
+      .resolves.toBeNull();
+
+    const unauthorized = await requireSessionUser(new Request(`${apiUrl}/api/auth/me`), env);
+    expect(unauthorized.response?.status).toBe(401);
+    expect(parseCookies(authenticatedRequest).get('other')).toBe('value=with=equals');
+    expect(getSecureCookieFlag(request, env)).toBe(false);
+    expect(createSessionCleanupCookie(request, env)).toContain('Max-Age=0');
+    expect(createOAuthCleanupCookie(request, env)).toContain('Max-Age=0');
+    expect(serializeCookie('plain', 'value', { httpOnly: false, sameSite: 'Strict', path: '/x' })).toBe('plain=value; Path=/x; SameSite=Strict');
+    await expect(sha256Base64Url('state')).resolves.toMatch(/^[A-Za-z0-9_-]+$/);
+  });
+
+  it('reads OAuth state payloads and rejects tampered or missing OAuth cookies', async () => {
+    const env = buildConfiguredEnv();
+    const loginRequest = new Request(`${apiUrl}/api/auth/kakao/login`);
+    const stateCookie = await createOAuthStateCookie('https://front.test/next', 'state-1', loginRequest, env);
+    const callbackRequest = new Request(`${apiUrl}/api/auth/kakao/callback`, {
+      headers: { Cookie: stateCookie },
+    });
+
+    await expect(readOAuthStatePayload(callbackRequest, env)).resolves.toEqual(expect.objectContaining({
+      state: 'state-1',
+      next: 'https://front.test/next',
+      exp: expect.any(Number),
+    }));
+    await expect(readOAuthStatePayload(new Request(`${apiUrl}/api/auth/kakao/callback`), env)).resolves.toBeNull();
+    await expect(readOAuthStatePayload(
+      new Request(`${apiUrl}/api/auth/kakao/callback`, { headers: { Cookie: 'jamissue_worker_oauth_state=broken' } }),
+      env,
+    )).resolves.toBeNull();
+    expect(getSigningSecret(buildConfiguredEnv({ APP_SESSION_SECRET: '', APP_JWT_SECRET: 'jwt-secret' }))).toBe('jwt-secret');
   });
 });
 

@@ -75,7 +75,7 @@ export function createMyService({ communityRouteService, loadBaseData, loadStati
         travelSessions: baseData.travelSessions,
         visitedPlaces,
         unvisitedPlaces,
-        collectedPlaces: visitedPlaces,
+        collectedPlaces: visitedPlaces.map((place) => ({ ...place })),
         routes,
       },
       env,

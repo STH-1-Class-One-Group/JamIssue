@@ -1,6 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { clearFestivalCache } from '../../deploy/api-worker-shell/services/festival-domain/cache';
+import {
+  buildBannerItem,
+  buildFestivalCard,
+} from '../../deploy/api-worker-shell/services/festival-domain/festival-response-mapper';
+import {
+  deduplicateImportedFestivalItemsByExternalId,
+  groupFestivalRowsBySeries,
+  mergeImportedFestivalItems,
+} from '../../deploy/api-worker-shell/services/festival-domain/festival-series';
 import { normalizeImportedFestivalItems } from '../../deploy/api-worker-shell/services/festival-domain/mapper';
 import { handleBannerEvents, handleFestivalImport, handleFestivals } from '../../deploy/api-worker-shell/services/festivals';
 import type { WorkerEnv } from '../../deploy/api-worker-shell/types';
@@ -193,5 +202,151 @@ describe('worker festival domain boundary', () => {
       endsAt: '2026-05-13T23:59:59.000Z',
       summary: '대전시청 광장에서 열리는 대전 행사예요.',
     });
+  });
+
+  it('maps festival cards and banners with null date/address/coordinate fallbacks', () => {
+    const row = {
+      ...sampleFestivalRow(),
+      address: 'fallback address',
+      ends_at: '',
+      latitude: 'not-a-number',
+      longitude: null,
+      public_event_id: 12,
+      road_address: null,
+      source_page_url: null,
+      starts_at: '',
+      summary: null,
+      venue_name: null,
+    };
+
+    expect(buildFestivalCard(row, Date.parse('2026-05-11T00:00:00+09:00'))).toEqual({
+      id: '12',
+      title: row.title,
+      venueName: null,
+      startDate: '',
+      endDate: '',
+      homepageUrl: null,
+      roadAddress: 'fallback address',
+      latitude: null,
+      longitude: null,
+      isOngoing: false,
+    });
+    expect(buildBannerItem(row, Date.parse('2026-05-11T00:00:00+09:00'), '일정 확인 필요')).toMatchObject({
+      id: '12',
+      venueName: null,
+      district: row.district,
+      dateLabel: '일정 확인 필요',
+      summary: '',
+      sourcePageUrl: null,
+      linkedPlaceName: null,
+      isOngoing: false,
+    });
+  });
+
+  it('merges imported festival items across overlaps, fallbacks, and duplicate external ids', () => {
+    const items = [
+      {
+        externalId: 'external-1',
+        title: 'Same Festival (A)',
+        venueName: 'Venue',
+        roadAddress: '',
+        address: '',
+        startsAt: '2026-05-12T00:00:00+09:00',
+        endsAt: '2026-05-12T23:59:59+09:00',
+        latitude: 'not-a-number',
+        longitude: 'not-a-number',
+        summary: '',
+        homepageUrl: '',
+        rawPayload: { mergedExternalIds: ['legacy-1'] },
+      },
+      {
+        externalId: 'external-2',
+        title: 'Same Festival (B)',
+        venueName: 'Venue',
+        roadAddress: 'Road',
+        address: 'Address',
+        startsAt: '2026-05-11T00:00:00+09:00',
+        endsAt: '2026-05-13T23:59:59+09:00',
+        latitude: 36.35,
+        longitude: 127.38,
+        summary: 'summary',
+        homepageUrl: 'https://festival.test',
+        rawPayload: { mergedExternalIds: ['legacy-2'] },
+      },
+    ];
+
+    const [merged] = mergeImportedFestivalItems(items);
+    expect(merged).toMatchObject({
+      startsAt: '2026-05-11T00:00:00+09:00',
+      endsAt: '2026-05-13T23:59:59+09:00',
+      summary: 'summary',
+      homepageUrl: 'https://festival.test',
+      roadAddress: 'Road',
+      address: 'Address',
+      latitude: 36.35,
+      longitude: 127.38,
+    });
+    expect(merged.rawPayload.mergedExternalIds).toEqual(expect.arrayContaining(['external-1', 'external-2']));
+
+    const [deduped] = deduplicateImportedFestivalItemsByExternalId([
+      { ...merged, externalId: 'same-id', startsAt: '2026-05-12T00:00:00+09:00', endsAt: '2026-05-12T23:59:59+09:00', summary: '' },
+      { ...merged, externalId: 'same-id', startsAt: '2026-05-10T00:00:00+09:00', endsAt: '2026-05-14T23:59:59+09:00', summary: 'deduped summary' },
+    ]);
+    expect(deduped).toMatchObject({
+      startsAt: '2026-05-10T00:00:00+09:00',
+      endsAt: '2026-05-14T23:59:59+09:00',
+      summary: 'deduped summary',
+    });
+  });
+
+  it('groups stored festival rows only when series keys and periods are mergeable', () => {
+    const grouped = groupFestivalRowsBySeries([
+      {
+        ...sampleFestivalRow(),
+        public_event_id: 21,
+        title: 'Series [1]',
+        summary: '',
+        source_page_url: '',
+        road_address: '',
+        address: '',
+        latitude: 'not-a-number',
+        longitude: 'not-a-number',
+        starts_at: '2026-05-10T00:00:00+09:00',
+        ends_at: '2026-05-10T23:59:59+09:00',
+      },
+      {
+        ...sampleFestivalRow(),
+        public_event_id: 22,
+        title: 'Series [2]',
+        summary: 'filled summary',
+        source_page_url: 'https://source.test',
+        road_address: 'Road',
+        address: 'Address',
+        latitude: '36.35',
+        longitude: '127.38',
+        starts_at: '2026-05-11T00:00:00+09:00',
+        ends_at: '2026-05-12T23:59:59+09:00',
+      },
+      {
+        ...sampleFestivalRow(),
+        public_event_id: 23,
+        title: 'Other Series',
+        starts_at: 'bad-date',
+        ends_at: 'bad-date',
+      },
+    ]);
+
+    expect(grouped).toHaveLength(2);
+    expect(grouped[0]).toMatchObject({
+      public_event_id: 21,
+      ends_at: '2026-05-12T23:59:59+09:00',
+      summary: 'filled summary',
+      source_page_url: 'https://source.test',
+      road_address: 'Road',
+      address: 'Address',
+      latitude: '36.35',
+      longitude: '127.38',
+    });
+    expect(grouped[1]).toMatchObject({ public_event_id: 23 });
   });
 });

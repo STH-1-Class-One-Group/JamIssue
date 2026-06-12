@@ -1,154 +1,182 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { WorkerBaseData, WorkerPlace } from '../../deploy/api-worker-shell/runtime/base-data-contracts';
-import { issueSessionCookie } from '../../deploy/api-worker-shell/services/auth/session';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStampService } from '../../deploy/api-worker-shell/services/stamps';
-import type { WorkerEnv, WorkerSessionUser } from '../../deploy/api-worker-shell/types';
+import type { WorkerEnv } from '../../deploy/api-worker-shell/types';
 
-const env: WorkerEnv = {
-  APP_CORS_ORIGINS: 'http://localhost',
-  APP_FRONTEND_URL: 'http://localhost',
-  APP_SESSION_HTTPS: 'false',
-  APP_SESSION_SECRET: 'test-session-secret',
-  APP_STAMP_UNLOCK_RADIUS_METERS: '100',
-  APP_SUPABASE_SERVICE_ROLE_KEY: 'service-role-key',
-  APP_SUPABASE_URL: 'https://supabase.test',
+const authMocks = vi.hoisted(() => ({
+  readSessionUser: vi.fn(),
+}));
+
+const stampMocks = vi.hoisted(() => ({
+  createTravelSession: vi.fn(),
+  createUserStamp: vi.fn(),
+  readLastStampRow: vi.fn(),
+  readPlaceStampRows: vi.fn(),
+  readTodayStampRow: vi.fn(),
+  readTravelSessionRow: vi.fn(),
+  updateStampTravelSession: vi.fn(),
+  updateTravelSession: vi.fn(),
+}));
+
+vi.mock('../../deploy/api-worker-shell/services/auth', () => ({
+  readSessionUser: authMocks.readSessionUser,
+}));
+
+vi.mock('../../deploy/api-worker-shell/services/stamp-domain', () => ({
+  createTravelSession: stampMocks.createTravelSession,
+  createUserStamp: stampMocks.createUserStamp,
+  readLastStampRow: stampMocks.readLastStampRow,
+  readPlaceStampRows: stampMocks.readPlaceStampRows,
+  readTodayStampRow: stampMocks.readTodayStampRow,
+  readTravelSessionRow: stampMocks.readTravelSessionRow,
+  updateStampTravelSession: stampMocks.updateStampTravelSession,
+  updateTravelSession: stampMocks.updateTravelSession,
+}));
+
+const env = {
+  APP_CORS_ORIGINS: '',
+  APP_FRONTEND_URL: 'https://daejeon.jamissue.com',
+  APP_STAMP_UNLOCK_RADIUS_METERS: '200',
+} as WorkerEnv;
+
+const baseData = {
+  collectedPlaceIds: ['place-1'],
+  places: [
+    {
+      id: 'place-1',
+      positionId: '101',
+      name: 'Place 1',
+      latitude: 36.35,
+      longitude: 127.38,
+    },
+  ],
+  stampLogs: [{ id: 'stamp-log-1' }],
+  travelSessions: [{ id: 'session-1' }],
 };
 
-const sessionUser: WorkerSessionUser = {
-  id: 'user-1',
-  nickname: 'tester',
-  email: null,
-  provider: 'kakao',
-  profileImage: null,
-  isAdmin: false,
-  profileCompletedAt: null,
-};
-
-const place: WorkerPlace = {
-  id: 'place-1',
-  positionId: '101',
-  name: 'Place 1',
-  district: 'Daejeon',
-  category: 'cafe',
-  jamColor: '#ff66aa',
-  accentColor: '#ffccdd',
-  imageUrl: null,
-  latitude: 36.35,
-  longitude: 127.38,
-  summary: null,
-  description: null,
-  vibeTags: [],
-  visitTime: null,
-  routeHint: null,
-  stampReward: null,
-  heroLabel: null,
-  totalVisitCount: 0,
-};
-
-function buildBaseData(): WorkerBaseData {
+function createService(loadBaseData = vi.fn(async () => baseData)) {
   return {
-    places: [place],
-    placesByPositionId: new Map([[place.positionId, place]]),
-    reviews: [],
-    courses: [],
-    collectedPlaceIds: [place.id],
-    stampLogs: [{ id: 'stamp-1', placeId: place.id }],
-    travelSessions: [{ id: 'session-1', placeIds: [place.id] }],
+    loadBaseData,
+    service: createStampService({ loadBaseData }),
   };
 }
 
-async function createAuthedRequest(payload: Record<string, unknown>) {
-  const baseRequest = new Request('http://localhost/api/stamps/toggle', { method: 'POST' });
-  const cookie = await issueSessionCookie(sessionUser, baseRequest, env);
-
-  return new Request('http://localhost/api/stamps/toggle', {
+function createStampRequest(payload: unknown) {
+  return new Request('https://api.test/api/stamps/toggle', {
     method: 'POST',
-    headers: {
-      cookie,
-      'content-type': 'application/json',
-    },
     body: JSON.stringify(payload),
   });
 }
 
-function stubSupabaseRows(rowsByCall: unknown[][]) {
-  const calls: Array<{ init?: RequestInit; url: string }> = [];
-  const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(async (input, init) => {
-    calls.push({ init, url: String(input) });
-    const rows = rowsByCall.shift() ?? [];
-
-    return new Response(JSON.stringify(rows), {
-      headers: { 'content-type': 'application/json' },
-      status: 200,
-    });
-  });
-
-  vi.stubGlobal('fetch', fetchMock);
-
-  return { calls, fetchMock };
+async function readJson(response: Response) {
+  return response.json() as Promise<unknown>;
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
-
 describe('worker stamp service', () => {
-  it('returns duplicate stamp state without writing new persistence rows', async () => {
-    const { calls } = stubSupabaseRows([[{ stamp_id: 1 }]]);
-    const loadBaseData = vi.fn(async () => buildBaseData());
-    const service = createStampService({ loadBaseData });
-
-    const response = await service.handleToggleStamp(
-      await createAuthedRequest({ latitude: place.latitude, longitude: place.longitude, placeId: place.id }),
-      env,
-    );
-    const payload = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(payload).toMatchObject({ collectedPlaceIds: [place.id], logs: [{ placeId: place.id }] });
-    expect(calls).toHaveLength(1);
-    expect(calls[0].url).toContain('user_stamp?select=stamp_id');
-    expect(calls.some((call) => call.init?.method === 'POST')).toBe(false);
+  beforeEach(() => {
+    vi.clearAllMocks();
+    authMocks.readSessionUser.mockResolvedValue({ id: 'user-1' });
+    stampMocks.readTodayStampRow.mockResolvedValue(null);
+    stampMocks.readPlaceStampRows.mockResolvedValue([]);
+    stampMocks.readLastStampRow.mockResolvedValue(null);
+    stampMocks.readTravelSessionRow.mockResolvedValue({ travel_session_id: 55, stamp_count: 1 });
+    stampMocks.createTravelSession.mockResolvedValue({ travel_session_id: 55 });
+    stampMocks.createUserStamp.mockResolvedValue({ stamp_id: 7 });
+    vi.spyOn(Date.prototype, 'toISOString').mockReturnValue('2026-05-14T00:00:00Z');
   });
 
-  it('rejects out-of-radius stamp claims before persistence access', async () => {
-    const { calls } = stubSupabaseRows([]);
-    const loadBaseData = vi.fn(async () => buildBaseData());
-    const service = createStampService({ loadBaseData });
+  it('guards stamp writes behind session auth and validates payload coordinates', async () => {
+    authMocks.readSessionUser.mockResolvedValueOnce(null);
+    const { service } = createService();
 
-    const response = await service.handleToggleStamp(
-      await createAuthedRequest({ latitude: 37.5, longitude: 127.38, placeId: place.id }),
-      env,
-    );
+    const unauthorized = await service.handleToggleStamp(createStampRequest({ placeId: 'place-1', latitude: 36.35, longitude: 127.38 }), env);
+    const invalid = await service.handleToggleStamp(createStampRequest({ placeId: '', latitude: null, longitude: 127.38 }), env);
 
-    expect(response.status).toBe(403);
-    expect(calls).toEqual([]);
+    expect(unauthorized.status).toBe(401);
+    expect(invalid.status).toBe(400);
   });
 
-  it('creates travel session and stamp rows for successful first claims', async () => {
-    const { calls } = stubSupabaseRows([[], [], [], [{ travel_session_id: 7 }], [{ stamp_id: 11 }]]);
-    const loadBaseData = vi.fn(async () => buildBaseData());
-    const service = createStampService({ loadBaseData });
+  it('rejects unknown places and places outside the unlock radius', async () => {
+    const { service } = createService();
 
-    const response = await service.handleToggleStamp(
-      await createAuthedRequest({ latitude: place.latitude, longitude: place.longitude, placeId: place.id }),
-      env,
-    );
-    const payload = await response.json();
+    const missing = await service.handleToggleStamp(createStampRequest({ placeId: 'missing-place', latitude: 36.35, longitude: 127.38 }), env);
+    const tooFar = await service.handleToggleStamp(createStampRequest({ placeId: 'place-1', latitude: 37.5, longitude: 127.38 }), env);
+
+    expect(missing.status).toBe(404);
+    expect(tooFar.status).toBe(403);
+  });
+
+  it('returns the latest base data without inserting a duplicate stamp for an existing today row', async () => {
+    stampMocks.readTodayStampRow.mockResolvedValueOnce({ stamp_id: 7 });
+    const { loadBaseData, service } = createService();
+
+    const response = await service.handleToggleStamp(createStampRequest({ placeId: 'place-1', latitude: 36.35, longitude: 127.38 }), env);
+    const payload = await readJson(response);
 
     expect(response.status).toBe(200);
-    expect(payload).toMatchObject({ collectedPlaceIds: [place.id], logs: [{ placeId: place.id }] });
-    expect(calls.map((call) => [call.init?.method ?? 'GET', new URL(call.url).pathname])).toEqual([
-      ['GET', '/rest/v1/user_stamp'],
-      ['GET', '/rest/v1/user_stamp'],
-      ['GET', '/rest/v1/user_stamp'],
-      ['POST', '/rest/v1/travel_session'],
-      ['POST', '/rest/v1/user_stamp'],
-    ]);
-    expect(JSON.parse(String(calls.at(-1)?.init?.body))).toMatchObject({
-      position_id: Number(place.positionId),
-      travel_session_id: 7,
-      user_id: sessionUser.id,
+    expect(payload).toEqual({
+      collectedPlaceIds: baseData.collectedPlaceIds,
+      logs: baseData.stampLogs,
+      travelSessions: baseData.travelSessions,
     });
+    expect(loadBaseData).toHaveBeenCalledTimes(2);
+    expect(stampMocks.createUserStamp).not.toHaveBeenCalled();
+  });
+
+  it('creates a new travel session and stamp when there is no recent stamp', async () => {
+    const { service } = createService();
+
+    const response = await service.handleToggleStamp(createStampRequest({ placeId: 'place-1', latitude: 36.35, longitude: 127.38 }), env);
+
+    expect(response.status).toBe(200);
+    expect(stampMocks.createTravelSession).toHaveBeenCalledWith(env, expect.objectContaining({
+      user_id: 'user-1',
+      started_at: '2026-05-14T00:00:00Z',
+      stamp_count: 1,
+    }));
+    expect(stampMocks.createUserStamp).toHaveBeenCalledWith(env, expect.objectContaining({
+      user_id: 'user-1',
+      position_id: 101,
+      travel_session_id: 55,
+      visit_ordinal: 1,
+      created_at: '2026-05-14T00:00:00Z',
+    }));
+  });
+
+  it('continues an existing travel session when the last stamp is recent', async () => {
+    stampMocks.readPlaceStampRows.mockResolvedValueOnce([{ stamp_id: 1 }, { stamp_id: 2 }]);
+    stampMocks.readLastStampRow.mockResolvedValueOnce({
+      stamp_id: 2,
+      travel_session_id: 55,
+      created_at: '2026-05-13T23:59:00Z',
+    });
+    const { service } = createService();
+
+    const response = await service.handleToggleStamp(createStampRequest({ placeId: 'place-1', latitude: 36.35, longitude: 127.38 }), env);
+
+    expect(response.status).toBe(200);
+    expect(stampMocks.readTravelSessionRow).toHaveBeenCalledWith(env, 55);
+    expect(stampMocks.updateTravelSession).toHaveBeenCalledWith(env, 55, expect.objectContaining({
+      stamp_count: 2,
+      last_stamp_at: '2026-05-14T00:00:00Z',
+    }));
+    expect(stampMocks.createUserStamp).toHaveBeenCalledWith(env, expect.objectContaining({ visit_ordinal: 3 }));
+  });
+
+  it('creates a travel session for the previous stamp when the recent stamp has no session id', async () => {
+    stampMocks.readLastStampRow.mockResolvedValueOnce({
+      stamp_id: 2,
+      travel_session_id: null,
+      created_at: '2026-05-13T23:59:00Z',
+    });
+    const { service } = createService();
+
+    const response = await service.handleToggleStamp(createStampRequest({ placeId: 'place-1', latitude: 36.35, longitude: 127.38 }), env);
+
+    expect(response.status).toBe(200);
+    expect(stampMocks.createTravelSession).toHaveBeenCalledWith(env, expect.objectContaining({
+      started_at: '2026-05-13T23:59:00Z',
+      stamp_count: 2,
+    }));
+    expect(stampMocks.updateStampTravelSession).toHaveBeenCalledWith(env, 2, 55);
   });
 });

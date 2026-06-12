@@ -1,149 +1,219 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { issueSessionCookie } from '../../deploy/api-worker-shell/services/auth/session';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  countUnreadNotifications,
+  createUserNotification,
   handleDeleteNotification,
   handleMarkAllNotificationsRead,
   handleMarkNotificationRead,
+  handleMyNotifications,
   handleNotificationRealtimeChannel,
+  loadNotificationById,
+  loadUserNotifications,
+  publishNotificationEvent,
 } from '../../deploy/api-worker-shell/services/notifications';
-import type { WorkerEnv, WorkerSessionUser } from '../../deploy/api-worker-shell/types';
+import type { WorkerEnv } from '../../deploy/api-worker-shell/types';
 
-const env: WorkerEnv = {
-  APP_CORS_ORIGINS: 'http://localhost',
-  APP_FRONTEND_URL: 'http://localhost',
-  APP_SESSION_HTTPS: 'false',
-  APP_SESSION_SECRET: 'test-session-secret',
-  APP_SUPABASE_SERVICE_ROLE_KEY: 'service-role-key',
-  APP_SUPABASE_URL: 'https://supabase.test',
-};
+const authMocks = vi.hoisted(() => ({
+  readSessionUser: vi.fn(),
+}));
 
-const sessionUser: WorkerSessionUser = {
-  id: 'user-1',
-  nickname: 'tester',
-  email: null,
-  provider: 'kakao',
-  profileImage: null,
-  isAdmin: false,
-  profileCompletedAt: null,
-};
+const notificationDomainMocks = vi.hoisted(() => ({
+  buildNotificationRealtimeTopic: vi.fn(),
+  createNotification: vi.fn(),
+  deleteNotificationRow: vi.fn(),
+  markAllNotificationsRead: vi.fn(),
+  markNotificationRead: vi.fn(),
+  readNotificationActorRow: vi.fn(),
+  readNotificationActorRows: vi.fn(),
+  readNotificationRow: vi.fn(),
+  readUnreadNotificationRows: vi.fn(),
+  readUserNotificationRows: vi.fn(),
+  sendRealtimeBroadcast: vi.fn(),
+}));
 
-const notificationRow = {
-  notification_id: 10,
-  user_id: sessionUser.id,
-  actor_user_id: 'actor-1',
-  type: 'comment',
-  title: 'title',
-  body: 'body',
-  review_id: 20,
-  comment_id: 30,
-  route_id: null,
-  is_read: false,
-  created_at: '2026-05-12T00:00:00.000Z',
-};
+vi.mock('../../deploy/api-worker-shell/services/auth', () => ({
+  readSessionUser: authMocks.readSessionUser,
+}));
 
-async function createAuthedRequest(method = 'POST') {
-  const baseRequest = new Request('http://localhost/api/my/notifications', { method });
-  const cookie = await issueSessionCookie(sessionUser, baseRequest, env);
+vi.mock('../../deploy/api-worker-shell/services/notification-domain', () => ({
+  buildNotificationRealtimeTopic: notificationDomainMocks.buildNotificationRealtimeTopic,
+  createNotification: notificationDomainMocks.createNotification,
+  deleteNotificationRow: notificationDomainMocks.deleteNotificationRow,
+  markAllNotificationsRead: notificationDomainMocks.markAllNotificationsRead,
+  markNotificationRead: notificationDomainMocks.markNotificationRead,
+  readNotificationActorRow: notificationDomainMocks.readNotificationActorRow,
+  readNotificationActorRows: notificationDomainMocks.readNotificationActorRows,
+  readNotificationRow: notificationDomainMocks.readNotificationRow,
+  readUnreadNotificationRows: notificationDomainMocks.readUnreadNotificationRows,
+  readUserNotificationRows: notificationDomainMocks.readUserNotificationRows,
+  sendRealtimeBroadcast: notificationDomainMocks.sendRealtimeBroadcast,
+}));
 
-  return new Request('http://localhost/api/my/notifications', {
-    method,
-    headers: { cookie },
-  });
-}
+const env = {
+  APP_CORS_ORIGINS: '',
+  APP_FRONTEND_URL: 'https://daejeon.jamissue.com',
+} as WorkerEnv;
 
-function stubFetchRows(rowsByCall: unknown[][]) {
-  const calls: Array<{ init?: RequestInit; url: string }> = [];
-  const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(async (input, init) => {
-    calls.push({ init, url: String(input) });
-    const isRealtime = String(input).includes('/realtime/v1/api/broadcast');
-    const rows = isRealtime ? { ok: true } : rowsByCall.shift() ?? [];
-
-    return new Response(JSON.stringify(rows), {
-      headers: { 'content-type': 'application/json' },
-      status: 200,
-    });
-  });
-
-  vi.stubGlobal('fetch', fetchMock);
-
-  return { calls, fetchMock };
-}
-
-function realtimePayload(call: { init?: RequestInit }) {
-  return JSON.parse(String(call.init?.body)) as {
-    messages: Array<{ event: string; payload: Record<string, unknown>; topic: string }>;
+function notificationRow(overrides: Record<string, unknown> = {}) {
+  return {
+    notification_id: 'notification-1',
+    user_id: 'user-1',
+    actor_user_id: 'actor-1',
+    type: 'comment',
+    title: 'title',
+    body: 'body',
+    is_read: false,
+    review_id: 'review-1',
+    comment_id: 'comment-1',
+    route_id: null,
+    created_at: '2026-05-14T00:00:00Z',
+    ...overrides,
   };
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
+async function readJson(response: Response) {
+  return response.json() as Promise<unknown>;
+}
 
 describe('worker notification service', () => {
-  it('marks a single notification as read and publishes a realtime event', async () => {
-    const { calls } = stubFetchRows([[notificationRow], [], []]);
-
-    const response = await handleMarkNotificationRead(await createAuthedRequest(), env, '10');
-    const payload = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(payload).toEqual({ notificationId: '10', read: true });
-    expect(calls.map((call) => [call.init?.method ?? 'GET', new URL(call.url).pathname])).toEqual([
-      ['GET', '/rest/v1/user_notification'],
-      ['PATCH', '/rest/v1/user_notification'],
-      ['GET', '/rest/v1/user_notification'],
-      ['POST', '/realtime/v1/api/broadcast'],
-    ]);
-    expect(realtimePayload(calls.at(-1)!).messages[0]).toMatchObject({
-      event: 'notification.read',
-      payload: { notificationId: '10', unreadCount: 0 },
-    });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    authMocks.readSessionUser.mockResolvedValue({ id: 'user-1' });
+    notificationDomainMocks.buildNotificationRealtimeTopic.mockResolvedValue('topic:user-1');
+    notificationDomainMocks.readUnreadNotificationRows.mockResolvedValue([notificationRow()]);
+    notificationDomainMocks.readUserNotificationRows.mockResolvedValue([notificationRow()]);
+    notificationDomainMocks.readNotificationActorRows.mockResolvedValue([{ user_id: 'actor-1', nickname: 'Actor' }]);
+    notificationDomainMocks.readNotificationActorRow.mockResolvedValue({ user_id: 'actor-1', nickname: 'Actor' });
+    notificationDomainMocks.readNotificationRow.mockResolvedValue(notificationRow());
+    notificationDomainMocks.createNotification.mockResolvedValue({ notification_id: 'notification-1' });
   });
 
-  it('marks all unread notifications and publishes a realtime event with the updated count', async () => {
-    const { calls } = stubFetchRows([[{ notification_id: 10 }, { notification_id: 11 }], []]);
+  it('creates notifications only when a user id is present', async () => {
+    await expect(createUserNotification(env, {
+      userId: '',
+      type: 'comment',
+      title: 'title',
+    })).resolves.toBeNull();
+    await expect(createUserNotification(env, {
+      userId: 'user-1',
+      type: 'comment',
+      title: 'title',
+    })).resolves.toEqual({ notification_id: 'notification-1' });
 
-    const response = await handleMarkAllNotificationsRead(await createAuthedRequest(), env);
-    const payload = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(payload).toEqual({ updated: 2 });
-    expect(calls.map((call) => [call.init?.method ?? 'GET', new URL(call.url).pathname])).toEqual([
-      ['GET', '/rest/v1/user_notification'],
-      ['PATCH', '/rest/v1/user_notification'],
-      ['POST', '/realtime/v1/api/broadcast'],
-    ]);
-    expect(realtimePayload(calls.at(-1)!).messages[0]).toMatchObject({
-      event: 'notification.all-read',
-      payload: { unreadCount: 0, updated: 2 },
-    });
+    expect(notificationDomainMocks.createNotification).toHaveBeenCalledTimes(1);
   });
 
-  it('deletes a notification and publishes a realtime event', async () => {
-    const { calls } = stubFetchRows([[notificationRow], [], []]);
-
-    const response = await handleDeleteNotification(await createAuthedRequest('DELETE'), env, '10');
-    const payload = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(payload).toEqual({ deleted: true, notificationId: '10' });
-    expect(calls.map((call) => [call.init?.method ?? 'GET', new URL(call.url).pathname])).toEqual([
-      ['GET', '/rest/v1/user_notification'],
-      ['DELETE', '/rest/v1/user_notification'],
-      ['GET', '/rest/v1/user_notification'],
-      ['POST', '/realtime/v1/api/broadcast'],
+  it('maps notification rows with actor names and unread counts', async () => {
+    await expect(loadUserNotifications(env, 'user-1', 5)).resolves.toEqual([
+      expect.objectContaining({
+        id: 'notification-1',
+        actorName: 'Actor',
+        reviewId: 'review-1',
+        commentId: 'comment-1',
+        routeId: null,
+        isRead: false,
+      }),
     ]);
-    expect(realtimePayload(calls.at(-1)!).messages[0]).toMatchObject({
-      event: 'notification.deleted',
-      payload: { notificationId: '10', unreadCount: 0 },
-    });
+    await expect(countUnreadNotifications(env, 'user-1')).resolves.toBe(1);
+
+    expect(notificationDomainMocks.readUserNotificationRows).toHaveBeenCalledWith(env, 'user-1', 5);
+    expect(notificationDomainMocks.readNotificationActorRows).toHaveBeenCalledWith(env, ['actor-1']);
   });
 
-  it('returns a signed notification realtime topic for the current session user', async () => {
-    const response = await handleNotificationRealtimeChannel(await createAuthedRequest('GET'), env);
-    const payload = (await response.json()) as { topic: string };
+  it('loads a single notification with its actor and returns null for missing rows', async () => {
+    await expect(loadNotificationById(env, 'notification-1')).resolves.toEqual(expect.objectContaining({
+      id: 'notification-1',
+      actorName: 'Actor',
+    }));
+
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(null);
+    await expect(loadNotificationById(env, 'missing')).resolves.toBeNull();
+  });
+
+  it('publishes realtime notification events to the computed topic', async () => {
+    await publishNotificationEvent(env, 'user-1', 'notification.created', { notificationId: 'notification-1' });
+
+    expect(notificationDomainMocks.buildNotificationRealtimeTopic).toHaveBeenCalledWith(env, 'user-1');
+    expect(notificationDomainMocks.sendRealtimeBroadcast).toHaveBeenCalledWith(
+      env,
+      'topic:user-1',
+      'notification.created',
+      { notificationId: 'notification-1' },
+    );
+  });
+
+  it('guards notification list and realtime channel handlers behind session auth', async () => {
+    authMocks.readSessionUser.mockResolvedValueOnce(null);
+    const unauthorized = await handleMyNotifications(new Request('https://api.test/api/my/notifications'), env);
+    expect(unauthorized.status).toBe(401);
+
+    const listResponse = await handleMyNotifications(new Request('https://api.test/api/my/notifications'), env);
+    const realtimeResponse = await handleNotificationRealtimeChannel(new Request('https://api.test/api/my/notifications/realtime'), env);
+
+    expect(listResponse.status).toBe(200);
+    await expect(readJson(listResponse)).resolves.toEqual([expect.objectContaining({ id: 'notification-1' })]);
+    await expect(readJson(realtimeResponse)).resolves.toEqual({ topic: 'topic:user-1' });
+  });
+
+  it('marks an owned unread notification as read and publishes the unread count', async () => {
+    const response = await handleMarkNotificationRead(new Request('https://api.test/api/my/notifications/notification-1/read'), env, 'notification-1');
+    const payload = await readJson(response);
 
     expect(response.status).toBe(200);
-    expect(payload.topic).toMatch(/^user-notifications:user-1:[A-Za-z0-9_-]+$/);
+    expect(payload).toEqual({ notificationId: 'notification-1', read: true });
+    expect(notificationDomainMocks.markNotificationRead).toHaveBeenCalledWith(env, 'notification-1', expect.any(String));
+    expect(notificationDomainMocks.sendRealtimeBroadcast).toHaveBeenCalledWith(
+      env,
+      'topic:user-1',
+      'notification.read',
+      { notificationId: 'notification-1', unreadCount: 1 },
+    );
+  });
+
+  it('does not republish read events for already-read notifications', async () => {
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(notificationRow({ is_read: true }));
+
+    const response = await handleMarkNotificationRead(new Request('https://api.test/api/my/notifications/notification-1/read'), env, 'notification-1');
+
+    expect(response.status).toBe(200);
+    expect(notificationDomainMocks.markNotificationRead).not.toHaveBeenCalled();
+    expect(notificationDomainMocks.sendRealtimeBroadcast).not.toHaveBeenCalled();
+  });
+
+  it('rejects missing or unowned notification read requests', async () => {
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(null);
+    const missing = await handleMarkNotificationRead(new Request('https://api.test/api/my/notifications/missing/read'), env, 'missing');
+    expect(missing.status).toBe(404);
+
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(notificationRow({ user_id: 'other-user' }));
+    const forbidden = await handleMarkNotificationRead(new Request('https://api.test/api/my/notifications/notification-1/read'), env, 'notification-1');
+    expect(forbidden.status).toBe(403);
+  });
+
+  it('marks all unread notifications and reports zero updates when there is nothing to mark', async () => {
+    const updated = await handleMarkAllNotificationsRead(new Request('https://api.test/api/my/notifications/read-all'), env);
+    await expect(readJson(updated)).resolves.toEqual({ updated: 1 });
+    expect(notificationDomainMocks.markAllNotificationsRead).toHaveBeenCalledWith(env, 'user-1', expect.any(String));
+
+    vi.clearAllMocks();
+    authMocks.readSessionUser.mockResolvedValue({ id: 'user-1' });
+    notificationDomainMocks.readUnreadNotificationRows.mockResolvedValue([]);
+    const unchanged = await handleMarkAllNotificationsRead(new Request('https://api.test/api/my/notifications/read-all'), env);
+    await expect(readJson(unchanged)).resolves.toEqual({ updated: 0 });
+    expect(notificationDomainMocks.markAllNotificationsRead).not.toHaveBeenCalled();
+  });
+
+  it('deletes owned notifications and rejects missing or unowned deletion targets', async () => {
+    const deleted = await handleDeleteNotification(new Request('https://api.test/api/my/notifications/notification-1'), env, 'notification-1');
+    await expect(readJson(deleted)).resolves.toEqual({ notificationId: 'notification-1', deleted: true });
+    expect(notificationDomainMocks.deleteNotificationRow).toHaveBeenCalledWith(env, 'notification-1');
+
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(null);
+    const missing = await handleDeleteNotification(new Request('https://api.test/api/my/notifications/missing'), env, 'missing');
+    expect(missing.status).toBe(404);
+
+    notificationDomainMocks.readNotificationRow.mockResolvedValueOnce(notificationRow({ user_id: 'other-user' }));
+    const forbidden = await handleDeleteNotification(new Request('https://api.test/api/my/notifications/notification-1'), env, 'notification-1');
+    expect(forbidden.status).toBe(403);
   });
 });

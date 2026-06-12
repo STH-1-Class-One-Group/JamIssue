@@ -147,6 +147,48 @@ describe('worker tourism public contract', () => {
     });
   });
 
+  it('returns an empty contract when the tourism source row is not initialized', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(jsonResponse([]));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await handleTourismPlaces(new Request(`${apiUrl}/api/tourism/places?category=tourism`), buildEnv());
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      sourceReady: false,
+      sourceName: null,
+      importedAt: null,
+      facets: { contentTypes: [], ktoFacets: [], districts: [] },
+      items: [],
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('applies category filters and reports source readiness from imported metadata when rows are empty', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse([{ resource_type: 'places', source_name: 'KTO', last_imported_at: '2026-06-02T00:00:00Z' }]))
+      .mockResolvedValueOnce(jsonResponse([{ content_type_id: null, content_type_label: null, kto_facet: null, district: null }]))
+      .mockResolvedValueOnce(jsonResponse([]));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await handleTourismPlaces(
+      new Request(`${apiUrl}/api/tourism/places?category=tourism&limit=1`),
+      buildEnv(),
+    );
+    const payload = await response.json();
+
+    expect(payload).toEqual({
+      sourceReady: true,
+      sourceName: 'KTO',
+      importedAt: '2026-06-02T00:00:00Z',
+      facets: { contentTypes: [], ktoFacets: [], districts: [] },
+      items: [],
+    });
+    expect(String(fetchMock.mock.calls[2][0])).toContain('category=eq.tourism');
+    expect(String(fetchMock.mock.calls[2][0])).toContain('limit=1');
+  });
+
   it('returns a stable empty response when KTO schema is missing', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ code: 'PGRST205', message: 'Could not find public.kto_place' }, { status: 404 })));
 
@@ -160,5 +202,11 @@ describe('worker tourism public contract', () => {
       facets: { contentTypes: [], ktoFacets: [], districts: [] },
       items: [],
     });
+  });
+
+  it('rethrows non-schema tourism repository failures', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ message: 'temporary failure' }, { status: 503 })));
+
+    await expect(handleTourismPlaces(new Request(`${apiUrl}/api/tourism/places`), buildEnv())).rejects.toThrow('temporary failure');
   });
 });

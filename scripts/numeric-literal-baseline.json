@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "756bd8ca2d7a8ec87e4411dc84bdc64a56693bc2",
+  "generatedFrom": "49fac43cbac28559de6d84bca538c5d9da3f9b87",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -2554,6 +2554,81 @@
       ]
     },
     {
+      "path": "deploy/api-worker-shell/services/tourism-domain/read-service.ts",
+      "count": 8,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 27,
+          "column": 25
+        },
+        {
+          "value": "1",
+          "line": 33,
+          "column": 22
+        },
+        {
+          "value": "1",
+          "line": 37,
+          "column": 19
+        },
+        {
+          "value": "0",
+          "line": 57,
+          "column": 111
+        },
+        {
+          "value": "0",
+          "line": 60,
+          "column": 124
+        },
+        {
+          "value": "0",
+          "line": 63,
+          "column": 75
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/tourism-domain/repository.ts",
+      "count": 2,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "1",
+          "line": 56,
+          "column": 117
+        },
+        {
+          "value": "0",
+          "line": 58,
+          "column": 17
+        }
+      ]
+    },
+    {
+      "path": "deploy/api-worker-shell/services/tourism.ts",
+      "count": 1,
+      "owner": "worker-backend",
+      "category": "worker-runtime-limit-baseline",
+      "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
+      "reason": "Worker TTL, limit, status, session, route, and adapter values are migrated through Worker config work.",
+      "examples": [
+        {
+          "value": "200",
+          "line": 20,
+          "column": 23
+        }
+      ]
+    },
+    {
       "path": "scripts/build-frontend.mjs",
       "count": 59,
       "owner": "tooling",
@@ -3279,6 +3354,46 @@
       ]
     },
     {
+      "path": "scripts/smoke-worker-tourism-contract.ts",
+      "count": 9,
+      "owner": "tooling",
+      "category": "tooling-script-baseline",
+      "scopeId": "TSK-002-01-HARDCODED-VALUE-AUDIT",
+      "reason": "Build, smoke, sync, and data scripts are tracked by the audit baseline before later extraction decisions.",
+      "examples": [
+        {
+          "value": "3",
+          "line": 25,
+          "column": 74
+        },
+        {
+          "value": "0",
+          "line": 48,
+          "column": 62
+        },
+        {
+          "value": "0",
+          "line": 49,
+          "column": 32
+        },
+        {
+          "value": "0",
+          "line": 51,
+          "column": 36
+        },
+        {
+          "value": "0",
+          "line": 55,
+          "column": 25
+        },
+        {
+          "value": "2",
+          "line": 56,
+          "column": 70
+        }
+      ]
+    },
+    {
       "path": "scripts/smoke/protected.ts",
       "count": 6,
       "owner": "tooling",
@@ -3625,6 +3740,31 @@
           "value": "0",
           "line": 107,
           "column": 79
+        }
+      ]
+    },
+    {
+      "path": "src/components/EventTabTourismSection.tsx",
+      "count": 3,
+      "owner": "frontend-ui",
+      "category": "frontend-ui-inline-token-baseline",
+      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
+      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 110,
+          "column": 79
+        },
+        {
+          "value": "0",
+          "line": 112,
+          "column": 31
+        },
+        {
+          "value": "0",
+          "line": 134,
+          "column": 24
         }
       ]
     },

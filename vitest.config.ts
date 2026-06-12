@@ -12,6 +12,12 @@ export default defineConfig({
       all: true,
       reportsDirectory: './coverage/typescript',
       reporter: ['text', 'json-summary', 'html'],
+      thresholds: {
+        statements: 95,
+        lines: 95,
+        functions: 95,
+        branches: 80,
+      },
       include: ['src/**/*.{ts,tsx}', 'scripts/**/*.ts', 'deploy/api-worker-shell/**/*.ts'],
       exclude: [
         '**/*.d.ts',

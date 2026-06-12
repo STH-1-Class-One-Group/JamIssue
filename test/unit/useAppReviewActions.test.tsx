@@ -170,6 +170,42 @@ describe('useAppReviewActions', () => {
     expect(getReviewComments).toHaveBeenCalledTimes(2);
   });
 
+  it('syncs and clears only the active comment thread', async () => {
+    const setNotice = vi.fn();
+    const formatErrorMessage = (error: unknown) => String(error);
+    const initialComments = myPageFixture.reviews[0].comments;
+    const syncedComments = [{ ...initialComments[0], id: 'comment-2', body: 'synced comment body' }];
+    vi.mocked(getReviewComments).mockResolvedValue(initialComments);
+
+    const { result } = renderHook(() => useActiveReviewComments({
+      activeCommentReviewId: 'review-1',
+      setNotice,
+      formatErrorMessage,
+    }));
+
+    await waitFor(() => {
+      expect(result.current.activeReviewCommentsStatus).toBe('ready');
+    });
+
+    act(() => {
+      result.current.syncReviewComments('other-review', syncedComments);
+      result.current.clearReviewComments('other-review');
+    });
+    expect(result.current.activeReviewComments).toEqual(initialComments);
+    expect(result.current.activeReviewCommentsStatus).toBe('ready');
+
+    act(() => {
+      result.current.syncReviewComments('review-1', syncedComments);
+    });
+    expect(result.current.activeReviewComments).toEqual(syncedComments);
+
+    act(() => {
+      result.current.clearReviewComments('review-1');
+    });
+    expect(result.current.activeReviewComments).toEqual([]);
+    expect(result.current.activeReviewCommentsStatus).toBe('idle');
+  });
+
   it('reports loading errors for uncached active comment threads', async () => {
     const setNotice = vi.fn();
     const formatErrorMessage = (error: unknown) => error instanceof Error ? error.message : String(error);
@@ -186,4 +222,5 @@ describe('useAppReviewActions', () => {
     });
     expect(setNotice).toHaveBeenCalledWith('boom');
   });
+
 });
