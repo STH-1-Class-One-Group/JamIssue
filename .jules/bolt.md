@@ -1,0 +1,3 @@
+## 2024-06-12 - [Performance] Prevent O(N) array allocation on single item deletion
+**Learning:** Using an unconditional `.filter(id !== ...)` to remove a single item from a large array allocates a new array in memory every single time, even if the item wasn't actually present in that list. Returning a new array reference causes unnecessary React re-renders in components mapping over these lists.
+**Action:** Use `arr.findIndex(...)` first. If it returns `-1`, return the exact original array reference (`return arr`) to entirely skip downstream React re-renders. If found, shallow copy and use `.splice(idx, 1)`.

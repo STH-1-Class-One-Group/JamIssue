@@ -152,22 +152,42 @@ export function useAppReviewCrudActions({
     try {
       await deleteReview(reviewId);
       clearReviewComments(reviewId);
-      setReviews((current) => current.filter((review) => review.id !== reviewId));
-      setSelectedPlaceReviews((current) => current.filter((review) => review.id !== reviewId));
+      const filterOutReview = <T extends { id: string }>(arr: T[], id: string) => {
+        const idx = arr.findIndex((item) => item.id === id);
+        if (idx === -1) return arr;
+        const next = [...arr];
+        next.splice(idx, 1);
+        return next;
+      };
+
+      setReviews((current) => filterOutReview(current, reviewId));
+      setSelectedPlaceReviews((current) => filterOutReview(current, reviewId));
       for (const placeId of Object.keys(placeReviewsCacheRef.current)) {
-        placeReviewsCacheRef.current[placeId] = placeReviewsCacheRef.current[placeId].filter((review) => review.id !== reviewId);
+        placeReviewsCacheRef.current[placeId] = filterOutReview(placeReviewsCacheRef.current[placeId], reviewId);
       }
       setMyPage((current) => {
         if (!current) {
           return current;
         }
+        const nextReviews = filterOutReview(current.reviews, reviewId);
+
+        // Fast readability-focused check if any comment needs removal
+        const hasCommentUpdate = current.comments.some((c) => c.reviewId === reviewId);
+        const nextComments = hasCommentUpdate
+          ? current.comments.filter((c) => c.reviewId !== reviewId)
+          : current.comments;
+
+        if (nextReviews === current.reviews && nextComments === current.comments) {
+          return current;
+        }
+
         return {
           ...current,
-          reviews: current.reviews.filter((review) => review.id !== reviewId),
-          comments: current.comments.filter((comment) => comment.reviewId !== reviewId),
+          reviews: nextReviews,
+          comments: nextComments,
           stats: {
             ...current.stats,
-            reviewCount: Math.max(0, current.stats.reviewCount - 1),
+            reviewCount: Math.max(0, current.stats.reviewCount - (nextReviews !== current.reviews ? 1 : 0)),
           },
         };
       });
