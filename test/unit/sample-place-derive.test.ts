@@ -49,4 +49,8 @@ describe('sample place derive helpers', () => {
       expect(deriveTags('Plain Place', category, 'District', '')).toContain(CATEGORY_META[category].name);
     }
   });
+
+  it('adds the ASCII art tag hint from place names', () => {
+    expect(deriveTags('art place', 'culture', 'District', '')).toHaveLength(4);
+  });
 });

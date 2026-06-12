@@ -231,6 +231,23 @@ describe('fetchJson', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
+  it('removes pending GET requests when a matching cache prefix is invalidated', async () => {
+    const pendingResolvers: Array<(response: Response) => void> = [];
+    const { fetchSpy } = stubFetch(() => new Promise<Response>((resolve) => {
+      pendingResolvers.push(resolve);
+    }));
+
+    const firstPending = fetchJson<{ value: number }>('/api/pending-cache');
+    invalidateApiCache(['/api/pending-cache']);
+    const secondPending = fetchJson<{ value: number }>('/api/pending-cache');
+
+    pendingResolvers[0]?.(jsonResponse({ value: 1 }));
+    pendingResolvers[1]?.(jsonResponse({ value: 2 }));
+
+    await expect(Promise.all([firstPending, secondPending])).resolves.toEqual([{ value: 1 }, { value: 2 }]);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
   it('throws API errors with server detail and dispatches auth expiration on 401', async () => {
     const authExpired = vi.fn();
     window.addEventListener('jamissue:auth-expired', authExpired);

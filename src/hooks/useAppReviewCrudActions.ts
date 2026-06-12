@@ -13,7 +13,7 @@ import {
   applyReviewUpdateToMyPage,
   removeReviewFromMyPage,
   removeReviewFromPlaceReviewCache,
-} from './reviewCrudCollectionUpdates';
+} from '../lib/reviewCrudCollectionUpdates';
 import type { UseAppReviewActionsParams } from './useAppReviewActions.types';
 
 export function useAppReviewCrudActions({

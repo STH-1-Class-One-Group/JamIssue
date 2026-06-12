@@ -123,6 +123,32 @@ describe('worker auth social-user boundary', () => {
     });
   });
 
+  it('falls back to identity email and provider nickname when existing identity profile fields are sparse', async () => {
+    const { upsertSocialUser } = await import('../../deploy/api-worker-shell/services/auth/social-user');
+    supabaseMocks.supabaseRequest
+      .mockResolvedValueOnce([{ identity_id: 'identity-2', user_id: 'user-2', email: 'identity@example.com', profile_image: 'https://image.test/identity.png' }])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ user_id: 'user-2', nickname: null, email: null, provider: 'naver', profile_completed_at: null }]);
+
+    const sessionUser = await upsertSocialUser(env, {
+      id: 'provider-identity',
+      email: null,
+      name: null,
+      nickname: 'Provider Nick',
+      profile_image: null,
+    }, 'naver');
+
+    expect(sessionUser).toMatchObject({
+      id: 'user-2',
+      nickname: 'Provider Nick',
+      email: null,
+      provider: 'naver',
+      profileImage: null,
+      profileCompletedAt: null,
+    });
+  });
+
   it('creates new social users with fallback names and suffixes duplicate nicknames', async () => {
     vi.spyOn(crypto, 'randomUUID').mockReturnValue('00000000-0000-4000-8000-000000000123');
     const { upsertSocialUser } = await import('../../deploy/api-worker-shell/services/auth/social-user');
@@ -180,5 +206,29 @@ describe('worker auth social-user boundary', () => {
       isAdmin: false,
       profileCompletedAt: null,
     });
+  });
+
+  it('fails when every generated social nickname candidate is already taken', async () => {
+    const { upsertSocialUser } = await import('../../deploy/api-worker-shell/services/auth/social-user');
+    let nicknameLookupCount = 0;
+    supabaseMocks.supabaseRequest.mockImplementation(async (_env, query: string) => {
+      if (String(query).startsWith('user_identity?')) {
+        return [];
+      }
+      if (String(query) === 'user?select=user_id,nickname') {
+        const nickname = nicknameLookupCount === 0 ? 'Taken' : `Taken${nicknameLookupCount + 1}`;
+        nicknameLookupCount += 1;
+        return [{ user_id: `existing-${nicknameLookupCount}`, nickname }];
+      }
+      return [];
+    });
+
+    await expect(upsertSocialUser(env, {
+      id: 'provider-exhausted',
+      email: null,
+      name: null,
+      nickname: 'Taken',
+      profile_image: null,
+    }, 'kakao')).rejects.toThrow(/\S+/u);
   });
 });

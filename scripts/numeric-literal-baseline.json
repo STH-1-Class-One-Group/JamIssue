@@ -5094,6 +5094,26 @@
       ]
     },
     {
+      "path": "src/lib/reviewCrudCollectionUpdates.ts",
+      "count": 2,
+      "owner": "frontend-ui",
+      "category": "frontend-ui-inline-token-baseline",
+      "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
+      "reason": "Frontend component, hook, store, and UI-domain numeric values are classified for token or config review.",
+      "examples": [
+        {
+          "value": "0",
+          "line": 44,
+          "column": 29
+        },
+        {
+          "value": "1",
+          "line": 44,
+          "column": 60
+        }
+      ]
+    },
+    {
       "path": "src/lib/visits.ts",
       "count": 8,
       "owner": "frontend-map",

@@ -3,7 +3,7 @@ import {
   applyReviewUpdateToMyPage,
   removeReviewFromMyPage,
   removeReviewFromPlaceReviewCache,
-} from '../../src/hooks/reviewCrudCollectionUpdates';
+} from '../../src/lib/reviewCrudCollectionUpdates';
 import type { MyComment, MyPageResponse } from '../../src/types/my-page';
 import type { Review } from '../../src/types/review';
 

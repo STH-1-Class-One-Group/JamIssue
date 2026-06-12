@@ -188,6 +188,28 @@ describe('worker community and my page mappers', () => {
     ]);
   });
 
+  it('maps community routes with anonymous authors, fallback place ids, and default flags', () => {
+    const routes = mapCommunityRoutes(
+      [{ route_id: 8, user_id: 'missing-user', title: 'Fallback Route', description: 'Description', mood: 'mood', like_count: null, is_user_generated: null, travel_session_id: null, created_at: '2026-05-14T00:00:00Z' }],
+      [{ route_id: 8, position_id: 999, stop_order: 1 }],
+      new Map(),
+      new Map(),
+    );
+
+    expect(routes).toEqual([
+      expect.objectContaining({
+        id: '8',
+        author: expect.any(String),
+        likeCount: 0,
+        likedByMe: false,
+        placeIds: ['999'],
+        placeNames: ['999'],
+        isUserGenerated: false,
+        travelSessionId: null,
+      }),
+    ]);
+  });
+
   it('maps my comments from arrays or maps and skips deleted comments', () => {
     const comments = mapMyComments(
       [

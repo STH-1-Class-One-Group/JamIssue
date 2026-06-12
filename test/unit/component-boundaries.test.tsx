@@ -225,6 +225,50 @@ describe('component boundary rendering', () => {
     expect(onTogglePlace).toHaveBeenCalledWith('place-1', false);
   });
 
+  it('keeps admin controls inert while summary is missing or a place is busy', () => {
+    const onRefreshImport = vi.fn().mockResolvedValue(undefined);
+    const onToggleManualOverride = vi.fn().mockResolvedValue(undefined);
+    const onTogglePlace = vi.fn().mockResolvedValue(undefined);
+    const props = {
+      busyPlaceId: 'place-1',
+      isImporting: true,
+      onRefreshImport,
+      onToggleManualOverride,
+      onTogglePlace,
+    };
+
+    const { container, rerender } = render(<AdminPanel summary={null} {...props} />);
+    expect(container.firstChild).toBeNull();
+
+    rerender(
+      <AdminPanel
+        {...props}
+        summary={{
+          userCount: 1,
+          placeCount: 1,
+          reviewCount: 0,
+          commentCount: 0,
+          stampCount: 0,
+          sourceReady: false,
+          places: [{
+            id: 'place-1',
+            name: 'Hidden Place',
+            district: 'District',
+            category: 'cafe',
+            isActive: false,
+            isManualOverride: true,
+            reviewCount: 0,
+            updatedAt: '2026-05-14',
+          }],
+        }}
+      />,
+    );
+
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(3);
+    expect(buttons.every((button) => button.hasAttribute('disabled'))).toBe(true);
+  });
+
   it('renders festival details only while open and routes handle clicks by drawer state', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
