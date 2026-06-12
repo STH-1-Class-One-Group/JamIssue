@@ -11,6 +11,7 @@ import {
   readSessionUser,
 } from '../services/auth';
 import { handleBannerEvents, handleFestivalImport, handleFestivals } from '../services/festivals';
+import { handleTourismPlaces } from '../services/tourism';
 import {
   handleDeleteNotification,
   handleMarkAllNotificationsRead,
@@ -64,6 +65,7 @@ export function createExactRoutes(request: Request, env: WorkerEnv, url: URL, ru
     ['PATCH', '/api/notifications/read-all', () => handleMarkAllNotificationsRead(request, env)],
     ['GET', '/api/festivals', () => handleFestivals(request, env)],
     ['GET', '/api/banner/events', () => handleBannerEvents(request, env)],
+    ['GET', '/api/tourism/places', () => handleTourismPlaces(request, env)],
     ['POST', '/api/internal/public-events/import', () => handleFestivalImport(request, env)],
     ['GET', '/api/admin/summary', () => runtime.adminService.handleAdminSummary(request, env)],
     ['POST', '/api/admin/import/public-data', () => runtime.adminService.handleAdminImportPublicData(request, env)],

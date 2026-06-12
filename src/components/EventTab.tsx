@@ -1,13 +1,17 @@
+import { useState } from 'react';
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import type { FestivalItem } from '../types/core';
+import { EventTabTourismSection } from './EventTabTourismSection';
 
 interface EventTabProps {
   festivals: FestivalItem[];
 }
 
+type EventSegment = 'festivals' | 'tourism';
+
 function formatFestivalPeriod(festival: FestivalItem) {
   if (!festival.startDate && !festival.endDate) {
-    return '일정 정보가 아직 없어요.';
+    return '일정 정보가 아직 없어요';
   }
   if (festival.startDate === festival.endDate) {
     return festival.startDate;
@@ -19,7 +23,7 @@ function formatFestivalTitle(title: string) {
   return title
     .replace(/\[[^\]]*\]/g, ' ')
     .replace(/\([^)]*\)/g, ' ')
-    .replace(/[&_·•/|]+/g, ' ')
+    .replace(/[&·•|]+/g, ' ')
     .replace(/\s+-\s+/g, ' ')
     .replace(/\s+[A-Z][A-Z0-9-]{2,}$/g, '')
     .replace(/\s{2,}/g, ' ')
@@ -31,7 +35,7 @@ function getFestivalLocationLines(festival: FestivalItem) {
   const roadAddress = festival.roadAddress?.trim() || null;
 
   if (!venueName && !roadAddress) {
-    return ['개최 장소 정보가 아직 없어요.'];
+    return ['개최 장소 정보가 아직 없어요'];
   }
 
   if (venueName && roadAddress && venueName === roadAddress) {
@@ -43,6 +47,7 @@ function getFestivalLocationLines(festival: FestivalItem) {
 
 export function EventTab({ festivals }: EventTabProps) {
   const scrollRef = useScrollRestoration<HTMLElement>('event');
+  const [segment, setSegment] = useState<EventSegment>('festivals');
 
   return (
     <section ref={scrollRef} className="page-panel page-panel--scrollable">
@@ -50,59 +55,74 @@ export function EventTab({ festivals }: EventTabProps) {
         <p className="eyebrow">EVENT</p>
         <h2>행사</h2>
         <p>
-          대전에서 진행 중이거나 곧 열릴 행사를
+          대전에서 진행 중이거나 곧 열릴 행사와 관광장소를
           <br />
-          한 번에 보고 빠르게 훑어볼 수 있어요.
+          한 번에 보고 빠르게 확인할 수 있어요.
         </p>
       </header>
 
-      <section className="sheet-card stack-gap">
-        <div className="section-title-row section-title-row--tight">
-          <div>
-            <p className="eyebrow">DAEJEON FESTIVALS</p>
-            <h3>지금 확인할 행사</h3>
-          </div>
-          <span className="counter-pill">{festivals.length}개</span>
+      <div className="event-segment" role="tablist" aria-label="행사 콘텐츠 구분">
+        <button type="button" className={`chip ${segment === 'festivals' ? 'is-active' : ''}`} onClick={() => setSegment('festivals')}>
+          행사
+        </button>
+        <button type="button" className={`chip ${segment === 'tourism' ? 'is-active' : ''}`} onClick={() => setSegment('tourism')}>
+          관광장소
+        </button>
+      </div>
+
+      {segment === 'festivals' ? <FestivalSection festivals={festivals} /> : <EventTabTourismSection active={segment === 'tourism'} />}
+    </section>
+  );
+}
+
+function FestivalSection({ festivals }: { festivals: FestivalItem[] }) {
+  return (
+    <section className="sheet-card stack-gap">
+      <div className="section-title-row section-title-row--tight">
+        <div>
+          <p className="eyebrow">DAEJEON FESTIVALS</p>
+          <h3>지금 확인할 행사</h3>
         </div>
+        <span className="counter-pill">{festivals.length}개</span>
+      </div>
 
-        {festivals.length === 0 ? (
-          <p className="empty-copy">현재 진행 중이거나 30일 이내 예정된 대전 행사가 없어요.</p>
-        ) : (
-          <div className="community-route-list festival-card-list">
-            {festivals.map((festival) => {
-              const locationLines = getFestivalLocationLines(festival);
-              return (
-                <article key={festival.id} className="community-route-card community-route-card--curated festival-card">
-                  <div className="festival-card__content">
-                    <div className="festival-card__meta-row">
-                      <span className="festival-card__date">{formatFestivalPeriod(festival)}</span>
-                      {festival.isOngoing ? <span className="soft-tag festival-card__status-chip">진행 중</span> : null}
-                    </div>
-
-                    <h4 className="festival-card__title">{formatFestivalTitle(festival.title)}</h4>
-
-                    <div className="festival-card__location">
-                      {locationLines.map((line, index) => (
-                        <p key={`${festival.id}-${index}`} className={index === 0 ? 'festival-card__location-primary' : 'festival-card__location-secondary'}>
-                          {line}
-                        </p>
-                      ))}
-                    </div>
+      {festivals.length === 0 ? (
+        <p className="empty-copy">현재 진행 중이거나 30일 이내 예정된 대전 행사가 없어요.</p>
+      ) : (
+        <div className="community-route-list festival-card-list">
+          {festivals.map((festival) => {
+            const locationLines = getFestivalLocationLines(festival);
+            return (
+              <article key={festival.id} className="community-route-card community-route-card--curated festival-card">
+                <div className="festival-card__content">
+                  <div className="festival-card__meta-row">
+                    <span className="festival-card__date">{formatFestivalPeriod(festival)}</span>
+                    {festival.isOngoing ? <span className="soft-tag festival-card__status-chip">진행 중</span> : null}
                   </div>
 
-                  {festival.homepageUrl ? (
-                    <div className="festival-card__footer">
-                      <a className="festival-card__link" href={festival.homepageUrl} target="_blank" rel="noreferrer">
-                        홈페이지 열기
-                      </a>
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                  <h4 className="festival-card__title">{formatFestivalTitle(festival.title)}</h4>
+
+                  <div className="festival-card__location">
+                    {locationLines.map((line, index) => (
+                      <p key={`${festival.id}-${index}`} className={index === 0 ? 'festival-card__location-primary' : 'festival-card__location-secondary'}>
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                {festival.homepageUrl ? (
+                  <div className="festival-card__footer">
+                    <a className="festival-card__link" href={festival.homepageUrl} target="_blank" rel="noreferrer">
+                      홈페이지 열기
+                    </a>
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

@@ -9,6 +9,10 @@ import type { WorkerEnv, WorkerSessionUser } from '../../deploy/api-worker-shell
 const supabaseMock = vi.hoisted(() => ({
   encodeFilterValue: (value: unknown) => encodeURIComponent(String(value)),
   getSupabaseKey: vi.fn(() => 'service-role-key'),
+  parseListLimit: (url: URL, defaultLimit: number, maxLimit: number) => {
+    const raw = Number(url.searchParams.get('limit') ?? defaultLimit);
+    return Number.isFinite(raw) && raw > 0 ? Math.min(Math.floor(raw), maxLimit) : defaultLimit;
+  },
   supabaseRequest: vi.fn(),
 }));
 
@@ -126,6 +130,22 @@ describe('worker routing runtime', () => {
     expect(response.status).toBe(200);
     expect(await readJson<{ route: string }>(response)).toEqual({ route: 'handler' });
     expect(runtime.reviewReadService.handleReviewFeed).toHaveBeenCalledTimes(1);
+  });
+
+  it('dispatches the public tourism route through the route registry', async () => {
+    supabaseMock.supabaseRequest
+      .mockResolvedValueOnce([{ resource_type: 'places', source_name: 'KTO', last_success_at: '2026-06-01T00:00:00Z' }])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    const response = await createRouteRequest(createRuntime())(new Request(`${apiUrl}/api/tourism/places`), env);
+
+    expect(response.status).toBe(200);
+    await expect(readJson(response)).resolves.toMatchObject({
+      sourceReady: true,
+      sourceName: 'KTO',
+      items: [],
+    });
   });
 
   it('dispatches pattern routes through the route registry', async () => {

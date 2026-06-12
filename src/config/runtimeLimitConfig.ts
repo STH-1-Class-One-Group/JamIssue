@@ -4,7 +4,7 @@ export class ApiCacheConfig {
   static readonly defaultGetTtlMs = 15 * ApiCacheConfig.secondMs;
 
   static readonly endpointTtlRules = [
-    { prefixes: ['/api/festivals', '/api/banner/events'], ttlMs: 30 * ApiCacheConfig.minuteMs },
+    { prefixes: ['/api/festivals', '/api/banner/events', '/api/tourism/places'], ttlMs: 30 * ApiCacheConfig.minuteMs },
     { prefixes: ['/api/courses/curated'], ttlMs: ApiCacheConfig.minuteMs },
     { prefixes: ['/api/map-bootstrap', '/api/community-routes'], ttlMs: 20 * ApiCacheConfig.secondMs },
     { prefixes: ['/api/reviews', '/api/my/summary'], ttlMs: 10 * ApiCacheConfig.secondMs },
