@@ -12,10 +12,18 @@ import { buildBannerItem, buildFestivalCard, getFestivalWindowEnd, getTargetFest
 import { loadFestivalRows, loadFestivalSourceMetadata } from './repository';
 
 async function loadConfiguredFestivalRows(env: WorkerEnv, now: number, limit: number) {
+  const source = (await loadFestivalSourceMetadata(env))[0] ?? null;
+  if (!source?.source_id) {
+    return [];
+  }
+  return loadConfiguredFestivalRowsForSource(env, source.source_id, now, limit);
+}
+
+async function loadConfiguredFestivalRowsForSource(env: WorkerEnv, sourceId: string | number, now: number, limit: number) {
   const nowIso = new Date(now).toISOString();
   const windowEndIso = getFestivalWindowEnd(now).toISOString();
   const cityKeyword = getTargetFestivalCityKeyword(env);
-  const rows = await loadFestivalRows(env, nowIso, windowEndIso, limit);
+  const rows = await loadFestivalRows(env, sourceId, nowIso, windowEndIso, limit);
   return groupFestivalRowsBySeries((rows || []).filter((row) => isFestivalRowInConfiguredArea(row, cityKeyword)));
 }
 
@@ -39,11 +47,16 @@ export async function loadFestivalCards(env: WorkerEnv, now: number) {
  * Loads banner event response fields for `/api/banner/events`.
  */
 export async function loadBannerEvents(now: number, env: WorkerEnv) {
-  const [eventRows, sourceRows] = await Promise.all([
-    loadConfiguredFestivalRows(env, now, WorkerFestivalRuntimeConfig.bannerQueryLimit),
-    loadFestivalSourceMetadata(env),
-  ]);
-  const source = sourceRows[0] ?? null;
+  const source = (await loadFestivalSourceMetadata(env))[0] ?? null;
+  if (!source?.source_id) {
+    return {
+      sourceReady: false,
+      sourceName: null,
+      importedAt: null,
+      items: [],
+    };
+  }
+  const eventRows = await loadConfiguredFestivalRowsForSource(env, source.source_id, now, WorkerFestivalRuntimeConfig.bannerQueryLimit);
   const items =
     eventRows.length > 0
       ? eventRows.slice(0, WorkerFestivalRuntimeConfig.bannerDisplayLimit).map((row) => buildBannerItem(row, now))

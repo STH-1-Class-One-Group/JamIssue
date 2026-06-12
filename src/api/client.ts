@@ -27,3 +27,5 @@ export {
 } from './myClient';
 export { getAdminSummary, importPublicData, updatePlaceVisibility } from './adminClient';
 export { claimStamp } from './stampClient';
+export { getTourismPlaces } from './tourismClient';
+export type { TourismPlacesParams } from './tourismClient';

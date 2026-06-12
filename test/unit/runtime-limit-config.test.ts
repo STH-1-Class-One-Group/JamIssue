@@ -13,6 +13,7 @@ describe('runtime limit config', () => {
   it('preserves API cache TTL rules by endpoint prefix', () => {
     expect(ApiCacheConfig.getTtlForPath('/api/festivals')).toBe(30 * 60 * 1000);
     expect(ApiCacheConfig.getTtlForPath('/api/banner/events/current')).toBe(30 * 60 * 1000);
+    expect(ApiCacheConfig.getTtlForPath('/api/tourism/places?district=%EC%9C%A0%EC%84%B1%EA%B5%AC')).toBe(30 * 60 * 1000);
     expect(ApiCacheConfig.getTtlForPath('/api/courses/curated')).toBe(60 * 1000);
     expect(ApiCacheConfig.getTtlForPath('/api/map-bootstrap')).toBe(20 * 1000);
     expect(ApiCacheConfig.getTtlForPath('/api/community-routes')).toBe(20 * 1000);

@@ -1171,6 +1171,45 @@ textarea {
   opacity: 0.88;
 }
 
+.event-segment {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.tourism-filter-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.tourism-filter-row {
+  display: grid;
+  gap: 7px;
+}
+
+.tourism-filter-row__label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tourism-filter-row__chips {
+  gap: 8px;
+}
+
+.tourism-card__summary,
+.tourism-card__curated {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tourism-card__curated {
+  color: color-mix(in srgb, var(--pink-deep) 82%, #2f2a33 18%);
+  font-weight: 650;
+}
+
 .comment-thread {
   margin-top: 10px;
 }

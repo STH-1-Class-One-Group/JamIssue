@@ -96,10 +96,10 @@ export function updateFestivalSourceMetadata(
 /**
  * Loads upcoming public event rows for festival card and banner responses.
  */
-export function loadFestivalRows(env: WorkerEnv, nowIso: string, windowEndIso: string, limit: number) {
+export function loadFestivalRows(env: WorkerEnv, sourceId: string | number, nowIso: string, windowEndIso: string, limit: number) {
   return supabaseRequest<FestivalEventRow[]>(
     env,
-    `public_event?select=public_event_id,title,venue_name,district,address,road_address,starts_at,ends_at,summary,source_page_url,latitude,longitude&ends_at=gte.${encodeFilterValue(nowIso)}&starts_at=lte.${encodeFilterValue(windowEndIso)}&order=starts_at.asc&limit=${limit}`,
+    `public_event?select=public_event_id,title,venue_name,district,address,road_address,starts_at,ends_at,summary,source_page_url,latitude,longitude&source_id=eq.${encodeFilterValue(sourceId)}&sync_status=neq.stale&ends_at=gte.${encodeFilterValue(nowIso)}&starts_at=lte.${encodeFilterValue(windowEndIso)}&order=starts_at.asc&limit=${limit}`,
   );
 }
 
@@ -107,8 +107,8 @@ export function loadFestivalRows(env: WorkerEnv, nowIso: string, windowEndIso: s
  * Loads source metadata for the banner response readiness fields.
  */
 export function loadFestivalSourceMetadata(env: WorkerEnv) {
-  return supabaseRequest<Array<Pick<FestivalSourceRow, 'name' | 'last_imported_at'>>>(
+  return supabaseRequest<Array<Pick<FestivalSourceRow, 'source_id' | 'name' | 'last_imported_at'>>>(
     env,
-    `public_data_source?select=name,last_imported_at&source_key=eq.${encodeFilterValue(INTERNAL_FESTIVAL_SOURCE_KEY)}&limit=1`,
+    `public_data_source?select=source_id,name,last_imported_at&source_key=eq.${encodeFilterValue(INTERNAL_FESTIVAL_SOURCE_KEY)}&limit=1`,
   );
 }

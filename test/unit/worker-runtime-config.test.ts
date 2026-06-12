@@ -9,6 +9,7 @@ import {
   WorkerStampRuntimeConfig,
   WorkerSupabaseRuntimeConfig,
   WorkerTimeConfig,
+  WorkerTourismRuntimeConfig,
 } from '../../deploy/api-worker-shell/config/runtime';
 
 describe('Worker runtime config', () => {
@@ -50,6 +51,12 @@ describe('Worker runtime config', () => {
     expect(WorkerFestivalRuntimeConfig.internalSourceKey).toBe('jamissue-public-event-feed');
     expect(WorkerFestivalRuntimeConfig.internalSourceName).toBe('Daejeon Official Event Search');
     expect(WorkerFestivalRuntimeConfig.internalSourceUrl).toBe('https://www.daejeon.go.kr/fvu/FvuEventList.do?menuSeq=504');
+  });
+
+  it('preserves tourism runtime settings', () => {
+    expect(WorkerTourismRuntimeConfig.defaultPlacesLimit).toBe(50);
+    expect(WorkerTourismRuntimeConfig.maxPlacesLimit).toBe(100);
+    expect(WorkerTourismRuntimeConfig.facetQueryLimit).toBe(10000);
   });
 
   it('preserves notification runtime limits', () => {

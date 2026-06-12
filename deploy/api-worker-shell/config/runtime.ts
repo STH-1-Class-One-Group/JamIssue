@@ -41,6 +41,12 @@ export class WorkerFestivalRuntimeConfig {
   static readonly internalSourceUrl = 'https://www.daejeon.go.kr/fvu/FvuEventList.do?menuSeq=504';
 }
 
+export class WorkerTourismRuntimeConfig {
+  static readonly defaultPlacesLimit = 50;
+  static readonly maxPlacesLimit = 100;
+  static readonly facetQueryLimit = 10000;
+}
+
 export class WorkerNotificationRuntimeConfig {
   static readonly defaultListLimit = 30;
   static readonly myNotificationsListLimit = 50;

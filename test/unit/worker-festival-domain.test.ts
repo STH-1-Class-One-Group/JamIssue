@@ -50,7 +50,10 @@ describe('worker festival domain boundary', () => {
   it('keeps /api/festivals response shape and cache hit semantics', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-05-11T00:00:00+09:00'));
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse([sampleFestivalRow()]));
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse([{ source_id: 7, name: 'Daejeon Official Event Search', last_imported_at: '2026-05-11T00:00:00.000Z' }]))
+      .mockResolvedValueOnce(jsonResponse([sampleFestivalRow()]));
     vi.stubGlobal('fetch', fetchMock);
 
     const request = new Request(`${apiUrl}/api/festivals`);
@@ -73,7 +76,9 @@ describe('worker festival domain boundary', () => {
         isOngoing: true,
       },
     ]);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[1][0])).toContain('source_id=eq.7');
+    expect(String(fetchMock.mock.calls[1][0])).toContain('sync_status=neq.stale');
   });
 
   it('keeps /api/banner/events source and item response shape', async () => {
@@ -81,8 +86,8 @@ describe('worker festival domain boundary', () => {
     vi.setSystemTime(new Date('2026-05-11T00:00:00+09:00'));
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(jsonResponse([sampleFestivalRow()]))
-      .mockResolvedValueOnce(jsonResponse([{ name: 'Daejeon Official Event Search', last_imported_at: '2026-05-11T00:00:00.000Z' }]));
+      .mockResolvedValueOnce(jsonResponse([{ source_id: 7, name: 'Daejeon Official Event Search', last_imported_at: '2026-05-11T00:00:00.000Z' }]))
+      .mockResolvedValueOnce(jsonResponse([sampleFestivalRow()]));
     vi.stubGlobal('fetch', fetchMock);
 
     const response = await handleBannerEvents(new Request(`${apiUrl}/api/banner/events`), buildEnv());
@@ -108,6 +113,8 @@ describe('worker festival domain boundary', () => {
         },
       ],
     });
+    expect(String(fetchMock.mock.calls[1][0])).toContain('source_id=eq.7');
+    expect(String(fetchMock.mock.calls[1][0])).toContain('sync_status=neq.stale');
   });
 
   it('keeps festival import token and valid path semantics', async () => {

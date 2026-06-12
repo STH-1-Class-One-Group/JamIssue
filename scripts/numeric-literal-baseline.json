@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedFrom": "7e3820dfeb5d739fe65ec1ba7b41f7a27c6ab3cb",
+  "generatedFrom": "756bd8ca2d7a8ec87e4411dc84bdc64a56693bc2",
   "policy": "TSK-002 requires every production numeric literal file to be classified before config extraction work starts.",
   "files": [
     {
@@ -1120,7 +1120,7 @@
     },
     {
       "path": "deploy/api-worker-shell/config/runtime.ts",
-      "count": 31,
+      "count": 34,
       "owner": "worker-backend",
       "category": "worker-runtime-config-baseline",
       "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
@@ -1403,32 +1403,32 @@
       "examples": [
         {
           "value": "1",
-          "line": 75,
+          "line": 77,
           "column": 116
         },
         {
           "value": "1",
-          "line": 76,
+          "line": 78,
           "column": 92
         },
         {
           "value": "1",
-          "line": 77,
+          "line": 79,
           "column": 93
         },
         {
           "value": "1",
-          "line": 83,
+          "line": 85,
           "column": 87
         },
         {
           "value": "200",
-          "line": 84,
+          "line": 86,
           "column": 29
         },
         {
           "value": "1",
-          "line": 87,
+          "line": 89,
           "column": 102
         }
       ]
@@ -1915,7 +1915,7 @@
     },
     {
       "path": "deploy/api-worker-shell/services/festival-domain/read-service.ts",
-      "count": 5,
+      "count": 6,
       "owner": "worker-backend",
       "category": "worker-runtime-limit-baseline",
       "scopeId": "TSK-002-05-WORKER-RUNTIME-CONFIG",
@@ -1923,27 +1923,32 @@
       "examples": [
         {
           "value": "0",
-          "line": 34,
+          "line": 15,
+          "column": 58
+        },
+        {
+          "value": "0",
+          "line": 42,
           "column": 12
         },
         {
           "value": "0",
-          "line": 46,
-          "column": 29
+          "line": 50,
+          "column": 58
         },
         {
           "value": "0",
-          "line": 48,
+          "line": 61,
           "column": 24
         },
         {
           "value": "0",
-          "line": 49,
+          "line": 62,
           "column": 25
         },
         {
           "value": "0",
-          "line": 52,
+          "line": 65,
           "column": 33
         }
       ]
@@ -3593,33 +3598,33 @@
       "examples": [
         {
           "value": "9",
-          "line": 24,
+          "line": 28,
           "column": 29
         },
         {
           "value": "2",
-          "line": 24,
+          "line": 28,
           "column": 33
         },
         {
           "value": "2",
-          "line": 25,
+          "line": 29,
           "column": 18
         },
         {
           "value": "0",
-          "line": 68,
-          "column": 31
+          "line": 89,
+          "column": 29
         },
         {
           "value": "30",
-          "line": 69,
-          "column": 48
+          "line": 90,
+          "column": 46
         },
         {
           "value": "0",
-          "line": 86,
-          "column": 81
+          "line": 107,
+          "column": 79
         }
       ]
     },
@@ -4609,7 +4614,7 @@
         {
           "value": "30",
           "line": 7,
-          "column": 66
+          "column": 89
         },
         {
           "value": "20",
@@ -4850,7 +4855,7 @@
     },
     {
       "path": "src/index.css",
-      "count": 1534,
+      "count": 1549,
       "owner": "frontend-ui",
       "category": "css-layout-token-baseline",
       "scopeId": "TSK-002-03-FRONTEND-UI-TOKEN-CONFIG",
