@@ -21,6 +21,7 @@ describe('PlaceDetailSheet integration', () => {
         reviews={[reviewFixture, secondaryReviewFixture]}
         isOpen={true}
         drawerState="partial"
+        sheetState="peek"
         loggedIn={true}
         visitCount={2}
         latestStamp={latestStampFixture}
@@ -63,6 +64,7 @@ describe('PlaceDetailSheet integration', () => {
         reviews={[reviewFixture]}
         isOpen={true}
         drawerState="full"
+        sheetState="full"
         loggedIn={true}
         visitCount={2}
         latestStamp={todayStampFixture}
@@ -94,6 +96,7 @@ describe('PlaceDetailSheet integration', () => {
         reviews={[reviewFixture]}
         isOpen={true}
         drawerState="full"
+        sheetState="full"
         loggedIn={true}
         visitCount={2}
         latestStamp={todayStampFixture}
@@ -122,5 +125,6 @@ describe('PlaceDetailSheet integration', () => {
     expect(textarea).toBeEnabled();
     expect(drawerContent).not.toBeNull();
     expect(drawer).toHaveClass('place-drawer--full');
+    expect(drawer).toHaveAttribute('data-map-sheet-state', 'full');
   });
 });

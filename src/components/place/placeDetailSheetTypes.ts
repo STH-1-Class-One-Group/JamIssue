@@ -1,11 +1,13 @@
 import type { ApiStatus, DrawerState, Place, ReviewMood } from '../../types/core';
 import type { Review, StampLog } from '../../types/review';
+import type { MapSheetState } from '../map-stage/mapSheetState';
 
 export interface PlaceDetailSheetProps {
   place: Place | null;
   reviews: Review[];
   isOpen: boolean;
   drawerState: DrawerState;
+  sheetState: MapSheetState;
   loggedIn: boolean;
   visitCount: number;
   latestStamp: StampLog | null;

@@ -5,12 +5,14 @@ import { PlaceDetailReviewSection } from './place/PlaceDetailReviewSection';
 import { PlaceProofCard } from './place/PlaceProofCard';
 import type { PlaceDetailSheetProps } from './place/placeDetailSheetTypes';
 import { usePlaceDrawerHandle } from './place/usePlaceDrawerHandle';
+import { buildMapSheetClassName } from './map-stage/mapSheetState';
 
 export function PlaceDetailSheet({
   place,
   reviews,
   isOpen,
   drawerState,
+  sheetState,
   loggedIn,
   visitCount,
   latestStamp,
@@ -41,13 +43,13 @@ export function PlaceDetailSheet({
     return null;
   }
 
-  const sheetClassName = `place-drawer place-drawer--${drawerState}`;
+  const sheetClassName = buildMapSheetClassName('place-drawer', sheetState, drawerState);
   const visitLabel = latestStamp ? latestStamp.visitLabel : '첫 방문 대기';
   const canClaimStamp = loggedIn && !todayStamp;
   const categoryMeta = categoryInfo[place.category];
 
   return (
-    <section className={sheetClassName} aria-label="장소 상세 시트">
+    <section className={sheetClassName} data-map-sheet-state={sheetState} aria-label="장소 상세 시트">
       <button
         type="button"
         className="place-drawer__handle"
