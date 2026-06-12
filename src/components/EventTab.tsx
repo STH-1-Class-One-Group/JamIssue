@@ -45,7 +45,7 @@ export function EventTab({ festivals }: EventTabProps) {
   const scrollRef = useScrollRestoration<HTMLElement>('event');
 
   return (
-    <section ref={scrollRef} className="page-panel page-panel--scrollable">
+    <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="event">
       <header className="panel-header">
         <p className="eyebrow">EVENT</p>
         <h2>행사</h2>

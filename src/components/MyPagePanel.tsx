@@ -86,14 +86,14 @@ export function MyPagePanel({
 
   if (!sessionUser) {
     return (
-      <section ref={scrollRef} className="page-panel page-panel--scrollable">
+      <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="my">
         <MyPageGuestState providers={providers} onLogin={onLogin} />
       </section>
     );
   }
 
   return (
-    <section ref={scrollRef} className="page-panel page-panel--scrollable">
+    <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="my">
       <MyPageHeader sessionUser={sessionUser} />
 
       {!myPage && myPageError && <MyPageLoadError myPageError={myPageError} onRetry={onRetry} />}
