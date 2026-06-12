@@ -57,7 +57,7 @@ describe('architecture readability source quality baseline', () => {
     expect(largeFiles).toEqual([]);
   });
 
-  it('keeps import hot spots explicit before app-shell and Worker entrypoint readability work', () => {
+  it('keeps import hot spots explicit after app-shell composition moves out of App', () => {
     const hotSpots = collectTrackedFiles(['src'])
       .filter((path) => trackedFrontendExtensions.test(path))
       .map((path) => ({ path, imports: countImportStatements(path) }))
@@ -65,7 +65,7 @@ describe('architecture readability source quality baseline', () => {
       .sort((left, right) => left.path.localeCompare(right.path));
 
     expect(hotSpots).toEqual([
-      { path: 'src/App.tsx', imports: 18 },
+      { path: 'src/App.tsx', imports: 15 },
       { path: 'src/components/MyPagePanel.tsx', imports: 11 },
       { path: 'src/hooks/app-bootstrap/useAppBootstrapLifecycle.ts', imports: 11 },
       { path: 'src/hooks/app-tab-loaders/useAppTabDataLoaders.ts', imports: 11 },

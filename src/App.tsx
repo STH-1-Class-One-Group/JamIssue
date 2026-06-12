@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
-import { BottomNav } from './components/BottomNav';
-import { FloatingBackButton } from './components/FloatingBackButton';
-import { GlobalSettingsMenu } from './components/GlobalSettingsMenu';
-import { GlobalStatusBanner } from './components/GlobalStatusBanner';
+import { AppShell } from './components/app-shell/AppShell';
 import {
   useAppRouteState,
   getInitialMapViewport,
@@ -55,37 +52,23 @@ export default function App() {
     pageStageProps,
   } = useAppStageProps(coordinator);
   return (
-    <div className="map-app-shell">
-      <div
-        className={[
-          'phone-shell',
-          activeTab === 'map' ? 'phone-shell--map' : '',
-        ].filter(Boolean).join(' ')}
-      >
-        {globalStatus && (
-          <div className="phone-shell__status-slot">
-            <GlobalStatusBanner
-              tone={globalStatus.tone}
-              message={globalStatus.message}
-              layout={activeTab === 'map' ? 'map' : 'page'}
-            />
-          </div>
-        )}
-        <div className="phone-shell__utility-slot">
-          <GlobalSettingsMenu {...globalUtility} />
-        </div>
-        <div className="phone-shell__body">
-          {activeTab === 'map' ? (
-            <AppMapStageView {...mapStageProps} />
-          ) : (
-            <AppPageStage {...pageStageProps} />
-          )}
-
-          {canNavigateBack && <FloatingBackButton onNavigateBack={handleNavigateBack} />}
-
-          <BottomNav activeTab={activeTab} onChange={handleBottomNavChange} />
-        </div>
-      </div>
-    </div>
+    <AppShell
+      activeTab={activeTab}
+      canNavigateBack={canNavigateBack}
+      globalStatus={globalStatus ? {
+        tone: globalStatus.tone,
+        message: globalStatus.message,
+        layout: activeTab === 'map' ? 'map' : 'page',
+      } : null}
+      globalUtility={globalUtility}
+      onBottomTabChange={handleBottomNavChange}
+      onNavigateBack={handleNavigateBack}
+    >
+      {activeTab === 'map' ? (
+        <AppMapStageView {...mapStageProps} />
+      ) : (
+        <AppPageStage {...pageStageProps} />
+      )}
+    </AppShell>
   );
 }

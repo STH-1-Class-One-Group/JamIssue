@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --app-height: 100dvh;
   --app-width: 100vw;
   --bottom-nav-offset: calc(76px + env(safe-area-inset-bottom));
@@ -161,6 +161,16 @@ textarea {
 .phone-shell__body {
   position: absolute;
   inset: 0;
+}
+
+.app-shell__content-slot {
+  position: absolute;
+  inset: 0;
+}
+
+.app-shell__overlay-slot,
+.app-shell__bottom-tab-slot {
+  display: contents;
 }
 
 .phone-shell__status-slot .global-status-banner {
@@ -1464,7 +1474,7 @@ textarea {
   min-height: var(--bottom-nav-offset);
   z-index: 40;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
   background: rgba(255, 252, 249, 0.9);
