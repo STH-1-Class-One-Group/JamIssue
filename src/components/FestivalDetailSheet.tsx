@@ -1,9 +1,12 @@
 import type { DrawerState, FestivalItem } from '../types/core';
+import type { MapSheetState } from './map-stage/mapSheetState';
+import { buildMapSheetClassName } from './map-stage/mapSheetState';
 
 interface FestivalDetailSheetProps {
   festival: FestivalItem | null;
   isOpen: boolean;
   drawerState: DrawerState;
+  sheetState: MapSheetState;
   onClose: () => void;
   onExpand: () => void;
   onCollapse: () => void;
@@ -24,6 +27,7 @@ export function FestivalDetailSheet({
   festival,
   isOpen,
   drawerState,
+  sheetState,
   onClose,
   onExpand,
   onCollapse,
@@ -32,7 +36,7 @@ export function FestivalDetailSheet({
     return null;
   }
 
-  const sheetClassName = `place-drawer place-drawer--${drawerState}`;
+  const sheetClassName = buildMapSheetClassName('place-drawer', sheetState, drawerState);
   const hasSchedule = Boolean(festival.startDate || festival.endDate);
   const periodLabel = hasSchedule
     ? festival.startDate && festival.endDate
@@ -41,7 +45,7 @@ export function FestivalDetailSheet({
     : '일정 업데이트 전';
 
   return (
-    <section className={sheetClassName} aria-label="행사 상세 서랍">
+    <section className={sheetClassName} data-map-sheet-state={sheetState} aria-label="행사 상세 서랍">
       <button
         type="button"
         className="place-drawer__handle"

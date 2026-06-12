@@ -40,6 +40,7 @@ describe('component smoke', () => {
         reviews={[reviewFixture]}
         isOpen={true}
         drawerState="partial"
+        sheetState="peek"
         loggedIn={true}
         visitCount={2}
         latestStamp={latestStampFixture}

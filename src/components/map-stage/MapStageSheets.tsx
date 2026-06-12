@@ -1,6 +1,7 @@
 import { FestivalDetailSheet } from '../FestivalDetailSheet';
 import { PlaceDetailSheet } from '../PlaceDetailSheet';
 import type { MapTabStageProps } from './mapTabStageTypes';
+import { resolveMapSheetState } from './mapSheetState';
 
 interface MapStageSheetsProps {
   placeSheet: MapTabStageProps['placeSheet'];
@@ -8,13 +9,17 @@ interface MapStageSheetsProps {
 }
 
 export function MapStageSheets({ placeSheet, festivalSheet }: MapStageSheetsProps) {
+  const placeSheetState = resolveMapSheetState(Boolean(placeSheet.selectedPlace), placeSheet.drawerState);
+  const festivalSheetState = resolveMapSheetState(Boolean(festivalSheet.selectedFestival), festivalSheet.drawerState);
+
   return (
     <>
       <PlaceDetailSheet
         place={placeSheet.selectedPlace}
         reviews={placeSheet.selectedPlaceReviews}
-        isOpen={Boolean(placeSheet.selectedPlace) && placeSheet.drawerState !== 'closed'}
+        isOpen={placeSheetState !== 'hidden'}
         drawerState={placeSheet.drawerState}
+        sheetState={placeSheetState}
         loggedIn={Boolean(placeSheet.sessionUser)}
         visitCount={placeSheet.visitCount}
         latestStamp={placeSheet.latestStamp}
@@ -37,8 +42,9 @@ export function MapStageSheets({ placeSheet, festivalSheet }: MapStageSheetsProp
 
       <FestivalDetailSheet
         festival={festivalSheet.selectedFestival}
-        isOpen={Boolean(festivalSheet.selectedFestival) && festivalSheet.drawerState !== 'closed'}
+        isOpen={festivalSheetState !== 'hidden'}
         drawerState={festivalSheet.drawerState}
+        sheetState={festivalSheetState}
         onClose={festivalSheet.onCloseDrawer}
         onExpand={festivalSheet.onExpandFestivalDrawer}
         onCollapse={festivalSheet.onCollapseFestivalDrawer}

@@ -20,10 +20,13 @@ test('UIUX-009 keeps drawer and bottom navigation anchored while writing a revie
   await page.goto('/?tab=map&place=place-1&drawer=full');
 
   await expect(page.locator('.place-drawer--full')).toBeVisible();
+  await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
   await expect(page.getByRole('heading', { name: '테스트 카페', exact: true })).toBeVisible();
 
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.getByRole('navigation');
   const beforeFocus = await requireBoundingBox(bottomNav);
+  await expect(bottomNav).toHaveCSS('pointer-events', 'none');
+  await expect(bottomNav).toHaveCSS('opacity', '0');
   const reviewBody = page.getByLabel('오늘의 기록');
   await reviewBody.scrollIntoViewIfNeeded();
   await reviewBody.focus();
@@ -58,7 +61,12 @@ test('UIUX-010 supports feed comment creation, like toggle, and place CTA', asyn
   await expect(page.locator('article[data-review-id="review-1"] .review-action-button[aria-pressed="true"]')).toContainText('3');
 
   await page.getByRole('button', { name: '장소 보기' }).click();
-  await expect(page.locator('.place-drawer--partial')).toBeVisible();
+  const peekDrawer = page.locator('[data-map-sheet-state="peek"]');
+  await expect(peekDrawer).toBeVisible();
+  const bottomNav = page.getByRole('navigation');
+  const drawerBox = await requireBoundingBox(peekDrawer);
+  const bottomNavBox = await requireBoundingBox(bottomNav);
+  expect(bottomNavBox.y - (drawerBox.y + drawerBox.height)).toBeGreaterThanOrEqual(12);
   await expect(page.getByRole('heading', { name: '테스트 카페', exact: true })).toBeVisible();
 });
 

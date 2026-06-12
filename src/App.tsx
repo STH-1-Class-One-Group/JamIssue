@@ -51,9 +51,15 @@ export default function App() {
     mapStageProps,
     pageStageProps,
   } = useAppStageProps(coordinator);
+  const bottomTabHidden = activeTab === 'map' && (
+    (Boolean(mapStageProps.mapData.selectedPlace) && mapStageProps.mapData.drawerState === 'full') ||
+    (Boolean(mapStageProps.mapData.selectedFestival) && mapStageProps.mapData.drawerState === 'full')
+  );
+
   return (
     <AppShell
       activeTab={activeTab}
+      bottomTabHidden={bottomTabHidden}
       canNavigateBack={canNavigateBack}
       globalStatus={globalStatus ? {
         tone: globalStatus.tone,
