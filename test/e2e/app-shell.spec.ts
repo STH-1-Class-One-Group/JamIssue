@@ -50,3 +50,28 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   const narrowest = Math.min(...itemBoxes);
   expect(widest - narrowest).toBeLessThan(2);
 });
+
+test('UIUX-013 keeps five-tab IA and hides map stage on non-map tabs', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+
+  const bottomNav = page.getByRole('navigation');
+  const tabKeys = await bottomNav.locator('.bottom-nav__item').evaluateAll((items) => (
+    items.map((item) => item.getAttribute('data-tab-key'))
+  ));
+  expect(tabKeys).toEqual(['map', 'event', 'feed', 'course', 'my']);
+
+  await expect(page.locator('.map-stage')).toBeVisible();
+
+  for (const tabKey of ['event', 'feed', 'course', 'my']) {
+    await bottomNav.locator(`[data-tab-key="${tabKey}"]`).click();
+    await expect(bottomNav.locator(`[data-tab-key="${tabKey}"]`)).toHaveAttribute('aria-current', 'page');
+    await expect(page.locator('.map-stage')).toHaveCount(0);
+    await expect(page.locator('.page-stage')).toBeVisible();
+  }
+
+  await bottomNav.locator('[data-tab-key="map"]').click();
+  await expect(bottomNav.locator('[data-tab-key="map"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('.map-stage')).toBeVisible();
+});

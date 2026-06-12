@@ -21,6 +21,8 @@ export function BottomNav({ activeTab, onChange }: BottomNavProps) {
           key={item.key}
           type="button"
           className={item.key === activeTab ? 'bottom-nav__item is-active' : 'bottom-nav__item'}
+          data-tab-key={item.key}
+          aria-current={item.key === activeTab ? 'page' : undefined}
           onClick={() => onChange(item.key)}
         >
           {item.label}
