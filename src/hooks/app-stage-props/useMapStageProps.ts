@@ -28,6 +28,9 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     selectedTourismPlaceId,
     showTourismInfo,
     tourismError,
+    tourismDetailError,
+    tourismDetailLoading,
+    tourismDetailsById,
     tourismLoading,
     tourismPlaces,
     tourismSheetState,
@@ -35,6 +38,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     viewModels,
   } = state;
   const selectedTourismPlace = tourismPlaces.find((place) => place.id === selectedTourismPlaceId) ?? null;
+  const selectedTourismDetail = selectedTourismPlaceId ? tourismDetailsById[selectedTourismPlaceId]?.item ?? null : null;
 
   return {
     mapData: {
@@ -44,6 +48,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       selectedPlace: viewModels.selectedPlace,
       selectedFestival: viewModels.selectedFestival,
       selectedTourismPlace,
+      selectedTourismDetail,
       currentPosition,
       mapLocationStatus,
       mapLocationMessage,
@@ -69,6 +74,8 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       tourismSourceReady,
       tourismLoading,
       tourismError,
+      tourismDetailLoading,
+      tourismDetailError,
       tourismSheetState,
     },
     mapActions: {

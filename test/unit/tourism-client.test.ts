@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invalidateApiCache } from '../../src/api/core';
-import { getTourismPlaces } from '../../src/api/tourismClient';
+import { getTourismPlaceDetail, getTourismPlaces } from '../../src/api/tourismClient';
 
 const fetchMock = vi.fn();
 
@@ -48,5 +48,18 @@ describe('tourismClient', () => {
     expect(fetchMock.mock.calls[0][1]).toMatchObject({
       signal: controller.signal,
     });
+  });
+
+  it('requests tourism detail through the Worker consumer contract', async () => {
+    await getTourismPlaceDetail('kto-content-133881');
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0][0])).toMatch(/\/api\/tourism\/places\/kto-content-133881$/);
+  });
+
+  it('encodes tourism detail ids in the path segment', async () => {
+    await getTourismPlaceDetail('kto content/133881');
+
+    expect(String(fetchMock.mock.calls[0][0])).toMatch(/\/api\/tourism\/places\/kto%20content%2F133881$/);
   });
 });

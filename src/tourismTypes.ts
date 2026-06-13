@@ -54,6 +54,8 @@ export interface TourismPlaceItem {
   homepageUrl?: string | null;
   sourceUpdatedAt?: string | null;
   sourceName: string | null;
+  hasDetail?: boolean;
+  detailKind?: string | null;
   isCurated: boolean;
   curatedPlace: TourismCuratedPlaceLink | null;
 }
@@ -64,6 +66,42 @@ export interface TourismPlacesResponse {
   importedAt: string | null;
   facets: TourismFacets;
   items: TourismPlaceItem[];
+}
+
+export interface TourismDetailImage {
+  url: string;
+  thumbnailUrl: string | null;
+}
+
+export interface TourismDetailSectionItem {
+  label: string;
+  value: string;
+}
+
+export interface TourismDetailSection {
+  title: string;
+  items: TourismDetailSectionItem[];
+}
+
+export interface TourismPlaceDetailItem extends TourismPlaceItem {
+  overview: string | null;
+  contact: string | null;
+  homepageUrl: string | null;
+  images: TourismDetailImage[];
+  displaySections: TourismDetailSection[];
+  detail: {
+    restaurant?: Record<string, unknown>;
+    lodging?: Record<string, unknown>;
+    attraction?: Record<string, unknown>;
+    culture?: Record<string, unknown>;
+    leports?: Record<string, unknown>;
+    shopping?: Record<string, unknown>;
+  };
+}
+
+export interface TourismPlaceDetailResponse {
+  sourceReady: boolean;
+  item: TourismPlaceDetailItem | null;
 }
 
 export interface TourismPlacesQuery {

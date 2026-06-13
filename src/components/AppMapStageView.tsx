@@ -7,7 +7,7 @@
  * Dependencies: React memo, MapTabStage, map category strip, and app domain DTOs.
  */
 import { memo } from 'react';
-import type { TourismPlaceItem } from '../tourismTypes';
+import type { TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
@@ -22,6 +22,7 @@ interface AppMapStageViewProps {
     selectedPlace: Place | null;
     selectedFestival: FestivalItem | null;
     selectedTourismPlace: TourismPlaceItem | null;
+    selectedTourismDetail: TourismPlaceDetailItem | null;
     currentPosition: { latitude: number; longitude: number } | null;
     mapLocationStatus: ApiStatus;
     mapLocationMessage: string | null;
@@ -47,6 +48,8 @@ interface AppMapStageViewProps {
     tourismSourceReady: boolean;
     tourismLoading: boolean;
     tourismError: string | null;
+    tourismDetailLoading: boolean;
+    tourismDetailError: string | null;
     tourismSheetState: 'partial' | 'full';
   };
   mapActions: {
@@ -159,10 +162,13 @@ export const AppMapStageView = memo(function AppMapStageView({
       }}
       tourismSheet={{
         selectedTourismPlace: mapData.selectedTourismPlace,
+        selectedTourismDetail: mapData.selectedTourismDetail,
         sheetState: mapData.tourismSheetState,
         sourceReady: mapData.tourismSourceReady,
         loading: mapData.tourismLoading,
         error: mapData.tourismError,
+        detailLoading: mapData.tourismDetailLoading,
+        detailError: mapData.tourismDetailError,
         onClose: mapActions.onCloseTourismInfoSheet,
         onExpand: mapActions.onExpandTourismInfoSheet,
         onCollapse: mapActions.onCollapseTourismInfoSheet,

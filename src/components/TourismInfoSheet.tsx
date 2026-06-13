@@ -1,12 +1,12 @@
 /*
  * File: TourismInfoSheet.tsx
  * Purpose: Present non-curated KTO tourism place information from the map layer.
- * Primary Responsibility: Render available KTO consumer-contract fields inside the app as a read-only information sheet.
- * Design Intent: Keep KTO places useful without sending users to unstable external provider detail pages.
+ * Primary Responsibility: Render user-facing KTO list/detail fields inside a read-only map bottom sheet.
+ * Design Intent: Prefer useful consumer information from the Worker detail API and hide provider/internal metadata.
  * Non-Goals: This component does not allow stamping, review creation, direct KTO/OpenAPI calls, or external source-page validation.
- * Dependencies: TourismPlaceItem DTO and MapBottomSheet.
+ * Dependencies: TourismPlaceItem/TourismPlaceDetailItem DTOs and MapBottomSheet.
  */
-import type { TourismPlaceItem } from '../tourismTypes';
+import type { TourismDetailSection, TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
 import type { DrawerState } from '../types/core';
 import { MapBottomSheet } from './map-stage/MapBottomSheet';
 import type { MapSheetState } from './map-stage/mapSheetState';
@@ -15,6 +15,9 @@ export type TourismInfoSheetState = 'partial' | 'full';
 
 interface TourismInfoSheetProps {
   place: TourismPlaceItem | null;
+  detail: TourismPlaceDetailItem | null;
+  detailLoading: boolean;
+  detailError: string | null;
   isOpen: boolean;
   sheetState: TourismInfoSheetState;
   onClose: () => void;
@@ -22,53 +25,107 @@ interface TourismInfoSheetProps {
   onCollapse: () => void;
 }
 
-function compactText(values: Array<string | null | undefined>) {
-  return values.map((value) => value?.trim()).filter((value): value is string => Boolean(value));
-}
+const SECTION_TITLE_LABELS: Record<string, string> = {
+  Usage: '이용정보',
+  Menu: '메뉴',
+  'Restaurant info': '음식점 정보',
+  Lodging: '숙박 정보',
+  Attraction: '관광 정보',
+  Culture: '문화시설 정보',
+  Leports: '레포츠 정보',
+  Shopping: '쇼핑 정보',
+};
+
+const ITEM_LABELS: Record<string, string> = {
+  Hours: '영업시간',
+  'Closed days': '휴무일',
+  Parking: '주차',
+  'Main menu': '대표메뉴',
+  Menu: '메뉴',
+  Smoking: '흡연',
+  Contact: '문의',
+  Reservation: '예약',
+  Packing: '포장',
+};
 
 function getTourismPlaceTitle(place: TourismPlaceItem) {
   return place.name || place.title || '관광정보';
 }
 
 function getTourismPlaceAddress(place: TourismPlaceItem) {
-  return place.address || place.roadAddress || null;
+  return place.roadAddress || place.address || null;
 }
 
 function getTourismPlaceCategoryLabel(place: TourismPlaceItem) {
-  return place.ktoContentTypeLabel || place.category || place.ktoFacet || null;
+  return place.ktoContentTypeLabel || place.category || null;
 }
 
-function formatCoordinates(place: TourismPlaceItem) {
-  if (typeof place.latitude !== 'number' || typeof place.longitude !== 'number') {
-    return null;
-  }
-  return `${place.latitude.toFixed(5)}, ${place.longitude.toFixed(5)}`;
-}
-
-function formatSourceUpdatedAt(value: string | null | undefined) {
+function isGenericKtoSummary(placeName: string, value: string | null | undefined) {
   if (!value) {
-    return null;
+    return true;
   }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat('ko-KR', {
-    dateStyle: 'medium',
-    timeZone: 'Asia/Seoul',
-  }).format(date);
+  return value.trim() === `${placeName} KTO TourAPI 대전 관광 정보`;
 }
 
-function getCategoryRows(place: TourismPlaceItem) {
-  return [
-    compactText([place.ktoCategoryLabel1, place.ktoCategoryCode1]).join(' / '),
-    compactText([place.ktoCategoryLabel2, place.ktoCategoryCode2]).join(' / '),
-    compactText([place.ktoCategoryLabel3, place.ktoCategoryCode3]).join(' / '),
-  ].filter(Boolean);
+function getUsefulOverview(place: TourismPlaceItem, detail: TourismPlaceDetailItem | null) {
+  const title = getTourismPlaceTitle(place);
+  const overview = detail?.overview?.trim();
+  if (overview && !isGenericKtoSummary(title, overview)) {
+    return overview;
+  }
+  const summary = place.summary?.trim();
+  if (summary && !isGenericKtoSummary(title, summary)) {
+    return summary;
+  }
+  return null;
+}
+
+function getImageUrl(place: TourismPlaceItem, detail: TourismPlaceDetailItem | null) {
+  return detail?.images.find((image) => image.url)?.url || place.imageUrl;
+}
+
+function normalizeDetailValue(value: string) {
+  return value
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/&nbsp;/gi, ' ')
+    .trim();
+}
+
+function translateSectionTitle(title: string) {
+  return SECTION_TITLE_LABELS[title] ?? title;
+}
+
+function translateItemLabel(label: string) {
+  return ITEM_LABELS[label] ?? label;
+}
+
+function getVisibleSections(sections: TourismDetailSection[]) {
+  return sections
+    .map((section) => ({
+      title: translateSectionTitle(section.title),
+      items: section.items
+        .map((item) => ({
+          label: translateItemLabel(item.label),
+          value: normalizeDetailValue(item.value),
+        }))
+        .filter((item) => item.value.length > 0),
+    }))
+    .filter((section) => section.items.length > 0);
+}
+
+function renderMultilineValue(value: string) {
+  return value.split('\n').map((line) => (
+    <span key={line} className="tourism-info-sheet__line">
+      {line}
+    </span>
+  ));
 }
 
 export function TourismInfoSheet({
   place,
+  detail,
+  detailLoading,
+  detailError,
   isOpen,
   sheetState,
   onClose,
@@ -84,11 +141,10 @@ export function TourismInfoSheet({
   const title = getTourismPlaceTitle(place);
   const address = getTourismPlaceAddress(place);
   const categoryLabel = getTourismPlaceCategoryLabel(place);
-  const primaryDescription = place.description && place.description !== place.summary ? place.description : null;
-  const summary = place.summary || primaryDescription || '관광지 기본 정보를 확인할 수 있어요.';
-  const coordinates = formatCoordinates(place);
-  const sourceUpdatedAt = formatSourceUpdatedAt(place.sourceUpdatedAt);
-  const categoryRows = getCategoryRows(place);
+  const overview = getUsefulOverview(place, detail);
+  const imageUrl = getImageUrl(place, detail);
+  const sections = getVisibleSections(detail?.displaySections ?? []);
+  const contact = detail?.contact?.trim() || null;
 
   return (
     <MapBottomSheet
@@ -98,9 +154,9 @@ export function TourismInfoSheet({
       onCollapse={onCollapse}
       onExpand={onExpand}
     >
-      {place.imageUrl ? (
+      {imageUrl ? (
         <figure className="tourism-info-sheet__media">
-          <img src={place.imageUrl} alt={`${title} 관광정보 이미지`} loading="lazy" />
+          <img src={imageUrl} alt={`${title} 관광정보 이미지`} loading="lazy" />
         </figure>
       ) : null}
 
@@ -108,7 +164,7 @@ export function TourismInfoSheet({
         <div>
           <p className="eyebrow">KTO INFO</p>
           <h2>{title}</h2>
-          <p className="place-drawer__summary">{summary}</p>
+          {overview ? <p className="place-drawer__summary">{overview}</p> : null}
         </div>
         <button type="button" className="text-button" onClick={onClose}>
           닫기
@@ -118,42 +174,38 @@ export function TourismInfoSheet({
       <div className="place-drawer__badges">
         {categoryLabel ? <span className="counter-pill">{categoryLabel}</span> : null}
         {place.district ? <span className="counter-pill">{place.district}</span> : null}
-        {place.ktoFacet ? <span className="counter-pill">{place.ktoFacet}</span> : null}
+        {detail?.hasDetail || place.hasDetail ? <span className="counter-pill">상세정보</span> : null}
       </div>
 
       <div className="sheet-card stack-gap">
-        {primaryDescription ? (
-          <div>
-            <strong>소개</strong>
-            <p>{primaryDescription}</p>
-          </div>
-        ) : null}
         <div>
           <strong>위치</strong>
           <p>{address || '주소 정보가 아직 제공되지 않았어요.'}</p>
-          {coordinates ? <p className="section-copy">좌표 {coordinates}</p> : null}
         </div>
-        <div>
-          <strong>분류</strong>
-          <p>
-            {compactText([place.ktoContentTypeLabel, place.ktoContentTypeId]).join(' / ') ||
-              '분류 정보가 아직 제공되지 않았어요.'}
-          </p>
-          {categoryRows.length > 0 ? (
-            <ul className="tourism-info-sheet__meta-list" aria-label="KTO 내부 분류">
-              {categoryRows.map((row) => (
-                <li key={row}>{row}</li>
+        {contact ? (
+          <div>
+            <strong>문의</strong>
+            <p>{contact}</p>
+          </div>
+        ) : null}
+        {detailLoading ? <p className="section-copy">상세 정보를 불러오는 중입니다.</p> : null}
+        {detailError ? <p className="section-copy">{detailError}</p> : null}
+        {sections.map((section) => (
+          <div key={section.title}>
+            <strong>{section.title}</strong>
+            <dl className="tourism-info-sheet__detail-list">
+              {section.items.map((item) => (
+                <div key={`${section.title}-${item.label}`} className="tourism-info-sheet__detail-row">
+                  <dt>{item.label}</dt>
+                  <dd>{renderMultilineValue(item.value)}</dd>
+                </div>
               ))}
-            </ul>
-          ) : null}
-        </div>
+            </dl>
+          </div>
+        ))}
         <div>
           <strong>출처</strong>
-          <p>{place.sourceName || 'KTO 관광정보'}</p>
-          {sourceUpdatedAt ? <p className="section-copy">업데이트 {sourceUpdatedAt}</p> : null}
-          <p className="section-copy">
-            외부 원문 페이지가 열리지 않을 수 있어 앱에서 확인 가능한 정보만 표시합니다.
-          </p>
+          <p>{detail?.sourceName || place.sourceName || 'KTO 관광정보'}</p>
         </div>
       </div>
     </MapBottomSheet>

@@ -55,6 +55,9 @@ export function MapStageSheets({ placeSheet, festivalSheet, tourismSheet }: MapS
 
       <TourismInfoSheet
         place={tourismSheet.selectedTourismPlace}
+        detail={tourismSheet.selectedTourismDetail}
+        detailLoading={tourismSheet.detailLoading}
+        detailError={tourismSheet.detailError}
         isOpen={isTourismSheetOpen}
         sheetState={tourismSheet.sheetState}
         onClose={tourismSheet.onClose}

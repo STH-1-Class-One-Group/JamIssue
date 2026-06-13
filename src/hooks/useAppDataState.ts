@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TourismPlaceItem } from '../tourismTypes';
+import type { TourismPlaceDetailResponse, TourismPlaceItem } from '../tourismTypes';
 import type { FestivalItem } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
 import type { MyPageResponse } from '../types/my-page';
@@ -14,6 +14,9 @@ export function useAppDataState(selectedPlaceId: string | null) {
   const [tourismSourceReady, setTourismSourceReady] = useState(false);
   const [tourismLoading, setTourismLoading] = useState(false);
   const [tourismError, setTourismError] = useState<string | null>(null);
+  const [tourismDetailsById, setTourismDetailsById] = useState<Record<string, TourismPlaceDetailResponse>>({});
+  const [tourismDetailLoading, setTourismDetailLoading] = useState(false);
+  const [tourismDetailError, setTourismDetailError] = useState<string | null>(null);
   const [courses, setCourses] = useState<BootstrapResponse['courses']>([]);
   const [stampState, setStampState] = useState<BootstrapResponse['stamps']>({
     collectedPlaceIds: [],
@@ -41,6 +44,12 @@ export function useAppDataState(selectedPlaceId: string | null) {
     setTourismLoading,
     tourismError,
     setTourismError,
+    tourismDetailsById,
+    setTourismDetailsById,
+    tourismDetailLoading,
+    setTourismDetailLoading,
+    tourismDetailError,
+    setTourismDetailError,
     ...reviewCollectionState,
     courses,
     setCourses,

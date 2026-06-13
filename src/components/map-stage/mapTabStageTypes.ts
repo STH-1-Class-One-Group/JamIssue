@@ -1,5 +1,5 @@
 import type { ApiStatus, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../../types/core';
-import type { TourismPlaceItem } from '../../tourismTypes';
+import type { TourismPlaceDetailItem, TourismPlaceItem } from '../../tourismTypes';
 import type { SessionUser } from '../../types/auth';
 import type { BootstrapResponse } from '../../types/review';
 
@@ -59,10 +59,13 @@ export interface MapTabStageProps {
   };
   tourismSheet: {
     selectedTourismPlace: TourismPlaceItem | null;
+    selectedTourismDetail: TourismPlaceDetailItem | null;
     sheetState: 'partial' | 'full';
     sourceReady: boolean;
     loading: boolean;
     error: string | null;
+    detailLoading: boolean;
+    detailError: string | null;
     onClose: () => void;
     onExpand: () => void;
     onCollapse: () => void;

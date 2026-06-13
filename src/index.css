@@ -359,6 +359,31 @@ textarea {
   font-size: 12px;
 }
 
+.tourism-info-sheet__detail-list {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 0;
+}
+
+.tourism-info-sheet__detail-row {
+  display: grid;
+  gap: 4px;
+}
+
+.tourism-info-sheet__detail-row dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tourism-info-sheet__detail-row dd {
+  margin: 0;
+}
+
+.tourism-info-sheet__line {
+  display: block;
+}
+
 .app-shell__content-slot {
   position: absolute;
   inset: 0;
