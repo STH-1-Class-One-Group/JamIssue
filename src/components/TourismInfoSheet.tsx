@@ -37,6 +37,8 @@ export function TourismInfoSheet({
   const drawerState: DrawerState = sheetState === 'full' ? 'full' : 'partial';
   const mapSheetState: MapSheetState = sheetState === 'full' ? 'full' : 'peek';
   const sheetClassName = buildMapSheetClassName('place-drawer', mapSheetState, drawerState);
+  const primaryDescription = place.description && place.description !== place.summary ? place.description : null;
+  const summary = place.summary || primaryDescription || '관광지 기본 정보를 확인할 수 있어요.';
 
   return (
     <section className={sheetClassName} data-map-sheet-state={mapSheetState} aria-label="관광정보 시트">
@@ -50,11 +52,17 @@ export function TourismInfoSheet({
       </button>
 
       <div className="place-drawer__content">
+        {place.imageUrl ? (
+          <figure className="tourism-info-sheet__media">
+            <img src={place.imageUrl} alt={`${place.title} 관광정보 이미지`} loading="lazy" />
+          </figure>
+        ) : null}
+
         <div className="place-drawer__header">
           <div>
             <p className="eyebrow">KTO INFO</p>
             <h2>{place.title}</h2>
-            <p className="place-drawer__summary">{place.summary || place.description || '관광지 기본 정보를 확인할 수 있어요.'}</p>
+            <p className="place-drawer__summary">{summary}</p>
           </div>
           <button type="button" className="text-button" onClick={onClose}>
             닫기
@@ -67,8 +75,14 @@ export function TourismInfoSheet({
         </div>
 
         <div className="sheet-card stack-gap">
+          {primaryDescription ? (
+            <div>
+              <strong>소개</strong>
+              <p>{primaryDescription}</p>
+            </div>
+          ) : null}
           <div>
-            <strong>주소</strong>
+            <strong>위치</strong>
             <p>{place.address || '주소 정보가 아직 제공되지 않았어요.'}</p>
           </div>
           <div>

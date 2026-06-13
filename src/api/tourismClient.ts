@@ -29,6 +29,6 @@ export function buildTourismPlacesPath(query: TourismPlacesQuery = {}) {
   return queryString ? `/api/tourism/places?${queryString}` : '/api/tourism/places';
 }
 
-export function getTourismPlaces(query: TourismPlacesQuery = {}) {
-  return fetchJson<TourismPlacesResponse>(buildTourismPlacesPath(query));
+export function getTourismPlaces(query: TourismPlacesQuery = {}, init?: RequestInit) {
+  return fetchJson<TourismPlacesResponse>(buildTourismPlacesPath(query), init);
 }
