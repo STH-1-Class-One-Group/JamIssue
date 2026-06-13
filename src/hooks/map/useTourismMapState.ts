@@ -1,5 +1,5 @@
 /*
- * File: useTourismMapState.ts
+ * File: hooks/map/useTourismMapState.ts
  * Purpose: Store map-local KTO tourism overlay UI state.
  * Primary Responsibility: Own the tourism visibility toggle, selected tourism item id, and sheet expansion state.
  * Design Intent: Keep KTO map overlay state local to map domain instead of encoding it in route URLs before the flow is proven stable.

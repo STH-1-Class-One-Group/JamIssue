@@ -161,17 +161,6 @@ textarea {
   pointer-events: none;
 }
 
-.phone-shell__utility-slot {
-  position: absolute;
-  top: var(--utility-slot-top);
-  right: var(--utility-slot-right);
-  z-index: var(--layer-utility);
-  display: inline-flex;
-  align-items: flex-start;
-  gap: var(--utility-gap);
-  pointer-events: auto;
-}
-
 .phone-shell__body {
   position: absolute;
   inset: var(--app-header-height) 0 0 0;
@@ -2575,6 +2564,39 @@ textarea {
 .list-load-more-sentinel {
   width: 100%;
   height: 1px;
+}
+
+/* TSK-012 app-shell map flow canonical rules */
+.phone-shell--map .map-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 12px 12px calc(78px + env(safe-area-inset-bottom));
+}
+
+.phone-shell--map .map-stage .map-surface-frame {
+  position: relative;
+  inset: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  margin: 0 0 6px;
+  border-radius: 24px;
+}
+
+.app-shell__sub-nav-slot .map-stage-subnav,
+.app-shell__sub-nav-slot .map-filter-strip,
+.app-shell__sub-nav-slot .map-filter-strip .chip-row {
+  min-width: 0;
+}
+
+.app-shell__sub-nav-slot .map-filter-strip {
+  position: relative;
+  inset: auto;
 }
 @font-face {
   font-family: 'Pretendard';

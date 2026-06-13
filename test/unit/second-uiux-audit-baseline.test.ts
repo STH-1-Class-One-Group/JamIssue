@@ -51,11 +51,17 @@ describe('TSK-012-01 second UI/UX audit baseline', () => {
     expect(sourceExists('src/tourismTypes.ts')).toBe(true);
   });
 
-  it('records the remaining map overlay and surface CSS cleanup debt', () => {
-    const css = `${readSource('src/index.css')}\n${readSource('src/styles/refinements.css')}`;
+  it('records that app-shell map offset cleanup no longer depends on legacy override selectors', () => {
+    const indexCss = readSource('src/index.css');
+    const refinementsCss = readSource('src/styles/refinements.css');
+    const css = `${indexCss}\n${refinementsCss}`;
 
     expect(css.match(/\.map-filter-strip/g)?.length ?? 0).toBeGreaterThan(1);
     expect(css.match(/\.map-surface-frame/g)?.length ?? 0).toBeGreaterThan(1);
-    expect(css).toContain('.phone-shell--map .phone-shell__utility-slot');
+    expect(css).not.toContain('.phone-shell--map .phone-shell__utility-slot');
+    expect(css).not.toContain('.app-back-button');
+    expect(refinementsCss).not.toContain('.map-filter-strip');
+    expect(refinementsCss).not.toContain('.map-surface-frame');
+    expect(indexCss).toContain('TSK-012 app-shell map flow canonical rules');
   });
 });

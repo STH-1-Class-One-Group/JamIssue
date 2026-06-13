@@ -1,6 +1,6 @@
 import { useMapCategoryState } from './useMapCategoryState';
 import { useRoutePreviewState } from './useRoutePreviewState';
-import { useTourismMapState } from './useTourismMapState';
+import { useTourismMapState } from './map/useTourismMapState';
 
 export function useMapDomainState() {
   return {
