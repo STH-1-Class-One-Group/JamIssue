@@ -4,7 +4,7 @@
 
 - Scope-ID: `TSK-014-02`
 - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/428
-- PR: `TBD-TSK-014-02`
+- PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/429
 - Branch: `tourism-info-rich-fields-fix`
 - Status: `implemented-local`
 - Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/425
@@ -42,7 +42,7 @@
 
 ## 원격 근거
 
-- PR URL: `TBD-TSK-014-02`
+- PR URL: https://github.com/STH-1-Class-One-Group/JamIssue/pull/429
 - main merge SHA: `TBD-TSK-014-02`
 - CI URL: `TBD-TSK-014-02`
 - production-smoke URL: `TBD-TSK-014-02`
