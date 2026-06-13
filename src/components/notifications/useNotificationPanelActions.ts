@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEventCallback } from '../../hooks/useEventCallback';
 import type { NotificationItem } from './notificationTypes';
 
 interface UseNotificationPanelActionsParams {
@@ -18,7 +19,7 @@ export function useNotificationPanelActions({
   const [busyAll, setBusyAll] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleOpenNotification(notification: NotificationItem) {
+  const handleOpenNotification = useEventCallback(async (notification: NotificationItem) => {
     try {
       setBusyId(notification.id);
       setError(null);
@@ -29,9 +30,9 @@ export function useNotificationPanelActions({
     } finally {
       setBusyId(null);
     }
-  }
+  });
 
-  async function handleMarkAll() {
+  const handleMarkAll = useEventCallback(async () => {
     try {
       setBusyAll(true);
       setError(null);
@@ -41,9 +42,9 @@ export function useNotificationPanelActions({
     } finally {
       setBusyAll(false);
     }
-  }
+  });
 
-  async function handleDelete(event: React.MouseEvent<HTMLButtonElement>, notificationId: string) {
+  const handleDelete = useEventCallback(async (event: React.MouseEvent<HTMLButtonElement>, notificationId: string) => {
     event.stopPropagation();
     try {
       setBusyId(notificationId);
@@ -54,7 +55,7 @@ export function useNotificationPanelActions({
     } finally {
       setBusyId(null);
     }
-  }
+  });
 
   return {
     busyId,
