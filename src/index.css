@@ -350,6 +350,15 @@ textarea {
   object-fit: cover;
 }
 
+.tourism-info-sheet__meta-list {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .app-shell__content-slot {
   position: absolute;
   inset: 0;

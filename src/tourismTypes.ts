@@ -35,6 +35,12 @@ export interface TourismPlaceItem {
   category: string | null;
   ktoContentTypeId?: string | null;
   ktoContentTypeLabel?: string | null;
+  ktoCategoryCode1?: string | null;
+  ktoCategoryLabel1?: string | null;
+  ktoCategoryCode2?: string | null;
+  ktoCategoryLabel2?: string | null;
+  ktoCategoryCode3?: string | null;
+  ktoCategoryLabel3?: string | null;
   ktoFacet?: string | null;
   district: string | null;
   address: string | null;
