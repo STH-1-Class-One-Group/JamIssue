@@ -6,7 +6,7 @@
 - Issue: `#421`
 - Parent Issue: `#420`
 - Branch: `tourism-info-data-consumption-fix`
-- Status: ready for PR
+- Status: merged
 
 ## Summary
 
@@ -36,7 +36,10 @@ KTO tourism place data is now consumed by the information sheet beyond title/add
 
 ## Remote Evidence
 
-- PR: TBD
-- Main merge SHA: TBD
-- CI: TBD
-- CodeQL / code scanning: TBD
+- PR: [#422](https://github.com/STH-1-Class-One-Group/JamIssue/pull/422)
+- Main merge SHA: `729cbe8764f59f4ae7c9a3a845de9e0a6a53f83f`
+- CI: [27458352463](https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27458352463)
+- production-smoke: [27458352467](https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27458352467)
+- CodeQL: [27458352230](https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27458352230)
+- Code Quality: [27458352188](https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27458352188)
+- Security API readback: unavailable in current token context (`404 Not Found` from Dependabot/code-scanning REST endpoints).
