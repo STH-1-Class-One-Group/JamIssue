@@ -4,24 +4,29 @@ import { TourismInfoSheet } from '../../src/components/TourismInfoSheet';
 import type { TourismPlaceItem } from '../../src/tourismTypes';
 
 const tourismPlace: TourismPlaceItem = {
-  id: 'tourism-1',
-  title: '대전근현대사전시관',
-  category: '문화관광',
-  district: '중구',
-  address: '대전 중구 중앙로 101',
-  summary: '옛 충남도청 건물을 활용한 전시 공간입니다.',
-  description: '근현대 대전의 전시 변화를 전시와 사진 자료로 볼 수 있습니다.',
-  latitude: 36.327,
-  longitude: 127.421,
+  id: 'kto-content-1932079',
+  name: '굿모닝레지던스호텔휴',
+  category: 'lodging',
+  ktoContentTypeId: '32',
+  ktoContentTypeLabel: '숙박',
+  ktoFacet: 'lodging',
+  district: '서구',
+  address: null,
+  roadAddress: '대전 서구 둔산로73번길 21',
+  summary: '대전 서구에 있는 숙박 관광자원입니다.',
+  description: '객실과 편의시설을 갖춘 레지던스형 숙박시설입니다.',
+  latitude: 36.35,
+  longitude: 127.38,
   imageUrl: 'https://example.com/tourism.jpg',
-  homepageUrl: 'https://example.com/tourism',
-  sourceName: 'KTO',
+  sourcePageUrl: 'https://example.com/tourism',
+  sourceUpdatedAt: '2025-09-22T01:56:03+00:00',
+  sourceName: 'KTO TourAPI Daejeon Tourism',
   isCurated: false,
   curatedPlace: null,
 };
 
 describe('TourismInfoSheet', () => {
-  it('renders the available KTO tourism data instead of only title and address', () => {
+  it('renders the available KTO tourism contract fields instead of only name and address', () => {
     render(
       <TourismInfoSheet
         place={tourismPlace}
@@ -33,16 +38,17 @@ describe('TourismInfoSheet', () => {
       />,
     );
 
-    expect(screen.getByRole('img', { name: '대전근현대사전시관 관광정보 이미지' })).toHaveAttribute(
+    expect(screen.getByRole('img', { name: '굿모닝레지던스호텔휴 관광정보 이미지' })).toHaveAttribute(
       'src',
       tourismPlace.imageUrl,
     );
-    expect(screen.getByText('옛 충남도청 건물을 활용한 전시 공간입니다.')).toBeInTheDocument();
-    expect(screen.getByText('근현대 대전의 전시 변화를 전시와 사진 자료로 볼 수 있습니다.')).toBeInTheDocument();
-    expect(screen.getByText('문화관광')).toBeInTheDocument();
-    expect(screen.getByText('중구')).toBeInTheDocument();
-    expect(screen.getByText('대전 중구 중앙로 101')).toBeInTheDocument();
-    expect(screen.getByText('KTO')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '자세히 보기' })).toHaveAttribute('href', tourismPlace.homepageUrl);
+    expect(screen.getByRole('heading', { name: '굿모닝레지던스호텔휴' })).toBeInTheDocument();
+    expect(screen.getByText('대전 서구에 있는 숙박 관광자원입니다.')).toBeInTheDocument();
+    expect(screen.getByText('객실과 편의시설을 갖춘 레지던스형 숙박시설입니다.')).toBeInTheDocument();
+    expect(screen.getByText('숙박')).toBeInTheDocument();
+    expect(screen.getByText('서구')).toBeInTheDocument();
+    expect(screen.getByText('대전 서구 둔산로73번길 21')).toBeInTheDocument();
+    expect(screen.getByText('KTO TourAPI Daejeon Tourism')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '자세히 보기' })).toHaveAttribute('href', tourismPlace.sourcePageUrl);
   });
 });
