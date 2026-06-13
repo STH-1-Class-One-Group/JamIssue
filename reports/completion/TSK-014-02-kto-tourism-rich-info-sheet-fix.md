@@ -6,7 +6,7 @@
 - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/428
 - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/429
 - Branch: `tourism-info-rich-fields-fix`
-- Status: `implemented-local`
+- Status: `implemented-merged`
 - Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/425
 - Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/428
 
@@ -43,12 +43,13 @@
 ## 원격 근거
 
 - PR URL: https://github.com/STH-1-Class-One-Group/JamIssue/pull/429
-- main merge SHA: `TBD-TSK-014-02`
-- CI URL: `TBD-TSK-014-02`
-- production-smoke URL: `TBD-TSK-014-02`
-- CodeQL/Code Quality URL: `TBD-TSK-014-02`
+- main merge SHA: `0f5294780ed108121836907240b4a32df94d8177`
+- CI URL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467236652/job/81191624614
+- production-smoke URL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467236660/job/81191654547
+- CodeQL/Code Quality URL:
+  - https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467236421/job/81191624884
+  - https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467236421/job/81191624876
 
 ## 잔여 항목
 
-- PR 생성 후 PR URL과 원격 check 결과를 이 보고서와 #428에 반영한다.
-- main merge 후 #428과 #425에 merge SHA, CI, production-smoke, CodeQL/Code Quality 근거를 기록한다.
+- #428과 #425에 merge SHA, CI, production-smoke, CodeQL/Code Quality 근거를 기록한다.
