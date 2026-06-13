@@ -51,4 +51,23 @@ describe('TourismInfoSheet', () => {
     expect(screen.getByText('KTO TourAPI Daejeon Tourism')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '자세히 보기' })).toHaveAttribute('href', tourismPlace.sourcePageUrl);
   });
+
+  it('uses the shared map bottom sheet shell and supports full-height scrolling', () => {
+    render(
+      <TourismInfoSheet
+        place={tourismPlace}
+        isOpen
+        sheetState="full"
+        onClose={vi.fn()}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+      />,
+    );
+
+    const sheet = screen.getByRole('region', { name: '관광정보 시트' });
+    const content = sheet.querySelector('.map-bottom-sheet__content');
+
+    expect(sheet).toHaveClass('place-drawer', 'place-drawer--full', 'place-drawer--route-full');
+    expect(content).not.toBeNull();
+  });
 });

@@ -1,3 +1,11 @@
+/*
+ * File: geolocation.ts
+ * Purpose: Resolve the browser's current device position for map and stamp flows.
+ * Primary Responsibility: Convert browser geolocation callbacks into validated Daejeon-area coordinates.
+ * Design Intent: Keep browser API quirks and user-readable failure messages behind one promise-based boundary.
+ * Non-Goals: This module does not move the map, claim stamps, or render UI feedback.
+ * Dependencies: GeolocationConfig and distance helpers.
+ */
 import { GeolocationConfig } from '../config/mapConfig';
 import { calculateDistanceMeters, formatDistanceMeters } from './visits';
 
@@ -42,72 +50,79 @@ export function getCurrentDevicePosition() {
     let bestPosition: GeolocationPosition | null = null;
     let finished = false;
     let timeoutId = 0;
+    let watchId: number | null = null;
 
-    const cleanup = (watchId: number) => {
-      navigator.geolocation.clearWatch(watchId);
+    const cleanup = () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
       window.clearTimeout(timeoutId);
       finished = true;
     };
 
-    const finishWithError = (watchId: number, error: Error) => {
+    const finishWithError = (error: Error) => {
       if (finished) {
         return;
       }
-      cleanup(watchId);
+      cleanup();
       reject(error);
     };
 
-    const finishWithBestPosition = (watchId: number) => {
+    const finishWithBestPosition = () => {
       if (finished) {
         return;
       }
 
       if (!bestPosition) {
-        cleanup(watchId);
+        cleanup();
         reject(new Error('현재 위치를 확인하지 못했어요.'));
         return;
       }
 
       try {
         const nextPosition = validateCurrentDevicePosition(bestPosition);
-        cleanup(watchId);
+        cleanup();
         resolve(nextPosition);
       } catch (error) {
-        cleanup(watchId);
+        cleanup();
         reject(error instanceof Error ? error : new Error('현재 위치를 확인하지 못했어요.'));
       }
     };
 
-    const watchId = navigator.geolocation.watchPosition(
+    watchId = navigator.geolocation.watchPosition(
       (position) => {
         if (!bestPosition || position.coords.accuracy < bestPosition.coords.accuracy) {
           bestPosition = position;
         }
 
         if (position.coords.accuracy <= GeolocationConfig.earlySuccessAccuracyMeters) {
-          finishWithBestPosition(watchId);
+          finishWithBestPosition();
         }
       },
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
-          finishWithError(watchId, new Error('브라우저 위치 권한이 꺼져 있어요. 위치 권한을 허용해 주세요.'));
+          finishWithError(new Error('브라우저 위치 권한이 꺼져 있어요. 위치 권한을 허용해 주세요.'));
           return;
         }
         if (error.code === error.POSITION_UNAVAILABLE) {
-          finishWithError(watchId, new Error('현재 위치를 찾지 못했어요. GPS가 잘 잡히는 곳에서 다시 시도해 주세요.'));
+          finishWithError(new Error('현재 위치를 찾지 못했어요. GPS가 잘 잡히는 곳에서 다시 시도해 주세요.'));
           return;
         }
         if (error.code === error.TIMEOUT) {
-          finishWithError(watchId, new Error('위치 확인 시간이 초과됐어요. 다시 시도해 주세요.'));
+          finishWithError(new Error('위치 확인 시간이 초과됐어요. 다시 시도해 주세요.'));
           return;
         }
-        finishWithError(watchId, new Error('현재 위치를 확인하지 못했어요.'));
+        finishWithError(new Error('현재 위치를 확인하지 못했어요.'));
       },
       GeolocationConfig.watchOptions,
     );
+    if (finished && watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      return;
+    }
 
     timeoutId = window.setTimeout(() => {
-      finishWithBestPosition(watchId);
+      finishWithBestPosition();
     }, GeolocationConfig.settleTimeoutMs);
   });
 }

@@ -1,10 +1,18 @@
+/*
+ * File: AppMapStageView.tsx
+ * Purpose: Compose the map tab stage from coordinator-provided map data and actions.
+ * Primary Responsibility: Adapt app-level map props into the MapTabStage contract.
+ * Design Intent: Keep the app shell coordinator separate from map-stage presentation wiring.
+ * Non-Goals: This component does not fetch map data, own Naver SDK state, or implement sheet internals.
+ * Dependencies: React memo, MapTabStage, map category strip, and app domain DTOs.
+ */
 import { memo } from 'react';
+import type { TourismPlaceItem } from '../tourismTypes';
+import type { SessionUser } from '../types/auth';
+import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
+import type { BootstrapResponse } from '../types/review';
 import { MapTabStage } from './MapTabStage';
 import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
-import type { TourismPlaceItem } from '../tourismTypes';
-import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
-import type { SessionUser } from '../types/auth';
-import type { BootstrapResponse } from '../types/review';
 
 interface AppMapStageViewProps {
   mapData: {
@@ -16,6 +24,7 @@ interface AppMapStageViewProps {
     selectedTourismPlace: TourismPlaceItem | null;
     currentPosition: { latitude: number; longitude: number } | null;
     mapLocationStatus: ApiStatus;
+    mapLocationMessage: string | null;
     mapLocationFocusKey: number;
     drawerState: DrawerState;
     sessionUser: SessionUser | null;
@@ -101,6 +110,7 @@ export const AppMapStageView = memo(function AppMapStageView({
         tourismPlaces: mapData.showTourismInfo ? mapData.tourismPlaces : [],
         currentPosition: mapData.currentPosition,
         mapLocationStatus: mapData.mapLocationStatus,
+        mapLocationMessage: mapData.mapLocationMessage,
         mapLocationFocusKey: mapData.mapLocationFocusKey,
         routePreviewPlaces: mapData.routePreviewPlaces,
       }}

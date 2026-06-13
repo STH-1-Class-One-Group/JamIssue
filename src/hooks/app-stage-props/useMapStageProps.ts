@@ -10,6 +10,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     festivals,
     initialMapViewport,
     mapLocationFocusKey,
+    mapLocationMessage,
     mapLocationStatus,
     mapStageActions,
     reviewActions,
@@ -45,6 +46,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       selectedTourismPlace,
       currentPosition,
       mapLocationStatus,
+      mapLocationMessage,
       mapLocationFocusKey,
       drawerState: state.drawerState,
       sessionUser,
@@ -79,7 +81,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
           return;
         }
         setSelectedTourismPlaceId(tourismPlaceId);
-        setTourismSheetState('partial');
+        setTourismSheetState('full');
       },
       onCloseTourismInfoSheet: () => setSelectedTourismPlaceId(null),
       onExpandTourismInfoSheet: () => setTourismSheetState('full'),

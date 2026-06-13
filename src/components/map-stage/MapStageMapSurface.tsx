@@ -38,7 +38,7 @@ export function MapStageMapSurface({
         onSelectTourismPlace={tourismActions.onOpenTourismPlace}
         currentPosition={mapData.currentPosition}
         currentLocationStatus={mapData.mapLocationStatus}
-        currentLocationMessage={null}
+        currentLocationMessage={mapData.mapLocationMessage}
         focusCurrentLocationKey={mapData.mapLocationFocusKey}
         onLocateCurrentPosition={viewportData.onLocateCurrentPosition}
         initialCenter={viewportData.initialMapCenter}
