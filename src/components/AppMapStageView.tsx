@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { MapTabStage } from './MapTabStage';
+import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { SessionUser } from '../types/auth';
 import type { BootstrapResponse } from '../types/review';
@@ -51,6 +52,20 @@ interface AppMapStageViewProps {
   };
 }
 
+type AppMapStageSubNavProps = Pick<AppMapStageViewProps, 'mapData' | 'mapActions'>;
+
+export function AppMapStageSubNav({
+  mapData,
+  mapActions,
+}: AppMapStageSubNavProps) {
+  return (
+    <MapStageCategoryStrip
+      activeCategory={mapData.activeCategory}
+      onSelectCategory={mapActions.setActiveCategory}
+    />
+  );
+}
+
 export const AppMapStageView = memo(function AppMapStageView({
   mapData,
   mapActions,
@@ -58,7 +73,6 @@ export const AppMapStageView = memo(function AppMapStageView({
   return (
     <MapTabStage
       mapData={{
-        activeCategory: mapData.activeCategory,
         filteredPlaces: mapData.filteredPlaces,
         festivals: mapData.festivals,
         currentPosition: mapData.currentPosition,
@@ -108,9 +122,6 @@ export const AppMapStageView = memo(function AppMapStageView({
         onCloseDrawer: mapActions.onCloseDrawer,
         onExpandFestivalDrawer: mapActions.onExpandFestivalDrawer,
         onCollapseFestivalDrawer: mapActions.onCollapseFestivalDrawer,
-      }}
-      mapActions={{
-        setActiveCategory: mapActions.setActiveCategory,
       }}
     />
   );

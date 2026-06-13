@@ -1,10 +1,9 @@
-import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../../types/core';
+import type { ApiStatus, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../../types/core';
 import type { SessionUser } from '../../types/auth';
 import type { BootstrapResponse } from '../../types/review';
 
 export interface MapTabStageProps {
   mapData: {
-    activeCategory: Category;
     filteredPlaces: Place[];
     festivals: FestivalItem[];
     currentPosition: { latitude: number; longitude: number } | null;
@@ -54,8 +53,5 @@ export interface MapTabStageProps {
     onCloseDrawer: () => void;
     onExpandFestivalDrawer: () => void;
     onCollapseFestivalDrawer: () => void;
-  };
-  mapActions: {
-    setActiveCategory: (category: Category) => void;
   };
 }

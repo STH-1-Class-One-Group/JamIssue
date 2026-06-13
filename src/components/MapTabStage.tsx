@@ -1,4 +1,3 @@
-import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
 import { MapStageMapSurface } from './map-stage/MapStageMapSurface';
 import { MapStageSheets } from './map-stage/MapStageSheets';
 import type { MapTabStageProps } from './map-stage/mapTabStageTypes';
@@ -9,14 +8,9 @@ export function MapTabStage({
   viewportData,
   placeSheet,
   festivalSheet,
-  mapActions,
 }: MapTabStageProps) {
   return (
     <div className="map-stage">
-      <MapStageCategoryStrip
-        activeCategory={mapData.activeCategory}
-        onSelectCategory={mapActions.setActiveCategory}
-      />
       <MapStageMapSurface
         mapData={mapData}
         routePreviewData={routePreviewData}

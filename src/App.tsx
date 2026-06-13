@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AppMapStageView } from './components/AppMapStageView';
+import { AppMapStageSubNav, AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
 import { AppShell } from './components/app-shell/AppShell';
 import {
@@ -55,6 +55,9 @@ export default function App() {
     (Boolean(mapStageProps.mapData.selectedPlace) && mapStageProps.mapData.drawerState === 'full') ||
     (Boolean(mapStageProps.mapData.selectedFestival) && mapStageProps.mapData.drawerState === 'full')
   );
+  const subNav = activeTab === 'map' ? (
+    <AppMapStageSubNav mapData={mapStageProps.mapData} mapActions={mapStageProps.mapActions} />
+  ) : null;
 
   return (
     <AppShell
@@ -69,6 +72,7 @@ export default function App() {
       globalUtility={globalUtility}
       onBottomTabChange={handleBottomNavChange}
       onNavigateBack={handleNavigateBack}
+      subNav={subNav}
     >
       {activeTab === 'map' ? (
         <AppMapStageView {...mapStageProps} />
