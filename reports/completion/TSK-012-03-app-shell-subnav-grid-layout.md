@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-012-03-APP-SHELL-SUBNAV-GRID-LAYOUT`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/407
-PR: `TBD-TSK-012-03`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/414
 Branch: `app-shell-subnav-grid-layout`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/404
