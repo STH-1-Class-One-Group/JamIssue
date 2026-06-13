@@ -1,9 +1,9 @@
 /*
  * File: TourismInfoSheet.tsx
  * Purpose: Present non-curated KTO tourism place information from the map layer.
- * Primary Responsibility: Render available KTO consumer-contract fields locally before offering an optional source link.
- * Design Intent: Reuse the shared map bottom-sheet shell and avoid depending on external provider pages for basic information.
- * Non-Goals: This component does not allow stamping, review creation, direct KTO/OpenAPI calls, or provider-row normalization.
+ * Primary Responsibility: Render available KTO consumer-contract fields inside the app as a read-only information sheet.
+ * Design Intent: Keep KTO places useful without sending users to unstable external provider detail pages.
+ * Non-Goals: This component does not allow stamping, review creation, direct KTO/OpenAPI calls, or external source-page validation.
  * Dependencies: TourismPlaceItem DTO and MapBottomSheet.
  */
 import type { TourismPlaceItem } from '../tourismTypes';
@@ -36,20 +36,6 @@ function getTourismPlaceAddress(place: TourismPlaceItem) {
 
 function getTourismPlaceCategoryLabel(place: TourismPlaceItem) {
   return place.ktoContentTypeLabel || place.category || place.ktoFacet || null;
-}
-
-function getValidTourismPlaceSourceUrl(place: TourismPlaceItem) {
-  const rawUrl = place.sourcePageUrl || place.homepageUrl;
-  if (!rawUrl) {
-    return null;
-  }
-
-  try {
-    const url = new URL(rawUrl);
-    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null;
-  } catch {
-    return null;
-  }
 }
 
 function formatCoordinates(place: TourismPlaceItem) {
@@ -98,7 +84,6 @@ export function TourismInfoSheet({
   const title = getTourismPlaceTitle(place);
   const address = getTourismPlaceAddress(place);
   const categoryLabel = getTourismPlaceCategoryLabel(place);
-  const sourceUrl = getValidTourismPlaceSourceUrl(place);
   const primaryDescription = place.description && place.description !== place.summary ? place.description : null;
   const summary = place.summary || primaryDescription || '관광지 기본 정보를 확인할 수 있어요.';
   const coordinates = formatCoordinates(place);
@@ -166,16 +151,10 @@ export function TourismInfoSheet({
           <strong>출처</strong>
           <p>{place.sourceName || 'KTO 관광정보'}</p>
           {sourceUpdatedAt ? <p className="section-copy">업데이트 {sourceUpdatedAt}</p> : null}
-        </div>
-        {sourceUrl ? (
-          <a className="primary-button primary-button--block" href={sourceUrl} target="_blank" rel="noreferrer">
-            KTO 원문 보기
-          </a>
-        ) : (
           <p className="section-copy">
-            KTO 원문 링크가 유효하지 않아 현재 시트의 정보를 기준으로 확인해 주세요.
+            외부 원문 페이지가 열리지 않을 수 있어 앱에서 확인 가능한 정보만 표시합니다.
           </p>
-        )}
+        </div>
       </div>
     </MapBottomSheet>
   );
