@@ -22,6 +22,22 @@ interface TourismInfoSheetProps {
   onCollapse: () => void;
 }
 
+function getTourismPlaceTitle(place: TourismPlaceItem) {
+  return place.name || place.title || '관광정보';
+}
+
+function getTourismPlaceAddress(place: TourismPlaceItem) {
+  return place.address || place.roadAddress || null;
+}
+
+function getTourismPlaceCategoryLabel(place: TourismPlaceItem) {
+  return place.ktoContentTypeLabel || place.category || place.ktoFacet || null;
+}
+
+function getTourismPlaceSourceUrl(place: TourismPlaceItem) {
+  return place.sourcePageUrl || place.homepageUrl || null;
+}
+
 export function TourismInfoSheet({
   place,
   isOpen,
@@ -37,6 +53,10 @@ export function TourismInfoSheet({
   const drawerState: DrawerState = sheetState === 'full' ? 'full' : 'partial';
   const mapSheetState: MapSheetState = sheetState === 'full' ? 'full' : 'peek';
   const sheetClassName = buildMapSheetClassName('place-drawer', mapSheetState, drawerState);
+  const title = getTourismPlaceTitle(place);
+  const address = getTourismPlaceAddress(place);
+  const categoryLabel = getTourismPlaceCategoryLabel(place);
+  const sourceUrl = getTourismPlaceSourceUrl(place);
   const primaryDescription = place.description && place.description !== place.summary ? place.description : null;
   const summary = place.summary || primaryDescription || '관광지 기본 정보를 확인할 수 있어요.';
 
@@ -54,14 +74,14 @@ export function TourismInfoSheet({
       <div className="place-drawer__content">
         {place.imageUrl ? (
           <figure className="tourism-info-sheet__media">
-            <img src={place.imageUrl} alt={`${place.title} 관광정보 이미지`} loading="lazy" />
+            <img src={place.imageUrl} alt={`${title} 관광정보 이미지`} loading="lazy" />
           </figure>
         ) : null}
 
         <div className="place-drawer__header">
           <div>
             <p className="eyebrow">KTO INFO</p>
-            <h2>{place.title}</h2>
+            <h2>{title}</h2>
             <p className="place-drawer__summary">{summary}</p>
           </div>
           <button type="button" className="text-button" onClick={onClose}>
@@ -70,7 +90,7 @@ export function TourismInfoSheet({
         </div>
 
         <div className="place-drawer__badges">
-          {place.category ? <span className="counter-pill">{place.category}</span> : null}
+          {categoryLabel ? <span className="counter-pill">{categoryLabel}</span> : null}
           {place.district ? <span className="counter-pill">{place.district}</span> : null}
         </div>
 
@@ -83,14 +103,14 @@ export function TourismInfoSheet({
           ) : null}
           <div>
             <strong>위치</strong>
-            <p>{place.address || '주소 정보가 아직 제공되지 않았어요.'}</p>
+            <p>{address || '주소 정보가 아직 제공되지 않았어요.'}</p>
           </div>
           <div>
             <strong>출처</strong>
             <p>{place.sourceName || 'KTO 관광정보'}</p>
           </div>
-          {place.homepageUrl ? (
-            <a className="primary-button primary-button--block" href={place.homepageUrl} target="_blank" rel="noreferrer">
+          {sourceUrl ? (
+            <a className="primary-button primary-button--block" href={sourceUrl} target="_blank" rel="noreferrer">
               자세히 보기
             </a>
           ) : null}

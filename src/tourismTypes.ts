@@ -8,7 +8,9 @@
  */
 
 export interface TourismFacetOption {
-  key: string;
+  key?: string;
+  id?: string;
+  name?: string;
   label: string;
   count: number;
 }
@@ -28,16 +30,23 @@ export interface TourismCuratedPlaceLink {
 
 export interface TourismPlaceItem {
   id: string;
-  title: string;
+  name: string;
+  title?: string;
   category: string | null;
+  ktoContentTypeId?: string | null;
+  ktoContentTypeLabel?: string | null;
+  ktoFacet?: string | null;
   district: string | null;
   address: string | null;
+  roadAddress?: string | null;
   summary: string | null;
   description: string | null;
   latitude: number | null;
   longitude: number | null;
   imageUrl: string | null;
-  homepageUrl: string | null;
+  sourcePageUrl?: string | null;
+  homepageUrl?: string | null;
+  sourceUpdatedAt?: string | null;
   sourceName: string | null;
   isCurated: boolean;
   curatedPlace: TourismCuratedPlaceLink | null;
