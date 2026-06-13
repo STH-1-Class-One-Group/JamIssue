@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { getTourismPlaces } from '../../api/tourismClient';
+import { getTourismPlaceDetail, getTourismPlaces } from '../../api/tourismClient';
 import { FeedbackRuntimeConfig, TourismRuntimeConfig } from '../../config/runtimeLimitConfig';
 import { getInitialNotice } from '../app-route/useAppRouteState';
-import { useAppFeedbackEffects } from '../useAppFeedbackEffects';
 import { useAppBootstrapLifecycle } from '../app-bootstrap/useAppBootstrapLifecycle';
+import { useAppFeedbackEffects } from '../useAppFeedbackEffects';
 import type {
   DataState,
   DomainState,
@@ -33,7 +33,7 @@ export function useAppCoordinatorEffects({
   const { activeTab, goToTab, selectedPlaceId } = routeState;
   const {
     auth: { sessionUser },
-    map: { showTourismInfo, setSelectedTourismPlaceId },
+    map: { selectedTourismPlaceId, showTourismInfo, setSelectedTourismPlaceId },
     myPage: { myPageTab },
   } = domainState;
   const { mapLocationMessage, notice, setNotice } = shellRuntimeState;
@@ -50,10 +50,14 @@ export function useAppCoordinatorEffects({
     setPlaces,
     setSelectedPlaceReviews,
     setStampState,
+    setTourismDetailError,
+    setTourismDetailLoading,
+    setTourismDetailsById,
     setTourismError,
     setTourismLoading,
     setTourismPlaces,
     setTourismSourceReady,
+    tourismDetailsById,
     tourismPlaces,
   } = dataState;
   const {
@@ -139,6 +143,65 @@ export function useAppCoordinatorEffects({
     tourismPlaces.length,
   ]);
 
+  useEffect(() => {
+    if (!selectedTourismPlaceId) {
+      setTourismDetailError(null);
+      setTourismDetailLoading(false);
+      return;
+    }
+    if (tourismDetailsById[selectedTourismPlaceId]) {
+      return;
+    }
+    const selectedTourismPlace = tourismPlaces.find((place) => place.id === selectedTourismPlaceId);
+    if (selectedTourismPlace?.hasDetail === false) {
+      return;
+    }
+
+    let isActive = true;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+    }, TourismRuntimeConfig.placesRequestTimeoutMs);
+    setTourismDetailLoading(true);
+    setTourismDetailError(null);
+
+    getTourismPlaceDetail(selectedTourismPlaceId, { signal: controller.signal })
+      .then((response) => {
+        if (!isActive) {
+          return;
+        }
+        setTourismDetailsById((current) => ({
+          ...current,
+          [selectedTourismPlaceId]: response,
+        }));
+      })
+      .catch((error: unknown) => {
+        if (!isActive) {
+          return;
+        }
+        setTourismDetailError(formatTourismErrorMessage(error));
+      })
+      .finally(() => {
+        window.clearTimeout(timeoutId);
+        if (isActive) {
+          setTourismDetailLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [
+    selectedTourismPlaceId,
+    setTourismDetailError,
+    setTourismDetailLoading,
+    setTourismDetailsById,
+    tourismDetailsById,
+    tourismPlaces,
+  ]);
+
   useAppBootstrapLifecycle({
     activeTab,
     selectedPlaceId,
@@ -169,7 +232,7 @@ export function useAppCoordinatorEffects({
 
 function formatTourismErrorMessage(error: unknown) {
   if (error instanceof DOMException && error.name === 'AbortError') {
-    return '관광정보 응답이 지연되고 있어요. 잠시 후 다시 켜 주세요.';
+    return '관광정보 응답이 지연되고 있어요. 잠시 뒤 다시 켜 주세요.';
   }
   return formatErrorMessage(error);
 }

@@ -1,12 +1,12 @@
 /*
  * File: tourismClient.ts
  * Purpose: Request KTO tourism places through the Worker consumer API.
- * Primary Responsibility: Convert optional UI filters into the stable `/api/tourism/places` query string.
+ * Primary Responsibility: Convert UI list/detail requests into stable Worker tourism API paths.
  * Design Intent: Keep browser code behind the Worker contract and prevent direct KTO/OpenAPI, Supabase, or admin import calls.
  * Non-Goals: This client does not normalize provider rows or perform admin import/sync operations.
  * Dependencies: `fetchJson` API wrapper and `TourismPlacesResponse` DTO.
  */
-import type { TourismPlacesQuery, TourismPlacesResponse } from '../tourismTypes';
+import type { TourismPlaceDetailResponse, TourismPlacesQuery, TourismPlacesResponse } from '../tourismTypes';
 import { fetchJson } from './core';
 
 function appendOptionalParam(params: URLSearchParams, key: string, value: string | number | null | undefined) {
@@ -31,4 +31,12 @@ export function buildTourismPlacesPath(query: TourismPlacesQuery = {}) {
 
 export function getTourismPlaces(query: TourismPlacesQuery = {}, init?: RequestInit) {
   return fetchJson<TourismPlacesResponse>(buildTourismPlacesPath(query), init);
+}
+
+export function buildTourismPlaceDetailPath(placeId: string) {
+  return `/api/tourism/places/${encodeURIComponent(placeId)}`;
+}
+
+export function getTourismPlaceDetail(placeId: string, init?: RequestInit) {
+  return fetchJson<TourismPlaceDetailResponse>(buildTourismPlaceDetailPath(placeId), init);
 }

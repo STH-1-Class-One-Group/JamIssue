@@ -1,6 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 import type { SessionUser } from '../../src/types/auth';
-import type { TourismPlaceItem, TourismPlacesResponse } from '../../src/tourismTypes';
+import type { TourismPlaceDetailResponse, TourismPlaceItem, TourismPlacesResponse } from '../../src/tourismTypes';
 import type { CommunityRouteSort, Course, Place } from '../../src/types/core';
 import type { Comment, Review, StampLog, StampState, TravelSession, UserRoute } from '../../src/types/review';
 import type { MyComment, MyPageResponse, UserNotification } from '../../src/types/my-page';
@@ -277,6 +277,42 @@ async function handleApiRoute(route: Route, state: E2EAppState) {
       items: state.tourismPlaces,
     };
     await fulfillJson(route, response);
+    return;
+  }
+
+  const tourismDetailMatch = path.match(/^\/api\/tourism\/places\/([^/]+)$/);
+  if (method === 'GET' && tourismDetailMatch) {
+    const placeId = decodeURIComponent(tourismDetailMatch[1]);
+    const place = state.tourismPlaces.find((candidate) => candidate.id === placeId);
+    const response: TourismPlaceDetailResponse = {
+      sourceReady: Boolean(place),
+      item: place
+        ? {
+            ...place,
+            hasDetail: place.hasDetail ?? true,
+            detailKind: place.detailKind ?? place.ktoFacet ?? place.category,
+            overview: place.summary,
+            contact: '0507-1429-3364',
+            homepageUrl: null,
+            images: [],
+            displaySections: [
+              {
+                title: 'Usage',
+                items: [
+                  { label: 'Hours', value: '11:00~19:50<br>- 준비시간 15:00~17:00' },
+                  { label: 'Parking', value: '가능' },
+                ],
+              },
+              {
+                title: 'Menu',
+                items: [{ label: 'Main menu', value: '돌솥밥' }],
+              },
+            ],
+            detail: {},
+          }
+        : null,
+    };
+    await fulfillJson(route, response, place ? 200 : 404);
     return;
   }
 
