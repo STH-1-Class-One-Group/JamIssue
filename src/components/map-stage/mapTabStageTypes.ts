@@ -10,6 +10,7 @@ export interface MapTabStageProps {
     tourismPlaces: TourismPlaceItem[];
     currentPosition: { latitude: number; longitude: number } | null;
     mapLocationStatus: ApiStatus;
+    mapLocationMessage: string | null;
     mapLocationFocusKey: number;
     routePreviewPlaces: Place[];
   };

@@ -1,3 +1,11 @@
+/*
+ * File: NaverMapStatus.tsx
+ * Purpose: Render map loading, SDK error, and current-location action feedback.
+ * Primary Responsibility: Own user-visible map status controls around the Naver map surface.
+ * Design Intent: Keep location feedback visible at the map UI boundary instead of hiding it in app-level banners only.
+ * Non-Goals: This component does not request geolocation or mutate map viewport state directly.
+ * Dependencies: ApiStatus and callbacks supplied by the map stage.
+ */
 import type { ApiStatus } from '../../types/core';
 
 type NaverMapStatusProps = {
@@ -32,7 +40,7 @@ export function NaverMapStatus({
     <>
       {status === 'loading' && (
         <div className="map-status-card map-status-card--overlay">
-          <strong>대전 지도를 준비하고 있어요</strong>
+          <strong>대전 지도를 준비하고 있어요.</strong>
           <p>잠시만 기다리면 지도와 마커를 바로 보여드릴게요.</p>
         </div>
       )}
