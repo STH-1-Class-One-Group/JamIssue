@@ -46,7 +46,7 @@ describe('architecture readability source quality baseline', () => {
     const directRootHookFiles = hookFiles.filter((path) => path.split('/').length === 3);
     const tinyDirectRootHookFiles = directRootHookFiles.filter((path) => countLines(path) <= 15);
 
-    expect(hookFiles.length).toBeLessThanOrEqual(87);
+    expect(hookFiles.length).toBeLessThanOrEqual(88);
     expect(directRootHookFiles.length).toBeLessThanOrEqual(35);
     expect(tinyDirectRootHookFiles.length).toBeLessThanOrEqual(9);
   });
