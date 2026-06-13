@@ -4,9 +4,9 @@
 
 - Scope-ID: `TSK-014-03`
 - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/431
-- PR: `TBD-TSK-014-03`
+- PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/432
 - Branch: `kto-source-link-cta-fix`
-- Status: `implemented-local`
+- Status: `implemented-merged`
 - Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/425
 - Child Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/431
 
@@ -38,13 +38,14 @@
 
 ## 원격 근거
 
-- PR URL: `TBD-TSK-014-03`
-- main merge SHA: `TBD-TSK-014-03`
-- CI URL: `TBD-TSK-014-03`
-- production-smoke URL: `TBD-TSK-014-03`
-- CodeQL/Code Quality URL: `TBD-TSK-014-03`
+- PR URL: https://github.com/STH-1-Class-One-Group/JamIssue/pull/432
+- main merge SHA: `ffc3745679aa4cfbdb0449d782c56f9d337a524d`
+- CI URL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467992466/job/81193642810
+- production-smoke URL: https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467992456/job/81193671624
+- CodeQL/Code Quality URL:
+  - https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467992184/job/81193642959
+  - https://github.com/STH-1-Class-One-Group/JamIssue/actions/runs/27467992184/job/81193642942
 
 ## 잔여 항목
 
-- PR 생성 후 PR URL과 원격 check 결과를 이 보고서와 #431에 반영한다.
-- main merge 후 #425 parent에 #431 완료 근거를 기록한다.
+- #425 parent에 #431 완료 근거를 기록한다.
