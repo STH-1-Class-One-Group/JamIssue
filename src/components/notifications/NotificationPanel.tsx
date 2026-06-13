@@ -43,7 +43,7 @@ export function NotificationPanel({
           <NotificationListItem
             key={notification.id}
             notification={notification}
-            busyId={busyId}
+            isBusy={busyId === notification.id}
             onOpenNotification={handleOpenNotification}
             onDelete={handleDelete}
           />
