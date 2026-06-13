@@ -54,11 +54,3 @@ export class FeedbackRuntimeConfig {
 export class PaginationRuntimeConfig {
   static readonly pageSize = 10;
 }
-
-export class FloatingBackButtonRuntimeConfig {
-  static readonly buttonSizePx = 46;
-  static readonly edgePaddingPx = 12;
-  static readonly desktopBottomPaddingPx = 120;
-  static readonly mobileSheetOffsetPx = 180;
-  static readonly touchDragDelayMs = 260;
-}

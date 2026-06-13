@@ -1,4 +1,3 @@
-import { MapStageBrandHeader } from './map-stage/MapStageBrandHeader';
 import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
 import { MapStageMapSurface } from './map-stage/MapStageMapSurface';
 import { MapStageSheets } from './map-stage/MapStageSheets';
@@ -14,7 +13,6 @@ export function MapTabStage({
 }: MapTabStageProps) {
   return (
     <div className="map-stage">
-      <MapStageBrandHeader />
       <MapStageCategoryStrip
         activeCategory={mapData.activeCategory}
         onSelectCategory={mapActions.setActiveCategory}

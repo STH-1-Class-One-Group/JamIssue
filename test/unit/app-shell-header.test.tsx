@@ -1,0 +1,66 @@
+/*
+ * File: app-shell-header.test.tsx
+ * Purpose: Verify the TSK-012 app header contract at the AppShell public boundary.
+ * Primary Responsibility: Prove that navigation and utility actions live inside the app header slot.
+ * Design Intent: Use rendered DOM behavior instead of private component internals so later layout work can refactor safely.
+ * Non-Goals: This test does not validate sub-navigation grid layout or KTO map layer behavior.
+ * Dependencies: React Testing Library, Vitest, and the AppShell component.
+ */
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+import { AppShell } from '../../src/components/app-shell/AppShell';
+
+const globalUtility = {
+  sessionUserName: 'tester',
+  notifications: [],
+  unreadCount: 0,
+  onOpenNotification: vi.fn(),
+  onMarkAllNotificationsRead: vi.fn(),
+  onDeleteNotification: vi.fn(),
+};
+
+function renderShell(canNavigateBack: boolean, onNavigateBack = vi.fn()) {
+  render(
+    <AppShell
+      activeTab="map"
+      canNavigateBack={canNavigateBack}
+      globalStatus={null}
+      globalUtility={globalUtility}
+      onBottomTabChange={vi.fn()}
+      onNavigateBack={onNavigateBack}
+    >
+      <div data-testid="content">content</div>
+    </AppShell>,
+  );
+}
+
+describe('AppShell app header contract', () => {
+  it('renders brand and utility actions inside the app header when back navigation is not available', () => {
+    renderShell(false);
+
+    const header = screen.getByRole('banner', { name: 'Jam Issue app header' });
+
+    expect(within(header).getByText('JAM ISSUE')).toBeInTheDocument();
+    expect(within(header).getByText('DAEJEON LOCAL GUIDE')).toBeInTheDocument();
+    expect(within(header).getByRole('button')).toHaveClass('global-settings-menu__trigger');
+    expect(screen.queryByTestId('app-shell-overlay')).not.toBeInTheDocument();
+  });
+
+  it('uses a header leading button instead of a floating overlay for back navigation', async () => {
+    const user = userEvent.setup();
+    const onNavigateBack = vi.fn();
+
+    renderShell(true, onNavigateBack);
+
+    const header = screen.getByRole('banner', { name: 'Jam Issue app header' });
+    const backButton = within(header).getByRole('button', { name: '이전 화면으로 돌아가기' });
+
+    expect(backButton).toHaveClass('app-header__back-button');
+    expect(screen.queryByTestId('app-shell-overlay')).not.toBeInTheDocument();
+
+    await user.click(backButton);
+
+    expect(onNavigateBack).toHaveBeenCalledTimes(1);
+  });
+});

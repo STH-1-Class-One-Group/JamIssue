@@ -30,12 +30,12 @@ describe('TSK-012-01 second UI/UX audit baseline', () => {
     expect(governanceIndex).not.toContain('TSK-011-00 Epic: 2차 UI/UX');
   });
 
-  it('records that AppShell still contains transitional floating header seams', () => {
+  it('records that AppShell has moved header ownership to the app header slice', () => {
     const appShell = readSource('src/components/app-shell/AppShell.tsx');
 
-    expect(appShell).toContain('FloatingBackButton');
-    expect(appShell).toContain('phone-shell__utility-slot');
-    expect(appShell).toContain('app-shell__header-actions');
+    expect(appShell).toContain('AppHeader');
+    expect(appShell).not.toContain('FloatingBackButton');
+    expect(appShell).not.toContain('phone-shell__utility-slot');
   });
 
   it('records that EventTab is already festival-only on the current main baseline', () => {

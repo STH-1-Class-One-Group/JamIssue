@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react';
 import type { Tab } from '../../types/core';
+import { AppHeader } from './AppHeader';
 import { BottomNav } from '../BottomNav';
-import { FloatingBackButton } from '../FloatingBackButton';
 import { GlobalSettingsMenu } from '../GlobalSettingsMenu';
 import { GlobalStatusBanner } from '../GlobalStatusBanner';
 
@@ -46,18 +46,15 @@ export function AppShell({
             />
           </div>
         )}
-        <div className="phone-shell__utility-slot app-shell__header-actions" data-app-shell-slot="header-actions">
-          <GlobalSettingsMenu {...globalUtility} />
-        </div>
+        <AppHeader
+          canNavigateBack={canNavigateBack}
+          globalUtility={globalUtility}
+          onNavigateBack={onNavigateBack}
+        />
         <div className="phone-shell__body" data-app-shell-slot="body">
           <div className="app-shell__content-slot" data-app-shell-slot="content">
             {children}
           </div>
-          {canNavigateBack && (
-            <div className="app-shell__overlay-slot" data-app-shell-slot="overlay">
-              <FloatingBackButton onNavigateBack={onNavigateBack} />
-            </div>
-          )}
           <div
             className={[
               'app-shell__bottom-tab-slot',
