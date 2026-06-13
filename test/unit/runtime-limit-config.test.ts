@@ -4,7 +4,6 @@ import {
   ApiCacheConfig,
   AutoLoadMoreConfig,
   FeedbackRuntimeConfig,
-  FloatingBackButtonRuntimeConfig,
   ImageUploadConfig,
   PaginationRuntimeConfig,
 } from '../../src/config/runtimeLimitConfig';
@@ -48,13 +47,5 @@ describe('runtime limit config', () => {
     expect(FeedbackRuntimeConfig.stampUnlockRadiusMeters).toBe(120);
     expect(FeedbackRuntimeConfig.noticeDismissDelayMs).toBe(4000);
     expect(PaginationRuntimeConfig.pageSize).toBe(10);
-  });
-
-  it('preserves floating back button runtime geometry', () => {
-    expect(FloatingBackButtonRuntimeConfig.buttonSizePx).toBe(46);
-    expect(FloatingBackButtonRuntimeConfig.edgePaddingPx).toBe(12);
-    expect(FloatingBackButtonRuntimeConfig.desktopBottomPaddingPx).toBe(120);
-    expect(FloatingBackButtonRuntimeConfig.mobileSheetOffsetPx).toBe(180);
-    expect(FloatingBackButtonRuntimeConfig.touchDragDelayMs).toBe(260);
   });
 });

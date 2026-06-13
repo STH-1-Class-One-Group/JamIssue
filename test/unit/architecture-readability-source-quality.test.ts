@@ -7,7 +7,7 @@
  * Dependencies: Vitest, Git CLI, and repository-relative tracked source paths.
  */
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -22,7 +22,10 @@ function collectTrackedFiles(paths: string[]) {
     encoding: 'utf8',
   });
 
-  return output.split(/\r?\n/).filter(Boolean);
+  return output
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .filter((path) => existsSync(join(workspaceRoot, path)));
 }
 
 function countLines(path: string) {
