@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { getTourismPlaces } from '../../api/tourismClient';
-import { FeedbackRuntimeConfig } from '../../config/runtimeLimitConfig';
+import { FeedbackRuntimeConfig, TourismRuntimeConfig } from '../../config/runtimeLimitConfig';
 import { getInitialNotice } from '../app-route/useAppRouteState';
 import { useAppFeedbackEffects } from '../useAppFeedbackEffects';
 import { useAppBootstrapLifecycle } from '../app-bootstrap/useAppBootstrapLifecycle';
@@ -96,10 +96,14 @@ export function useAppCoordinatorEffects({
     }
 
     let isActive = true;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+    }, TourismRuntimeConfig.placesRequestTimeoutMs);
     setTourismLoading(true);
     setTourismError(null);
 
-    getTourismPlaces()
+    getTourismPlaces({}, { signal: controller.signal })
       .then((response) => {
         if (!isActive) {
           return;
@@ -111,9 +115,10 @@ export function useAppCoordinatorEffects({
         if (!isActive) {
           return;
         }
-        setTourismError(formatErrorMessage(error));
+        setTourismError(formatTourismErrorMessage(error));
       })
       .finally(() => {
+        window.clearTimeout(timeoutId);
         if (isActive) {
           setTourismLoading(false);
         }
@@ -121,6 +126,8 @@ export function useAppCoordinatorEffects({
 
     return () => {
       isActive = false;
+      window.clearTimeout(timeoutId);
+      controller.abort();
     };
   }, [
     setSelectedTourismPlaceId,
@@ -158,6 +165,13 @@ export function useAppCoordinatorEffects({
     formatErrorMessage,
     reportBackgroundError,
   });
+}
+
+function formatTourismErrorMessage(error: unknown) {
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    return '관광정보 응답이 지연되고 있어요. 잠시 후 다시 켜 주세요.';
+  }
+  return formatErrorMessage(error);
 }
 
 function formatErrorMessage(error: unknown) {

@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { invalidateApiCache } from '../../src/api/core';
 import { getTourismPlaces } from '../../src/api/tourismClient';
 
 const fetchMock = vi.fn();
 
 beforeEach(() => {
+  invalidateApiCache();
   fetchMock.mockReset();
   vi.stubGlobal('fetch', fetchMock);
   fetchMock.mockResolvedValue({
@@ -36,5 +38,15 @@ describe('tourismClient', () => {
     await getTourismPlaces({ category: '', district: undefined, limit: undefined });
 
     expect(String(fetchMock.mock.calls[0][0])).toMatch(/\/api\/tourism\/places$/);
+  });
+
+  it('passes request init to the Worker tourism consumer request', async () => {
+    const controller = new AbortController();
+
+    await getTourismPlaces({}, { signal: controller.signal });
+
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({
+      signal: controller.signal,
+    });
   });
 });

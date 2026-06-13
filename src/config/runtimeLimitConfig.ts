@@ -54,3 +54,7 @@ export class FeedbackRuntimeConfig {
 export class PaginationRuntimeConfig {
   static readonly pageSize = 10;
 }
+
+export class TourismRuntimeConfig {
+  static readonly placesRequestTimeoutMs = 12000;
+}

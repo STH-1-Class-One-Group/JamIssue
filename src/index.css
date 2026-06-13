@@ -336,6 +336,20 @@ textarea {
   white-space: nowrap;
 }
 
+.tourism-info-sheet__media {
+  overflow: hidden;
+  margin: 0 0 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 197, 217, 0.42);
+  background: rgba(255, 240, 246, 0.72);
+}
+
+.tourism-info-sheet__media img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
 .app-shell__content-slot {
   position: absolute;
   inset: 0;
