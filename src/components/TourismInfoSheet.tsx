@@ -1,9 +1,9 @@
 /*
  * File: TourismInfoSheet.tsx
  * Purpose: Present non-curated KTO tourism place information from the map layer.
- * Primary Responsibility: Render a read-only information sheet without stamp, review, or feed actions.
- * Design Intent: Reuse the shared map bottom-sheet shell while keeping tourism info separate from curated place interactions.
- * Non-Goals: This component does not allow stamping, review creation, or direct KTO/OpenAPI calls.
+ * Primary Responsibility: Render available KTO consumer-contract fields locally before offering an optional source link.
+ * Design Intent: Reuse the shared map bottom-sheet shell and avoid depending on external provider pages for basic information.
+ * Non-Goals: This component does not allow stamping, review creation, direct KTO/OpenAPI calls, or provider-row normalization.
  * Dependencies: TourismPlaceItem DTO and MapBottomSheet.
  */
 import type { TourismPlaceItem } from '../tourismTypes';
@@ -22,6 +22,10 @@ interface TourismInfoSheetProps {
   onCollapse: () => void;
 }
 
+function compactText(values: Array<string | null | undefined>) {
+  return values.map((value) => value?.trim()).filter((value): value is string => Boolean(value));
+}
+
 function getTourismPlaceTitle(place: TourismPlaceItem) {
   return place.name || place.title || '관광정보';
 }
@@ -34,8 +38,47 @@ function getTourismPlaceCategoryLabel(place: TourismPlaceItem) {
   return place.ktoContentTypeLabel || place.category || place.ktoFacet || null;
 }
 
-function getTourismPlaceSourceUrl(place: TourismPlaceItem) {
-  return place.sourcePageUrl || place.homepageUrl || null;
+function getValidTourismPlaceSourceUrl(place: TourismPlaceItem) {
+  const rawUrl = place.sourcePageUrl || place.homepageUrl;
+  if (!rawUrl) {
+    return null;
+  }
+
+  try {
+    const url = new URL(rawUrl);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function formatCoordinates(place: TourismPlaceItem) {
+  if (typeof place.latitude !== 'number' || typeof place.longitude !== 'number') {
+    return null;
+  }
+  return `${place.latitude.toFixed(5)}, ${place.longitude.toFixed(5)}`;
+}
+
+function formatSourceUpdatedAt(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return new Intl.DateTimeFormat('ko-KR', {
+    dateStyle: 'medium',
+    timeZone: 'Asia/Seoul',
+  }).format(date);
+}
+
+function getCategoryRows(place: TourismPlaceItem) {
+  return [
+    compactText([place.ktoCategoryLabel1, place.ktoCategoryCode1]).join(' / '),
+    compactText([place.ktoCategoryLabel2, place.ktoCategoryCode2]).join(' / '),
+    compactText([place.ktoCategoryLabel3, place.ktoCategoryCode3]).join(' / '),
+  ].filter(Boolean);
 }
 
 export function TourismInfoSheet({
@@ -55,9 +98,12 @@ export function TourismInfoSheet({
   const title = getTourismPlaceTitle(place);
   const address = getTourismPlaceAddress(place);
   const categoryLabel = getTourismPlaceCategoryLabel(place);
-  const sourceUrl = getTourismPlaceSourceUrl(place);
+  const sourceUrl = getValidTourismPlaceSourceUrl(place);
   const primaryDescription = place.description && place.description !== place.summary ? place.description : null;
   const summary = place.summary || primaryDescription || '관광지 기본 정보를 확인할 수 있어요.';
+  const coordinates = formatCoordinates(place);
+  const sourceUpdatedAt = formatSourceUpdatedAt(place.sourceUpdatedAt);
+  const categoryRows = getCategoryRows(place);
 
   return (
     <MapBottomSheet
@@ -87,6 +133,7 @@ export function TourismInfoSheet({
       <div className="place-drawer__badges">
         {categoryLabel ? <span className="counter-pill">{categoryLabel}</span> : null}
         {place.district ? <span className="counter-pill">{place.district}</span> : null}
+        {place.ktoFacet ? <span className="counter-pill">{place.ktoFacet}</span> : null}
       </div>
 
       <div className="sheet-card stack-gap">
@@ -99,16 +146,36 @@ export function TourismInfoSheet({
         <div>
           <strong>위치</strong>
           <p>{address || '주소 정보가 아직 제공되지 않았어요.'}</p>
+          {coordinates ? <p className="section-copy">좌표 {coordinates}</p> : null}
+        </div>
+        <div>
+          <strong>분류</strong>
+          <p>
+            {compactText([place.ktoContentTypeLabel, place.ktoContentTypeId]).join(' / ') ||
+              '분류 정보가 아직 제공되지 않았어요.'}
+          </p>
+          {categoryRows.length > 0 ? (
+            <ul className="tourism-info-sheet__meta-list" aria-label="KTO 내부 분류">
+              {categoryRows.map((row) => (
+                <li key={row}>{row}</li>
+              ))}
+            </ul>
+          ) : null}
         </div>
         <div>
           <strong>출처</strong>
           <p>{place.sourceName || 'KTO 관광정보'}</p>
+          {sourceUpdatedAt ? <p className="section-copy">업데이트 {sourceUpdatedAt}</p> : null}
         </div>
         {sourceUrl ? (
           <a className="primary-button primary-button--block" href={sourceUrl} target="_blank" rel="noreferrer">
-            자세히 보기
+            KTO 원문 보기
           </a>
-        ) : null}
+        ) : (
+          <p className="section-copy">
+            KTO 원문 링크가 유효하지 않아 현재 시트의 정보를 기준으로 확인해 주세요.
+          </p>
+        )}
       </div>
     </MapBottomSheet>
   );

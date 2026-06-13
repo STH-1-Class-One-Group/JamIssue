@@ -4,29 +4,35 @@ import { TourismInfoSheet } from '../../src/components/TourismInfoSheet';
 import type { TourismPlaceItem } from '../../src/tourismTypes';
 
 const tourismPlace: TourismPlaceItem = {
-  id: 'kto-content-1932079',
-  name: '굿모닝레지던스호텔휴',
-  category: 'lodging',
-  ktoContentTypeId: '32',
-  ktoContentTypeLabel: '숙박',
-  ktoFacet: 'lodging',
-  district: '서구',
-  address: null,
-  roadAddress: '대전 서구 둔산로73번길 21',
-  summary: '대전 서구에 있는 숙박 관광자원입니다.',
-  description: '객실과 편의시설을 갖춘 레지던스형 숙박시설입니다.',
-  latitude: 36.35,
-  longitude: 127.38,
-  imageUrl: 'https://example.com/tourism.jpg',
-  sourcePageUrl: 'https://example.com/tourism',
-  sourceUpdatedAt: '2025-09-22T01:56:03+00:00',
+  id: 'kto-content-2866231',
+  name: '11시들쌈밥',
+  category: 'restaurant',
+  ktoContentTypeId: '39',
+  ktoContentTypeLabel: '음식점',
+  ktoCategoryCode1: 'A05',
+  ktoCategoryLabel1: null,
+  ktoCategoryCode2: 'A0502',
+  ktoCategoryLabel2: null,
+  ktoCategoryCode3: 'A05020100',
+  ktoCategoryLabel3: null,
+  ktoFacet: 'restaurant',
+  district: '대덕구',
+  address: '대전광역시 대덕구 대청로 9 (신탄진동)',
+  roadAddress: null,
+  summary: '11시들쌈밥 KTO TourAPI 대전 관광 정보',
+  description: null,
+  latitude: 36.4516742756,
+  longitude: 127.4296834974,
+  imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/17/2866217_image2_1.jpg',
+  sourcePageUrl: 'https://korean.visitkorea.or.kr/detail/ms_detail.do?cotid=2866231',
+  sourceUpdatedAt: '2025-09-10T04:25:17+00:00',
   sourceName: 'KTO TourAPI Daejeon Tourism',
   isCurated: false,
   curatedPlace: null,
 };
 
 describe('TourismInfoSheet', () => {
-  it('renders the available KTO tourism contract fields instead of only name and address', () => {
+  it('renders the available KTO tourism contract fields instead of relying on the source link', () => {
     render(
       <TourismInfoSheet
         place={tourismPlace}
@@ -38,18 +44,42 @@ describe('TourismInfoSheet', () => {
       />,
     );
 
-    expect(screen.getByRole('img', { name: '굿모닝레지던스호텔휴 관광정보 이미지' })).toHaveAttribute(
+    expect(screen.getByRole('img', { name: '11시들쌈밥 관광정보 이미지' })).toHaveAttribute(
       'src',
       tourismPlace.imageUrl,
     );
-    expect(screen.getByRole('heading', { name: '굿모닝레지던스호텔휴' })).toBeInTheDocument();
-    expect(screen.getByText('대전 서구에 있는 숙박 관광자원입니다.')).toBeInTheDocument();
-    expect(screen.getByText('객실과 편의시설을 갖춘 레지던스형 숙박시설입니다.')).toBeInTheDocument();
-    expect(screen.getByText('숙박')).toBeInTheDocument();
-    expect(screen.getByText('서구')).toBeInTheDocument();
-    expect(screen.getByText('대전 서구 둔산로73번길 21')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '11시들쌈밥' })).toBeInTheDocument();
+    expect(screen.getByText('11시들쌈밥 KTO TourAPI 대전 관광 정보')).toBeInTheDocument();
+    expect(screen.getByText('음식점')).toBeInTheDocument();
+    expect(screen.getByText('restaurant')).toBeInTheDocument();
+    expect(screen.getByText('대덕구')).toBeInTheDocument();
+    expect(screen.getByText('대전광역시 대덕구 대청로 9 (신탄진동)')).toBeInTheDocument();
+    expect(screen.getByText('좌표 36.45167, 127.42968')).toBeInTheDocument();
+    expect(screen.getByText('39', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText('A05')).toBeInTheDocument();
+    expect(screen.getByText('A0502')).toBeInTheDocument();
+    expect(screen.getByText('A05020100')).toBeInTheDocument();
     expect(screen.getByText('KTO TourAPI Daejeon Tourism')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '자세히 보기' })).toHaveAttribute('href', tourismPlace.sourcePageUrl);
+    expect(screen.getByText('업데이트', { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'KTO 원문 보기' })).toHaveAttribute('href', tourismPlace.sourcePageUrl);
+  });
+
+  it('does not render a clickable source link when the provider URL is invalid', () => {
+    render(
+      <TourismInfoSheet
+        place={{ ...tourismPlace, sourcePageUrl: 'javascript:alert(1)', homepageUrl: null }}
+        isOpen
+        sheetState="partial"
+        onClose={vi.fn()}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('link', { name: 'KTO 원문 보기' })).not.toBeInTheDocument();
+    expect(
+      screen.getByText('KTO 원문 링크가 유효하지 않아 현재 시트의 정보를 기준으로 확인해 주세요.'),
+    ).toBeInTheDocument();
   });
 
   it('uses the shared map bottom sheet shell and supports full-height scrolling', () => {
