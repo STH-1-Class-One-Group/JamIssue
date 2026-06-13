@@ -14,6 +14,7 @@ interface AppShellProps {
   globalUtility: ComponentProps<typeof GlobalSettingsMenu>;
   onBottomTabChange: (nextTab: Tab) => void;
   onNavigateBack: () => void;
+  subNav?: ReactNode;
 }
 
 export function AppShell({
@@ -25,8 +26,10 @@ export function AppShell({
   globalUtility,
   onBottomTabChange,
   onNavigateBack,
+  subNav,
 }: AppShellProps) {
   const isMapStage = activeTab === 'map';
+  const hasSubNav = Boolean(subNav);
 
   return (
     <div className="map-app-shell" data-app-shell="root">
@@ -34,8 +37,10 @@ export function AppShell({
         className={[
           'phone-shell',
           isMapStage ? 'phone-shell--map' : '',
+          hasSubNav ? 'app-shell--with-subnav' : 'app-shell--no-subnav',
         ].filter(Boolean).join(' ')}
         data-app-shell="phone"
+        data-testid="app-shell-phone"
       >
         {globalStatus && (
           <div className="phone-shell__status-slot app-shell__status-safe-area" data-app-shell-slot="status">
@@ -51,8 +56,21 @@ export function AppShell({
           globalUtility={globalUtility}
           onNavigateBack={onNavigateBack}
         />
+        {hasSubNav && (
+          <div
+            className="app-shell__sub-nav-slot"
+            data-app-shell-slot="sub-nav"
+            data-testid="app-shell-sub-nav"
+          >
+            {subNav}
+          </div>
+        )}
         <div className="phone-shell__body" data-app-shell-slot="body">
-          <div className="app-shell__content-slot" data-app-shell-slot="content">
+          <div
+            className="app-shell__content-slot"
+            data-app-shell-slot="content"
+            data-testid="app-shell-content"
+          >
             {children}
           </div>
           <div

@@ -95,3 +95,30 @@ test('UIUX-014 keeps tab content surfaces accessible inside the app shell', asyn
     expect(surfaceBox.x + surfaceBox.width).toBeLessThanOrEqual(contentSlotBox.x + contentSlotBox.width + 1);
   }
 });
+
+test('UIUX-015 moves map filters into the app shell sub navigation flow', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+
+  const phoneShell = page.locator('[data-app-shell="phone"]');
+  const subNavSlot = page.locator('[data-app-shell-slot="sub-nav"]');
+  const filterStrip = subNavSlot.locator('.map-filter-strip');
+
+  await expect(phoneShell).toHaveClass(/app-shell--with-subnav/);
+  await expect(subNavSlot).toBeVisible();
+  await expect(filterStrip).toBeVisible();
+  await expect(page.locator('.map-stage > .map-filter-strip')).toHaveCount(0);
+
+  const headerBox = await requireBoundingBox(page.locator('[data-app-shell-slot="header"]'));
+  const subNavBox = await requireBoundingBox(subNavSlot);
+  const contentBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
+
+  expect(subNavBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height - 1);
+  expect(contentBox.y).toBeGreaterThanOrEqual(subNavBox.y + subNavBox.height - 1);
+
+  await page.locator('[data-tab-key="my"]').click();
+
+  await expect(phoneShell).toHaveClass(/app-shell--no-subnav/);
+  await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
+});
