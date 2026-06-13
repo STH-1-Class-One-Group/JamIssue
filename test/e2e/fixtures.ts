@@ -1,5 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 import type { SessionUser } from '../../src/types/auth';
+import type { TourismPlaceItem, TourismPlacesResponse } from '../../src/tourismTypes';
 import type { CommunityRouteSort, Course, Place } from '../../src/types/core';
 import type { Comment, Review, StampLog, StampState, TravelSession, UserRoute } from '../../src/types/review';
 import type { MyComment, MyPageResponse, UserNotification } from '../../src/types/my-page';
@@ -133,6 +134,7 @@ const curatedCourse: Course = {
 interface E2EStateOptions {
   authenticated?: boolean;
   reviews?: Review[];
+  tourismPlaces?: TourismPlaceItem[];
 }
 
 interface E2EAppState {
@@ -144,6 +146,7 @@ interface E2EAppState {
   commentsByReviewId: Record<string, Comment[]>;
   communityRoutesBySort: Record<CommunityRouteSort, UserRoute[]>;
   notifications: UserNotification[];
+  tourismPlaces: TourismPlaceItem[];
 }
 
 function cloneReview(review: Review): Review {
@@ -153,7 +156,7 @@ function cloneReview(review: Review): Review {
   };
 }
 
-export function createE2EAppState({ authenticated = true, reviews = [] }: E2EStateOptions = {}): E2EAppState {
+export function createE2EAppState({ authenticated = true, reviews = [], tourismPlaces = [] }: E2EStateOptions = {}): E2EAppState {
   const clonedReviews = reviews.map(cloneReview);
   return {
     user: authenticated ? e2eUser : null,
@@ -169,6 +172,7 @@ export function createE2EAppState({ authenticated = true, reviews = [] }: E2ESta
       latest: [latestRoute],
     },
     notifications: [],
+    tourismPlaces,
   };
 }
 
@@ -261,6 +265,18 @@ async function handleApiRoute(route: Route, state: E2EAppState) {
 
   if (method === 'GET' && path === '/api/festivals') {
     await fulfillJson(route, []);
+    return;
+  }
+
+  if (method === 'GET' && path === '/api/tourism/places') {
+    const response: TourismPlacesResponse = {
+      sourceReady: true,
+      sourceName: 'kto',
+      importedAt: '2026-06-13T00:00:00.000Z',
+      facets: { categories: [], districts: [], contentTypes: [], ktoFacets: [] },
+      items: state.tourismPlaces,
+    };
+    await fulfillJson(route, response);
     return;
   }
 

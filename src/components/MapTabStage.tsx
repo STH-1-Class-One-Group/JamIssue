@@ -8,6 +8,8 @@ export function MapTabStage({
   viewportData,
   placeSheet,
   festivalSheet,
+  tourismSheet,
+  tourismActions,
 }: MapTabStageProps) {
   return (
     <div className="map-stage">
@@ -17,8 +19,9 @@ export function MapTabStage({
         viewportData={viewportData}
         placeSheet={placeSheet}
         festivalSheet={festivalSheet}
+        tourismActions={tourismActions}
       />
-      <MapStageSheets placeSheet={placeSheet} festivalSheet={festivalSheet} />
+      <MapStageSheets placeSheet={placeSheet} festivalSheet={festivalSheet} tourismSheet={tourismSheet} />
     </div>
   );
 }

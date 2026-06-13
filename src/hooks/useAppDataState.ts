@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { TourismPlaceItem } from '../tourismTypes';
 import type { FestivalItem } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
 import type { MyPageResponse } from '../types/my-page';
@@ -9,6 +10,10 @@ import { useReviewCollectionState } from './app-data/useReviewCollectionState';
 export function useAppDataState(selectedPlaceId: string | null) {
   const [places, setPlaces] = useState<BootstrapResponse['places']>([]);
   const [festivals, setFestivals] = useState<FestivalItem[]>([]);
+  const [tourismPlaces, setTourismPlaces] = useState<TourismPlaceItem[]>([]);
+  const [tourismSourceReady, setTourismSourceReady] = useState(false);
+  const [tourismLoading, setTourismLoading] = useState(false);
+  const [tourismError, setTourismError] = useState<string | null>(null);
   const [courses, setCourses] = useState<BootstrapResponse['courses']>([]);
   const [stampState, setStampState] = useState<BootstrapResponse['stamps']>({
     collectedPlaceIds: [],
@@ -28,6 +33,14 @@ export function useAppDataState(selectedPlaceId: string | null) {
     setPlaces,
     festivals,
     setFestivals,
+    tourismPlaces,
+    setTourismPlaces,
+    tourismSourceReady,
+    setTourismSourceReady,
+    tourismLoading,
+    setTourismLoading,
+    tourismError,
+    setTourismError,
     ...reviewCollectionState,
     courses,
     setCourses,

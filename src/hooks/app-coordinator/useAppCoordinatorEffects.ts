@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getTourismPlaces } from '../../api/tourismClient';
 import { FeedbackRuntimeConfig } from '../../config/runtimeLimitConfig';
 import { getInitialNotice } from '../app-route/useAppRouteState';
 import { useAppFeedbackEffects } from '../useAppFeedbackEffects';
@@ -32,6 +33,7 @@ export function useAppCoordinatorEffects({
   const { activeTab, goToTab, selectedPlaceId } = routeState;
   const {
     auth: { sessionUser },
+    map: { showTourismInfo, setSelectedTourismPlaceId },
     myPage: { myPageTab },
   } = domainState;
   const { mapLocationMessage, notice, setNotice } = shellRuntimeState;
@@ -48,6 +50,11 @@ export function useAppCoordinatorEffects({
     setPlaces,
     setSelectedPlaceReviews,
     setStampState,
+    setTourismError,
+    setTourismLoading,
+    setTourismPlaces,
+    setTourismSourceReady,
+    tourismPlaces,
   } = dataState;
   const {
     dataLoaders: {
@@ -78,6 +85,52 @@ export function useAppCoordinatorEffects({
     stampUnlockRadiusMeters: FeedbackRuntimeConfig.stampUnlockRadiusMeters,
     noticeDismissDelayMs: FeedbackRuntimeConfig.noticeDismissDelayMs,
   });
+
+  useEffect(() => {
+    if (!showTourismInfo) {
+      setSelectedTourismPlaceId(null);
+      return;
+    }
+    if (tourismPlaces.length > 0) {
+      return;
+    }
+
+    let isActive = true;
+    setTourismLoading(true);
+    setTourismError(null);
+
+    getTourismPlaces()
+      .then((response) => {
+        if (!isActive) {
+          return;
+        }
+        setTourismPlaces(response.items);
+        setTourismSourceReady(response.sourceReady);
+      })
+      .catch((error: unknown) => {
+        if (!isActive) {
+          return;
+        }
+        setTourismError(formatErrorMessage(error));
+      })
+      .finally(() => {
+        if (isActive) {
+          setTourismLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [
+    setSelectedTourismPlaceId,
+    setTourismError,
+    setTourismLoading,
+    setTourismPlaces,
+    setTourismSourceReady,
+    showTourismInfo,
+    tourismPlaces.length,
+  ]);
 
   useAppBootstrapLifecycle({
     activeTab,

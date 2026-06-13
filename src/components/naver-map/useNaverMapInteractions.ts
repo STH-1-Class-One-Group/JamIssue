@@ -1,9 +1,9 @@
 import { useRef } from 'react';
+import type { TourismPlaceItem } from '../../tourismTypes';
 import type { FestivalItem, Place } from '../../types/core';
 import { useNaverCurrentLocationMarker } from './useNaverCurrentLocationMarker';
 import { useNaverCurrentLocationFocus } from './useNaverCurrentLocationFocus';
-import { useNaverFestivalMarkers } from './useNaverFestivalMarkers';
-import { useNaverPlaceMarkers } from './useNaverPlaceMarkers';
+import { useNaverMarkerLayers } from './useNaverMarkerLayers';
 import { useNaverRoutePreviewOverlay } from './useNaverRoutePreviewOverlay';
 import { useNaverSelectionSync } from './useNaverSelectionSync';
 import type { NaverMapInstance, NaverMapsApi, NaverMarkerInstance, NaverPolylineInstance } from './naverMapTypes';
@@ -15,12 +15,15 @@ type MapInteractionsArgs = {
   mapElementRef: React.MutableRefObject<HTMLDivElement | null>;
   places: Place[];
   festivals: FestivalItem[];
+  tourismPlaces: TourismPlaceItem[];
   selectedPlaceId: string | null;
   selectedFestivalId: string | null;
+  selectedTourismPlaceId: string | null;
   selectedPlace?: Place | null;
   selectedFestival?: FestivalItem | null;
   onSelectPlace: (placeId: string) => void;
   onSelectFestival: (festivalId: string) => void;
+  onSelectTourismPlace: (tourismPlaceId: string) => void;
   currentPosition: { latitude: number; longitude: number } | null;
   focusCurrentLocationKey: number;
   routePreviewPlaces: Place[];
@@ -33,12 +36,15 @@ export function useNaverMapInteractions({
   mapElementRef,
   places,
   festivals,
+  tourismPlaces,
   selectedPlaceId,
   selectedFestivalId,
+  selectedTourismPlaceId,
   selectedPlace,
   selectedFestival,
   onSelectPlace,
   onSelectFestival,
+  onSelectTourismPlace,
   currentPosition,
   focusCurrentLocationKey,
   routePreviewPlaces,
@@ -47,22 +53,19 @@ export function useNaverMapInteractions({
   const routeStepMarkersRef = useRef<NaverMarkerInstance[]>([]);
   const lastHandledCurrentLocationFocusKeyRef = useRef(0);
 
-  useNaverPlaceMarkers({
+  useNaverMarkerLayers({
     status,
     mapsApi,
     mapRef,
     places,
-    selectedPlaceId,
-    onSelectPlace,
-  });
-
-  useNaverFestivalMarkers({
-    status,
-    mapsApi,
-    mapRef,
     festivals,
+    tourismPlaces,
+    selectedPlaceId,
     selectedFestivalId,
+    selectedTourismPlaceId,
+    onSelectPlace,
     onSelectFestival,
+    onSelectTourismPlace,
   });
 
   useNaverCurrentLocationMarker({

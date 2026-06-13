@@ -38,6 +38,7 @@ describe('MapTabStage route preview card', () => {
           activeCategory: 'all',
           filteredPlaces: places,
           festivals: [],
+          tourismPlaces: [],
           currentPosition: null,
           mapLocationStatus: 'idle',
           mapLocationFocusKey: 0,
@@ -83,6 +84,20 @@ describe('MapTabStage route preview card', () => {
           onCloseDrawer: vi.fn(),
           onExpandFestivalDrawer: vi.fn(),
           onCollapseFestivalDrawer: vi.fn(),
+        }}
+        tourismSheet={{
+          selectedTourismPlace: null,
+          sheetState: 'partial',
+          sourceReady: true,
+          loading: false,
+          error: null,
+          onClose: vi.fn(),
+          onExpand: vi.fn(),
+          onCollapse: vi.fn(),
+        }}
+        tourismActions={{
+          selectedTourismPlaceId: null,
+          onOpenTourismPlace: vi.fn(),
         }}
         mapActions={{
           setActiveCategory: vi.fn(),

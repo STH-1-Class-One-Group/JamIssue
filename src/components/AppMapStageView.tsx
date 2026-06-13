@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { MapTabStage } from './MapTabStage';
 import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
+import type { TourismPlaceItem } from '../tourismTypes';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { SessionUser } from '../types/auth';
 import type { BootstrapResponse } from '../types/review';
@@ -12,6 +13,7 @@ interface AppMapStageViewProps {
     festivals: FestivalItem[];
     selectedPlace: Place | null;
     selectedFestival: FestivalItem | null;
+    selectedTourismPlace: TourismPlaceItem | null;
     currentPosition: { latitude: number; longitude: number } | null;
     mapLocationStatus: ApiStatus;
     mapLocationFocusKey: number;
@@ -31,9 +33,20 @@ interface AppMapStageViewProps {
     canCreateReview: boolean;
     hasCreatedReviewToday: boolean;
     initialMapViewport: { lat: number; lng: number; zoom: number };
+    showTourismInfo: boolean;
+    tourismPlaces: TourismPlaceItem[];
+    tourismSourceReady: boolean;
+    tourismLoading: boolean;
+    tourismError: string | null;
+    tourismSheetState: 'partial' | 'full';
   };
   mapActions: {
     setActiveCategory: (category: Category) => void;
+    onToggleTourismInfo: () => void;
+    onOpenTourismPlace: (tourismPlaceId: string) => void;
+    onCloseTourismInfoSheet: () => void;
+    onExpandTourismInfoSheet: () => void;
+    onCollapseTourismInfoSheet: () => void;
     onOpenPlaceFeed: () => void;
     onOpenPlace: (placeId: string) => void;
     onOpenRoutePreviewPlace: (placeId: string) => void;
@@ -59,10 +72,20 @@ export function AppMapStageSubNav({
   mapActions,
 }: AppMapStageSubNavProps) {
   return (
-    <MapStageCategoryStrip
-      activeCategory={mapData.activeCategory}
-      onSelectCategory={mapActions.setActiveCategory}
-    />
+    <div className="map-stage-subnav">
+      <MapStageCategoryStrip
+        activeCategory={mapData.activeCategory}
+        onSelectCategory={mapActions.setActiveCategory}
+      />
+      <button
+        type="button"
+        className={mapData.showTourismInfo ? 'chip map-filter-chip is-active tourism-toggle-chip' : 'chip map-filter-chip tourism-toggle-chip'}
+        data-tourism-toggle="map"
+        onClick={mapActions.onToggleTourismInfo}
+      >
+        관광정보
+      </button>
+    </div>
   );
 }
 
@@ -75,6 +98,7 @@ export const AppMapStageView = memo(function AppMapStageView({
       mapData={{
         filteredPlaces: mapData.filteredPlaces,
         festivals: mapData.festivals,
+        tourismPlaces: mapData.showTourismInfo ? mapData.tourismPlaces : [],
         currentPosition: mapData.currentPosition,
         mapLocationStatus: mapData.mapLocationStatus,
         mapLocationFocusKey: mapData.mapLocationFocusKey,
@@ -122,6 +146,20 @@ export const AppMapStageView = memo(function AppMapStageView({
         onCloseDrawer: mapActions.onCloseDrawer,
         onExpandFestivalDrawer: mapActions.onExpandFestivalDrawer,
         onCollapseFestivalDrawer: mapActions.onCollapseFestivalDrawer,
+      }}
+      tourismSheet={{
+        selectedTourismPlace: mapData.selectedTourismPlace,
+        sheetState: mapData.tourismSheetState,
+        sourceReady: mapData.tourismSourceReady,
+        loading: mapData.tourismLoading,
+        error: mapData.tourismError,
+        onClose: mapActions.onCloseTourismInfoSheet,
+        onExpand: mapActions.onExpandTourismInfoSheet,
+        onCollapse: mapActions.onCollapseTourismInfoSheet,
+      }}
+      tourismActions={{
+        selectedTourismPlaceId: mapData.selectedTourismPlace?.id ?? null,
+        onOpenTourismPlace: mapActions.onOpenTourismPlace,
       }}
     />
   );

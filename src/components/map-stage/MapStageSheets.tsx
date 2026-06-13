@@ -1,16 +1,19 @@
 import { FestivalDetailSheet } from '../FestivalDetailSheet';
 import { PlaceDetailSheet } from '../PlaceDetailSheet';
+import { TourismInfoSheet } from '../TourismInfoSheet';
 import type { MapTabStageProps } from './mapTabStageTypes';
 import { resolveMapSheetState } from './mapSheetState';
 
 interface MapStageSheetsProps {
   placeSheet: MapTabStageProps['placeSheet'];
   festivalSheet: MapTabStageProps['festivalSheet'];
+  tourismSheet: MapTabStageProps['tourismSheet'];
 }
 
-export function MapStageSheets({ placeSheet, festivalSheet }: MapStageSheetsProps) {
+export function MapStageSheets({ placeSheet, festivalSheet, tourismSheet }: MapStageSheetsProps) {
   const placeSheetState = resolveMapSheetState(Boolean(placeSheet.selectedPlace), placeSheet.drawerState);
   const festivalSheetState = resolveMapSheetState(Boolean(festivalSheet.selectedFestival), festivalSheet.drawerState);
+  const isTourismSheetOpen = Boolean(tourismSheet.selectedTourismPlace);
 
   return (
     <>
@@ -48,6 +51,15 @@ export function MapStageSheets({ placeSheet, festivalSheet }: MapStageSheetsProp
         onClose={festivalSheet.onCloseDrawer}
         onExpand={festivalSheet.onExpandFestivalDrawer}
         onCollapse={festivalSheet.onCollapseFestivalDrawer}
+      />
+
+      <TourismInfoSheet
+        place={tourismSheet.selectedTourismPlace}
+        isOpen={isTourismSheetOpen}
+        sheetState={tourismSheet.sheetState}
+        onClose={tourismSheet.onClose}
+        onExpand={tourismSheet.onExpand}
+        onCollapse={tourismSheet.onCollapse}
       />
     </>
   );

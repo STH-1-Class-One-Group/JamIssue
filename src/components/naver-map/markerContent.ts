@@ -1,5 +1,6 @@
 import { cssPx, UiNaverMarkerVisualConfig } from '../../config/uiTokenConfig';
 import { categoryInfo } from '../../lib/categories';
+import type { TourismPlaceItem } from '../../tourismTypes';
 import type { FestivalItem, Place } from '../../types/core';
 
 type FestivalWithCoordinates = FestivalItem & {
@@ -45,6 +46,26 @@ export function festivalMarkerContent(_festival: FestivalItem, isActive: boolean
       ${label}
     </div>
   `;
+}
+
+export function tourismMarkerContent(_place: TourismPlaceItem, isActive: boolean) {
+  const ring = isActive ? '#5f7ea8' : 'rgba(95, 126, 168, 0.24)';
+  const scale = isActive ? UiNaverMarkerVisualConfig.activeFestivalScale : UiNaverMarkerVisualConfig.defaultScale;
+
+  return `
+    <div style="transform:${scale};display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
+      <div style="position:relative;width:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};">
+        <div style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.festivalCoreInsetPx)};border-radius:999px;background:#f2f7ff;border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${UiNaverMarkerVisualConfig.festivalShadow};display:flex;align-items:center;justify-content:center;color:#315b86;font-size:${cssPx(UiNaverMarkerVisualConfig.festivalLabelFontSizePx)};font-weight:900;">i</div>
+      </div>
+    </div>
+  `;
+}
+
+export function hasTourismCoordinates(place: TourismPlaceItem): place is TourismPlaceItem & { latitude: number; longitude: number } {
+  return typeof place.latitude === 'number'
+    && Number.isFinite(place.latitude)
+    && typeof place.longitude === 'number'
+    && Number.isFinite(place.longitude);
 }
 
 export function hasFestivalCoordinates(festival: FestivalItem): festival is FestivalWithCoordinates {
