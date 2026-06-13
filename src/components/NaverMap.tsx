@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { getClientConfig } from '../config';
+import type { TourismPlaceItem } from '../tourismTypes';
 import type { ApiStatus, FestivalItem, Place } from '../types/core';
 import { NaverMapStatus } from './naver-map/NaverMapStatus';
 import { useNaverMapInstance } from './naver-map/useNaverMapInstance';
@@ -10,12 +11,15 @@ import { useNaverViewportSync } from './naver-map/useNaverViewportSync';
 interface NaverMapProps {
   places: Place[];
   festivals: FestivalItem[];
+  tourismPlaces: TourismPlaceItem[];
   selectedPlaceId: string | null;
   selectedFestivalId: string | null;
+  selectedTourismPlaceId: string | null;
   selectedPlace?: Place | null;
   selectedFestival?: FestivalItem | null;
   onSelectPlace: (placeId: string) => void;
   onSelectFestival: (festivalId: string) => void;
+  onSelectTourismPlace: (tourismPlaceId: string) => void;
   currentPosition: { latitude: number; longitude: number } | null;
   currentLocationStatus: ApiStatus;
   currentLocationMessage: string | null;
@@ -31,12 +35,15 @@ interface NaverMapProps {
 export function NaverMap({
   places,
   festivals,
+  tourismPlaces,
   selectedPlaceId,
   selectedFestivalId,
+  selectedTourismPlaceId,
   selectedPlace = null,
   selectedFestival = null,
   onSelectPlace,
   onSelectFestival,
+  onSelectTourismPlace,
   currentPosition,
   currentLocationStatus,
   currentLocationMessage,
@@ -73,12 +80,15 @@ export function NaverMap({
     mapElementRef,
     places,
     festivals,
+    tourismPlaces,
     selectedPlaceId,
     selectedFestivalId,
+    selectedTourismPlaceId,
     selectedPlace,
     selectedFestival,
     onSelectPlace,
     onSelectFestival,
+    onSelectTourismPlace,
     currentPosition,
     focusCurrentLocationKey,
     routePreviewPlaces,

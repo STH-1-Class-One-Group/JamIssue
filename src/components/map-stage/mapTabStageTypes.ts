@@ -1,4 +1,5 @@
 import type { ApiStatus, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../../types/core';
+import type { TourismPlaceItem } from '../../tourismTypes';
 import type { SessionUser } from '../../types/auth';
 import type { BootstrapResponse } from '../../types/review';
 
@@ -6,6 +7,7 @@ export interface MapTabStageProps {
   mapData: {
     filteredPlaces: Place[];
     festivals: FestivalItem[];
+    tourismPlaces: TourismPlaceItem[];
     currentPosition: { latitude: number; longitude: number } | null;
     mapLocationStatus: ApiStatus;
     mapLocationFocusKey: number;
@@ -53,5 +55,19 @@ export interface MapTabStageProps {
     onCloseDrawer: () => void;
     onExpandFestivalDrawer: () => void;
     onCollapseFestivalDrawer: () => void;
+  };
+  tourismSheet: {
+    selectedTourismPlace: TourismPlaceItem | null;
+    sheetState: 'partial' | 'full';
+    sourceReady: boolean;
+    loading: boolean;
+    error: string | null;
+    onClose: () => void;
+    onExpand: () => void;
+    onCollapse: () => void;
+  };
+  tourismActions: {
+    selectedTourismPlaceId: string | null;
+    onOpenTourismPlace: (tourismPlaceId: string) => void;
   };
 }

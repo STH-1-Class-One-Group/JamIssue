@@ -9,6 +9,7 @@ interface MapStageMapSurfaceProps {
   viewportData: MapTabStageProps['viewportData'];
   placeSheet: MapTabStageProps['placeSheet'];
   festivalSheet: MapTabStageProps['festivalSheet'];
+  tourismActions: MapTabStageProps['tourismActions'];
 }
 
 export function MapStageMapSurface({
@@ -17,6 +18,7 @@ export function MapStageMapSurface({
   viewportData,
   placeSheet,
   festivalSheet,
+  tourismActions,
 }: MapStageMapSurfaceProps) {
   const showRoutePreview = !placeSheet.selectedPlace && !festivalSheet.selectedFestival;
 
@@ -25,12 +27,15 @@ export function MapStageMapSurface({
       <NaverMap
         places={mapData.filteredPlaces}
         festivals={mapData.festivals}
+        tourismPlaces={mapData.tourismPlaces}
         selectedPlaceId={placeSheet.selectedPlace?.id ?? null}
         selectedFestivalId={festivalSheet.selectedFestival?.id ?? null}
+        selectedTourismPlaceId={tourismActions.selectedTourismPlaceId}
         selectedPlace={placeSheet.selectedPlace ?? null}
         selectedFestival={festivalSheet.selectedFestival ?? null}
         onSelectPlace={placeSheet.onOpenPlace}
         onSelectFestival={festivalSheet.onOpenFestival}
+        onSelectTourismPlace={tourismActions.onOpenTourismPlace}
         currentPosition={mapData.currentPosition}
         currentLocationStatus={mapData.mapLocationStatus}
         currentLocationMessage={null}

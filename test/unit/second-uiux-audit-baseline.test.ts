@@ -46,9 +46,9 @@ describe('TSK-012-01 second UI/UX audit baseline', () => {
     expect(eventTab).not.toContain('event-segment');
   });
 
-  it('records that the KTO tourism consumer contract is not present on current main', () => {
-    expect(sourceExists('src/api/tourismClient.ts')).toBe(false);
-    expect(sourceExists('src/tourismTypes.ts')).toBe(false);
+  it('records that the KTO tourism consumer contract is present for the map layer child issue', () => {
+    expect(sourceExists('src/api/tourismClient.ts')).toBe(true);
+    expect(sourceExists('src/tourismTypes.ts')).toBe(true);
   });
 
   it('records the remaining map overlay and surface CSS cleanup debt', () => {
