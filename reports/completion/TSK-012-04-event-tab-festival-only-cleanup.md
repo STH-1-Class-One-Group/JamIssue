@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-012-04-EVENT-TAB-FESTIVAL-ONLY-CLEANUP`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/408
-PR: `TBD-TSK-012-04`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/415
 Branch: `event-tab-festival-only-cleanup`
 Status: `validated-local`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/404
