@@ -97,19 +97,8 @@ export function applyDeletedNotification(
   state: NotificationStoreState,
   { notificationId, unreadCount }: NotificationReadPayload,
 ): Partial<NotificationStoreState> {
-  const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
-  if (idx === -1) {
-    return {
-      unreadCount,
-      connected: true,
-    };
-  }
-
-  const nextNotifications = [...state.notifications];
-  nextNotifications.splice(idx, 1);
-
   return {
-    notifications: nextNotifications,
+    notifications: state.notifications.filter((notification) => notification.id !== notificationId),
     unreadCount,
     connected: true,
   };

@@ -1,3 +1,0 @@
-## 2026-06-09 - [Optimizing Single Item Array Removals]
-**Learning:** In state array updates (like `useAppReviewCrudActions.ts`), using `.filter()` unconditionally creates O(N) intermediate array allocations and object recreation, triggering React state updates even if the element doesn't exist in the array. This happens when deleting items where the item may not be present in multiple state stores.
-**Action:** Replace `current.filter(...)` with `current.findIndex(...)`. If the item isn't found (returns -1), return the exact `current` array reference to skip unnecessary reconciliation. If found, use `splice` on a shallow copy to remove the item optimally.

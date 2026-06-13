@@ -168,17 +168,10 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
     async deleteNotification(notificationId) {
       await deleteNotificationRequest(notificationId);
       set((state) => {
-        const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
-        if (idx === -1) {
-          return state;
-        }
-
-        const nextNotifications = [...state.notifications];
-        nextNotifications.splice(idx, 1);
-
+        const notifications = state.notifications.filter((notification) => notification.id !== notificationId);
         return {
-          notifications: nextNotifications,
-          unreadCount: countUnread(nextNotifications),
+          notifications,
+          unreadCount: countUnread(notifications),
         };
       });
     },
