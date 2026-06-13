@@ -4,15 +4,14 @@ import type { NotificationItem } from './notificationTypes';
 
 interface NotificationListItemProps {
   notification: NotificationItem;
-  busyId: string | null;
+  isBusy: boolean;
   onOpenNotification: (notification: NotificationItem) => Promise<void>;
   onDelete: (event: React.MouseEvent<HTMLButtonElement>, notificationId: string) => Promise<void>;
 }
 
-// Optimizes performance by preventing unnecessary re-renders of list items in notification panel
 export const NotificationListItem = memo(function NotificationListItem({
   notification,
-  busyId,
+  isBusy,
   onOpenNotification,
   onDelete,
 }: NotificationListItemProps) {
@@ -22,7 +21,7 @@ export const NotificationListItem = memo(function NotificationListItem({
         type="button"
         className="notification-item__content"
         onClick={() => void onOpenNotification(notification)}
-        disabled={busyId === notification.id}
+        disabled={isBusy}
       >
         <div className="notification-item__top">
           <span className="soft-tag">{getNotificationLabel(notification)}</span>
@@ -38,7 +37,7 @@ export const NotificationListItem = memo(function NotificationListItem({
         className="notification-item__delete"
         aria-label="알림 삭제"
         onClick={(event) => void onDelete(event, notification.id)}
-        disabled={busyId === notification.id}
+        disabled={isBusy}
       >
         ×
       </button>
