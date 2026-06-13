@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { getNotificationLabel } from './notificationTypes';
 import type { NotificationItem } from './notificationTypes';
 
@@ -8,7 +9,8 @@ interface NotificationListItemProps {
   onDelete: (event: React.MouseEvent<HTMLButtonElement>, notificationId: string) => Promise<void>;
 }
 
-export function NotificationListItem({
+// Optimizes performance by preventing unnecessary re-renders of list items in notification panel
+export const NotificationListItem = memo(function NotificationListItem({
   notification,
   busyId,
   onOpenNotification,
@@ -42,4 +44,4 @@ export function NotificationListItem({
       </button>
     </article>
   );
-}
+});
