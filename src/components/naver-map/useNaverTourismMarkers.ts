@@ -42,10 +42,18 @@ export function useNaverTourismMarkers({
       return;
     }
 
-    const visiblePlaces: TourismPlaceWithCoordinates[] = tourismPlaces
-      .filter(hasTourismCoordinates)
-      .filter((place) => !place.isCurated);
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
+    // Use a single iteration to collect visible places and their IDs,
+    // avoiding multiple intermediate array allocations from chained .filter() and .map()
+    const visiblePlaces: TourismPlaceWithCoordinates[] = [];
+    const nextIds = new Set<string>();
+
+    for (const place of tourismPlaces) {
+      if (hasTourismCoordinates(place) && !place.isCurated) {
+        visiblePlaces.push(place);
+        nextIds.add(place.id);
+      }
+    }
+
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
 
     for (const [placeId, marker] of tourismMarkersRef.current.entries()) {
