@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TourismPlaceDetailResponse, TourismPlaceItem } from '../tourismTypes';
+import type { TourismFacets, TourismPlaceDetailResponse, TourismPlaceItem } from '../tourismTypes';
 import type { FestivalItem } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
 import type { MyPageResponse } from '../types/my-page';
@@ -11,6 +11,8 @@ export function useAppDataState(selectedPlaceId: string | null) {
   const [places, setPlaces] = useState<BootstrapResponse['places']>([]);
   const [festivals, setFestivals] = useState<FestivalItem[]>([]);
   const [tourismPlaces, setTourismPlaces] = useState<TourismPlaceItem[]>([]);
+  const [tourismPlacesQueryKey, setTourismPlacesQueryKey] = useState<string | null>(null);
+  const [tourismFacets, setTourismFacets] = useState<TourismFacets | null>(null);
   const [tourismSourceReady, setTourismSourceReady] = useState(false);
   const [tourismLoading, setTourismLoading] = useState(false);
   const [tourismError, setTourismError] = useState<string | null>(null);
@@ -38,6 +40,10 @@ export function useAppDataState(selectedPlaceId: string | null) {
     setFestivals,
     tourismPlaces,
     setTourismPlaces,
+    tourismPlacesQueryKey,
+    setTourismPlacesQueryKey,
+    tourismFacets,
+    setTourismFacets,
     tourismSourceReady,
     setTourismSourceReady,
     tourismLoading,

@@ -2,29 +2,51 @@ import { expect, test } from '@playwright/test';
 import type { TourismPlaceItem } from '../../src/tourismTypes';
 import { createE2EAppState, installApiFixtures } from './fixtures';
 
-const tourismPlace: TourismPlaceItem = {
-  id: 'tourism-1',
-  name: 'KTO 정보 장소',
-  category: 'tourism',
-  ktoContentTypeId: '12',
-  ktoContentTypeLabel: '관광지',
-  ktoFacet: 'tourism',
+const cafeTourismPlace: TourismPlaceItem = {
+  id: 'tourism-cafe-1',
+  name: 'KTO 카페 장소',
+  category: 'restaurant',
+  primaryType: 'restaurant',
+  subType: 'cafe',
+  displayGroup: 'cafe',
+  officialCategoryLabel: '음식점',
+  curationStatus: 'raw_kto',
+  ktoContentTypeId: '39',
+  ktoContentTypeLabel: '음식점',
+  ktoFacet: 'restaurant',
   district: '중구',
   address: null,
   roadAddress: '대전 중구 테스트로 1',
-  summary: 'KTO 정보성 장소입니다.',
+  summary: 'KTO 카페 장소 설명입니다.',
   description: null,
   latitude: 36.35,
   longitude: 127.38,
   imageUrl: null,
-  sourcePageUrl: 'https://example.com',
+  sourcePageUrl: null,
   sourceUpdatedAt: null,
-  sourceName: 'KTO',
+  sourceName: 'KTO 관광정보',
+  hasDetail: true,
+  detailKind: 'restaurant',
   isCurated: false,
   curatedPlace: null,
 };
 
-test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches only after toggle', async ({ page }) => {
+const lodgingTourismPlace: TourismPlaceItem = {
+  ...cafeTourismPlace,
+  id: 'tourism-lodging-1',
+  name: 'KTO 숙박 장소',
+  category: 'lodging',
+  primaryType: 'lodging',
+  subType: 'unknown',
+  displayGroup: 'lodging',
+  officialCategoryLabel: '숙박',
+  ktoContentTypeId: '32',
+  ktoContentTypeLabel: '숙박',
+  ktoFacet: 'lodging',
+  roadAddress: '대전 중구 숙박로 1',
+};
+
+test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches all places after toggle', async ({ page }) => {
   const tourismRequests: string[] = [];
   page.on('request', (request) => {
     const url = request.url();
@@ -35,7 +57,7 @@ test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches only after
 
   await installApiFixtures(page, createE2EAppState({
     authenticated: false,
-    tourismPlaces: [tourismPlace],
+    tourismPlaces: [cafeTourismPlace, lodgingTourismPlace],
   }));
 
   await page.goto('/');
@@ -48,4 +70,34 @@ test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches only after
 
   await expect(tourismToggle).toHaveClass(/is-active/);
   await expect.poll(() => tourismRequests.length).toBe(1);
+  expect(tourismRequests[0]).toContain('scope=all');
+  expect(tourismRequests[0]).not.toContain('limit=');
+  await expect(page.getByRole('button', { name: /카페/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /숙박/ })).toBeVisible();
+});
+
+test('UIUX-018 filters KTO tourism map layer by canonical displayGroup', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
+
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: [cafeTourismPlace, lodgingTourismPlace],
+  }));
+
+  await page.goto('/');
+  await page.locator('[data-tourism-toggle="map"]').click();
+  await expect.poll(() => tourismRequests.length).toBe(1);
+
+  await page.getByRole('button', { name: /카페/ }).click();
+
+  await expect.poll(() => tourismRequests.length).toBe(2);
+  expect(tourismRequests[1]).toContain('scope=all');
+  expect(tourismRequests[1]).toContain('displayGroup=cafe');
+  expect(tourismRequests[1]).not.toContain('limit=');
 });

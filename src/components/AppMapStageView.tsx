@@ -7,7 +7,7 @@
  * Dependencies: React memo, MapTabStage, map category strip, and app domain DTOs.
  */
 import { memo } from 'react';
-import type { TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
+import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
@@ -17,6 +17,7 @@ import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
 interface AppMapStageViewProps {
   mapData: {
     activeCategory: Category;
+    activeTourismDisplayGroup: TourismDisplayGroupFilter;
     filteredPlaces: Place[];
     festivals: FestivalItem[];
     selectedPlace: Place | null;
@@ -45,6 +46,7 @@ interface AppMapStageViewProps {
     initialMapViewport: { lat: number; lng: number; zoom: number };
     showTourismInfo: boolean;
     tourismPlaces: TourismPlaceItem[];
+    tourismFacets: TourismFacets | null;
     tourismSourceReady: boolean;
     tourismLoading: boolean;
     tourismError: string | null;
@@ -54,6 +56,7 @@ interface AppMapStageViewProps {
   };
   mapActions: {
     setActiveCategory: (category: Category) => void;
+    setActiveTourismDisplayGroup: (displayGroup: TourismDisplayGroupFilter) => void;
     onToggleTourismInfo: () => void;
     onOpenTourismPlace: (tourismPlaceId: string) => void;
     onCloseTourismInfoSheet: () => void;
@@ -87,7 +90,11 @@ export function AppMapStageSubNav({
     <div className="map-stage-subnav">
       <MapStageCategoryStrip
         activeCategory={mapData.activeCategory}
+        activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
+        tourismDisplayGroupFacets={mapData.tourismFacets?.displayGroups}
+        showTourismInfo={mapData.showTourismInfo}
         onSelectCategory={mapActions.setActiveCategory}
+        onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
       />
       <button
         type="button"

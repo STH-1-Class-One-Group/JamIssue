@@ -1,4 +1,5 @@
 import { updateMapViewportInUrl } from '../app-route/useAppRouteState';
+import type { TourismDisplayGroupFilter } from '../../tourismTypes';
 import type { useAppShellCoordinator } from '../app-coordinator/useAppShellCoordinator';
 
 type AppShellCoordinatorState = ReturnType<typeof useAppShellCoordinator>;
@@ -6,6 +7,7 @@ type AppShellCoordinatorState = ReturnType<typeof useAppShellCoordinator>;
 export function useMapStageProps(state: AppShellCoordinatorState) {
   const {
     activeCategory,
+    activeTourismDisplayGroup,
     currentPosition,
     festivals,
     initialMapViewport,
@@ -20,6 +22,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     selectedRoutePreview,
     sessionUser,
     setActiveCategory,
+    setActiveTourismDisplayGroup,
     stampActionMessage,
     stampActionStatus,
     setSelectedTourismPlaceId,
@@ -28,6 +31,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     selectedTourismPlaceId,
     showTourismInfo,
     tourismError,
+    tourismFacets,
     tourismDetailError,
     tourismDetailLoading,
     tourismDetailsById,
@@ -43,6 +47,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
   return {
     mapData: {
       activeCategory,
+      activeTourismDisplayGroup,
       filteredPlaces: viewModels.filteredPlaces,
       festivals,
       selectedPlace: viewModels.selectedPlace,
@@ -71,6 +76,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       initialMapViewport,
       showTourismInfo,
       tourismPlaces,
+      tourismFacets,
       tourismSourceReady,
       tourismLoading,
       tourismError,
@@ -80,6 +86,10 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     },
     mapActions: {
       setActiveCategory,
+      setActiveTourismDisplayGroup: (displayGroup: TourismDisplayGroupFilter) => {
+        setActiveTourismDisplayGroup(displayGroup);
+        setSelectedTourismPlaceId(null);
+      },
       onToggleTourismInfo: () => setShowTourismInfo((current) => !current),
       onOpenTourismPlace: (tourismPlaceId: string) => {
         const tourismPlace = tourismPlaces.find((place) => place.id === tourismPlaceId);

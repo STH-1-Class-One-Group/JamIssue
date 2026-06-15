@@ -15,11 +15,20 @@ export interface TourismFacetOption {
   count: number;
 }
 
+export type TourismPrimaryType = 'restaurant' | 'attraction' | 'culture' | 'leports' | 'lodging' | 'shopping';
+export type TourismSubType = 'cafe' | 'bakery' | 'restaurant_general' | 'unknown';
+export type TourismDisplayGroup = 'restaurant' | 'cafe' | 'attraction' | 'culture' | 'leports' | 'lodging' | 'shopping';
+export type TourismCurationStatus = 'raw_kto' | 'curated';
+export type TourismDisplayGroupFilter = 'all' | TourismDisplayGroup;
+
 export interface TourismFacets {
   categories: TourismFacetOption[];
   districts: TourismFacetOption[];
   contentTypes: TourismFacetOption[];
   ktoFacets: TourismFacetOption[];
+  primaryTypes?: TourismFacetOption[];
+  subTypes?: TourismFacetOption[];
+  displayGroups?: TourismFacetOption[];
 }
 
 export interface TourismCuratedPlaceLink {
@@ -33,6 +42,11 @@ export interface TourismPlaceItem {
   name: string;
   title?: string;
   category: string | null;
+  primaryType?: TourismPrimaryType | null;
+  subType?: TourismSubType | null;
+  displayGroup?: TourismDisplayGroup | null;
+  officialCategoryLabel?: string | null;
+  curationStatus?: TourismCurationStatus | null;
   ktoContentTypeId?: string | null;
   ktoContentTypeLabel?: string | null;
   ktoCategoryCode1?: string | null;
@@ -64,6 +78,7 @@ export interface TourismPlacesResponse {
   sourceReady: boolean;
   sourceName: string | null;
   importedAt: string | null;
+  total?: number;
   facets: TourismFacets;
   items: TourismPlaceItem[];
 }
@@ -105,7 +120,11 @@ export interface TourismPlaceDetailResponse {
 }
 
 export interface TourismPlacesQuery {
+  scope?: 'all' | string | null;
   category?: string | null;
+  displayGroup?: TourismDisplayGroup | string | null;
+  primaryType?: TourismPrimaryType | string | null;
+  subType?: TourismSubType | string | null;
   district?: string | null;
   ktoContentTypeId?: string | null;
   ktoFacet?: string | null;

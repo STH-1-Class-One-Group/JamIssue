@@ -19,7 +19,11 @@ function appendOptionalParam(params: URLSearchParams, key: string, value: string
 export function buildTourismPlacesPath(query: TourismPlacesQuery = {}) {
   const params = new URLSearchParams();
 
+  appendOptionalParam(params, 'scope', query.scope);
   appendOptionalParam(params, 'category', query.category);
+  appendOptionalParam(params, 'displayGroup', query.displayGroup);
+  appendOptionalParam(params, 'primaryType', query.primaryType);
+  appendOptionalParam(params, 'subType', query.subType);
   appendOptionalParam(params, 'district', query.district);
   appendOptionalParam(params, 'ktoContentTypeId', query.ktoContentTypeId);
   appendOptionalParam(params, 'ktoFacet', query.ktoFacet);
