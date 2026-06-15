@@ -17,6 +17,7 @@ type MarkerLayersArgs = {
   status: 'loading' | 'ready' | 'error';
   mapsApi: NaverMapsApi | undefined;
   mapRef: React.MutableRefObject<NaverMapInstance | null>;
+  viewportVersion: number;
   places: Place[];
   festivals: FestivalItem[];
   tourismPlaces: TourismPlaceItem[];
@@ -32,6 +33,7 @@ export function useNaverMarkerLayers({
   status,
   mapsApi,
   mapRef,
+  viewportVersion,
   places,
   festivals,
   tourismPlaces,
@@ -64,6 +66,7 @@ export function useNaverMarkerLayers({
     status,
     mapsApi,
     mapRef,
+    viewportVersion,
     tourismPlaces,
     selectedTourismPlaceId,
     onSelectTourismPlace,
