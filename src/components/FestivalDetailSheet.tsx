@@ -50,10 +50,15 @@ export function FestivalDetailSheet({
         type="button"
         className="place-drawer__handle"
         aria-label="서랍 높이 조절"
-        onClick={drawerState === 'partial' ? onExpand : onCollapse}
+        onClick={drawerState === 'partial' ? onExpand : undefined}
       >
         <span />
       </button>
+      {drawerState === 'full' ? (
+        <button type="button" className="place-drawer__minimize" aria-label="시트 최소화" onClick={onCollapse}>
+          최소화
+        </button>
+      ) : null}
 
       <div className="place-drawer__content">
         <div className="place-drawer__header">

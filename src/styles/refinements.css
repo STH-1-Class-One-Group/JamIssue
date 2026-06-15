@@ -1394,6 +1394,35 @@ body {
   }
 }
 
+/* TSK-012-17: full map drawers cover the map content and minimize explicitly. */
+.place-drawer--full {
+  top: 0 !important;
+  bottom: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  z-index: 140 !important;
+}
+
+.place-drawer--full .place-drawer__content {
+  padding-bottom: 18px !important;
+}
+
+.place-drawer__minimize {
+  position: absolute !important;
+  top: 12px !important;
+  right: 16px !important;
+  z-index: 2 !important;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  border: 1px solid rgba(255, 129, 168, 0.32) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 252, 249, 0.96) !important;
+  color: var(--pink-deep) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 10px 24px rgba(255, 127, 168, 0.12) !important;
+}
+
 /* 2026-03-24 review image frame normalization */
 .review-card__image {
   display: block !important;

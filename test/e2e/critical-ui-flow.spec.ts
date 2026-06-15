@@ -41,6 +41,35 @@ test('UIUX-009 keeps drawer and bottom navigation anchored while writing a revie
   await expect(page.locator('.place-drawer__feed-preview')).toContainText(createdBody);
 });
 
+test('UIUX-020 keeps map bottom drawer full until explicit minimize', async ({ page }) => {
+  const state = createE2EAppState();
+  await installApiFixtures(page, state);
+
+  await page.goto('/?tab=map&place=place-1&drawer=partial');
+
+  const drawer = page.locator('.place-drawer');
+  const handle = page.locator('.place-drawer__handle');
+  const bottomNav = page.getByRole('navigation');
+
+  await expect(page.locator('[data-map-sheet-state="peek"]')).toBeVisible();
+
+  await handle.click();
+  await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
+  await expect(bottomNav).toHaveCSS('pointer-events', 'none');
+  await expect(bottomNav).toHaveCSS('opacity', '0');
+
+  const fullBox = await requireBoundingBox(drawer);
+  const contentBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
+  expect(fullBox.y).toBeLessThanOrEqual(contentBox.y + 1);
+  expect(fullBox.y + fullBox.height).toBeGreaterThanOrEqual(contentBox.y + contentBox.height - 1);
+
+  await handle.click();
+  await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
+
+  await page.getByRole('button', { name: '시트 최소화' }).click();
+  await expect(page.locator('[data-map-sheet-state="peek"]')).toBeVisible();
+});
+
 test('UIUX-010 supports feed comment creation, like toggle, and place CTA', async ({ page }) => {
   const state = createE2EAppState({ reviews: [e2eReview] });
   await installApiFixtures(page, state);

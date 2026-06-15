@@ -15,6 +15,7 @@ export function usePlaceDrawerHandle({
   onCollapse,
 }: UsePlaceDrawerHandleOptions) {
   const dragStartYRef = useRef<number | null>(null);
+  const suppressNextClickRef = useRef(false);
 
   function handlePointerDown(event: React.PointerEvent<HTMLButtonElement>) {
     dragStartYRef.current = event.clientY;
@@ -29,6 +30,7 @@ export function usePlaceDrawerHandle({
     dragStartYRef.current = null;
 
     if (delta > 72) {
+      suppressNextClickRef.current = true;
       if (drawerState === 'full') {
         onCollapse();
         return;
@@ -38,6 +40,18 @@ export function usePlaceDrawerHandle({
     }
 
     if (delta < -48) {
+      suppressNextClickRef.current = true;
+      onExpand();
+    }
+  }
+
+  function handleClick() {
+    if (suppressNextClickRef.current) {
+      suppressNextClickRef.current = false;
+      return;
+    }
+
+    if (drawerState === 'partial') {
       onExpand();
     }
   }
@@ -45,6 +59,6 @@ export function usePlaceDrawerHandle({
   return {
     handlePointerDown,
     handlePointerUp,
-    handleClick: drawerState === 'partial' ? onExpand : onCollapse,
+    handleClick,
   };
 }
