@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { FEEDBACK_FORM_URL } from './GlobalFeedbackButton';
 import { NotificationPanel } from './notifications/NotificationPanel';
 import { useNotificationPanelActions } from './notifications/useNotificationPanelActions';
@@ -11,6 +12,7 @@ export type GlobalSettingsMenuProps = {
   onOpenNotification: (notification: NotificationItem) => Promise<void>;
   onMarkAllNotificationsRead: () => Promise<void>;
   onDeleteNotification: (notificationId: string) => Promise<void>;
+  notificationPanelMode?: 'anchored' | 'floating';
 };
 
 function GearIcon() {
@@ -35,9 +37,13 @@ export function GlobalSettingsMenu({
   onOpenNotification,
   onMarkAllNotificationsRead,
   onDeleteNotification,
+  notificationPanelMode = 'anchored',
 }: GlobalSettingsMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [floatingPanelStyle, setFloatingPanelStyle] = useState<CSSProperties>({});
+  const shouldUseFloatingPanel = notificationPanelMode === 'floating';
 
   const notificationActions = useNotificationPanelActions({
     onOpenNotification,
@@ -49,14 +55,63 @@ export function GlobalSettingsMenu({
     },
   });
 
+  useLayoutEffect(() => {
+    if (!shouldUseFloatingPanel || !showNotifications) {
+      return;
+    }
+
+    const updateFloatingPanelPosition = () => {
+      const root = rootRef.current;
+      const nav = root?.closest('[data-map-floating-nav="root"]') as HTMLElement | null;
+      const anchorRect = (nav ?? root)?.getBoundingClientRect();
+      if (!anchorRect) {
+        return;
+      }
+
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      const right = Math.max(16, viewportWidth - anchorRect.right);
+      const top = Math.max(16, anchorRect.bottom + 10);
+      setFloatingPanelStyle({
+        '--notification-panel-floating-right': `${right}px`,
+        '--notification-panel-floating-top': `${top}px`,
+      } as CSSProperties);
+    };
+
+    updateFloatingPanelPosition();
+    window.addEventListener('resize', updateFloatingPanelPosition);
+    window.visualViewport?.addEventListener('resize', updateFloatingPanelPosition);
+    return () => {
+      window.removeEventListener('resize', updateFloatingPanelPosition);
+      window.visualViewport?.removeEventListener('resize', updateFloatingPanelPosition);
+    };
+  }, [shouldUseFloatingPanel, showNotifications]);
+
+  const notificationPanel = (
+    <NotificationPanel
+      sessionUserName={sessionUserName}
+      notifications={notifications}
+      unreadCount={unreadCount}
+      actions={notificationActions}
+    />
+  );
+
+  const floatingNotificationPanel = shouldUseFloatingPanel && showNotifications && typeof document !== 'undefined'
+    ? createPortal(
+        <div className="global-notification-panel-portal" style={floatingPanelStyle}>
+          {notificationPanel}
+        </div>,
+        document.body,
+      )
+    : null;
+
   return (
-    <div className="global-settings-menu">
+    <div className="global-settings-menu" ref={rootRef}>
       <button
         type="button"
         className={isMenuOpen ? 'secondary-button icon-button global-settings-menu__trigger is-complete' : 'secondary-button icon-button global-settings-menu__trigger'}
         onClick={() => {
           setIsMenuOpen((current) => !current);
-          if (isMenuOpen) {
+          if (isMenuOpen || showNotifications) {
             setShowNotifications(false);
           }
         }}
@@ -72,7 +127,12 @@ export function GlobalSettingsMenu({
           <button
             type="button"
             className={showNotifications ? 'secondary-button is-complete global-settings-menu__item' : 'secondary-button global-settings-menu__item'}
-            onClick={() => setShowNotifications((current) => !current)}
+            onClick={() => {
+              setShowNotifications((current) => !current);
+              if (shouldUseFloatingPanel) {
+                setIsMenuOpen(false);
+              }
+            }}
           >
             <span>알람</span>
             {unreadCount > 0 && <strong>{unreadCount}</strong>}
@@ -83,14 +143,8 @@ export function GlobalSettingsMenu({
         </div>
       )}
 
-      {isMenuOpen && showNotifications && (
-        <NotificationPanel
-          sessionUserName={sessionUserName}
-          notifications={notifications}
-          unreadCount={unreadCount}
-          actions={notificationActions}
-        />
-      )}
+      {!shouldUseFloatingPanel && isMenuOpen && showNotifications && notificationPanel}
+      {floatingNotificationPanel}
     </div>
   );
 }

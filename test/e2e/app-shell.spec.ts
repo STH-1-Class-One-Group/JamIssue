@@ -159,7 +159,7 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   await expect(page.locator('[data-app-shell-slot="header"]')).toBeVisible();
 });
 
-test('UIUX-024 keeps notification panel below the floating capsule layer', async ({ page }) => {
+test('UIUX-024 keeps notification panel above the floating capsule overlay layer', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState());
 
   await page.goto('/');
@@ -170,13 +170,21 @@ test('UIUX-024 keeps notification panel below the floating capsule layer', async
   await floatingNav.locator('.global-settings-menu__trigger').click();
   await floatingNav.locator('.global-settings-menu__item').first().click();
 
-  const notificationPanel = floatingNav.locator('.global-notification-panel');
+  const notificationPanel = page.locator('.global-notification-panel');
   await expect(notificationPanel).toBeVisible();
+  await expect(floatingNav.locator('.global-notification-panel')).toHaveCount(0);
 
   const navBox = await requireBoundingBox(floatingNav);
   const panelBox = await requireBoundingBox(notificationPanel);
   expect(panelBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height - 1);
   expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(navBox.x + navBox.width + 1);
+
+  const isPanelTopHitTarget = await notificationPanel.evaluate((panel) => {
+    const rect = panel.getBoundingClientRect();
+    const target = document.elementFromPoint(rect.left + Math.min(24, rect.width / 2), rect.top + Math.min(24, rect.height / 2));
+    return Boolean(target?.closest('.global-notification-panel'));
+  });
+  expect(isPanelTopHitTarget).toBe(true);
 });
 
 test('UIUX-023 keeps the floating capsule single-line across target mobile widths', async ({ page }) => {

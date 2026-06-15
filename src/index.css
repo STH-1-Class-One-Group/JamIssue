@@ -505,6 +505,25 @@ textarea {
   backdrop-filter: blur(var(--utility-panel-blur));
 }
 
+.global-notification-panel-portal {
+  position: fixed;
+  top: var(--notification-panel-floating-top, 72px);
+  right: var(--notification-panel-floating-right, 24px);
+  z-index: calc(var(--layer-utility-panel) + 80);
+  width: min(var(--notification-panel-width), calc(100vw - var(--utility-panel-viewport-gap)));
+  max-height: min(var(--notification-panel-max-vh), var(--notification-panel-max-height));
+  pointer-events: auto;
+}
+
+.global-notification-panel-portal .global-notification-panel {
+  position: relative;
+  top: auto;
+  right: auto;
+  z-index: auto;
+  width: 100%;
+  max-height: inherit;
+}
+
 .global-notification-panel--embedded {
   position: relative;
   top: auto;
