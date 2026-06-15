@@ -2716,3 +2716,32 @@ textarea {
   font-weight: 900;
   font-display: swap;
 }
+
+/* Final map bottom-sheet policy: full covers the map content; partial remains a peek above tabs. */
+.place-drawer--full {
+  top: 0;
+  bottom: 0;
+  height: auto;
+  max-height: none;
+  z-index: 140;
+}
+
+.place-drawer--full .place-drawer__content {
+  padding-bottom: 18px;
+}
+
+.place-drawer__minimize {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 2;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 129, 168, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 252, 249, 0.96);
+  color: var(--pink-deep);
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(255, 127, 168, 0.12);
+}

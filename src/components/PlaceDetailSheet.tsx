@@ -60,6 +60,11 @@ export function PlaceDetailSheet({
       >
         <span />
       </button>
+      {drawerState === 'full' ? (
+        <button type="button" className="place-drawer__minimize" aria-label="시트 최소화" onClick={onCollapse}>
+          최소화
+        </button>
+      ) : null}
 
       <div className="place-drawer__content">
         <PlaceDetailHeader name={place.name} summary={place.summary} onClose={onClose} />

@@ -53,7 +53,8 @@ export default function App() {
   } = useAppStageProps(coordinator);
   const bottomTabHidden = activeTab === 'map' && (
     (Boolean(mapStageProps.mapData.selectedPlace) && mapStageProps.mapData.drawerState === 'full') ||
-    (Boolean(mapStageProps.mapData.selectedFestival) && mapStageProps.mapData.drawerState === 'full')
+    (Boolean(mapStageProps.mapData.selectedFestival) && mapStageProps.mapData.drawerState === 'full') ||
+    (Boolean(mapStageProps.mapData.selectedTourismPlace) && mapStageProps.mapData.tourismSheetState === 'full')
   );
   const subNav = activeTab === 'map' ? (
     <AppMapStageSubNav mapData={mapStageProps.mapData} mapActions={mapStageProps.mapActions} />
