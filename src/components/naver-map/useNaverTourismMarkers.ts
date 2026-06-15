@@ -34,7 +34,10 @@ export function useNaverTourismMarkers({
   onSelectTourismPlace,
 }: TourismMarkersArgs) {
   const tourismMarkersRef = useRef<Map<string, NaverMarkerInstance>>(new Map());
-  const markerBatchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const markerBatchFrameRef = useRef<number | null>(null);
+  const markerBatchPendingRef = useRef(false);
+  const previousSelectedTourismPlaceIdRef = useRef<string | null>(null);
+  const previousVisibleSignatureRef = useRef('');
 
   useEffect(() => {
     if (status !== 'ready' || !mapsApi || !mapRef.current) {
@@ -48,40 +51,58 @@ export function useNaverTourismMarkers({
       tourismPlaces,
     });
     const nextIds = new Set(visiblePlaces.map((place) => place.id));
+    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
-    let nextPlaceIndex = 0;
 
-    if (markerBatchTimerRef.current !== null) {
-      clearTimeout(markerBatchTimerRef.current);
-      markerBatchTimerRef.current = null;
+    if (markerBatchFrameRef.current !== null) {
+      cancelAnimationFrame(markerBatchFrameRef.current);
+      markerBatchFrameRef.current = null;
     }
-    for (const [placeId, marker] of tourismMarkersRef.current.entries()) {
-      if (!nextIds.has(placeId)) {
-        marker.setMap(null);
-        tourismMarkersRef.current.delete(placeId);
+
+    const updateMarkerVisual = (place: typeof visiblePlaces[number], marker: NaverMarkerInstance) => {
+      const zIndex = place.id === selectedTourismPlaceId ? NaverMarkerConfig.zIndex.tourismActive : NaverMarkerConfig.zIndex.tourismDefault;
+      marker.setIcon({
+        content: tourismMarkerContent(place, place.id === selectedTourismPlaceId),
+        anchor: markerAnchor,
+      });
+      marker.setZIndex(zIndex);
+    };
+
+    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
+    if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
+      const idsToRefresh = new Set([
+        previousSelectedTourismPlaceIdRef.current,
+        selectedTourismPlaceId,
+      ].filter((placeId): placeId is string => Boolean(placeId)));
+
+      for (const placeId of idsToRefresh) {
+        const place = placeById.get(placeId);
+        const marker = tourismMarkersRef.current.get(placeId);
+        if (place && marker) {
+          updateMarkerVisual(place, marker);
+        }
       }
+
+      previousSelectedTourismPlaceIdRef.current = selectedTourismPlaceId;
+      return;
     }
 
-    const syncMarker = (place: typeof visiblePlaces[number]) => {
+    const createMarker = (place: typeof visiblePlaces[number]) => {
       if (!mapRef.current) {
         return;
       }
 
-      const existing = tourismMarkersRef.current.get(place.id);
+      if (tourismMarkersRef.current.has(place.id)) {
+        return;
+      }
+
       const position = new mapsApi.LatLng(place.latitude, place.longitude);
       const zIndex = place.id === selectedTourismPlaceId ? NaverMarkerConfig.zIndex.tourismActive : NaverMarkerConfig.zIndex.tourismDefault;
       const icon = {
         content: tourismMarkerContent(place, place.id === selectedTourismPlaceId),
         anchor: markerAnchor,
       };
-
-      if (existing) {
-        existing.setPosition(position);
-        existing.setIcon(icon);
-        existing.setZIndex(zIndex);
-        return;
-      }
 
       const marker = new mapsApi.Marker({
         map: mapRef.current,
@@ -94,28 +115,57 @@ export function useNaverTourismMarkers({
       tourismMarkersRef.current.set(place.id, marker);
     };
 
-    const syncNextBatch = () => {
+    const stalePlaceIds = Array.from(tourismMarkersRef.current.keys()).filter((placeId) => !nextIds.has(placeId));
+    const placesToCreate = visiblePlaces.filter((place) => !tourismMarkersRef.current.has(place.id));
+    const idsToRefresh = new Set([
+      previousSelectedTourismPlaceIdRef.current,
+      selectedTourismPlaceId,
+    ].filter((placeId): placeId is string => Boolean(placeId)));
+    const operations = [
+      ...stalePlaceIds.map((placeId) => () => {
+        const marker = tourismMarkersRef.current.get(placeId);
+        marker?.setMap(null);
+        tourismMarkersRef.current.delete(placeId);
+      }),
+      ...placesToCreate.map((place) => () => createMarker(place)),
+      ...Array.from(idsToRefresh).map((placeId) => () => {
+        const place = placeById.get(placeId);
+        const marker = tourismMarkersRef.current.get(placeId);
+        if (place && marker) {
+          updateMarkerVisual(place, marker);
+        }
+      }),
+    ];
+    let nextOperationIndex = 0;
+    markerBatchPendingRef.current = operations.length > 0;
+
+    const runNextBatch = () => {
       if (cancelled) {
         return;
       }
 
-      const nextBatchEnd = Math.min(nextPlaceIndex + NaverMarkerConfig.materialization.tourismMarkerBatchSize, visiblePlaces.length);
-      for (; nextPlaceIndex < nextBatchEnd; nextPlaceIndex += 1) {
-        syncMarker(visiblePlaces[nextPlaceIndex]);
+      const nextBatchEnd = Math.min(nextOperationIndex + NaverMarkerConfig.materialization.tourismMarkerBatchSize, operations.length);
+      for (; nextOperationIndex < nextBatchEnd; nextOperationIndex += 1) {
+        operations[nextOperationIndex]();
       }
 
-      if (nextPlaceIndex < visiblePlaces.length) {
-        markerBatchTimerRef.current = setTimeout(syncNextBatch, NaverMarkerConfig.materialization.tourismMarkerBatchDelayMs);
+      if (nextOperationIndex < operations.length) {
+        markerBatchFrameRef.current = requestAnimationFrame(runNextBatch);
+        return;
       }
+
+      markerBatchPendingRef.current = false;
     };
 
-    syncNextBatch();
+    runNextBatch();
+    previousVisibleSignatureRef.current = visibleSignature;
+    previousSelectedTourismPlaceIdRef.current = selectedTourismPlaceId;
 
     return () => {
       cancelled = true;
-      if (markerBatchTimerRef.current !== null) {
-        clearTimeout(markerBatchTimerRef.current);
-        markerBatchTimerRef.current = null;
+      if (markerBatchFrameRef.current !== null) {
+        cancelAnimationFrame(markerBatchFrameRef.current);
+        markerBatchFrameRef.current = null;
       }
     };
   }, [mapRef, mapsApi, onSelectTourismPlace, selectedTourismPlaceId, status, tourismPlaces, viewportVersion]);

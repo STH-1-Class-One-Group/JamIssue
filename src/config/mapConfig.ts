@@ -45,10 +45,12 @@ export class NaverMarkerConfig {
   };
 
   static readonly materialization = {
-    tourismViewportMarkerLimit: 80,
-    tourismFallbackMarkerLimit: 120,
-    tourismMarkerBatchSize: 40,
-    tourismMarkerBatchDelayMs: 0,
+    tourismMobileViewportMaxWidth: 640,
+    tourismMobileViewportMarkerLimit: 32,
+    tourismDesktopViewportMarkerLimit: 64,
+    tourismViewportMarkerLimit: 32,
+    tourismFallbackMarkerLimit: 48,
+    tourismMarkerBatchSize: 8,
   };
 }
 

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { act } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NaverMarkerConfig } from '../../src/config/mapConfig';
 import { useNaverFestivalMarkers } from '../../src/components/naver-map/useNaverFestivalMarkers';
 import { useNaverPlaceMarkers } from '../../src/components/naver-map/useNaverPlaceMarkers';
@@ -16,6 +16,22 @@ type MarkerRecord = {
   setPosition: ReturnType<typeof vi.fn>;
   setZIndex: ReturnType<typeof vi.fn>;
 };
+
+const originalInnerWidth = window.innerWidth;
+
+afterEach(() => {
+  Object.defineProperty(window, 'innerWidth', {
+    value: originalInnerWidth,
+    configurable: true,
+  });
+});
+
+function setViewportWidth(width: number) {
+  Object.defineProperty(window, 'innerWidth', {
+    value: width,
+    configurable: true,
+  });
+}
 
 function createMapsApi(markerRecords: MarkerRecord[]) {
   class Point {
@@ -313,8 +329,48 @@ describe('naver marker selection updates', () => {
 
     rerender(<Harness selectedTourismPlaceId="tourism-2" />);
 
-    expect(markerRecords[0].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismDefault);
+    expect(markerRecords[0].setZIndex).not.toHaveBeenCalled();
     expect(markerRecords[1].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismActive);
+  });
+
+  it('diffs KTO marker changes without refreshing unchanged markers', () => {
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: {} };
+    const onSelectTourismPlace = vi.fn();
+    const nextTourismPlace = {
+      ...tourismPlaces[0],
+      id: 'tourism-3',
+      name: 'Tourism 3',
+      latitude: 36.8,
+      longitude: 127.8,
+    };
+
+    function Harness({ currentTourismPlaces }: { currentTourismPlaces: TourismPlaceItem[] }) {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: currentTourismPlaces,
+        selectedTourismPlaceId: null,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    const { rerender } = render(<Harness currentTourismPlaces={tourismPlaces} />);
+
+    expect(markerRecords).toHaveLength(2);
+    clearMarkerSpies(markerRecords);
+
+    rerender(<Harness currentTourismPlaces={[tourismPlaces[1], nextTourismPlace]} />);
+
+    expect(markerRecords).toHaveLength(3);
+    expect(markerRecords[0].setMap).toHaveBeenCalledWith(null);
+    expect(markerRecords[1].setPosition).not.toHaveBeenCalled();
+    expect(markerRecords[1].setIcon).not.toHaveBeenCalled();
+    expect(markerRecords[1].setZIndex).not.toHaveBeenCalled();
   });
 
   it('keeps curated marker visual priority while preserving KTO marker click target', () => {
@@ -364,6 +420,7 @@ describe('naver marker selection updates', () => {
   });
 
   it('materializes only KTO markers inside the current map bounds', () => {
+    vi.useFakeTimers();
     const markerRecords: MarkerRecord[] = [];
     const mapsApi = createMapsApi(markerRecords);
     const mapRef = { current: createMapWithBounds(36.012) };
@@ -383,13 +440,24 @@ describe('naver marker selection updates', () => {
       return null;
     }
 
-    render(<Harness />);
+    try {
+      render(<Harness />);
 
-    expect(markerRecords).toHaveLength(12);
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismMarkerBatchSize);
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(markerRecords).toHaveLength(12);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it('caps KTO marker materialization even when many production items are inside bounds', () => {
+  it('caps mobile KTO marker materialization even when many production items are inside bounds', () => {
     vi.useFakeTimers();
+    setViewportWidth(390);
     const markerRecords: MarkerRecord[] = [];
     const mapsApi = createMapsApi(markerRecords);
     const mapRef = { current: createMapWithBounds(37) };
@@ -418,7 +486,44 @@ describe('naver marker selection updates', () => {
         vi.runAllTimers();
       });
 
-      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismViewportMarkerLimit);
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismMobileViewportMarkerLimit);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('uses a higher desktop KTO marker materialization cap', () => {
+    vi.useFakeTimers();
+    setViewportWidth(1024);
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: createMapWithBounds(37) };
+    const onSelectTourismPlace = vi.fn();
+    const productionLikeTourismPlaces = buildTourismPlaces(395);
+
+    function Harness() {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: productionLikeTourismPlaces,
+        selectedTourismPlaceId: null,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    try {
+      render(<Harness />);
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismMarkerBatchSize);
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismDesktopViewportMarkerLimit);
     } finally {
       vi.useRealTimers();
     }
@@ -426,6 +531,7 @@ describe('naver marker selection updates', () => {
 
   it('keeps a selected KTO marker materialized even when it is outside the viewport cap', () => {
     vi.useFakeTimers();
+    setViewportWidth(390);
     const markerRecords: MarkerRecord[] = [];
     const mapsApi = createMapsApi(markerRecords);
     const mapRef = { current: createMapWithBounds(37) };
@@ -453,7 +559,7 @@ describe('naver marker selection updates', () => {
         vi.runAllTimers();
       });
 
-      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismViewportMarkerLimit + 1);
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismMobileViewportMarkerLimit + 1);
       expect(markerRecords.some((marker) => marker.options.zIndex === NaverMarkerConfig.zIndex.tourismActive)).toBe(true);
     } finally {
       vi.useRealTimers();
