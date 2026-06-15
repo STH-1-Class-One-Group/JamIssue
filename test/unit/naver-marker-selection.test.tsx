@@ -9,6 +9,7 @@ import type { TourismPlaceItem } from '../../src/tourismTypes';
 import type { FestivalItem, Place } from '../../src/types';
 
 type MarkerRecord = {
+  listeners: Record<string, Array<() => void>>;
   options: Record<string, unknown>;
   setIcon: ReturnType<typeof vi.fn>;
   setMap: ReturnType<typeof vi.fn>;
@@ -40,6 +41,7 @@ function createMapsApi(markerRecords: MarkerRecord[]) {
   }
 
   class Marker {
+    readonly listeners: Record<string, Array<() => void>> = {};
     readonly options: Record<string, unknown>;
     readonly setIcon = vi.fn();
     readonly setMap = vi.fn();
@@ -57,7 +59,11 @@ function createMapsApi(markerRecords: MarkerRecord[]) {
     LatLng,
     Marker,
     Event: {
-      addListener: vi.fn(),
+      addListener: vi.fn((marker: Marker, eventName: string, listener: () => void) => {
+        marker.listeners[eventName] ??= [];
+        marker.listeners[eventName].push(listener);
+        return { remove: vi.fn() };
+      }),
     },
   } as unknown as typeof window.naver.maps;
 }
@@ -309,6 +315,52 @@ describe('naver marker selection updates', () => {
 
     expect(markerRecords[0].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismDefault);
     expect(markerRecords[1].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismActive);
+  });
+
+  it('keeps curated marker visual priority while preserving KTO marker click target', () => {
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: {} };
+    const onSelectPlace = vi.fn();
+    const onSelectTourismPlace = vi.fn();
+    const overlappingPlace = { ...places[0], id: 'place-overlap', latitude: 36.7, longitude: 127.7 };
+    const overlappingTourismPlace = { ...tourismPlaces[0], id: 'tourism-overlap', latitude: 36.7, longitude: 127.7 };
+
+    function Harness() {
+      useNaverPlaceMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        places: [overlappingPlace],
+        selectedPlaceId: null,
+        onSelectPlace,
+      });
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: [overlappingTourismPlace],
+        selectedTourismPlaceId: null,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    render(<Harness />);
+
+    const [placeMarker, tourismMarker] = markerRecords;
+    expect(placeMarker).toBeDefined();
+    expect(tourismMarker).toBeDefined();
+    expect(placeMarker?.setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.placeDefault);
+    expect(tourismMarker?.options.zIndex).toBe(NaverMarkerConfig.zIndex.tourismDefault);
+    expect(NaverMarkerConfig.zIndex.placeDefault).toBeGreaterThan(NaverMarkerConfig.zIndex.tourismDefault);
+
+    placeMarker?.listeners.click?.[0]?.();
+    tourismMarker?.listeners.click?.[0]?.();
+
+    expect(onSelectPlace).toHaveBeenCalledWith('place-overlap');
+    expect(onSelectTourismPlace).toHaveBeenCalledWith('tourism-overlap');
   });
 
   it('materializes only KTO markers inside the current map bounds', () => {
