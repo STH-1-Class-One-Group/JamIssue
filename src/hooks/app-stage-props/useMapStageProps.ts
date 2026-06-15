@@ -1,4 +1,5 @@
 import { updateMapViewportInUrl } from '../app-route/useAppRouteState';
+import { filterTourismPlacesByDisplayGroup } from '../../lib/tourismTaxonomy';
 import type { TourismDisplayGroupFilter } from '../../tourismTypes';
 import type { useAppShellCoordinator } from '../app-coordinator/useAppShellCoordinator';
 
@@ -41,6 +42,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     tourismSourceReady,
     viewModels,
   } = state;
+  const visibleTourismPlaces = filterTourismPlacesByDisplayGroup(tourismPlaces, activeTourismDisplayGroup);
   const selectedTourismPlace = tourismPlaces.find((place) => place.id === selectedTourismPlaceId) ?? null;
   const selectedTourismDetail = selectedTourismPlaceId ? tourismDetailsById[selectedTourismPlaceId]?.item ?? null : null;
 
@@ -75,7 +77,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       hasCreatedReviewToday: viewModels.hasCreatedReviewToday,
       initialMapViewport,
       showTourismInfo,
-      tourismPlaces,
+      tourismPlaces: visibleTourismPlaces,
       tourismFacets,
       tourismSourceReady,
       tourismLoading,
