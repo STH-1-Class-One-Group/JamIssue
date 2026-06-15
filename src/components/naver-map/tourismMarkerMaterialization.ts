@@ -1,7 +1,7 @@
 import { NaverMarkerConfig } from '../../config/mapConfig';
 import type { TourismPlaceItem } from '../../tourismTypes';
 import { hasTourismCoordinates } from './markerContent';
-import type { NaverMapInstance, NaverMapsApi } from './naverMapTypes';
+import type { NaverLatLng, NaverMapInstance, NaverMapsApi } from './naverMapTypes';
 
 export type TourismPlaceWithCoordinates = TourismPlaceItem & {
   latitude: number;
@@ -39,7 +39,12 @@ export function selectTourismPlacesForMarkerMaterialization({
     return bounds.hasLatLng?.(position) === true;
   });
 
-  return includeSelectedTourismPlace(inViewportPlaces, markerEligiblePlaces, selectedTourismPlaceId);
+  return includeSelectedTourismPlace(
+    sortTourismPlacesByDistanceToMapCenter(inViewportPlaces, map.getCenter())
+      .slice(0, NaverMarkerConfig.materialization.tourismViewportMarkerLimit),
+    markerEligiblePlaces,
+    selectedTourismPlaceId,
+  );
 }
 
 function includeSelectedTourismPlace(
@@ -53,4 +58,25 @@ function includeSelectedTourismPlace(
 
   const selectedPlace = eligiblePlaces.find((place) => place.id === selectedTourismPlaceId);
   return selectedPlace ? [...places, selectedPlace] : places;
+}
+
+function sortTourismPlacesByDistanceToMapCenter(
+  places: TourismPlaceWithCoordinates[],
+  center: NaverLatLng,
+) {
+  const centerLatitude = center.lat();
+  const centerLongitude = center.lng();
+  return [...places].sort((left, right) => (
+    getSquaredDistance(left, centerLatitude, centerLongitude) - getSquaredDistance(right, centerLatitude, centerLongitude)
+  ));
+}
+
+function getSquaredDistance(
+  place: TourismPlaceWithCoordinates,
+  centerLatitude: number,
+  centerLongitude: number,
+) {
+  const latitudeDelta = place.latitude - centerLatitude;
+  const longitudeDelta = place.longitude - centerLongitude;
+  return latitudeDelta * latitudeDelta + longitudeDelta * longitudeDelta;
 }

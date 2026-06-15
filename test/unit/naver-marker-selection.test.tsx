@@ -336,6 +336,78 @@ describe('naver marker selection updates', () => {
     expect(markerRecords).toHaveLength(12);
   });
 
+  it('caps KTO marker materialization even when many production items are inside bounds', () => {
+    vi.useFakeTimers();
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: createMapWithBounds(37) };
+    const onSelectTourismPlace = vi.fn();
+    const productionLikeTourismPlaces = buildTourismPlaces(395);
+
+    function Harness() {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: productionLikeTourismPlaces,
+        selectedTourismPlaceId: null,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    try {
+      render(<Harness />);
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismMarkerBatchSize);
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismViewportMarkerLimit);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps a selected KTO marker materialized even when it is outside the viewport cap', () => {
+    vi.useFakeTimers();
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: createMapWithBounds(37) };
+    const onSelectTourismPlace = vi.fn();
+    const productionLikeTourismPlaces = buildTourismPlaces(395);
+    const selectedTourismPlaceId = productionLikeTourismPlaces[0].id;
+
+    function Harness() {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: productionLikeTourismPlaces,
+        selectedTourismPlaceId,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    try {
+      render(<Harness />);
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismViewportMarkerLimit + 1);
+      expect(markerRecords.some((marker) => marker.options.zIndex === NaverMarkerConfig.zIndex.tourismActive)).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('uses the fallback marker cap and batches creation when map bounds are unavailable', () => {
     vi.useFakeTimers();
     const markerRecords: MarkerRecord[] = [];
