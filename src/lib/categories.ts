@@ -56,10 +56,16 @@ export function normalizePlaceCategory(category: string, slug = ''): PlaceCatego
   return 'attraction';
 }
 
-export const categoryItems: { key: PlaceCategoryFilter; label: string }[] = [
-  { key: 'all', label: '전체' },
-  { key: 'restaurant', label: categoryInfo.restaurant.name },
-  { key: 'cafe', label: categoryInfo.cafe.name },
-  { key: 'attraction', label: categoryInfo.attraction.name },
-  { key: 'culture', label: categoryInfo.culture.name },
+export type PlaceCategoryFilterItem = {
+  key: PlaceCategoryFilter;
+  label: string;
+  icon: string;
+};
+
+export const categoryItems: PlaceCategoryFilterItem[] = [
+  { key: 'all', label: '전체', icon: '✨' },
+  { key: 'restaurant', label: categoryInfo.restaurant.name, icon: categoryInfo.restaurant.icon },
+  { key: 'cafe', label: categoryInfo.cafe.name, icon: categoryInfo.cafe.icon },
+  { key: 'attraction', label: categoryInfo.attraction.name, icon: categoryInfo.attraction.icon },
+  { key: 'culture', label: categoryInfo.culture.name, icon: categoryInfo.culture.icon },
 ];

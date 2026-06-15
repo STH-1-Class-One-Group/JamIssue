@@ -14,11 +14,9 @@ test('mobile app shell exposes primary tabs from the built bundle', async ({ pag
 
   await page.goto('/');
 
-  await expect(page.getByRole('button', { name: '지도' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '행사' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '피드' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '코스' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '마이' })).toBeVisible();
+  for (const tabKey of ['map', 'event', 'feed', 'course', 'my']) {
+    await expect(page.locator(`[data-tab-key="${tabKey}"]`)).toBeVisible();
+  }
 });
 
 test('UIUX-024 shows the splash once on initial entry and does not replay on tab changes', async ({ page }) => {
@@ -45,7 +43,7 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   const phoneShell = page.locator('[data-app-shell="phone"]');
   const contentSlot = page.locator('[data-app-shell-slot="content"]');
   const bottomTabSlot = page.locator('[data-app-shell-slot="bottom-tab"]');
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.getByRole('navigation');
   const bottomNavItems = bottomNav.locator('.bottom-nav__item');
 
   await expect(phoneShell).toBeVisible();
@@ -132,15 +130,19 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
   await expect(floatingNav).toBeVisible();
   await expect(page.locator('.map-filter-strip')).toHaveCount(0);
+  await expect(floatingNav.locator('.map-floating-nav__filter-icon')).toBeVisible();
+  await expect(floatingNav.locator('.map-floating-nav__filter-label')).toHaveText('전체');
+  await expect(floatingNav.locator('.map-floating-nav__filter-caret')).toBeVisible();
 
   const navBox = await requireBoundingBox(floatingNav);
   expect(navBox.height).toBeGreaterThanOrEqual(42);
   expect(navBox.height).toBeLessThanOrEqual(48);
   expect(contentBox.y).toBeLessThanOrEqual(navBox.y + 1);
 
-  await floatingNav.getByRole('button', { name: /전체/ }).click();
+  await floatingNav.getByRole('button', { name: /전체 필터 열기/ }).click();
   const dropdown = floatingNav.locator('.map-floating-nav__dropdown');
   await expect(dropdown).toBeVisible({ timeout: 400 });
+  await expect(dropdown.locator('.map-floating-nav__dropdown-icon').first()).toBeVisible();
   await page.screenshot({ timeout: 1000 });
   expect(tourismRequests).toEqual([]);
   const dropdownBox = await requireBoundingBox(dropdown);
@@ -155,6 +157,26 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   await expect(phoneShell).toHaveClass(/app-shell--no-subnav/);
   await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
   await expect(page.locator('[data-app-shell-slot="header"]')).toBeVisible();
+});
+
+test('UIUX-024 keeps notification panel below the floating capsule layer', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState());
+
+  await page.goto('/');
+
+  const floatingNav = page.locator('[data-map-floating-nav="root"]');
+  await expect(floatingNav).toBeVisible();
+
+  await floatingNav.locator('.global-settings-menu__trigger').click();
+  await floatingNav.locator('.global-settings-menu__item').first().click();
+
+  const notificationPanel = floatingNav.locator('.global-notification-panel');
+  await expect(notificationPanel).toBeVisible();
+
+  const navBox = await requireBoundingBox(floatingNav);
+  const panelBox = await requireBoundingBox(notificationPanel);
+  expect(panelBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height - 1);
+  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(navBox.x + navBox.width + 1);
 });
 
 test('UIUX-023 keeps the floating capsule single-line across target mobile widths', async ({ page }) => {

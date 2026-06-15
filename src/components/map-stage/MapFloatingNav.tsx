@@ -5,6 +5,12 @@ import { categoryInfo, categoryItems } from '../../lib/categories';
 import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
 import { GlobalSettingsMenu, type GlobalSettingsMenuProps } from '../GlobalSettingsMenu';
 
+type FloatingFilterItem = {
+  key: string;
+  label: string;
+  icon?: string;
+};
+
 export interface MapFloatingNavProps {
   activeCategory: Category;
   activeTourismDisplayGroup: TourismDisplayGroupFilter;
@@ -64,6 +70,16 @@ export function MapFloatingNav({
     return () => document.removeEventListener('pointerdown', closeOnOutsidePointer);
   }, [filterOpen]);
 
+  const renderFilterLabel = (item: FloatingFilterItem | undefined) => (
+    <>
+      <span className="map-floating-nav__filter-icon" aria-hidden="true">
+        {item?.icon ?? '✨'}
+      </span>
+      <span className="map-floating-nav__filter-label">{item?.label ?? '전체'}</span>
+      <span className="map-floating-nav__filter-caret" aria-hidden="true">⌄</span>
+    </>
+  );
+
   return (
     <div className="map-floating-nav" data-map-floating-nav="root">
       <button type="button" className="map-floating-nav__icon-btn" aria-label="메뉴" aria-disabled="true">
@@ -77,10 +93,10 @@ export function MapFloatingNav({
           data-map-filter-trigger="true"
           aria-expanded={filterOpen}
           aria-haspopup="menu"
+          aria-label={`${selectedFilter?.label ?? '전체'} 필터 열기`}
           onClick={() => setFilterOpen((current) => !current)}
         >
-          <span>{selectedFilter?.label ?? '전체'}</span>
-          <span aria-hidden="true">⌄</span>
+          {renderFilterLabel(selectedFilter)}
         </button>
 
         {filterOpen && (
@@ -112,7 +128,10 @@ export function MapFloatingNav({
                     setFilterOpen(false);
                   }}
                 >
-                  {item.label}
+                  <span className="map-floating-nav__dropdown-icon" aria-hidden="true">
+                    {item.icon ?? '✨'}
+                  </span>
+                  <span className="map-floating-nav__dropdown-label">{item.label}</span>
                 </button>
               );
             })}
