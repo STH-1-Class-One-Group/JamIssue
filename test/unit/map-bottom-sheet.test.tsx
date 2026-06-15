@@ -14,6 +14,7 @@ describe('MapBottomSheet', () => {
         sheetState="peek"
         onExpand={onExpand}
         onCollapse={onCollapse}
+        onClose={vi.fn()}
       >
         <p>content</p>
       </MapBottomSheet>,
@@ -37,6 +38,7 @@ describe('MapBottomSheet', () => {
         sheetState="full"
         onExpand={onExpand}
         onCollapse={onCollapse}
+        onClose={vi.fn()}
       >
         <p>content</p>
       </MapBottomSheet>,
@@ -48,5 +50,28 @@ describe('MapBottomSheet', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '시트 최소화' }));
     expect(onCollapse).toHaveBeenCalledTimes(1);
+  });
+
+  it('owns one close control and only shows minimize from the shared control rail in full mode', () => {
+    const onClose = vi.fn();
+
+    render(
+      <MapBottomSheet
+        ariaLabel="테스트 시트"
+        drawerState="full"
+        sheetState="full"
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+        onClose={onClose}
+      >
+        <button type="button">본문 액션</button>
+      </MapBottomSheet>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '시트 닫기' }));
+
+    expect(screen.getAllByRole('button', { name: '시트 닫기' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: '시트 최소화' })).toHaveLength(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

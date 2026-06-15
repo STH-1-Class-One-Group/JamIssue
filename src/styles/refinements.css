@@ -1394,10 +1394,10 @@ body {
   }
 }
 
-/* TSK-012-17: full map drawers cover the map content and minimize explicitly. */
+/* TSK-012-17: full map drawers fill the map content above persistent bottom tabs. */
 .place-drawer--full {
   top: 0 !important;
-  bottom: 0 !important;
+  bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;
   height: auto !important;
   max-height: none !important;
   z-index: 140 !important;
@@ -1407,11 +1407,18 @@ body {
   padding-bottom: 18px !important;
 }
 
-.place-drawer__minimize {
+.place-drawer__control-rail {
   position: absolute !important;
   top: 12px !important;
   right: 16px !important;
   z-index: 2 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.place-drawer__minimize,
+.place-drawer__shell-close {
   min-height: 36px !important;
   padding: 0 12px !important;
   border: 1px solid rgba(255, 129, 168, 0.32) !important;

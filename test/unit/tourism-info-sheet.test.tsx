@@ -113,7 +113,7 @@ describe('TourismInfoSheet', () => {
     expect(screen.getByText('연중무휴')).toBeInTheDocument();
     expect(screen.getByText('주차')).toBeInTheDocument();
     expect(screen.getByText('가능')).toBeInTheDocument();
-    expect(screen.getByText('대표메뉴')).toBeInTheDocument();
+    expect(screen.getByText('대표 메뉴')).toBeInTheDocument();
     expect(screen.getByText('돌솥밥')).toBeInTheDocument();
     expect(screen.getByText('수육 / 돼지갈비 / 육회갈비')).toBeInTheDocument();
     expect(screen.getByText('흡연')).toBeInTheDocument();

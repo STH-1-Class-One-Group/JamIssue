@@ -16,9 +16,9 @@ type TourismDisplayGroupMeta = {
 export const tourismDisplayGroupInfo: Record<TourismDisplayGroup, TourismDisplayGroupMeta> = {
   restaurant: { label: '음식점', icon: '🍽️' },
   cafe: { label: '카페', icon: '☕' },
-  attraction: { label: '관광지', icon: '🌸' },
-  culture: { label: '문화시설', icon: '🎨' },
-  leports: { label: '레포츠', icon: '🚴' },
+  attraction: { label: '관광지', icon: '📍' },
+  culture: { label: '문화시설', icon: '🎭' },
+  leports: { label: '레포츠', icon: '🏃' },
   lodging: { label: '숙박', icon: '🛏️' },
   shopping: { label: '쇼핑', icon: '🛍️' },
 };
@@ -107,7 +107,7 @@ export function buildTourismDisplayGroupItems(facets: TourismFacetOption[] | und
       };
     });
 
-  return [{ key: 'all', label: '전체', icon: '✨' }, ...groups];
+  return [{ key: 'all', label: '전체', icon: '🗺️' }, ...groups];
 }
 
 function isTourismDisplayGroup(value: unknown): value is TourismDisplayGroup {

@@ -1,8 +1,8 @@
 /*
  * File: TourismInfoSheet.tsx
  * Purpose: Present non-curated KTO tourism place information from the map layer.
- * Primary Responsibility: Render user-facing KTO list/detail fields inside a read-only map bottom sheet.
- * Design Intent: Prefer useful consumer information from the Worker detail API and hide provider/internal metadata.
+ * Primary Responsibility: Render user-facing KTO list/detail fields inside the shared map bottom sheet.
+ * Design Intent: Use the same drawer shell and card rhythm as curated places while hiding provider/internal metadata.
  * Non-Goals: This component does not allow stamping, review creation, direct KTO/OpenAPI calls, or external source-page validation.
  * Dependencies: TourismPlaceItem/TourismPlaceDetailItem DTOs, tourism taxonomy helpers, and MapBottomSheet.
  */
@@ -41,7 +41,8 @@ const ITEM_LABELS: Record<string, string> = {
   Hours: '영업시간',
   'Closed days': '휴무일',
   Parking: '주차',
-  'Main menu': '대표메뉴',
+  Fee: '요금',
+  'Main menu': '대표 메뉴',
   Menu: '메뉴',
   Smoking: '흡연',
   Contact: '문의',
@@ -55,10 +56,6 @@ function getTourismPlaceTitle(place: TourismPlaceItem) {
 
 function getTourismPlaceAddress(place: TourismPlaceItem) {
   return place.roadAddress || place.address || null;
-}
-
-function getTourismPlaceCategoryLabel(place: TourismPlaceItem) {
-  return getTourismDisplayGroupLabel(place);
 }
 
 function isGenericKtoSummary(placeName: string, value: string | null | undefined) {
@@ -141,7 +138,7 @@ export function TourismInfoSheet({
   const mapSheetState: MapSheetState = sheetState === 'full' ? 'full' : 'peek';
   const title = getTourismPlaceTitle(place);
   const address = getTourismPlaceAddress(place);
-  const categoryLabel = getTourismPlaceCategoryLabel(place);
+  const categoryLabel = getTourismDisplayGroupLabel(place);
   const overview = getUsefulOverview(place, detail);
   const imageUrl = getImageUrl(place, detail);
   const sections = getVisibleSections(detail?.displaySections ?? []);
@@ -153,6 +150,7 @@ export function TourismInfoSheet({
       ariaLabel="관광정보 시트"
       drawerState={drawerState}
       sheetState={mapSheetState}
+      onClose={onClose}
       onCollapse={onCollapse}
       onExpand={onExpand}
     >
@@ -162,15 +160,12 @@ export function TourismInfoSheet({
         </figure>
       ) : null}
 
-      <div className="place-drawer__header">
+      <div className="place-drawer__header tourism-info-sheet__intro">
         <div>
           <p className="eyebrow">KTO INFO</p>
           <h2>{title}</h2>
           {overview ? <p className="place-drawer__summary">{overview}</p> : null}
         </div>
-        <button type="button" className="text-button" onClick={onClose}>
-          닫기
-        </button>
       </div>
 
       <div className="place-drawer__badges">
@@ -179,38 +174,48 @@ export function TourismInfoSheet({
         {detail?.hasDetail || place.hasDetail ? <span className="counter-pill">상세정보</span> : null}
       </div>
 
-      <div className="sheet-card stack-gap">
-        <div>
-          <strong>위치</strong>
-          <p>{address || '주소 정보가 아직 제공되지 않았어요.'}</p>
-        </div>
-        {contact ? (
-          <div>
-            <strong>문의</strong>
-            <p>{contact}</p>
+      <section className="sheet-card tourism-info-sheet__section" aria-label="관광지 기본 정보">
+        <dl className="tourism-info-sheet__detail-list">
+          <div className="tourism-info-sheet__detail-row">
+            <dt>위치</dt>
+            <dd>{address || '주소 정보가 아직 제공되지 않았어요.'}</dd>
           </div>
-        ) : null}
+          {contact ? (
+            <div className="tourism-info-sheet__detail-row">
+              <dt>문의</dt>
+              <dd>{contact}</dd>
+            </div>
+          ) : null}
+        </dl>
         {detailLoading ? <p className="section-copy">상세 정보를 불러오는 중입니다.</p> : null}
         {detailError ? <p className="section-copy">{detailError}</p> : null}
-        {sections.map((section) => (
-          <div key={section.title}>
-            <strong>{section.title}</strong>
-            <dl className="tourism-info-sheet__detail-list">
-              {section.items.map((item) => (
-                <div key={`${section.title}-${item.label}`} className="tourism-info-sheet__detail-row">
-                  <dt>{item.label}</dt>
-                  <dd>{renderMultilineValue(item.value)}</dd>
-                </div>
-              ))}
-            </dl>
+      </section>
+
+      {sections.map((section) => (
+        <section key={section.title} className="sheet-card tourism-info-sheet__section" aria-label={section.title}>
+          <h3>{section.title}</h3>
+          <dl className="tourism-info-sheet__detail-list">
+            {section.items.map((item) => (
+              <div key={`${section.title}-${item.label}`} className="tourism-info-sheet__detail-row">
+                <dt>{item.label}</dt>
+                <dd>{renderMultilineValue(item.value)}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+
+      <section className="sheet-card tourism-info-sheet__section" aria-label="관광정보 출처">
+        <dl className="tourism-info-sheet__detail-list">
+          <div className="tourism-info-sheet__detail-row">
+            <dt>출처</dt>
+            <dd>{detail?.sourceName || place.sourceName || 'KTO 관광정보'}</dd>
           </div>
-        ))}
-        <div>
-          <strong>출처</strong>
-          <p>{detail?.sourceName || place.sourceName || 'KTO 관광정보'}</p>
-          {officialLabel ? <p className="section-copy">공식 분류: {officialLabel}</p> : null}
-        </div>
-      </div>
+        </dl>
+        {officialLabel ? (
+          <p className="section-copy">공식 분류: {officialLabel}</p>
+        ) : null}
+      </section>
     </MapBottomSheet>
   );
 }

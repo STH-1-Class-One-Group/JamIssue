@@ -373,39 +373,51 @@ textarea {
 }
 
 .tourism-info-sheet__media img {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
-.tourism-info-sheet__meta-list {
+.tourism-info-sheet__intro {
+  margin-bottom: 10px;
+}
+
+.tourism-info-sheet__section {
   display: grid;
-  gap: 4px;
-  margin: 8px 0 0;
-  padding-left: 18px;
-  color: var(--muted);
-  font-size: 12px;
+  gap: 14px;
+}
+
+.tourism-info-sheet__section h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 900;
 }
 
 .tourism-info-sheet__detail-list {
   display: grid;
-  gap: 10px;
-  margin: 10px 0 0;
+  gap: 12px;
+  margin: 0;
 }
 
 .tourism-info-sheet__detail-row {
   display: grid;
-  gap: 4px;
+  gap: 5px;
 }
 
 .tourism-info-sheet__detail-row dt {
   color: var(--muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .tourism-info-sheet__detail-row dd {
   margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.55;
 }
 
 .tourism-info-sheet__line {
@@ -3000,10 +3012,10 @@ textarea {
   font-display: swap;
 }
 
-/* Final map bottom-sheet policy: full covers the map content; partial remains a peek above tabs. */
+/* Final map bottom-sheet policy: full fills the map content above the persistent bottom tabs. */
 .place-drawer--full {
   top: 0;
-  bottom: 0;
+  bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap));
   height: auto;
   max-height: none;
   z-index: 140;
@@ -3013,11 +3025,18 @@ textarea {
   padding-bottom: 18px;
 }
 
-.place-drawer__minimize {
+.place-drawer__control-rail {
   position: absolute;
   top: 12px;
   right: 16px;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.place-drawer__minimize,
+.place-drawer__shell-close {
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid rgba(255, 129, 168, 0.32);
