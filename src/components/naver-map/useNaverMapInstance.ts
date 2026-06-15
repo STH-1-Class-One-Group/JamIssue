@@ -46,7 +46,7 @@ export function useNaverMapInstance({
           scaleControl: false,
           logoControl: false,
           mapDataControl: false,
-          zoomControl: true,
+          zoomControl: false,
         });
 
         setStatus('ready');

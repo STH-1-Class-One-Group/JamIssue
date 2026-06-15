@@ -2706,9 +2706,12 @@ textarea {
   justify-content: center;
   border-radius: 16px;
   background: rgba(255, 240, 246, 0.94);
-  color: var(--pink-deep);
-  font-size: 28px;
-  font-weight: 800;
+}
+
+.app-splash__mark-image {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
 }
 
 .app-splash__eyebrow,
