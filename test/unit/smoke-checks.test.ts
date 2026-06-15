@@ -21,6 +21,7 @@ import {
   isProtectedWriteSmokeEnabled,
 } from '../../scripts/smoke/protected-write';
 import {
+  createProtectedWriteSmokeChecks,
   runProtectedWriteSmokeSuite,
 } from '../../scripts/run-protected-write-smoke-checks';
 
@@ -189,5 +190,52 @@ describe('run-smoke-checks helpers', () => {
       reviewBody: 'review body',
       commentBody: 'comment body',
     });
+  });
+
+  it('runs protected write smoke as create, comment, and cleanup when explicitly configured', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: 'review-1' }), { status: 201 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify([{ id: 'comment-1' }]), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ deleted: true }), { status: 200 }));
+
+    try {
+      const [check] = createProtectedWriteSmokeChecks({
+        apiBaseUrl: 'https://api.example.com',
+        env: {
+          SMOKE_AUTH_BEARER_TOKEN: 'token-123',
+          SMOKE_WRITE_PLACE_ID: 'place-1',
+          SMOKE_WRITE_STAMP_ID: 'stamp-1',
+          SMOKE_WRITE_REVIEW_BODY: 'review body',
+          SMOKE_WRITE_COMMENT_BODY: 'comment body',
+        },
+      });
+
+      const result = await check.run();
+
+      expect(result.ok).toBe(true);
+      expect(fetchSpy).toHaveBeenNthCalledWith(
+        1,
+        'https://api.example.com/api/reviews',
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"stampId":"stamp-1"'),
+        }),
+      );
+      expect(fetchSpy).toHaveBeenNthCalledWith(
+        2,
+        'https://api.example.com/api/reviews/review-1/comments',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ body: 'comment body' }),
+        }),
+      );
+      expect(fetchSpy).toHaveBeenNthCalledWith(
+        3,
+        'https://api.example.com/api/reviews/review-1',
+        expect.objectContaining({ method: 'DELETE' }),
+      );
+    } finally {
+      fetchSpy.mockRestore();
+    }
   });
 });
