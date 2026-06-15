@@ -16,13 +16,13 @@ export function placeMarkerContent(place: Place, isActive: boolean) {
   const label = '';
 
   return `
-    <div style="transform:${scale};display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
+    <div style="transform:${scale};pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
       <div style="position:relative;width:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};">
         <div style="position:absolute;left:50%;top:${cssPx(UiNaverMarkerVisualConfig.jamDotEdgePx)};width:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};border-radius:999px;background:${info.jamColor};transform:translateX(-50%);"></div>
         <div style="position:absolute;left:50%;bottom:${cssPx(UiNaverMarkerVisualConfig.jamDotEdgePx)};width:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};border-radius:999px;background:${info.jamColor};transform:translateX(-50%);"></div>
         <div style="position:absolute;left:${cssPx(UiNaverMarkerVisualConfig.jamDotEdgePx)};top:50%;width:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};border-radius:999px;background:${info.jamColor};transform:translateY(-50%);"></div>
         <div style="position:absolute;right:${cssPx(UiNaverMarkerVisualConfig.jamDotEdgePx)};top:50%;width:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.jamDotSizePx)};border-radius:999px;background:${info.jamColor};transform:translateY(-50%);"></div>
-        <div style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.placeCoreInsetPx)};border-radius:999px;background:${info.color};border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${shadow};display:flex;align-items:center;justify-content:center;color:#5f4660;font-size:${cssPx(UiNaverMarkerVisualConfig.placeIconFontSizePx)};font-weight:900;">${info.icon}</div>
+        <div data-marker-hit-target="curated" style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.placeCoreInsetPx)};pointer-events:auto;border-radius:999px;background:${info.color};border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${shadow};display:flex;align-items:center;justify-content:center;color:#5f4660;font-size:${cssPx(UiNaverMarkerVisualConfig.placeIconFontSizePx)};font-weight:900;">${info.icon}</div>
       </div>
       ${label}
     </div>
@@ -54,9 +54,9 @@ export function tourismMarkerContent(_place: TourismPlaceItem, isActive: boolean
   const opacity = isActive ? UiNaverMarkerVisualConfig.activeTourismOpacity : UiNaverMarkerVisualConfig.inactiveTourismOpacity;
 
   return `
-    <div style="transform:${scale};opacity:${opacity};display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
+    <div style="transform:${scale};opacity:${opacity};pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
       <div style="position:relative;width:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};">
-        <div style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.festivalCoreInsetPx)};border-radius:999px;background:#f2f7ff;border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${UiNaverMarkerVisualConfig.tourismShadow};display:flex;align-items:center;justify-content:center;color:#315b86;font-size:${cssPx(UiNaverMarkerVisualConfig.festivalLabelFontSizePx)};font-weight:900;">i</div>
+        <div data-marker-hit-target="tourism" style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.festivalCoreInsetPx)};pointer-events:auto;border-radius:999px;background:#f2f7ff;border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${UiNaverMarkerVisualConfig.tourismShadow};display:flex;align-items:center;justify-content:center;color:#315b86;font-size:${cssPx(UiNaverMarkerVisualConfig.festivalLabelFontSizePx)};font-weight:900;">i</div>
       </div>
     </div>
   `;
