@@ -7,6 +7,11 @@ const tourismPlace: TourismPlaceItem = {
   id: 'kto-content-133881',
   name: '귀빈돌솥밥',
   category: 'restaurant',
+  primaryType: 'restaurant',
+  subType: 'restaurant_general',
+  displayGroup: 'restaurant',
+  officialCategoryLabel: '음식점',
+  curationStatus: 'raw_kto',
   ktoContentTypeId: '39',
   ktoContentTypeLabel: '음식점',
   ktoCategoryCode1: 'A05',
@@ -20,6 +25,7 @@ const tourismPlace: TourismPlaceItem = {
   address: '대전광역시 서구 만년로68번길 21',
   roadAddress: null,
   summary: '귀빈돌솥밥 KTO TourAPI 대전 관광 정보',
+  description: null,
   latitude: 36.3663498341,
   longitude: 127.3805013325,
   imageUrl: 'http://tong.visitkorea.or.kr/cms/resource/72/3060272_image2_1.JPG',
@@ -54,12 +60,12 @@ const tourismDetail: TourismPlaceDetailItem = {
       title: 'Menu',
       items: [
         { label: 'Main menu', value: '돌솥밥' },
-        { label: 'Menu', value: '수육 / 소석갈비 / 소떡갈비 등' },
+        { label: 'Menu', value: '수육 / 돼지갈비 / 뼈다귀갈비 등' },
       ],
     },
     {
       title: 'Restaurant info',
-      items: [{ label: 'Smoking', value: '모두 금연석' }],
+      items: [{ label: 'Smoking', value: '모두 금연' }],
     },
   ],
   detail: {
@@ -106,10 +112,30 @@ describe('TourismInfoSheet', () => {
     expect(screen.getByText('가능')).toBeInTheDocument();
     expect(screen.getByText('대표메뉴')).toBeInTheDocument();
     expect(screen.getByText('돌솥밥')).toBeInTheDocument();
-    expect(screen.getByText('수육 / 소석갈비 / 소떡갈비 등')).toBeInTheDocument();
+    expect(screen.getByText('수육 / 돼지갈비 / 뼈다귀갈비 등')).toBeInTheDocument();
     expect(screen.getByText('흡연')).toBeInTheDocument();
-    expect(screen.getByText('모두 금연석')).toBeInTheDocument();
+    expect(screen.getByText('모두 금연')).toBeInTheDocument();
     expect(screen.getByText('KTO 관광정보')).toBeInTheDocument();
+    expect(screen.getByText('공식 분류: 음식점')).toBeInTheDocument();
+  });
+
+  it('uses displayGroup as the primary badge when official category is broader', () => {
+    render(
+      <TourismInfoSheet
+        place={{ ...tourismPlace, subType: 'cafe', displayGroup: 'cafe' }}
+        detail={{ ...tourismDetail, subType: 'cafe', displayGroup: 'cafe' }}
+        detailLoading={false}
+        detailError={null}
+        isOpen
+        sheetState="partial"
+        onClose={vi.fn()}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('카페')).toBeInTheDocument();
+    expect(screen.getByText('공식 분류: 음식점')).toBeInTheDocument();
   });
 
   it('hides provider metadata that is not useful to users', () => {

@@ -269,12 +269,23 @@ async function handleApiRoute(route: Route, state: E2EAppState) {
   }
 
   if (method === 'GET' && path === '/api/tourism/places') {
+    const displayGroup = url.searchParams.get('displayGroup');
+    const items = displayGroup
+      ? state.tourismPlaces.filter((place) => place.displayGroup === displayGroup)
+      : state.tourismPlaces;
     const response: TourismPlacesResponse = {
       sourceReady: true,
       sourceName: 'kto',
       importedAt: '2026-06-13T00:00:00.000Z',
-      facets: { categories: [], districts: [], contentTypes: [], ktoFacets: [] },
-      items: state.tourismPlaces,
+      total: items.length,
+      facets: {
+        categories: [],
+        districts: [],
+        contentTypes: [],
+        ktoFacets: [],
+        displayGroups: buildTourismDisplayGroupFacets(state.tourismPlaces),
+      },
+      items,
     };
     await fulfillJson(route, response);
     return;
@@ -411,6 +422,29 @@ async function handleApiRoute(route: Route, state: E2EAppState) {
   }
 
   throw new Error(`Unhandled E2E API fixture: ${method} ${path}`);
+}
+
+function buildTourismDisplayGroupFacets(places: TourismPlaceItem[]) {
+  const labels = new Map([
+    ['restaurant', '음식점'],
+    ['cafe', '카페'],
+    ['attraction', '관광지'],
+    ['culture', '문화시설'],
+    ['leports', '레포츠'],
+    ['lodging', '숙박'],
+    ['shopping', '쇼핑'],
+  ]);
+  const counts = new Map<string, number>();
+  for (const place of places) {
+    if (place.displayGroup) {
+      counts.set(place.displayGroup, (counts.get(place.displayGroup) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()].map(([key, count]) => ({
+    key,
+    label: labels.get(key) ?? key,
+    count,
+  }));
 }
 
 export async function installApiFixtures(page: Page, state: E2EAppState) {

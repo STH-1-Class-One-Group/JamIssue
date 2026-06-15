@@ -1,9 +1,17 @@
+/*
+ * File: useAppCoordinatorEffects.ts
+ * Purpose: Register app-level side effects for bootstrap, feedback, and optional map overlays.
+ * Primary Responsibility: Compose domain effect hooks without owning their internal fetch policies.
+ * Design Intent: Keep the shell coordinator readable by delegating large behavior-specific effects to owner hooks.
+ * Non-Goals: This hook does not render UI, normalize API payloads, or call provider/admin APIs directly.
+ * Dependencies: React effects, app bootstrap lifecycle, feedback effects, and tourism overlay effects.
+ */
 import { useEffect } from 'react';
-import { getTourismPlaceDetail, getTourismPlaces } from '../../api/tourismClient';
-import { FeedbackRuntimeConfig, TourismRuntimeConfig } from '../../config/runtimeLimitConfig';
-import { getInitialNotice } from '../app-route/useAppRouteState';
+import { FeedbackRuntimeConfig } from '../../config/runtimeLimitConfig';
 import { useAppBootstrapLifecycle } from '../app-bootstrap/useAppBootstrapLifecycle';
+import { getInitialNotice } from '../app-route/useAppRouteState';
 import { useAppFeedbackEffects } from '../useAppFeedbackEffects';
+import { useTourismOverlayEffects } from './useTourismOverlayEffects';
 import type {
   DataState,
   DomainState,
@@ -33,7 +41,7 @@ export function useAppCoordinatorEffects({
   const { activeTab, goToTab, selectedPlaceId } = routeState;
   const {
     auth: { sessionUser },
-    map: { selectedTourismPlaceId, showTourismInfo, setSelectedTourismPlaceId },
+    map: { activeTourismDisplayGroup, selectedTourismPlaceId, showTourismInfo, setSelectedTourismPlaceId },
     myPage: { myPageTab },
   } = domainState;
   const { mapLocationMessage, notice, setNotice } = shellRuntimeState;
@@ -54,11 +62,14 @@ export function useAppCoordinatorEffects({
     setTourismDetailLoading,
     setTourismDetailsById,
     setTourismError,
+    setTourismFacets,
     setTourismLoading,
     setTourismPlaces,
+    setTourismPlacesQueryKey,
     setTourismSourceReady,
     tourismDetailsById,
     tourismPlaces,
+    tourismPlacesQueryKey,
   } = dataState;
   const {
     dataLoaders: {
@@ -73,10 +84,9 @@ export function useAppCoordinatorEffects({
 
   useEffect(() => {
     const initialNotice = getInitialNotice();
-    if (!initialNotice) {
-      return;
+    if (initialNotice) {
+      setNotice((current) => current ?? initialNotice);
     }
-    setNotice((current) => current ?? initialNotice);
   }, [setNotice]);
 
   useAppFeedbackEffects({
@@ -90,117 +100,25 @@ export function useAppCoordinatorEffects({
     noticeDismissDelayMs: FeedbackRuntimeConfig.noticeDismissDelayMs,
   });
 
-  useEffect(() => {
-    if (!showTourismInfo) {
-      setSelectedTourismPlaceId(null);
-      return;
-    }
-    if (tourismPlaces.length > 0) {
-      return;
-    }
-
-    let isActive = true;
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => {
-      controller.abort();
-    }, TourismRuntimeConfig.placesRequestTimeoutMs);
-    setTourismLoading(true);
-    setTourismError(null);
-
-    getTourismPlaces({}, { signal: controller.signal })
-      .then((response) => {
-        if (!isActive) {
-          return;
-        }
-        setTourismPlaces(response.items);
-        setTourismSourceReady(response.sourceReady);
-      })
-      .catch((error: unknown) => {
-        if (!isActive) {
-          return;
-        }
-        setTourismError(formatTourismErrorMessage(error));
-      })
-      .finally(() => {
-        window.clearTimeout(timeoutId);
-        if (isActive) {
-          setTourismLoading(false);
-        }
-      });
-
-    return () => {
-      isActive = false;
-      window.clearTimeout(timeoutId);
-      controller.abort();
-    };
-  }, [
-    setSelectedTourismPlaceId,
-    setTourismError,
-    setTourismLoading,
-    setTourismPlaces,
-    setTourismSourceReady,
-    showTourismInfo,
-    tourismPlaces.length,
-  ]);
-
-  useEffect(() => {
-    if (!selectedTourismPlaceId) {
-      setTourismDetailError(null);
-      setTourismDetailLoading(false);
-      return;
-    }
-    if (tourismDetailsById[selectedTourismPlaceId]) {
-      return;
-    }
-    const selectedTourismPlace = tourismPlaces.find((place) => place.id === selectedTourismPlaceId);
-    if (selectedTourismPlace?.hasDetail === false) {
-      return;
-    }
-
-    let isActive = true;
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => {
-      controller.abort();
-    }, TourismRuntimeConfig.placesRequestTimeoutMs);
-    setTourismDetailLoading(true);
-    setTourismDetailError(null);
-
-    getTourismPlaceDetail(selectedTourismPlaceId, { signal: controller.signal })
-      .then((response) => {
-        if (!isActive) {
-          return;
-        }
-        setTourismDetailsById((current) => ({
-          ...current,
-          [selectedTourismPlaceId]: response,
-        }));
-      })
-      .catch((error: unknown) => {
-        if (!isActive) {
-          return;
-        }
-        setTourismDetailError(formatTourismErrorMessage(error));
-      })
-      .finally(() => {
-        window.clearTimeout(timeoutId);
-        if (isActive) {
-          setTourismDetailLoading(false);
-        }
-      });
-
-    return () => {
-      isActive = false;
-      window.clearTimeout(timeoutId);
-      controller.abort();
-    };
-  }, [
+  useTourismOverlayEffects({
+    activeTourismDisplayGroup,
     selectedTourismPlaceId,
+    showTourismInfo,
+    tourismDetailsById,
+    tourismPlaces,
+    tourismPlacesQueryKey,
+    setSelectedTourismPlaceId,
     setTourismDetailError,
     setTourismDetailLoading,
     setTourismDetailsById,
-    tourismDetailsById,
-    tourismPlaces,
-  ]);
+    setTourismError,
+    setTourismFacets,
+    setTourismLoading,
+    setTourismPlaces,
+    setTourismPlacesQueryKey,
+    setTourismSourceReady,
+    formatErrorMessage,
+  });
 
   useAppBootstrapLifecycle({
     activeTab,
@@ -228,13 +146,6 @@ export function useAppCoordinatorEffects({
     formatErrorMessage,
     reportBackgroundError,
   });
-}
-
-function formatTourismErrorMessage(error: unknown) {
-  if (error instanceof DOMException && error.name === 'AbortError') {
-    return '관광정보 응답이 지연되고 있어요. 잠시 뒤 다시 켜 주세요.';
-  }
-  return formatErrorMessage(error);
 }
 
 function formatErrorMessage(error: unknown) {

@@ -15,27 +15,39 @@ beforeEach(() => {
       sourceReady: true,
       sourceName: 'kto',
       importedAt: '2026-06-13T00:00:00.000Z',
-      facets: { categories: [], districts: [], contentTypes: [], ktoFacets: [] },
+      total: 0,
+      facets: { categories: [], districts: [], contentTypes: [], ktoFacets: [], displayGroups: [] },
       items: [],
     }),
   });
 });
 
 describe('tourismClient', () => {
-  it('requests tourism places through the Worker consumer contract', async () => {
-    await getTourismPlaces({ category: 'cafe', district: '중구', limit: 12 });
+  it('requests all tourism places through the canonical Worker consumer contract', async () => {
+    await getTourismPlaces({ scope: 'all', displayGroup: 'cafe', district: '중구' });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const requestedUrl = String(fetchMock.mock.calls[0][0]);
 
     expect(requestedUrl).toContain('/api/tourism/places?');
-    expect(requestedUrl).toContain('category=cafe');
+    expect(requestedUrl).toContain('scope=all');
+    expect(requestedUrl).toContain('displayGroup=cafe');
     expect(requestedUrl).toContain('district=%EC%A4%91%EA%B5%AC');
-    expect(requestedUrl).toContain('limit=12');
+    expect(requestedUrl).not.toContain('limit=');
+  });
+
+  it('keeps provider filters available without using them as UI display groups', async () => {
+    await getTourismPlaces({ scope: 'all', primaryType: 'restaurant', subType: 'cafe', ktoFacet: 'restaurant' });
+
+    const requestedUrl = String(fetchMock.mock.calls[0][0]);
+
+    expect(requestedUrl).toContain('primaryType=restaurant');
+    expect(requestedUrl).toContain('subType=cafe');
+    expect(requestedUrl).toContain('ktoFacet=restaurant');
   });
 
   it('omits empty optional filters from the tourism places query', async () => {
-    await getTourismPlaces({ category: '', district: undefined, limit: undefined });
+    await getTourismPlaces({ displayGroup: '', district: undefined, limit: undefined });
 
     expect(String(fetchMock.mock.calls[0][0])).toMatch(/\/api\/tourism\/places$/);
   });
@@ -43,7 +55,7 @@ describe('tourismClient', () => {
   it('passes request init to the Worker tourism consumer request', async () => {
     const controller = new AbortController();
 
-    await getTourismPlaces({}, { signal: controller.signal });
+    await getTourismPlaces({ scope: 'all' }, { signal: controller.signal });
 
     expect(fetchMock.mock.calls[0][1]).toMatchObject({
       signal: controller.signal,

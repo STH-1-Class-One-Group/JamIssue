@@ -4,8 +4,9 @@
  * Primary Responsibility: Render user-facing KTO list/detail fields inside a read-only map bottom sheet.
  * Design Intent: Prefer useful consumer information from the Worker detail API and hide provider/internal metadata.
  * Non-Goals: This component does not allow stamping, review creation, direct KTO/OpenAPI calls, or external source-page validation.
- * Dependencies: TourismPlaceItem/TourismPlaceDetailItem DTOs and MapBottomSheet.
+ * Dependencies: TourismPlaceItem/TourismPlaceDetailItem DTOs, tourism taxonomy helpers, and MapBottomSheet.
  */
+import { getTourismDisplayGroupLabel } from '../lib/tourismTaxonomy';
 import type { TourismDetailSection, TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
 import type { DrawerState } from '../types/core';
 import { MapBottomSheet } from './map-stage/MapBottomSheet';
@@ -57,7 +58,7 @@ function getTourismPlaceAddress(place: TourismPlaceItem) {
 }
 
 function getTourismPlaceCategoryLabel(place: TourismPlaceItem) {
-  return place.ktoContentTypeLabel || place.category || null;
+  return getTourismDisplayGroupLabel(place);
 }
 
 function isGenericKtoSummary(placeName: string, value: string | null | undefined) {
@@ -145,6 +146,7 @@ export function TourismInfoSheet({
   const imageUrl = getImageUrl(place, detail);
   const sections = getVisibleSections(detail?.displaySections ?? []);
   const contact = detail?.contact?.trim() || null;
+  const officialLabel = place.officialCategoryLabel || place.ktoContentTypeLabel || null;
 
   return (
     <MapBottomSheet
@@ -206,6 +208,7 @@ export function TourismInfoSheet({
         <div>
           <strong>출처</strong>
           <p>{detail?.sourceName || place.sourceName || 'KTO 관광정보'}</p>
+          {officialLabel ? <p className="section-copy">공식 분류: {officialLabel}</p> : null}
         </div>
       </div>
     </MapBottomSheet>
