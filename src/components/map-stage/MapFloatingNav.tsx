@@ -159,7 +159,7 @@ export function MapFloatingNav({
           {tourismError}
         </span>
       ) : null}
-      <GlobalSettingsMenu {...globalUtility} />
+      <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
     </div>
   );
 }
