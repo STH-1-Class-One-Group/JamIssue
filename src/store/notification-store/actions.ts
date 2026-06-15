@@ -128,20 +128,20 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
         if (idx === -1) {
           return state;
         }
-        const nextNotifications = [...state.notifications];
-        nextNotifications[idx] = { ...nextNotifications[idx], isRead: true };
 
-        // Count unread notifications without creating an intermediate array to reduce memory pressure
-        let nextUnreadCount = 0;
-        for (const notification of state.notifications) {
-          if (!notification.isRead && notification.id !== notificationId) {
-            nextUnreadCount++;
-          }
+        const target = state.notifications[idx];
+        if (target.isRead) {
+          return state;
         }
 
+        const nextNotifications = [...state.notifications];
+        nextNotifications[idx] = { ...target, isRead: true };
+
+        // Optimization: Calculate unreadCount in O(1) time instead of counting over the entire array.
+        // We know the target was previously unread, so we can just decrement the count.
         return {
           notifications: nextNotifications,
-          unreadCount: Math.max(0, nextUnreadCount),
+          unreadCount: Math.max(0, state.unreadCount - 1),
         };
       });
     },
@@ -168,10 +168,19 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
     async deleteNotification(notificationId) {
       await deleteNotificationRequest(notificationId);
       set((state) => {
-        const notifications = state.notifications.filter((notification) => notification.id !== notificationId);
+        const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
+        if (idx === -1) {
+          return state;
+        }
+
+        const target = state.notifications[idx];
+        const nextNotifications = [...state.notifications];
+        nextNotifications.splice(idx, 1);
+
+        // Optimization: Calculate unreadCount in O(1) time without recounting the entire array.
         return {
-          notifications,
-          unreadCount: countUnread(notifications),
+          notifications: nextNotifications,
+          unreadCount: Math.max(0, state.unreadCount - (target.isRead ? 0 : 1)),
         };
       });
     },
