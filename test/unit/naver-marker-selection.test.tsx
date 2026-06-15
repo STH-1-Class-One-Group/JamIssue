@@ -66,6 +66,19 @@ const places = [
   { id: 'place-3', latitude: 36.3, longitude: 127.3, category: 'culture' },
 ] as Place[];
 
+function buildCuratedPlaces(count: number): Place[] {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `curated-place-${index + 1}`,
+    name: `Curated Place ${index + 1}`,
+    district: '대전',
+    category: index % 2 === 0 ? 'cafe' : 'restaurant',
+    jamColor: '#f6a8c8',
+    accentColor: '#315f72',
+    latitude: 36.1 + index * 0.001,
+    longitude: 127.1 + index * 0.001,
+  })) as Place[];
+}
+
 const festivals = [
   { id: 'festival-1', latitude: 36.4, longitude: 127.4 },
   { id: 'festival-2', latitude: 36.5, longitude: 127.5 },
@@ -110,6 +123,30 @@ describe('naver marker selection updates', () => {
     expect(markerRecords[2].setIcon).toHaveBeenCalledTimes(1);
     expect(markerRecords[2].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.placeActive);
     expect(markerRecords[2].setPosition).not.toHaveBeenCalled();
+  });
+
+  it('creates one place marker per curated map-bootstrap place without a page-size cap', () => {
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: {} };
+    const onSelectPlace = vi.fn();
+    const allCuratedPlaces = buildCuratedPlaces(81);
+
+    function Harness() {
+      useNaverPlaceMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        places: allCuratedPlaces,
+        selectedPlaceId: null,
+        onSelectPlace,
+      });
+      return null;
+    }
+
+    render(<Harness />);
+
+    expect(markerRecords).toHaveLength(81);
   });
 
   it('updates only previous and next festival marker state when selection changes', () => {

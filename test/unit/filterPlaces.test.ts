@@ -16,6 +16,21 @@ describe('filterPlacesByCategory', () => {
     expect(result).toEqual(mockPlaces);
   });
 
+  it('keeps the full curated map-bootstrap list when category is "all"', () => {
+    const allCuratedPlaces = Array.from({ length: 81 }, (_, index) => ({
+      ...placeFixture,
+      id: `curated-place-${index + 1}`,
+      category: index % 2 === 0 ? 'cafe' : 'restaurant',
+      latitude: 36.1 + index * 0.001,
+      longitude: 127.1 + index * 0.001,
+    })) as Place[];
+
+    const result = filterPlacesByCategory(allCuratedPlaces, 'all');
+
+    expect(result).toHaveLength(81);
+    expect(result).toEqual(allCuratedPlaces);
+  });
+
   it('should filter places by a specific category', () => {
     const result = filterPlacesByCategory(mockPlaces, 'cafe');
     expect(result).toHaveLength(2);
