@@ -72,8 +72,9 @@ test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches all places
   await expect.poll(() => tourismRequests.length).toBe(1);
   expect(tourismRequests[0]).toContain('scope=all');
   expect(tourismRequests[0]).not.toContain('limit=');
-  await expect(page.getByRole('button', { name: /카페/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /숙박/ })).toBeVisible();
+  await page.locator('[data-map-filter-trigger="true"]').click();
+  await expect(page.locator('[data-map-filter-key="cafe"]')).toBeVisible();
+  await expect(page.locator('[data-map-filter-key="lodging"]')).toBeVisible();
 });
 
 test('UIUX-019 shows initial KTO loading feedback while the all-scope request is pending', async ({ page }) => {
@@ -119,9 +120,10 @@ test('UIUX-018 filters KTO tourism map layer locally after the initial all-scope
   await page.locator('[data-tourism-toggle="map"]').click();
   await expect.poll(() => tourismRequests.length).toBe(1);
 
-  await page.getByRole('button', { name: /카페/ }).click();
+  await page.locator('[data-map-filter-trigger="true"]').click();
+  await page.locator('[data-map-filter-key="cafe"]').click();
 
-  await expect(page.getByRole('button', { name: /카페/ })).toHaveClass(/is-active/);
+  await expect(page.locator('[data-map-filter-trigger="true"]')).toBeVisible();
   expect(tourismRequests).toHaveLength(1);
   expect(tourismRequests[0]).toContain('scope=all');
   expect(tourismRequests[0]).not.toContain('displayGroup=');

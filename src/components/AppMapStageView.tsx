@@ -4,7 +4,6 @@
  * Primary Responsibility: Adapt app-level map props into the MapTabStage contract.
  * Design Intent: Keep the app shell coordinator separate from map-stage presentation wiring.
  * Non-Goals: This component does not fetch map data, own Naver SDK state, or implement sheet internals.
- * Dependencies: React memo, MapTabStage, map category strip, and app domain DTOs.
  */
 import { memo } from 'react';
 import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
@@ -12,7 +11,8 @@ import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
 import { MapTabStage } from './MapTabStage';
-import { MapStageCategoryStrip } from './map-stage/MapStageCategoryStrip';
+import { MapFloatingNav } from './map-stage/MapFloatingNav';
+import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 
 interface AppMapStageViewProps {
   mapData: {
@@ -78,61 +78,32 @@ interface AppMapStageViewProps {
     onLocateCurrentPosition: () => void;
     onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
   };
-}
-
-type AppMapStageSubNavProps = Pick<AppMapStageViewProps, 'mapData' | 'mapActions'>;
-
-export function AppMapStageSubNav({
-  mapData,
-  mapActions,
-}: AppMapStageSubNavProps) {
-  const isTourismInitialPending =
-    mapData.showTourismInfo &&
-    !mapData.tourismSourceReady &&
-    mapData.tourismPlaces.length === 0 &&
-    !mapData.tourismError;
-  const shouldShowTourismLoading = mapData.tourismLoading || isTourismInitialPending;
-
-  return (
-    <div className="map-stage-subnav">
-      <MapStageCategoryStrip
-        activeCategory={mapData.activeCategory}
-        activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
-        tourismDisplayGroupFacets={mapData.tourismFacets?.displayGroups}
-        showTourismInfo={mapData.showTourismInfo}
-        onSelectCategory={mapActions.setActiveCategory}
-        onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
-      />
-      <button
-        type="button"
-        className={mapData.showTourismInfo ? 'chip map-filter-chip is-active tourism-toggle-chip' : 'chip map-filter-chip tourism-toggle-chip'}
-        data-tourism-toggle="map"
-        aria-busy={shouldShowTourismLoading || undefined}
-        aria-pressed={mapData.showTourismInfo}
-        onClick={mapActions.onToggleTourismInfo}
-      >
-        관광정보
-      </button>
-      {mapData.showTourismInfo && shouldShowTourismLoading ? (
-        <span className="tourism-load-status" data-tourism-load-status="initial" role="status">
-          관광정보 확인 중
-        </span>
-      ) : null}
-      {mapData.showTourismInfo && mapData.tourismError ? (
-        <span className="tourism-load-status is-error" role="alert">
-          {mapData.tourismError}
-        </span>
-      ) : null}
-    </div>
-  );
+  globalUtility: GlobalSettingsMenuProps;
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
   mapData,
   mapActions,
+  globalUtility,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
+      floatingNav={(
+        <MapFloatingNav
+          activeCategory={mapData.activeCategory}
+          activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
+          showTourismInfo={mapData.showTourismInfo}
+          tourismFacets={mapData.tourismFacets}
+          tourismPlaces={mapData.tourismPlaces}
+          tourismSourceReady={mapData.tourismSourceReady}
+          tourismLoading={mapData.tourismLoading}
+          tourismError={mapData.tourismError}
+          globalUtility={globalUtility}
+          onSelectCategory={mapActions.setActiveCategory}
+          onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
+          onToggleTourismInfo={mapActions.onToggleTourismInfo}
+        />
+      )}
       mapData={{
         filteredPlaces: mapData.filteredPlaces,
         festivals: mapData.festivals,

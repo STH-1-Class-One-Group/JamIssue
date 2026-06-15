@@ -4,7 +4,7 @@ import { NotificationPanel } from './notifications/NotificationPanel';
 import { useNotificationPanelActions } from './notifications/useNotificationPanelActions';
 import type { NotificationItem } from './notifications/notificationTypes';
 
-type GlobalSettingsMenuProps = {
+export type GlobalSettingsMenuProps = {
   sessionUserName: string | null;
   notifications: NotificationItem[];
   unreadCount: number;

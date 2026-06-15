@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import type { ComponentProps, ReactNode } from 'react';
 import type { Tab } from '../../types/core';
 import { AppHeader } from './AppHeader';
 import { BottomNav } from '../BottomNav';
 import { GlobalSettingsMenu } from '../GlobalSettingsMenu';
 import { GlobalStatusBanner } from '../GlobalStatusBanner';
+import { SplashScreen } from '../SplashScreen';
 
 interface AppShellProps {
   activeTab: Tab;
@@ -14,6 +16,8 @@ interface AppShellProps {
   globalUtility: ComponentProps<typeof GlobalSettingsMenu>;
   onBottomTabChange: (nextTab: Tab) => void;
   onNavigateBack: () => void;
+  headerMode?: 'default' | 'hidden';
+  showEntrySplash?: boolean;
   subNav?: ReactNode;
 }
 
@@ -24,19 +28,25 @@ export function AppShell({
   children,
   globalStatus,
   globalUtility,
+  headerMode = 'default',
   onBottomTabChange,
   onNavigateBack,
+  showEntrySplash = false,
   subNav,
 }: AppShellProps) {
+  const [showSplash, setShowSplash] = useState(showEntrySplash);
   const isMapStage = activeTab === 'map';
   const hasSubNav = Boolean(subNav);
+  const isHeaderHidden = headerMode === 'hidden';
 
   return (
     <div className="map-app-shell" data-app-shell="root">
+      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
       <div
         className={[
           'phone-shell',
           isMapStage ? 'phone-shell--map' : '',
+          isHeaderHidden ? 'app-shell--header-hidden' : '',
           hasSubNav ? 'app-shell--with-subnav' : 'app-shell--no-subnav',
         ].filter(Boolean).join(' ')}
         data-app-shell="phone"
@@ -51,11 +61,13 @@ export function AppShell({
             />
           </div>
         )}
-        <AppHeader
-          canNavigateBack={canNavigateBack}
-          globalUtility={globalUtility}
-          onNavigateBack={onNavigateBack}
-        />
+        {!isHeaderHidden && (
+          <AppHeader
+            canNavigateBack={canNavigateBack}
+            globalUtility={globalUtility}
+            onNavigateBack={onNavigateBack}
+          />
+        )}
         {hasSubNav && (
           <div
             className="app-shell__sub-nav-slot"

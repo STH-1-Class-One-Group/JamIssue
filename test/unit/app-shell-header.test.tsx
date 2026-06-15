@@ -35,6 +35,22 @@ function renderShell(canNavigateBack: boolean, onNavigateBack = vi.fn()) {
   );
 }
 
+function renderHeaderHiddenShell() {
+  render(
+    <AppShell
+      activeTab="map"
+      canNavigateBack={false}
+      globalStatus={null}
+      globalUtility={globalUtility}
+      headerMode="hidden"
+      onBottomTabChange={vi.fn()}
+      onNavigateBack={vi.fn()}
+    >
+      <div data-testid="content">content</div>
+    </AppShell>,
+  );
+}
+
 describe('AppShell app header contract', () => {
   it('renders brand and utility actions inside the app header when back navigation is not available', () => {
     renderShell(false);
@@ -62,5 +78,13 @@ describe('AppShell app header contract', () => {
     await user.click(backButton);
 
     expect(onNavigateBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('can hide the app header for map-owned floating navigation', () => {
+    renderHeaderHiddenShell();
+
+    expect(screen.getByTestId('app-shell-phone')).toHaveClass('app-shell--header-hidden');
+    expect(screen.queryByRole('banner', { name: 'Jam Issue app header' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('app-shell-content')).toContainElement(screen.getByTestId('content'));
   });
 });

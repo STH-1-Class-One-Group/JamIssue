@@ -35,11 +35,15 @@
   --app-sub-nav-height: 48px;
   --app-header-gap: 10px;
   --app-header-action-size: 44px;
+  --shell-capsule-height: 44px;
   --phone-shell-max-width: 430px;
   --phone-shell-max-height: 920px;
   --phone-shell-height-gap: 24px;
   --phone-shell-radius: 32px;
   --layer-app-header: 40;
+  --z-floating-nav: 96;
+  --z-floating-nav-dropdown: 97;
+  --z-splash: 200;
   --layer-utility: 1200;
   --layer-utility-panel: 1201;
   --utility-slot-top: 14px;
@@ -172,6 +176,11 @@ textarea {
 
 .app-shell--no-subnav .phone-shell__body {
   inset: var(--app-header-height) 0 0 0;
+}
+
+.app-shell--header-hidden .phone-shell__body,
+.app-shell--header-hidden.app-shell--no-subnav .phone-shell__body {
+  inset: 0;
 }
 
 .app-header {
@@ -2668,6 +2677,222 @@ textarea {
 .app-shell__sub-nav-slot .map-filter-strip {
   position: relative;
   inset: auto;
+}
+
+/* TSK-013 fifth UI/UX floating capsule canonical rules */
+.app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-splash);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--app-surface-background);
+  transition: opacity 300ms ease;
+}
+
+.app-splash--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app-splash__mark {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: rgba(255, 240, 246, 0.94);
+  color: var(--pink-deep);
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.app-splash__eyebrow,
+.app-splash__title {
+  margin: 0;
+}
+
+.app-splash__eyebrow {
+  color: var(--pink-deep);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.app-splash__title {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.phone-shell--map.app-shell--header-hidden .map-stage {
+  padding: 12px 12px calc(78px + env(safe-area-inset-bottom));
+}
+
+.map-floating-nav {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 16px;
+  right: 16px;
+  z-index: var(--z-floating-nav);
+  display: flex;
+  height: var(--shell-capsule-height);
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  overflow: visible;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 197, 217, 0.46);
+  border-radius: 999px;
+  background: rgba(255, 252, 249, 0.9);
+  box-shadow: 0 16px 34px rgba(66, 40, 60, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.map-floating-nav__icon-btn,
+.map-floating-nav .global-settings-menu__trigger {
+  display: inline-flex;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.map-floating-nav__icon-btn[aria-disabled="true"] {
+  opacity: 0.72;
+}
+
+.map-floating-nav__filter {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.map-floating-nav__filter-btn {
+  display: inline-flex;
+  max-width: 112px;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 10px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 240, 246, 0.92);
+  color: var(--pink-deep);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.map-floating-nav__filter-btn span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.map-floating-nav__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: var(--z-floating-nav-dropdown);
+  display: grid;
+  width: 110px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 197, 217, 0.46);
+  border-radius: 12px;
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 0 18px 34px rgba(66, 40, 60, 0.16);
+}
+
+.map-floating-nav__dropdown-item {
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-top: 1px solid rgba(255, 197, 217, 0.24);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.map-floating-nav__dropdown-item:first-child {
+  border-top: 0;
+}
+
+.map-floating-nav__dropdown-item.is-active {
+  color: var(--pink-deep);
+  background: rgba(255, 240, 246, 0.88);
+}
+
+.map-floating-nav .tourism-toggle-chip {
+  display: inline-flex;
+  min-width: auto;
+  height: 30px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 127, 168, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--pink-deep);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.map-floating-nav .tourism-toggle-chip.is-active {
+  background: linear-gradient(180deg, #fff4f8, #ffe7ef);
+  border-color: rgba(255, 93, 146, 0.42);
+}
+
+.map-floating-nav .global-settings-menu {
+  flex: 0 0 auto;
+}
+
+.map-floating-nav__status {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 48px;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 111, 163, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--pink-deep);
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(255, 111, 163, 0.12);
+}
+
+.map-floating-nav__status.is-error {
+  color: #9b405f;
+}
+
+.map-floating-nav .global-settings-menu__menu {
+  top: calc(100% + 10px);
+  right: 0;
+}
+
+.map-floating-nav .notification-panel {
+  top: calc(100% + 62px);
+  right: 0;
+}
+
+.phone-shell--map.app-shell--header-hidden .map-surface-frame .map-floating-controls {
+  top: calc(var(--shell-capsule-height) + 20px);
 }
 @font-face {
   font-family: 'Pretendard';

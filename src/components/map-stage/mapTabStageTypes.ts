@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react';
 import type { ApiStatus, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../../types/core';
 import type { TourismPlaceDetailItem, TourismPlaceItem } from '../../tourismTypes';
 import type { SessionUser } from '../../types/auth';
 import type { BootstrapResponse } from '../../types/review';
 
 export interface MapTabStageProps {
+  floatingNav?: ReactNode;
   mapData: {
     filteredPlaces: Place[];
     festivals: FestivalItem[];

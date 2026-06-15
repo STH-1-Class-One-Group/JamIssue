@@ -21,6 +21,20 @@ test('mobile app shell exposes primary tabs from the built bundle', async ({ pag
   await expect(page.getByRole('button', { name: '마이' })).toBeVisible();
 });
 
+test('UIUX-024 shows the splash once on initial entry and does not replay on tab changes', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+
+  await expect(page.getByTestId('app-splash')).toBeVisible();
+  await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
+
+  await page.locator('[data-tab-key="feed"]').click();
+  await page.locator('[data-tab-key="map"]').click();
+
+  await expect(page.getByTestId('app-splash')).toHaveCount(0);
+});
+
 test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
@@ -28,14 +42,12 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
 
   const phoneShell = page.locator('[data-app-shell="phone"]');
   const contentSlot = page.locator('[data-app-shell-slot="content"]');
-  const headerActions = page.locator('[data-app-shell-slot="header-actions"]');
   const bottomTabSlot = page.locator('[data-app-shell-slot="bottom-tab"]');
   const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
   const bottomNavItems = bottomNav.locator('.bottom-nav__item');
 
   await expect(phoneShell).toBeVisible();
   await expect(contentSlot).toBeVisible();
-  await expect(headerActions).toBeVisible();
   await expect(bottomTabSlot).toBeAttached();
   await expect(bottomNavItems).toHaveCount(5);
 
@@ -96,29 +108,59 @@ test('UIUX-014 keeps tab content surfaces accessible inside the app shell', asyn
   }
 });
 
-test('UIUX-015 moves map filters into the app shell sub navigation flow', async ({ page }) => {
+test('UIUX-023 replaces the map header and subnav with a one-line floating capsule', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
   await page.goto('/');
 
   const phoneShell = page.locator('[data-app-shell="phone"]');
-  const subNavSlot = page.locator('[data-app-shell-slot="sub-nav"]');
-  const filterStrip = subNavSlot.locator('.map-filter-strip');
-
-  await expect(phoneShell).toHaveClass(/app-shell--with-subnav/);
-  await expect(subNavSlot).toBeVisible();
-  await expect(filterStrip).toBeVisible();
-  await expect(page.locator('.map-stage > .map-filter-strip')).toHaveCount(0);
-
-  const headerBox = await requireBoundingBox(page.locator('[data-app-shell-slot="header"]'));
-  const subNavBox = await requireBoundingBox(subNavSlot);
+  const floatingNav = page.locator('[data-map-floating-nav="root"]');
   const contentBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
 
-  expect(subNavBox.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height - 1);
-  expect(contentBox.y).toBeGreaterThanOrEqual(subNavBox.y + subNavBox.height - 1);
+  await expect(phoneShell).toHaveClass(/app-shell--header-hidden/);
+  await expect(phoneShell).toHaveClass(/app-shell--no-subnav/);
+  await expect(page.locator('[data-app-shell-slot="header"]')).toHaveCount(0);
+  await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
+  await expect(floatingNav).toBeVisible();
+  await expect(page.locator('.map-filter-strip')).toHaveCount(0);
+
+  const navBox = await requireBoundingBox(floatingNav);
+  expect(navBox.height).toBeGreaterThanOrEqual(42);
+  expect(navBox.height).toBeLessThanOrEqual(48);
+  expect(contentBox.y).toBeLessThanOrEqual(navBox.y + 1);
+
+  await floatingNav.getByRole('button', { name: /전체/ }).click();
+  const dropdown = floatingNav.locator('.map-floating-nav__dropdown');
+  await expect(dropdown).toBeVisible();
+  const dropdownBox = await requireBoundingBox(dropdown);
+  expect(dropdownBox.width).toBeGreaterThanOrEqual(108);
+  expect(dropdownBox.width).toBeLessThanOrEqual(118);
+
+  await dropdown.getByRole('menuitem').nth(1).click();
+  await expect(dropdown).toHaveCount(0);
 
   await page.locator('[data-tab-key="my"]').click();
 
   await expect(phoneShell).toHaveClass(/app-shell--no-subnav/);
   await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
+  await expect(page.locator('[data-app-shell-slot="header"]')).toBeVisible();
+});
+
+test('UIUX-023 keeps the floating capsule single-line across target mobile widths', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/');
+
+    const floatingNav = page.locator('[data-map-floating-nav="root"]');
+    await expect(floatingNav).toBeVisible();
+
+    const navBox = await requireBoundingBox(floatingNav);
+    expect(navBox.height).toBeGreaterThanOrEqual(42);
+    expect(navBox.height).toBeLessThanOrEqual(48);
+
+    const hasHorizontalOverflow = await floatingNav.evaluate((element) => element.scrollWidth > element.clientWidth + 1);
+    expect(hasHorizontalOverflow).toBe(false);
+  }
 });

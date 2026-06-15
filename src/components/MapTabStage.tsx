@@ -3,6 +3,7 @@ import { MapStageSheets } from './map-stage/MapStageSheets';
 import type { MapTabStageProps } from './map-stage/mapTabStageTypes';
 
 export function MapTabStage({
+  floatingNav,
   mapData,
   routePreviewData,
   viewportData,
@@ -21,6 +22,7 @@ export function MapTabStage({
         festivalSheet={festivalSheet}
         tourismActions={tourismActions}
       />
+      {floatingNav}
       <MapStageSheets placeSheet={placeSheet} festivalSheet={festivalSheet} tourismSheet={tourismSheet} />
     </div>
   );
