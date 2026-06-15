@@ -27,6 +27,8 @@ test('UIUX-024 shows the splash once on initial entry and does not replay on tab
   await page.goto('/');
 
   await expect(page.getByTestId('app-splash')).toBeVisible();
+  await expect(page.locator('.app-splash__mark-image')).toBeVisible();
+  await expect(page.locator('.app-splash__mark', { hasText: /^J$/ })).toHaveCount(0);
   await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
 
   await page.locator('[data-tab-key="feed"]').click();
@@ -109,6 +111,13 @@ test('UIUX-014 keeps tab content surfaces accessible inside the app shell', asyn
 });
 
 test('UIUX-023 replaces the map header and subnav with a one-line floating capsule', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
   await page.goto('/');
@@ -131,7 +140,9 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
 
   await floatingNav.getByRole('button', { name: /전체/ }).click();
   const dropdown = floatingNav.locator('.map-floating-nav__dropdown');
-  await expect(dropdown).toBeVisible();
+  await expect(dropdown).toBeVisible({ timeout: 400 });
+  await page.screenshot({ timeout: 1000 });
+  expect(tourismRequests).toEqual([]);
   const dropdownBox = await requireBoundingBox(dropdown);
   expect(dropdownBox.width).toBeGreaterThanOrEqual(108);
   expect(dropdownBox.width).toBeLessThanOrEqual(118);

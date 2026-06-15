@@ -10,6 +10,9 @@ describe('SplashScreen', () => {
     try {
       render(<SplashScreen onDone={onDone} />);
 
+      const logo = screen.getByRole('presentation', { hidden: true });
+      expect(logo).toHaveAttribute('src', expect.stringContaining('jamissue-logo'));
+      expect(screen.queryByText('J')).not.toBeInTheDocument();
       expect(screen.getByText('DAEJEON LOCAL GUIDE')).toBeInTheDocument();
       expect(screen.getByText('JAM ISSUE')).toBeInTheDocument();
 
