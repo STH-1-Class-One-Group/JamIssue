@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "structure-impact-manifest.v1",
+  "repo": "STH-1-Class-One-Group/JamIssue",
+  "groups": [
+    {
+      "name": "frontend-source",
+      "description": "React frontend source and map adapter files.",
+      "patterns": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ],
+      "structureImpact": true
+    },
+    {
+      "name": "governance-readback",
+      "description": "Repository-local governance and traceability readback files.",
+      "patterns": [
+        "docs/ISSUE_TREE.md",
+        "docs/TASK_ID_LEDGER.md",
+        "docs/traceability/*.jsonl",
+        "tests/test_*.py",
+        "graphify.structure-impact.json"
+      ],
+      "structureImpact": false
+    }
+  ],
+  "authority": {
+    "contextAidOnly": true,
+    "editAuthority": false,
+    "completionEvidence": false,
+    "checklistMutation": false,
+    "registryFocusMutation": false
+  }
+}
