@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { NaverMarkerConfig } from '../../src/config/mapConfig';
 import { useNaverFestivalMarkers } from '../../src/components/naver-map/useNaverFestivalMarkers';
 import { useNaverPlaceMarkers } from '../../src/components/naver-map/useNaverPlaceMarkers';
+import { useNaverTourismMarkers } from '../../src/components/naver-map/useNaverTourismMarkers';
+import type { TourismPlaceItem } from '../../src/tourismTypes';
 import type { FestivalItem, Place } from '../../src/types';
 
 type MarkerRecord = {
@@ -84,6 +86,65 @@ const festivals = [
   { id: 'festival-2', latitude: 36.5, longitude: 127.5 },
   { id: 'festival-3', latitude: 36.6, longitude: 127.6 },
 ] as FestivalItem[];
+
+const tourismPlaces = [
+  {
+    id: 'tourism-1',
+    name: 'Tourism 1',
+    category: 'restaurant',
+    primaryType: 'restaurant',
+    subType: 'unknown',
+    displayGroup: 'restaurant',
+    officialCategoryLabel: '음식점',
+    curationStatus: 'raw_kto',
+    ktoContentTypeId: '39',
+    ktoContentTypeLabel: '음식점',
+    ktoFacet: 'restaurant',
+    district: '서구',
+    address: null,
+    roadAddress: null,
+    summary: '',
+    description: null,
+    latitude: 36.7,
+    longitude: 127.7,
+    imageUrl: null,
+    sourcePageUrl: null,
+    sourceUpdatedAt: null,
+    sourceName: 'KTO 관광정보',
+    hasDetail: true,
+    detailKind: 'restaurant',
+    isCurated: false,
+    curatedPlace: null,
+  },
+  {
+    id: 'tourism-2',
+    name: 'Tourism 2',
+    category: 'culture',
+    primaryType: 'culture',
+    subType: 'unknown',
+    displayGroup: 'culture',
+    officialCategoryLabel: '문화시설',
+    curationStatus: 'raw_kto',
+    ktoContentTypeId: '14',
+    ktoContentTypeLabel: '문화시설',
+    ktoFacet: 'culture',
+    district: '중구',
+    address: null,
+    roadAddress: null,
+    summary: '',
+    description: null,
+    latitude: 36.8,
+    longitude: 127.8,
+    imageUrl: null,
+    sourcePageUrl: null,
+    sourceUpdatedAt: null,
+    sourceName: 'KTO 관광정보',
+    hasDetail: true,
+    detailKind: 'culture',
+    isCurated: false,
+    curatedPlace: null,
+  },
+] as TourismPlaceItem[];
 
 describe('naver marker selection updates', () => {
   it('updates only previous and next place marker state when selection changes', () => {
@@ -186,5 +247,36 @@ describe('naver marker selection updates', () => {
     expect(markerRecords[2].setIcon).toHaveBeenCalledTimes(1);
     expect(markerRecords[2].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.festivalActive);
     expect(markerRecords[2].setPosition).not.toHaveBeenCalled();
+  });
+
+  it('uses tourism-specific z-index layers for KTO markers', () => {
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: {} };
+    const onSelectTourismPlace = vi.fn();
+
+    function Harness({ selectedTourismPlaceId }: { selectedTourismPlaceId: string | null }) {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        tourismPlaces,
+        selectedTourismPlaceId,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    const { rerender } = render(<Harness selectedTourismPlaceId={null} />);
+
+    expect(markerRecords).toHaveLength(tourismPlaces.length);
+    expect(markerRecords[0].options.zIndex).toBe(NaverMarkerConfig.zIndex.tourismDefault);
+    expect(markerRecords[0].options.zIndex).not.toBe(NaverMarkerConfig.zIndex.festivalDefault);
+    clearMarkerSpies(markerRecords);
+
+    rerender(<Harness selectedTourismPlaceId="tourism-2" />);
+
+    expect(markerRecords[0].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismDefault);
+    expect(markerRecords[1].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismActive);
   });
 });

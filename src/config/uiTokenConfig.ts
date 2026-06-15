@@ -7,7 +7,11 @@ export function cssPx(value: number) {
 export class UiNaverMarkerVisualConfig {
   static readonly activePlaceScale = 'scale(1.08)';
   static readonly activeFestivalScale = 'scale(1.06)';
+  static readonly activeTourismScale = 'scale(1.02)';
+  static readonly inactiveTourismScale = 'scale(0.86)';
   static readonly defaultScale = 'scale(1)';
+  static readonly activeTourismOpacity = '1';
+  static readonly inactiveTourismOpacity = '0.62';
   static readonly columnGapPx = 6;
   static readonly markerSizePx = 30;
   static readonly jamDotSizePx = 10;
@@ -25,6 +29,7 @@ export class UiNaverMarkerVisualConfig {
   static readonly activePlaceShadow = '0 14px 28px rgba(255,127,168,0.28)';
   static readonly inactivePlaceShadow = '0 10px 22px rgba(255,156,96,0.18)';
   static readonly festivalShadow = '0 10px 24px rgba(255,93,146,0.18)';
+  static readonly tourismShadow = '0 6px 16px rgba(65,105,150,0.12)';
   static readonly currentLocationShadow = '0 6px 18px rgba(95,70,96,0.18)';
   static readonly currentLocationPulseShadow = '0 0 0 6px rgba(79,140,255,0.18)';
   static readonly routeStepShadow = '0 10px 24px rgba(95,70,96,0.22)';

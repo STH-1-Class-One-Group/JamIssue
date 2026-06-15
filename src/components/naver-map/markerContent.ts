@@ -50,12 +50,13 @@ export function festivalMarkerContent(_festival: FestivalItem, isActive: boolean
 
 export function tourismMarkerContent(_place: TourismPlaceItem, isActive: boolean) {
   const ring = isActive ? '#5f7ea8' : 'rgba(95, 126, 168, 0.24)';
-  const scale = isActive ? UiNaverMarkerVisualConfig.activeFestivalScale : UiNaverMarkerVisualConfig.defaultScale;
+  const scale = isActive ? UiNaverMarkerVisualConfig.activeTourismScale : UiNaverMarkerVisualConfig.inactiveTourismScale;
+  const opacity = isActive ? UiNaverMarkerVisualConfig.activeTourismOpacity : UiNaverMarkerVisualConfig.inactiveTourismOpacity;
 
   return `
-    <div style="transform:${scale};display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
+    <div style="transform:${scale};opacity:${opacity};display:flex;flex-direction:column;align-items:center;gap:${cssPx(UiNaverMarkerVisualConfig.columnGapPx)};">
       <div style="position:relative;width:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};height:${cssPx(UiNaverMarkerVisualConfig.markerSizePx)};">
-        <div style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.festivalCoreInsetPx)};border-radius:999px;background:#f2f7ff;border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${UiNaverMarkerVisualConfig.festivalShadow};display:flex;align-items:center;justify-content:center;color:#315b86;font-size:${cssPx(UiNaverMarkerVisualConfig.festivalLabelFontSizePx)};font-weight:900;">i</div>
+        <div style="position:absolute;inset:${cssPx(UiNaverMarkerVisualConfig.festivalCoreInsetPx)};border-radius:999px;background:#f2f7ff;border:${cssPx(UiNaverMarkerVisualConfig.markerBorderWidthPx)} solid ${ring};box-shadow:${UiNaverMarkerVisualConfig.tourismShadow};display:flex;align-items:center;justify-content:center;color:#315b86;font-size:${cssPx(UiNaverMarkerVisualConfig.festivalLabelFontSizePx)};font-weight:900;">i</div>
       </div>
     </div>
   `;

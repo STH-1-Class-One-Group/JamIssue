@@ -28,6 +28,8 @@ export class NaverMarkerConfig {
   static readonly zIndex = {
     placeDefault: 100,
     placeActive: 160,
+    tourismDefault: 90,
+    tourismActive: 150,
     festivalDefault: 110,
     festivalActive: 170,
     routeLine: 120,
