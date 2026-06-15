@@ -76,7 +76,7 @@ test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches all places
   await expect(page.getByRole('button', { name: /숙박/ })).toBeVisible();
 });
 
-test('UIUX-018 filters KTO tourism map layer by canonical displayGroup', async ({ page }) => {
+test('UIUX-018 filters KTO tourism map layer locally after the initial all-scope request', async ({ page }) => {
   const tourismRequests: string[] = [];
   page.on('request', (request) => {
     const url = request.url();
@@ -96,8 +96,9 @@ test('UIUX-018 filters KTO tourism map layer by canonical displayGroup', async (
 
   await page.getByRole('button', { name: /카페/ }).click();
 
-  await expect.poll(() => tourismRequests.length).toBe(2);
-  expect(tourismRequests[1]).toContain('scope=all');
-  expect(tourismRequests[1]).toContain('displayGroup=cafe');
-  expect(tourismRequests[1]).not.toContain('limit=');
+  await expect(page.getByRole('button', { name: /카페/ })).toHaveClass(/is-active/);
+  expect(tourismRequests).toHaveLength(1);
+  expect(tourismRequests[0]).toContain('scope=all');
+  expect(tourismRequests[0]).not.toContain('displayGroup=');
+  expect(tourismRequests[0]).not.toContain('limit=');
 });

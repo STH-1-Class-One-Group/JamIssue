@@ -41,7 +41,7 @@ export function useAppCoordinatorEffects({
   const { activeTab, goToTab, selectedPlaceId } = routeState;
   const {
     auth: { sessionUser },
-    map: { activeTourismDisplayGroup, selectedTourismPlaceId, showTourismInfo, setSelectedTourismPlaceId },
+    map: { selectedTourismPlaceId, showTourismInfo, setSelectedTourismPlaceId },
     myPage: { myPageTab },
   } = domainState;
   const { mapLocationMessage, notice, setNotice } = shellRuntimeState;
@@ -101,7 +101,6 @@ export function useAppCoordinatorEffects({
   });
 
   useTourismOverlayEffects({
-    activeTourismDisplayGroup,
     selectedTourismPlaceId,
     showTourismInfo,
     tourismDetailsById,

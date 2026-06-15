@@ -10,11 +10,10 @@ import { useEffect } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import { getTourismPlaceDetail, getTourismPlaces } from '../../api/tourismClient';
 import { TourismRuntimeConfig } from '../../config/runtimeLimitConfig';
-import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailResponse, TourismPlaceItem } from '../../tourismTypes';
+import type { TourismFacets, TourismPlaceDetailResponse, TourismPlaceItem } from '../../tourismTypes';
 import { buildTourismPlacesQuery, buildTourismPlacesQueryKey } from './tourismQuery';
 
 type TourismOverlayEffectsArgs = {
-  activeTourismDisplayGroup: TourismDisplayGroupFilter;
   selectedTourismPlaceId: string | null;
   showTourismInfo: boolean;
   tourismDetailsById: Record<string, TourismPlaceDetailResponse>;
@@ -40,7 +39,6 @@ type TourismOverlayEffectsArgs = {
  * selected display group instead of an arbitrary first page.
  */
 export function useTourismOverlayEffects({
-  activeTourismDisplayGroup,
   selectedTourismPlaceId,
   showTourismInfo,
   tourismDetailsById,
@@ -63,8 +61,8 @@ export function useTourismOverlayEffects({
       setSelectedTourismPlaceId(null);
       return;
     }
-    const tourismQuery = buildTourismPlacesQuery(activeTourismDisplayGroup);
-    const tourismQueryKey = buildTourismPlacesQueryKey(activeTourismDisplayGroup);
+    const tourismQuery = buildTourismPlacesQuery();
+    const tourismQueryKey = buildTourismPlacesQueryKey();
     if (tourismPlaces.length > 0 && tourismPlacesQueryKey === tourismQueryKey) {
       return;
     }
@@ -106,7 +104,6 @@ export function useTourismOverlayEffects({
       controller.abort();
     };
   }, [
-    activeTourismDisplayGroup,
     formatErrorMessage,
     setSelectedTourismPlaceId,
     setTourismError,

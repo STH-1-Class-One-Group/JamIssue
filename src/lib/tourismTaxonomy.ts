@@ -70,6 +70,16 @@ export function getTourismDisplayGroupLabel(place: TourismPlaceItem) {
   return displayGroup ? tourismDisplayGroupInfo[displayGroup].label : place.officialCategoryLabel || place.ktoContentTypeLabel || place.category || null;
 }
 
+export function filterTourismPlacesByDisplayGroup(
+  places: TourismPlaceItem[],
+  displayGroup: TourismDisplayGroupFilter,
+) {
+  if (displayGroup === 'all') {
+    return places;
+  }
+  return places.filter((place) => getTourismDisplayGroup(place) === displayGroup);
+}
+
 /**
  * Builds KTO display-group chip items from Worker facets.
  *
