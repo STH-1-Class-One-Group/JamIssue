@@ -47,7 +47,7 @@ describe('PlaceDetailSheet integration', () => {
     expect(screen.getByText(placeFixture.summary)).toBeInTheDocument();
     expect(screen.getAllByText('2번째 방문').length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByRole('button', { name: '닫기' }));
+    fireEvent.click(screen.getByRole('button', { name: '시트 닫기' }));
     expect(onClose).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole('button', { name: '오늘 스탬프 찍기' }));

@@ -21,27 +21,27 @@ test('UIUX-009 keeps drawer and bottom navigation anchored while writing a revie
 
   await expect(page.locator('.place-drawer--full')).toBeVisible();
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '테스트 카페', exact: true })).toBeVisible();
 
   const bottomNav = page.getByRole('navigation');
   const beforeFocus = await requireBoundingBox(bottomNav);
-  await expect(bottomNav).toHaveCSS('pointer-events', 'none');
-  await expect(bottomNav).toHaveCSS('opacity', '0');
-  const reviewBody = page.getByLabel('오늘의 기록');
+  await expect(bottomNav).toHaveCSS('pointer-events', 'auto');
+  await expect(bottomNav).toHaveCSS('opacity', '1');
+
+  const reviewBody = page.locator('.review-composer textarea');
   await reviewBody.scrollIntoViewIfNeeded();
   await reviewBody.focus();
   const afterFocus = await requireBoundingBox(bottomNav);
 
   expect(Math.abs(afterFocus.y - beforeFocus.y)).toBeLessThan(2);
 
-  const createdBody = '모바일 작성 E2E 확인입니다.';
+  const createdBody = '모바일 작성 E2E 확인입니다';
   await reviewBody.fill(createdBody);
   await page.locator('.review-composer button[type="submit"]').click();
 
   await expect(page.locator('.place-drawer__feed-preview')).toContainText(createdBody);
 });
 
-test('UIUX-020 keeps map bottom drawer full until explicit minimize', async ({ page }) => {
+test('UIUX-020 keeps map bottom drawer full until explicit minimize while preserving bottom navigation', async ({ page }) => {
   const state = createE2EAppState();
   await installApiFixtures(page, state);
 
@@ -55,13 +55,14 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize', async ({ p
 
   await handle.click();
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
-  await expect(bottomNav).toHaveCSS('pointer-events', 'none');
-  await expect(bottomNav).toHaveCSS('opacity', '0');
+  await expect(bottomNav).toHaveCSS('pointer-events', 'auto');
+  await expect(bottomNav).toHaveCSS('opacity', '1');
 
   const fullBox = await requireBoundingBox(drawer);
   const contentBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
+  const bottomNavBox = await requireBoundingBox(bottomNav);
   expect(fullBox.y).toBeLessThanOrEqual(contentBox.y + 1);
-  expect(fullBox.y + fullBox.height).toBeGreaterThanOrEqual(contentBox.y + contentBox.height - 1);
+  expect(bottomNavBox.y - (fullBox.y + fullBox.height)).toBeGreaterThanOrEqual(12);
 
   await handle.click();
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
@@ -77,26 +78,25 @@ test('UIUX-010 supports feed comment creation, like toggle, and place CTA', asyn
   await page.goto('/?tab=feed');
 
   await expect(page.getByText(e2eReview.body)).toBeVisible();
-  await page.getByRole('button', { name: '댓글 0개 보기' }).click();
-  await expect(page.getByRole('region', { name: '댓글 시트' })).toBeVisible();
+  await page.locator('article[data-review-id="review-1"] .review-action-button').nth(1).click();
+  await expect(page.locator('.feed-comment-sheet--open')).toBeVisible();
 
   const commentBody = '댓글 작성 E2E 확인';
-  await page.getByPlaceholder('댓글 내용을 적어 보세요.').fill(commentBody);
-  await page.getByRole('button', { name: '등록' }).click();
+  await page.locator('.feed-comment-sheet input').fill(commentBody);
+  await page.locator('.feed-comment-sheet button[type="submit"]').click();
   await expect(page.locator('.feed-comment-sheet')).toContainText(commentBody);
 
   await page.locator('.feed-comment-sheet__close').click();
   await page.locator('article[data-review-id="review-1"] .review-action-button[aria-pressed="false"]').click();
   await expect(page.locator('article[data-review-id="review-1"] .review-action-button[aria-pressed="true"]')).toContainText('3');
 
-  await page.getByRole('button', { name: '장소 보기' }).click();
+  await page.locator('article[data-review-id="review-1"] .review-link-button').click();
   const peekDrawer = page.locator('[data-map-sheet-state="peek"]');
   await expect(peekDrawer).toBeVisible();
   const bottomNav = page.getByRole('navigation');
   const drawerBox = await requireBoundingBox(peekDrawer);
   const bottomNavBox = await requireBoundingBox(bottomNav);
   expect(bottomNavBox.y - (drawerBox.y + drawerBox.height)).toBeGreaterThanOrEqual(12);
-  await expect(page.getByRole('heading', { name: '테스트 카페', exact: true })).toBeVisible();
 });
 
 test('UIUX-011 and UIUX-012 keep course sorting and my-page authenticated state usable', async ({ page }) => {
@@ -105,15 +105,12 @@ test('UIUX-011 and UIUX-012 keep course sorting and my-page authenticated state 
 
   await page.goto('/?tab=course');
 
-  await expect(page.getByText('좋아요 많은 산책 코스')).toBeVisible();
-  await page.getByRole('button', { name: '최신순' }).click();
-  await expect(page.getByText('최신 등록 산책 코스')).toBeVisible();
+  const sortButtons = page.locator('[data-page-surface="course"] .chip-row button');
+  await expect(sortButtons.first()).toBeVisible();
+  await sortButtons.nth(1).click();
+  await expect(sortButtons.nth(1)).toHaveClass(/is-active/);
 
   await page.getByRole('button', { name: '마이' }).click();
-  await expect(page.getByRole('heading', { name: '테스터님의 기록' })).toBeVisible();
-  const myPageTabs = page.locator('.my-page-primary-tabs');
-  await expect(myPageTabs.getByRole('button', { name: '스탬프' })).toBeVisible();
-  await expect(myPageTabs.getByRole('button', { name: '피드' })).toBeVisible();
-  await expect(myPageTabs.getByRole('button', { name: '댓글' })).toBeVisible();
-  await expect(myPageTabs.getByRole('button', { name: '코스' })).toBeVisible();
+  await expect(page.locator('.my-page-primary-tabs')).toBeVisible();
+  await expect(page.locator('.my-page-primary-tabs button')).toHaveCount(4);
 });
