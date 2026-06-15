@@ -76,6 +76,31 @@ test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches all places
   await expect(page.getByRole('button', { name: /숙박/ })).toBeVisible();
 });
 
+test('UIUX-019 shows initial KTO loading feedback while the all-scope request is pending', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
+
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: [cafeTourismPlace, lodgingTourismPlace],
+  }), { tourismPlacesDelayMs: 800 });
+
+  await page.goto('/');
+
+  await page.locator('[data-tourism-toggle="map"]').click();
+
+  await expect(page.locator('[data-tourism-load-status="initial"]')).toBeVisible({ timeout: 400 });
+  await page.screenshot({ timeout: 1000 });
+  await expect.poll(() => tourismRequests.length).toBe(1);
+  expect(tourismRequests[0]).toContain('scope=all');
+  expect(tourismRequests[0]).not.toContain('limit=');
+});
+
 test('UIUX-018 filters KTO tourism map layer locally after the initial all-scope request', async ({ page }) => {
   const tourismRequests: string[] = [];
   page.on('request', (request) => {

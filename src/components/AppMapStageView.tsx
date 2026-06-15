@@ -86,6 +86,13 @@ export function AppMapStageSubNav({
   mapData,
   mapActions,
 }: AppMapStageSubNavProps) {
+  const isTourismInitialPending =
+    mapData.showTourismInfo &&
+    !mapData.tourismSourceReady &&
+    mapData.tourismPlaces.length === 0 &&
+    !mapData.tourismError;
+  const shouldShowTourismLoading = mapData.tourismLoading || isTourismInitialPending;
+
   return (
     <div className="map-stage-subnav">
       <MapStageCategoryStrip
@@ -100,10 +107,22 @@ export function AppMapStageSubNav({
         type="button"
         className={mapData.showTourismInfo ? 'chip map-filter-chip is-active tourism-toggle-chip' : 'chip map-filter-chip tourism-toggle-chip'}
         data-tourism-toggle="map"
+        aria-busy={shouldShowTourismLoading || undefined}
+        aria-pressed={mapData.showTourismInfo}
         onClick={mapActions.onToggleTourismInfo}
       >
         관광정보
       </button>
+      {mapData.showTourismInfo && shouldShowTourismLoading ? (
+        <span className="tourism-load-status" data-tourism-load-status="initial" role="status">
+          관광정보 확인 중
+        </span>
+      ) : null}
+      {mapData.showTourismInfo && mapData.tourismError ? (
+        <span className="tourism-load-status is-error" role="alert">
+          {mapData.tourismError}
+        </span>
+      ) : null}
     </div>
   );
 }
