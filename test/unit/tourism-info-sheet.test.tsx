@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { TourismInfoSheet } from '../../src/components/TourismInfoSheet';
@@ -60,7 +62,7 @@ const tourismDetail: TourismPlaceDetailItem = {
       title: 'Menu',
       items: [
         { label: 'Main menu', value: '돌솥밥' },
-        { label: 'Menu', value: '수육 / 돼지갈비 / 뼈다귀갈비 등' },
+        { label: 'Menu', value: '수육 / 돼지갈비 / 육회갈비' },
       ],
     },
     {
@@ -91,6 +93,7 @@ describe('TourismInfoSheet', () => {
       />,
     );
 
+    expect(screen.getByRole('region', { name: '관광정보 시트' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: '귀빈돌솥밥 관광정보 이미지' })).toHaveAttribute(
       'src',
       tourismPlace.imageUrl,
@@ -112,7 +115,7 @@ describe('TourismInfoSheet', () => {
     expect(screen.getByText('가능')).toBeInTheDocument();
     expect(screen.getByText('대표메뉴')).toBeInTheDocument();
     expect(screen.getByText('돌솥밥')).toBeInTheDocument();
-    expect(screen.getByText('수육 / 돼지갈비 / 뼈다귀갈비 등')).toBeInTheDocument();
+    expect(screen.getByText('수육 / 돼지갈비 / 육회갈비')).toBeInTheDocument();
     expect(screen.getByText('흡연')).toBeInTheDocument();
     expect(screen.getByText('모두 금연')).toBeInTheDocument();
     expect(screen.getByText('KTO 관광정보')).toBeInTheDocument();
@@ -135,10 +138,11 @@ describe('TourismInfoSheet', () => {
     );
 
     expect(screen.getByText('카페')).toBeInTheDocument();
+    expect(screen.queryByText('음식점 / 39')).not.toBeInTheDocument();
     expect(screen.getByText('공식 분류: 음식점')).toBeInTheDocument();
   });
 
-  it('hides provider metadata that is not useful to users', () => {
+  it('hides provider metadata and external source links that are not useful in the sheet', () => {
     render(
       <TourismInfoSheet
         place={tourismPlace}
@@ -203,5 +207,30 @@ describe('TourismInfoSheet', () => {
 
     expect(sheet).toHaveClass('place-drawer', 'place-drawer--full', 'place-drawer--route-full');
     expect(content).not.toBeNull();
+  });
+
+  it('keeps KTO user-facing modules free from mojibake regressions', () => {
+    const files = [
+      'src/components/TourismInfoSheet.tsx',
+      'src/lib/tourismTaxonomy.ts',
+    ];
+    const mojibakeFragments = [
+      0xfffd,
+      0x9858,
+      0x613f,
+      0xbb52,
+      0x934e,
+      0xb69f,
+      0xc493,
+      0xf98e,
+      0xf98f,
+    ].map((codePoint) => String.fromCodePoint(codePoint));
+
+    for (const file of files) {
+      const source = readFileSync(resolve(process.cwd(), file), 'utf8');
+      for (const fragment of mojibakeFragments) {
+        expect(source, file).not.toContain(fragment);
+      }
+    }
   });
 });
