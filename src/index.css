@@ -2787,7 +2787,7 @@ textarea {
   display: inline-flex;
   max-width: 112px;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   padding: 7px 10px;
   overflow: hidden;
   border: 0;
@@ -2799,9 +2799,31 @@ textarea {
   white-space: nowrap;
 }
 
-.map-floating-nav__filter-btn span:first-child {
+.map-floating-nav__filter-icon,
+.map-floating-nav__filter-caret,
+.map-floating-nav__dropdown-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.map-floating-nav__filter-icon {
+  width: 16px;
+}
+
+.map-floating-nav__filter-label {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.map-floating-nav__filter-caret {
+  width: 10px;
+  color: var(--pink-deep);
+  font-size: 11px;
+  transform: translateY(-1px);
 }
 
 .map-floating-nav__dropdown {
@@ -2819,6 +2841,9 @@ textarea {
 }
 
 .map-floating-nav__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   width: 100%;
   padding: 9px 12px;
   border: 0;
@@ -2828,6 +2853,12 @@ textarea {
   font-size: 12px;
   font-weight: 700;
   text-align: left;
+}
+
+.map-floating-nav__dropdown-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .map-floating-nav__dropdown-item:first-child {
@@ -2864,6 +2895,7 @@ textarea {
 
 .map-floating-nav .global-settings-menu {
   flex: 0 0 auto;
+  z-index: calc(var(--z-floating-nav-dropdown) + 1);
 }
 
 .map-floating-nav__status {
@@ -2887,11 +2919,15 @@ textarea {
 .map-floating-nav .global-settings-menu__menu {
   top: calc(100% + 10px);
   right: 0;
+  z-index: calc(var(--z-floating-nav-dropdown) + 2);
 }
 
-.map-floating-nav .notification-panel {
-  top: calc(100% + 62px);
+.map-floating-nav .global-notification-panel {
+  top: calc(100% + 58px);
   right: 0;
+  z-index: calc(var(--z-floating-nav-dropdown) + 3);
+  width: min(var(--notification-panel-width), calc(100vw - 48px));
+  max-height: min(var(--notification-panel-max-vh), var(--notification-panel-max-height));
 }
 
 .phone-shell--map.app-shell--header-hidden .map-surface-frame .map-floating-controls {
