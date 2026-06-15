@@ -237,7 +237,11 @@ function updateReview(state: E2EAppState, reviewId: string, updater: (review: Re
   state.reviews = state.reviews.map((review) => (review.id === reviewId ? updater(review) : review));
 }
 
-async function handleApiRoute(route: Route, state: E2EAppState) {
+interface E2EFixtureOptions {
+  tourismPlacesDelayMs?: number;
+}
+
+async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixtureOptions = {}) {
   const request = route.request();
   const url = new URL(request.url());
   const method = request.method();
@@ -269,6 +273,11 @@ async function handleApiRoute(route: Route, state: E2EAppState) {
   }
 
   if (method === 'GET' && path === '/api/tourism/places') {
+    if (options.tourismPlacesDelayMs) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, options.tourismPlacesDelayMs);
+      });
+    }
     const displayGroup = url.searchParams.get('displayGroup');
     const items = displayGroup
       ? state.tourismPlaces.filter((place) => place.displayGroup === displayGroup)
@@ -447,7 +456,7 @@ function buildTourismDisplayGroupFacets(places: TourismPlaceItem[]) {
   }));
 }
 
-export async function installApiFixtures(page: Page, state: E2EAppState) {
+export async function installApiFixtures(page: Page, state: E2EAppState, options: E2EFixtureOptions = {}) {
   await page.route('**/app-config.js', async (route) => {
     await route.fulfill({
       contentType: 'text/javascript; charset=utf-8',
@@ -461,6 +470,6 @@ export async function installApiFixtures(page: Page, state: E2EAppState) {
   });
 
   await page.route('**/api/**', async (route) => {
-    await handleApiRoute(route, state);
+    await handleApiRoute(route, state, options);
   });
 }
