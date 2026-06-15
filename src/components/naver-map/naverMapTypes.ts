@@ -13,10 +13,12 @@ export type NaverPoint = unknown;
 
 export type NaverLatLngBounds = {
   extend: (position: NaverLatLng) => void;
+  hasLatLng?: (position: NaverLatLng) => boolean;
 };
 
 export type NaverMapInstance = {
   fitBounds?: (bounds: NaverLatLngBounds, padding?: Record<string, number>) => void;
+  getBounds?: () => NaverLatLngBounds;
   getCenter: () => NaverLatLng;
   getZoom: () => number;
   panBy?: (x: number, y: number) => void;

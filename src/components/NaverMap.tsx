@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { getClientConfig } from '../config';
 import type { TourismPlaceItem } from '../tourismTypes';
 import type { ApiStatus, FestivalItem, Place } from '../types/core';
@@ -56,7 +56,11 @@ export function NaverMap({
   height = '100%',
 }: NaverMapProps) {
   const mapElementRef = useRef<HTMLDivElement | null>(null);
-  const onViewportChangeRef = useNaverViewportChangeRef(onViewportChange);
+  const [markerViewportVersion, setMarkerViewportVersion] = useState(0);
+  const onViewportChangeRef = useNaverViewportChangeRef((lat, lng, zoom) => {
+    setMarkerViewportVersion((version) => version + 1);
+    onViewportChange?.(lat, lng, zoom);
+  });
   const clientId = getClientConfig().naverMapClientId;
 
   const { mapRef, status, errorMessage } = useNaverMapInstance({
@@ -78,6 +82,7 @@ export function NaverMap({
     mapsApi: window.naver?.maps,
     mapRef,
     mapElementRef,
+    viewportVersion: markerViewportVersion,
     places,
     festivals,
     tourismPlaces,

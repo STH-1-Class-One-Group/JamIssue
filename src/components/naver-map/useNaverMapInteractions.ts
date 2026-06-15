@@ -13,6 +13,7 @@ type MapInteractionsArgs = {
   mapsApi: NaverMapsApi | undefined;
   mapRef: React.MutableRefObject<NaverMapInstance | null>;
   mapElementRef: React.MutableRefObject<HTMLDivElement | null>;
+  viewportVersion: number;
   places: Place[];
   festivals: FestivalItem[];
   tourismPlaces: TourismPlaceItem[];
@@ -34,6 +35,7 @@ export function useNaverMapInteractions({
   mapsApi,
   mapRef,
   mapElementRef,
+  viewportVersion,
   places,
   festivals,
   tourismPlaces,
@@ -57,6 +59,7 @@ export function useNaverMapInteractions({
     status,
     mapsApi,
     mapRef,
+    viewportVersion,
     places,
     festivals,
     tourismPlaces,

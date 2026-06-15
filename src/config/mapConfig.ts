@@ -43,6 +43,12 @@ export class NaverMarkerConfig {
     bottom: 120,
     left: 40,
   };
+
+  static readonly materialization = {
+    tourismFallbackMarkerLimit: 120,
+    tourismMarkerBatchSize: 40,
+    tourismMarkerBatchDelayMs: 0,
+  };
 }
 
 export class SelectionMotionConfig {

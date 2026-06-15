@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { act } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { NaverMarkerConfig } from '../../src/config/mapConfig';
 import { useNaverFestivalMarkers } from '../../src/components/naver-map/useNaverFestivalMarkers';
@@ -28,6 +29,14 @@ function createMapsApi(markerRecords: MarkerRecord[]) {
       readonly latitude: number,
       readonly longitude: number,
     ) {}
+
+    lat() {
+      return this.latitude;
+    }
+
+    lng() {
+      return this.longitude;
+    }
   }
 
   class Marker {
@@ -146,6 +155,27 @@ const tourismPlaces = [
   },
 ] as TourismPlaceItem[];
 
+function buildTourismPlaces(count: number): TourismPlaceItem[] {
+  return Array.from({ length: count }, (_, index) => ({
+    ...tourismPlaces[0],
+    id: `tourism-bulk-${index + 1}`,
+    name: `Tourism Bulk ${index + 1}`,
+    latitude: 36.0 + index * 0.001,
+    longitude: 127.0 + index * 0.001,
+  }));
+}
+
+function createMapWithBounds(maxLatitude: number) {
+  return {
+    getBounds: () => ({
+      extend: vi.fn(),
+      hasLatLng: (position: { lat: () => number }) => position.lat() < maxLatitude,
+    }),
+    getCenter: () => ({ lat: () => 36.35, lng: () => 127.38 }),
+    getZoom: () => 13,
+  };
+}
+
 describe('naver marker selection updates', () => {
   it('updates only previous and next place marker state when selection changes', () => {
     const markerRecords: MarkerRecord[] = [];
@@ -260,6 +290,7 @@ describe('naver marker selection updates', () => {
         status: 'ready',
         mapsApi,
         mapRef,
+        viewportVersion: 0,
         tourismPlaces,
         selectedTourismPlaceId,
         onSelectTourismPlace,
@@ -278,5 +309,71 @@ describe('naver marker selection updates', () => {
 
     expect(markerRecords[0].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismDefault);
     expect(markerRecords[1].setZIndex).toHaveBeenLastCalledWith(NaverMarkerConfig.zIndex.tourismActive);
+  });
+
+  it('materializes only KTO markers inside the current map bounds', () => {
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = { current: createMapWithBounds(36.012) };
+    const onSelectTourismPlace = vi.fn();
+    const allTourismPlaces = buildTourismPlaces(200);
+
+    function Harness() {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: allTourismPlaces,
+        selectedTourismPlaceId: null,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    render(<Harness />);
+
+    expect(markerRecords).toHaveLength(12);
+  });
+
+  it('uses the fallback marker cap and batches creation when map bounds are unavailable', () => {
+    vi.useFakeTimers();
+    const markerRecords: MarkerRecord[] = [];
+    const mapsApi = createMapsApi(markerRecords);
+    const mapRef = {
+      current: {
+        getCenter: () => ({ lat: () => 36.35, lng: () => 127.38 }),
+        getZoom: () => 13,
+      },
+    };
+    const onSelectTourismPlace = vi.fn();
+    const allTourismPlaces = buildTourismPlaces(200);
+
+    function Harness() {
+      useNaverTourismMarkers({
+        status: 'ready',
+        mapsApi,
+        mapRef,
+        viewportVersion: 0,
+        tourismPlaces: allTourismPlaces,
+        selectedTourismPlaceId: null,
+        onSelectTourismPlace,
+      });
+      return null;
+    }
+
+    try {
+      render(<Harness />);
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismMarkerBatchSize);
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      expect(markerRecords).toHaveLength(NaverMarkerConfig.materialization.tourismFallbackMarkerLimit);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
