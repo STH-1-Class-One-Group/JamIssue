@@ -49,12 +49,17 @@ describe('map config boundaries', () => {
     expect(NaverMarkerConfig.zIndex).toMatchObject({
       placeDefault: 100,
       placeActive: 160,
+      tourismDefault: 90,
+      tourismActive: 150,
       festivalDefault: 110,
       festivalActive: 170,
       routeLine: 120,
       routeStep: 165,
       currentLocation: 200,
     });
+    expect(NaverMarkerConfig.zIndex.tourismDefault).toBeLessThan(NaverMarkerConfig.zIndex.placeDefault);
+    expect(NaverMarkerConfig.zIndex.tourismActive).toBeGreaterThan(NaverMarkerConfig.zIndex.tourismDefault);
+    expect(NaverMarkerConfig.zIndex.tourismActive).toBeLessThan(NaverMarkerConfig.zIndex.placeActive);
     expect(NaverMarkerConfig.routeBoundsPadding).toEqual({ top: 72, right: 40, bottom: 120, left: 40 });
   });
 

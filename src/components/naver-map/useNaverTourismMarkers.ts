@@ -64,7 +64,7 @@ export function useNaverTourismMarkers({
           content: tourismMarkerContent(place, place.id === selectedTourismPlaceId),
           anchor: markerAnchor,
         });
-        existing.setZIndex(place.id === selectedTourismPlaceId ? NaverMarkerConfig.zIndex.festivalActive : NaverMarkerConfig.zIndex.festivalDefault);
+        existing.setZIndex(place.id === selectedTourismPlaceId ? NaverMarkerConfig.zIndex.tourismActive : NaverMarkerConfig.zIndex.tourismDefault);
         return;
       }
 
@@ -72,7 +72,7 @@ export function useNaverTourismMarkers({
         map: mapRef.current,
         position,
         title: '',
-        zIndex: place.id === selectedTourismPlaceId ? NaverMarkerConfig.zIndex.festivalActive : NaverMarkerConfig.zIndex.festivalDefault,
+        zIndex: place.id === selectedTourismPlaceId ? NaverMarkerConfig.zIndex.tourismActive : NaverMarkerConfig.zIndex.tourismDefault,
         icon: {
           content: tourismMarkerContent(place, place.id === selectedTourismPlaceId),
           anchor: markerAnchor,
