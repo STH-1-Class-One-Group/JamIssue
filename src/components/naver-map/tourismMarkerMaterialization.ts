@@ -41,10 +41,29 @@ export function selectTourismPlacesForMarkerMaterialization({
 
   return includeSelectedTourismPlace(
     sortTourismPlacesByDistanceToMapCenter(inViewportPlaces, map.getCenter())
-      .slice(0, NaverMarkerConfig.materialization.tourismViewportMarkerLimit),
+      .slice(0, getTourismViewportMarkerLimit()),
     markerEligiblePlaces,
     selectedTourismPlaceId,
   );
+}
+
+/**
+ * Returns the KTO marker cap for the current viewport class.
+ *
+ * Mobile uses a lower cap because Naver HTML marker insertion blocks the main
+ * thread more noticeably on narrow devices. The default remains mobile-safe
+ * when the viewport is unavailable in tests or non-browser contexts.
+ */
+export function getTourismViewportMarkerLimit(viewportWidth = globalThis.window?.innerWidth) {
+  if (
+    typeof viewportWidth === 'number'
+    && Number.isFinite(viewportWidth)
+    && viewportWidth > NaverMarkerConfig.materialization.tourismMobileViewportMaxWidth
+  ) {
+    return NaverMarkerConfig.materialization.tourismDesktopViewportMarkerLimit;
+  }
+
+  return NaverMarkerConfig.materialization.tourismMobileViewportMarkerLimit;
 }
 
 function includeSelectedTourismPlace(

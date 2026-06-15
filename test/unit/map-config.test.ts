@@ -61,12 +61,15 @@ describe('map config boundaries', () => {
     expect(NaverMarkerConfig.zIndex.tourismActive).toBeGreaterThan(NaverMarkerConfig.zIndex.tourismDefault);
     expect(NaverMarkerConfig.zIndex.tourismActive).toBeLessThan(NaverMarkerConfig.zIndex.placeActive);
     expect(NaverMarkerConfig.routeBoundsPadding).toEqual({ top: 72, right: 40, bottom: 120, left: 40 });
-    expect(NaverMarkerConfig.materialization.tourismViewportMarkerLimit).toBeLessThan(
+    expect(NaverMarkerConfig.materialization.tourismMobileViewportMarkerLimit).toBeLessThan(
       NaverMarkerConfig.materialization.tourismFallbackMarkerLimit,
     );
-    expect(NaverMarkerConfig.materialization.tourismFallbackMarkerLimit).toBe(120);
-    expect(NaverMarkerConfig.materialization.tourismMarkerBatchSize).toBe(40);
-    expect(NaverMarkerConfig.materialization.tourismMarkerBatchDelayMs).toBe(0);
+    expect(NaverMarkerConfig.materialization.tourismMobileViewportMaxWidth).toBe(640);
+    expect(NaverMarkerConfig.materialization.tourismMobileViewportMarkerLimit).toBe(32);
+    expect(NaverMarkerConfig.materialization.tourismDesktopViewportMarkerLimit).toBe(64);
+    expect(NaverMarkerConfig.materialization.tourismViewportMarkerLimit).toBe(32);
+    expect(NaverMarkerConfig.materialization.tourismFallbackMarkerLimit).toBe(48);
+    expect(NaverMarkerConfig.materialization.tourismMarkerBatchSize).toBe(8);
   });
 
   it('keeps selection offset behavior while moving numbers into config', () => {

@@ -46,6 +46,17 @@ const lodgingTourismPlace: TourismPlaceItem = {
   roadAddress: '대전 중구 숙박로 1',
 };
 
+function buildProductionLikeTourismPlaces(count: number): TourismPlaceItem[] {
+  return Array.from({ length: count }, (_, index) => ({
+    ...cafeTourismPlace,
+    id: `tourism-production-${index + 1}`,
+    name: `KTO production ${index + 1}`,
+    displayGroup: index % 3 === 0 ? 'cafe' : index % 3 === 1 ? 'restaurant' : 'lodging',
+    latitude: 36.2 + index * 0.0005,
+    longitude: 127.2 + index * 0.0005,
+  }));
+}
+
 test('UIUX-017 keeps KTO tourism map layer OFF by default and fetches all places after toggle', async ({ page }) => {
   const tourismRequests: string[] = [];
   page.on('request', (request) => {
@@ -128,4 +139,57 @@ test('UIUX-018 filters KTO tourism map layer locally after the initial all-scope
   expect(tourismRequests[0]).toContain('scope=all');
   expect(tourismRequests[0]).not.toContain('displayGroup=');
   expect(tourismRequests[0]).not.toContain('limit=');
+});
+
+test('UIUX-021 keeps KTO ON interaction responsive with production-like tourism data', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
+
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: buildProductionLikeTourismPlaces(383),
+  }));
+
+  await page.goto('/');
+
+  const tourismToggle = page.locator('[data-tourism-toggle="map"]');
+  await tourismToggle.click();
+
+  await expect(tourismToggle).toHaveClass(/is-active/, { timeout: 300 });
+  await page.screenshot({ timeout: 1000 });
+  await expect.poll(() => tourismRequests.length).toBe(1);
+  expect(tourismRequests[0]).toContain('scope=all');
+  expect(await page.locator('[data-marker-hit-target="tourism"]').count()).toBeLessThanOrEqual(32);
+});
+
+test('UIUX-022 keeps KTO display group switching local and responsive', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
+
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: buildProductionLikeTourismPlaces(383),
+  }));
+
+  await page.goto('/');
+  await page.locator('[data-tourism-toggle="map"]').click();
+  await expect.poll(() => tourismRequests.length).toBe(1);
+
+  const filterTrigger = page.locator('[data-map-filter-trigger="true"]');
+  await filterTrigger.click();
+  await page.locator('[data-map-filter-key="cafe"]').click();
+
+  await expect(filterTrigger).toHaveAttribute('aria-expanded', 'false', { timeout: 300 });
+  await page.screenshot({ timeout: 1000 });
+  expect(tourismRequests).toHaveLength(1);
 });
