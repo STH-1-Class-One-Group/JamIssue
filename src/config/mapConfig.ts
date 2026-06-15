@@ -45,6 +45,7 @@ export class NaverMarkerConfig {
   };
 
   static readonly materialization = {
+    tourismViewportMarkerLimit: 80,
     tourismFallbackMarkerLimit: 120,
     tourismMarkerBatchSize: 40,
     tourismMarkerBatchDelayMs: 0,
