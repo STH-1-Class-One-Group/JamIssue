@@ -1,10 +1,10 @@
 /* 2026-03-18 drawer over map fix */
 .place-drawer {
-  z-index: 120 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
 .bottom-nav {
-  z-index: 130 !important;
+  z-index: var(--z-bottom-nav) !important;
 }
 
 .place-drawer--partial,
@@ -1141,6 +1141,47 @@ body {
   font-size: var(--type-sm) !important;
 }
 
+.bottom-nav__item {
+  position: relative !important;
+  isolation: isolate !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.bottom-nav__active-pill {
+  position: absolute;
+  inset: 5px 4px;
+  z-index: -1;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.bottom-nav__item.is-active .bottom-nav__active-pill {
+  background: var(--ui-control-active-bg);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bottom-nav__icon {
+  display: block;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.bottom-nav__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
 .map-route-preview-card {
   bottom: calc(var(--bottom-nav-offset) + 28px) !important;
 }
@@ -1422,7 +1463,7 @@ body {
 
 /* TSK-015-03 + TSK-016-06: keep drawer chrome below the capsule and out of the media frame. */
 .place-drawer {
-  z-index: 88 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
 .place-drawer--peek,
@@ -1443,7 +1484,7 @@ body {
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;
   height: auto !important;
   max-height: none !important;
-  z-index: 88 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
 .place-drawer__chrome {
@@ -1471,6 +1512,10 @@ body {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
+}
+
+.place-drawer--full .place-drawer__control-rail {
+  top: var(--map-sheet-full-control-top) !important;
 }
 
 .place-drawer__control-btn {

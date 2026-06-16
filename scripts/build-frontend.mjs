@@ -1,6 +1,6 @@
 /* global console, process */
 
-import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -10,6 +10,14 @@ const rootDir = path.resolve(__dirname, '..');
 const siteDir = path.join(rootDir, 'infra', 'nginx', 'site');
 const assetsDir = path.join(siteDir, 'assets');
 const iconsDir = path.join(siteDir, 'icons');
+const ICON_SOURCE_RELATIVE_PATH = 'src/assets/jamissue-logo.png';
+const iconSourcePath = path.join(rootDir, ICON_SOURCE_RELATIVE_PATH);
+const iconOutputs = [
+  'jamissue-icon-1024.png',
+  'jamissue-maskable-1024.png',
+  'apple-touch-icon.png',
+  'favicon.png',
+];
 
 const APP_NAME = '대전잼있슈';
 const APP_SHORT_NAME = '잼있슈';
@@ -76,10 +84,16 @@ function createManifest() {
       lang: 'ko',
       icons: [
         {
-          src: '/icons/jamissue-icon.svg',
-          sizes: 'any',
-          type: 'image/svg+xml',
-          purpose: 'any maskable',
+          src: '/icons/jamissue-icon-1024.png',
+          sizes: '1024x1024',
+          type: 'image/png',
+          purpose: 'any',
+        },
+        {
+          src: '/icons/jamissue-maskable-1024.png',
+          sizes: '1024x1024',
+          type: 'image/png',
+          purpose: 'maskable',
         },
       ],
     },
@@ -107,21 +121,8 @@ function createPagesHeaders() {
 `.trimStart();
 }
 
-function createIconSvg() {
-  return `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="${APP_NAME}">
-  <defs>
-    <linearGradient id="jam-bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffe3ef" />
-      <stop offset="100%" stop-color="#d9f3ff" />
-    </linearGradient>
-  </defs>
-  <rect width="256" height="256" rx="64" fill="url(#jam-bg)" />
-  <path d="M68 98c0-19.882 16.118-36 36-36h48c19.882 0 36 16.118 36 36v60c0 19.882-16.118 36-36 36h-48c-19.882 0-36-16.118-36-36V98Z" fill="#fff7ef" />
-  <path d="M86 104h84c9.941 0 18 8.059 18 18v24H68v-24c0-9.941 8.059-18 18-18Z" fill="#ff8fb7" />
-  <circle cx="128" cy="152" r="30" fill="#ff5d92" />
-  <circle cx="128" cy="152" r="14" fill="#fff4fb" />
-</svg>`.trim();
+async function copyIconAssets() {
+  await Promise.all(iconOutputs.map((fileName) => copyFile(iconSourcePath, path.join(iconsDir, fileName))));
 }
 
 function createIndexHtml({ jsFile, cssFile }) {
@@ -141,7 +142,8 @@ function createIndexHtml({ jsFile, cssFile }) {
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/icons/jamissue-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" href="/icons/favicon.png" type="image/png" />
     <link rel="stylesheet" href="/assets/${cssFile}" />
     <script defer src="/app-config.js"></script>
     <script type="module" defer src="/assets/${jsFile}"></script>
@@ -183,7 +185,7 @@ async function finalizeBuild() {
   await writeFile(path.join(siteDir, 'index.html'), createIndexHtml(builtAssets), 'utf8');
   await writeFile(path.join(siteDir, '_headers'), createPagesHeaders(), 'utf8');
   await writeFile(path.join(siteDir, 'manifest.webmanifest'), createManifest(), 'utf8');
-  await writeFile(path.join(iconsDir, 'jamissue-icon.svg'), createIconSvg(), 'utf8');
+  await copyIconAssets();
   await writeFile(
     path.join(siteDir, 'app-config.js'),
     `window.__JAMISSUE_CONFIG__ = ${JSON.stringify(publicConfig, null, 2)};\n`,

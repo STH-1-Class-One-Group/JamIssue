@@ -1,90 +1,52 @@
-# UI/UX 기대 동작 QA 매트릭스
+# UI/UX QA Matrix
 
-이 문서는 Web Front에서 사용자가 기대하는 화면 동작을 `UIUX-###` ID로 추적합니다. UI/UX 관련 PR은 영향을 받는 ID, 자동 테스트, 수동 QA 여부, 관련 issue/PR을 남겨야 합니다.
+JamIssue Web Front의 기대 동작을 `UIUX-###` ID로 추적한다. UI/UX 변경 PR은 영향을 받는 기대 동작, 자동 테스트, 수동 QA 필요 여부, 관련 issue/PR 근거를 함께 남긴다.
 
 ## 운영 규칙
 
 | 항목 | 기준 |
 | --- | --- |
 | ID 형식 | `UIUX-###` |
-| 단위 | 사용자가 체감하는 화면 동작 하나 |
-| 자동화 기준 | unit, integration, regression, E2E 중 하나로 재현 가능하면 자동 테스트에 연결 |
+| 단위 | 사용자가 체감하는 화면 동작 1개 |
+| 자동화 기준 | unit, integration, regression, E2E 중 하나 이상으로 재현 가능하면 자동 테스트에 연결 |
 | 수동 QA 기준 | 실제 iPhone Safari/WebView처럼 자동화가 불완전한 항목은 기기, 브라우저, 일시, 확인자를 기록 |
 | 완료 기준 | 자동 테스트 또는 수동 QA 근거 없이 close 금지 |
 
-## 기대 동작 ID
+## 기대 동작
 
 | ID | 영역 | 기대 동작 | 자동 테스트 | 수동 QA |
 | --- | --- | --- | --- | --- |
-| `UIUX-001` | 앱 셸 | 모바일 기준 헤더, 콘텐츠, 하단 탭이 겹치지 않고 shell flow에 배치된다. | `test/e2e/app-shell.spec.ts` | 필요 |
-| `UIUX-002` | 탭 전환 | 비지도 탭에서는 지도 배경이 노출되지 않고 각 탭이 독립 화면처럼 보인다. | `test/e2e/app-shell.spec.ts` | 선택 |
-| `UIUX-003` | 지도 레이아웃 | 헤더, 서브내비, 지도, 시트, Naver attribution이 서로 겹치지 않는다. | `test/e2e/app-shell.spec.ts` | 필요 |
-| `UIUX-004` | 장소 시트 | 장소/정보 시트는 `hidden / peek / half / full` 상태 계약을 유지한다. | `test/unit/map-sheet-state.test.ts` | 필요 |
-| `UIUX-005` | 장소 정보 | 장소 시트에는 장소명, 카테고리, 스탬프/후기 상태, 후기 목록이 표시된다. | `test/e2e/critical-ui-flow.spec.ts` | 선택 |
-| `UIUX-006` | 행사 탭 | 행사 탭은 행사 콘텐츠만 표시하고 관광장소 세그먼트를 노출하지 않는다. | `test/e2e/event-tab.spec.ts` | 선택 |
-| `UIUX-007` | 스탬프 | 로그인, 반경, 완료 상태별 스탬프 버튼 상태가 올바르게 표시된다. | E2E 보강 대상 | 필요 |
-| `UIUX-008` | 후기 작성 | 후기 작성은 해당 장소 스탬프 완료 상태에서만 진입된다. | `test/e2e/critical-ui-flow.spec.ts` | 필요 |
-| `UIUX-009` | 모바일 키보드 | 리뷰 작성 textarea focus 시 키보드가 떠도 하단 탭과 드로워가 화면 중간으로 떠오르지 않는다. | unit/integration + E2E | 필수 |
-| `UIUX-010` | 피드 | 피드 탭에서 댓글, 좋아요, 장소 이동 CTA가 동작한다. | `test/e2e/critical-ui-flow.spec.ts` | 선택 |
-| `UIUX-011` | 코스 | 코스 탭에서 정렬, 추천 코스 카드, 상세 진입이 동작한다. | `test/e2e/critical-ui-flow.spec.ts` | 선택 |
-| `UIUX-012` | 마이 | 로그인 전/후 마이 탭 상태가 구분되고 내 활동으로 진입할 수 있다. | `test/e2e/critical-ui-flow.spec.ts` | 선택 |
+| `UIUX-001` | 앱 셸 | 모바일 기준 콘텐츠가 하단 탭과 shell flow 안에서 겹치지 않는다. | `test/e2e/app-shell.spec.ts` | 선택 |
+| `UIUX-004` | 지도 시트 | 지도 시트 상태는 `hidden / peek / half / full` 계약을 유지한다. `partial` query는 호환 alias로만 처리한다. | `test/unit/map-sheet-state.test.ts` | 필요 |
+| `UIUX-009` | 모바일 키보드 | 리뷰 작성 focus 시 하단 탭과 시트가 화면 중간으로 떠오르지 않는다. | `test/e2e/critical-ui-flow.spec.ts` | 필요 |
 | `UIUX-013` | 5탭 IA | 하단 탭은 `지도 / 행사 / 피드 / 코스 / 마이` 5개를 유지한다. | `test/e2e/app-shell.spec.ts` | 선택 |
-| `UIUX-014` | 탭 콘텐츠 | 행사/피드/코스/마이 콘텐츠는 공통 content slot 안에서 접근 가능하다. | `test/e2e/app-shell.spec.ts` | 선택 |
-| `UIUX-015` | 앱 헤더 | 뒤로가기, 설정, 알림, 피드백 액션은 absolute utility slot이 아니라 header slot에서 관리된다. | `test/e2e/app-shell.spec.ts` | 필요 |
-| `UIUX-016` | 서브내비 | 지도 필터와 탭별 보조 조작은 content 위 absolute overlay가 아니라 subNav flow에 배치된다. | `test/e2e/app-shell.spec.ts` | 필요 |
-| `UIUX-017` | Peek 시트 | Peek 시트는 하단 탭과 간격을 두고 floating card처럼 보인다. | `test/e2e/critical-ui-flow.spec.ts` | 필수 |
-| `UIUX-018` | Half/Full 시트 | Half/Full 시트에서는 하단 탭이 숨고 시트와 탭바가 동시에 겹쳐 보이지 않는다. | `test/e2e/critical-ui-flow.spec.ts` | 필수 |
-| `UIUX-019` | 지도 FAB | 현재 위치 버튼과 지도 보조 액션은 지도 조작과 시트 상태를 방해하지 않는다. | E2E 보강 대상 | 필요 |
-| `UIUX-020` | 디자인 토큰 | shell, spacing, sheet, tabbar 값은 token/config 기준으로 관리된다. | `npm.cmd run check:numeric-literals` | 필요 |
-| `UIUX-021` | KTO 지도 레이어 | KTO 정보성 레이어는 기본 OFF이며, 사용자가 켤 때만 관광장소를 불러온다. | `test/e2e/tourism-map-layer.spec.ts` | 필요 |
-| `UIUX-022` | KTO 정보 시트 | `isCurated: false` 관광장소 선택 시 스탬프/후기 액션 없는 정보 시트가 열린다. | `test/e2e/tourism-map-layer.spec.ts` | 필요 |
+| `UIUX-020` | 바텀 드로워 | full 드로워는 명시적 최소화 전까지 peek으로 돌아가지 않고, 하단 탭은 계속 visible/clickable 상태를 유지한다. | `test/e2e/critical-ui-flow.spec.ts` | 필요 |
+| `UIUX-021` | KTO 지도 레이어 | KTO 관광정보 레이어는 기본 OFF이며, 사용자가 켰을 때만 `scope=all` snapshot을 조회한다. | `test/e2e/tourism-map-layer.spec.ts` | 필요 |
+| `UIUX-022` | KTO 정보 시트 | 비큐레이션 KTO 장소는 스탬프/후기 액션 없이 정보 시트로만 표시한다. | `test/e2e/tourism-map-layer.spec.ts` | 필요 |
+| `UIUX-023` | 플로팅 캡슐 | 지도 전역 캡슐은 360/390/430px viewport에서 한 줄을 유지하고 알림/설정 레이어에 가려지지 않는다. | `test/e2e/app-shell.spec.ts` | 필요 |
+| `UIUX-024` | 스플래시/브랜드 | 최초 진입 스플래시는 JamIssue 브랜드 자산을 사용하고 탭 전환 시 재표시되지 않는다. | `test/e2e/app-shell.spec.ts` | 선택 |
+| `UIUX-025` | 공통 MapBottomSheet | 장소/행사/KTO 시트는 공통 `MapBottomSheet` shell을 사용하고 handle/close/scroll/media frame을 중복 구현하지 않는다. | `test/unit/map-bottom-sheet.test.tsx`, `test/e2e/critical-ui-flow.spec.ts` | 필요 |
+| `UIUX-026` | BottomNav 표현 | 하단 탭은 icon wrapper, label, active pill 구조를 렌더링한다. | `test/unit/bottom-nav.test.tsx`, `test/e2e/app-shell.spec.ts` | 선택 |
+| `UIUX-027` | PWA 앱 아이콘 | manifest, favicon, apple-touch-icon은 JamIssue 브랜드 로고 기반 자산을 가리킨다. | `test/unit/pwa-icon-assets.test.ts` | 필요 |
+| `UIUX-028` | Drawer/nav CSS 정책 | drawer/nav CSS에 stale `bottom nav hidden` 정책이 다시 들어오지 않는다. | `test/unit/layout-token-source-quality.test.ts` | 선택 |
+| `UIUX-029` | AppCapsule shell | `AppCapsule`은 back/menu/center/right slot 조합을 유지하고 `canNavigateBack`, `onNavigateBack`, `GlobalSettingsMenu` 계약만 사용한다. | `test/unit/app-capsule.test.tsx` | 선택 |
+| `UIUX-030` | SideDrawer shell | `SideDrawer`는 shell/overlay/close 동작만 제공하고 새 메뉴 IA나 placeholder copy를 노출하지 않는다. | `test/unit/app-capsule.test.tsx`, `test/e2e/app-shell.spec.ts` | 필요 |
+| `UIUX-031` | SpeedDialFAB | `SpeedDialFAB`는 action array 계약으로 동작하고 지도 quick action을 주입해도 하단 탭/드로워/알림 패널을 가리지 않는다. | `test/unit/app-capsule.test.tsx`, `test/e2e/app-shell.spec.ts` | 필요 |
+| `UIUX-032` | Overlay z-index | notification panel, capsule, FAB, bottom nav, bottom sheet의 겹침 회귀가 semantic z-index token과 E2E hit target 검증으로 차단된다. | `test/unit/layout-token-source-quality.test.ts`, `test/e2e/app-shell.spec.ts` | 필요 |
 
-## TSK-012 구현 근거
+## TSK-016 구현 근거
 
-| Child issue | PR | Merge SHA | 고정된 기대 동작 |
+| Child issue | PR | Merge SHA | 고정한 기대 동작 |
 | --- | --- | --- | --- |
-| [#405](https://github.com/STH-1-Class-One-Group/JamIssue/issues/405) | [#412](https://github.com/STH-1-Class-One-Group/JamIssue/pull/412) | `dc0c5027` | 2차 UI/UX 기준선과 코드 증거 |
-| [#406](https://github.com/STH-1-Class-One-Group/JamIssue/issues/406) | [#413](https://github.com/STH-1-Class-One-Group/JamIssue/pull/413) | `edac1e31` | `UIUX-015` header slot |
-| [#407](https://github.com/STH-1-Class-One-Group/JamIssue/issues/407) | [#414](https://github.com/STH-1-Class-One-Group/JamIssue/pull/414) | `bcd1284` | `UIUX-016` subNav flow |
-| [#408](https://github.com/STH-1-Class-One-Group/JamIssue/issues/408) | [#415](https://github.com/STH-1-Class-One-Group/JamIssue/pull/415) | `3ee8f77` | `UIUX-006` 행사 탭 festival-only |
-| [#409](https://github.com/STH-1-Class-One-Group/JamIssue/issues/409) | [#416](https://github.com/STH-1-Class-One-Group/JamIssue/pull/416) | `b89b7fc` | `UIUX-021`, `UIUX-022` KTO 지도 레이어 |
-| [#410](https://github.com/STH-1-Class-One-Group/JamIssue/issues/410) | [#417](https://github.com/STH-1-Class-One-Group/JamIssue/pull/417) | `fa67c88` | legacy absolute/fixed offset 제거 |
-
-## 이슈 템플릿
-
-```markdown
-## 기대 동작 ID
-
-- UIUX-###
-
-## 기대 동작
-
--
-
-## 실제 동작
-
--
-
-## 재현 경로
-
-1.
-
-## 테스트 상태
-
-- 자동 테스트:
-- 수동 QA:
-
-## 관련 근거
-
-- Issue:
-- PR:
-- Merge SHA:
-- CI:
-```
+| [#509](https://github.com/STH-1-Class-One-Group/JamIssue/issues/509) | [#516](https://github.com/STH-1-Class-One-Group/JamIssue/pull/516) | `9daac606e2e80fb9188085023f1d8dd161445be7` | `UIUX-029`, `UIUX-030`, `UIUX-031`, `UIUX-032` baseline |
+| [#510](https://github.com/STH-1-Class-One-Group/JamIssue/issues/510) | [#519](https://github.com/STH-1-Class-One-Group/JamIssue/pull/519) | `eabc8773ea1ec3d865a8d28cef03183ba7a3a737` | `UIUX-029` |
+| [#511](https://github.com/STH-1-Class-One-Group/JamIssue/issues/511) | [#521](https://github.com/STH-1-Class-One-Group/JamIssue/pull/521) | `7267dbb3ce95937aef0820a8541bd73f6302f859` | `UIUX-023`, `UIUX-029` |
+| [#512](https://github.com/STH-1-Class-One-Group/JamIssue/issues/512) | [#523](https://github.com/STH-1-Class-One-Group/JamIssue/pull/523) | `14c50d151aab481da00d8c4d98fae7a866ab86fe` | `UIUX-030` |
+| [#513](https://github.com/STH-1-Class-One-Group/JamIssue/issues/513) | [#526](https://github.com/STH-1-Class-One-Group/JamIssue/pull/526) | `434aefb99430b121dd0b7b97998c2334810ca027` | `UIUX-031` |
+| [#514](https://github.com/STH-1-Class-One-Group/JamIssue/issues/514) | [#529](https://github.com/STH-1-Class-One-Group/JamIssue/pull/529) | `3d8be5e011eeb115d917034db17882e737accd3a` | `UIUX-023`, `UIUX-031`, `UIUX-032` |
 
 ## 관련 문서
 
-- [화면 설계 기준](screen-spec.md)
-- [UI/UX 개편 기준선](ui-ux-redesign-baseline.md)
-- [UI/UX 추적성](ui-ux-redesign-traceability.md)
-- [테스트 커버리지 운영 기준](testing-coverage.md)
+- [TSK-016-01 7차 UI/UX 컴포넌트 아키텍처 Audit](TSK-016-01-seventh-uiux-component-architecture-audit.md)
+- [Release Candidate 1.3.6](release-candidate-1.3.6.md)
+- [Governance Index](GOVERNANCE_INDEX.md)

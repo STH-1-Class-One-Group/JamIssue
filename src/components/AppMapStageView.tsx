@@ -10,13 +10,14 @@ import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, 
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
+import { AppCapsule } from './app-shell/AppCapsule';
+import { SpeedDialFAB } from './app-shell/SpeedDialFAB';
+import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 import { MapTabStage } from './MapTabStage';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
-import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 
 interface AppMapStageViewProps {
   canNavigateBack: boolean;
-  onNavigateBack: () => void;
   mapData: {
     activeCategory: Category;
     activeTourismDisplayGroup: TourismDisplayGroupFilter;
@@ -81,33 +82,57 @@ interface AppMapStageViewProps {
     onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
   };
   globalUtility: GlobalSettingsMenuProps;
+  menuOpen: boolean;
+  onNavigateBack: () => void;
+  onOpenMenu: () => void;
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
   canNavigateBack,
   mapData,
   mapActions,
-  onNavigateBack,
   globalUtility,
+  menuOpen,
+  onNavigateBack,
+  onOpenMenu,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
       floatingNav={(
-        <MapFloatingNav
+        <AppCapsule
           canNavigateBack={canNavigateBack}
-          activeCategory={mapData.activeCategory}
-          activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
-          showTourismInfo={mapData.showTourismInfo}
-          tourismFacets={mapData.tourismFacets}
-          tourismPlaces={mapData.tourismPlaces}
-          tourismSourceReady={mapData.tourismSourceReady}
-          tourismLoading={mapData.tourismLoading}
-          tourismError={mapData.tourismError}
           globalUtility={globalUtility}
+          menuOpen={menuOpen}
           onNavigateBack={onNavigateBack}
-          onSelectCategory={mapActions.setActiveCategory}
-          onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
-          onToggleTourismInfo={mapActions.onToggleTourismInfo}
+          onOpenMenu={onOpenMenu}
+          center={(
+            <MapFloatingNav
+              activeCategory={mapData.activeCategory}
+              activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
+              showTourismInfo={mapData.showTourismInfo}
+              tourismFacets={mapData.tourismFacets}
+              tourismPlaces={mapData.tourismPlaces}
+              tourismSourceReady={mapData.tourismSourceReady}
+              tourismLoading={mapData.tourismLoading}
+              tourismError={mapData.tourismError}
+              onSelectCategory={mapActions.setActiveCategory}
+              onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
+              onToggleTourismInfo={mapActions.onToggleTourismInfo}
+            />
+          )}
+        />
+      )}
+      quickActions={(
+        <SpeedDialFAB
+          actions={[
+            {
+              id: 'locate-current-position',
+              label: '내 위치 찾기',
+              icon: '⌖',
+              onClick: mapActions.onLocateCurrentPosition,
+            },
+          ]}
+          hidden={mapData.drawerState !== 'closed' || Boolean(mapData.selectedTourismPlace)}
         />
       )}
       mapData={{

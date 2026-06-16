@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
 import { AppShell } from './components/app-shell/AppShell';
+import { SideDrawer } from './components/app-shell/SideDrawer';
 import {
   useAppRouteState,
   getInitialMapViewport,
@@ -21,6 +22,7 @@ export default function App() {
   const routeState = useAppRouteState();
 
   const [initialMapViewport] = useState(getInitialMapViewport);
+  const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
 
   const domainState = {
     auth: useAuthDomainState(),
@@ -56,7 +58,6 @@ export default function App() {
   return (
     <AppShell
       activeTab={activeTab}
-      bottomTabHidden={false}
       canNavigateBack={canNavigateBack}
       globalStatus={globalStatus ? {
         tone: globalStatus.tone,
@@ -70,12 +71,17 @@ export default function App() {
       showEntrySplash
     >
       {activeTab === 'map' ? (
-        <AppMapStageView
-          {...mapStageProps}
-          canNavigateBack={canNavigateBack}
-          globalUtility={globalUtility}
-          onNavigateBack={handleNavigateBack}
-        />
+        <>
+          <AppMapStageView
+            {...mapStageProps}
+            canNavigateBack={canNavigateBack}
+            globalUtility={globalUtility}
+            menuOpen={isSideDrawerOpen}
+            onNavigateBack={handleNavigateBack}
+            onOpenMenu={() => setIsSideDrawerOpen(true)}
+          />
+          <SideDrawer isOpen={isSideDrawerOpen} onClose={() => setIsSideDrawerOpen(false)} />
+        </>
       ) : (
         <AppPageStage {...pageStageProps} />
       )}

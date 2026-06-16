@@ -52,7 +52,7 @@ export function MapBottomSheet({
         <button
           type="button"
           className="place-drawer__handle"
-          aria-label={isFull ? '시트 확장됨' : '시트 확장'}
+          aria-label={isFull ? '시트 확장 유지' : '시트 확장'}
           onPointerDown={handlePointerHandlers?.onPointerDown}
           onPointerUp={handlePointerHandlers?.onPointerUp}
           onClick={handleClick}

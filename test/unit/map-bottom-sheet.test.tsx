@@ -44,7 +44,7 @@ describe('MapBottomSheet', () => {
       </MapBottomSheet>,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '시트 확장됨' }));
+    fireEvent.click(screen.getByRole('button', { name: '시트 확장 유지' }));
     expect(onExpand).not.toHaveBeenCalled();
     expect(onCollapse).not.toHaveBeenCalled();
 

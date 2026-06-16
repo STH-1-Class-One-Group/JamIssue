@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
+import { categoryInfo, categoryItems } from '../../lib/categories';
 import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceItem } from '../../tourismTypes';
 import type { Category } from '../../types/core';
-import { categoryInfo, categoryItems } from '../../lib/categories';
-import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
-import { GlobalSettingsMenu, type GlobalSettingsMenuProps } from '../GlobalSettingsMenu';
 
 type FloatingFilterItem = {
   key: string;
@@ -14,15 +13,12 @@ type FloatingFilterItem = {
 export interface MapFloatingNavProps {
   activeCategory: Category;
   activeTourismDisplayGroup: TourismDisplayGroupFilter;
-  canNavigateBack: boolean;
   showTourismInfo: boolean;
   tourismFacets: TourismFacets | null;
   tourismPlaces: TourismPlaceItem[];
   tourismSourceReady: boolean;
   tourismLoading: boolean;
   tourismError: string | null;
-  globalUtility: GlobalSettingsMenuProps;
-  onNavigateBack: () => void;
   onSelectCategory: (category: Category) => void;
   onSelectTourismDisplayGroup: (displayGroup: TourismDisplayGroupFilter) => void;
   onToggleTourismInfo: () => void;
@@ -31,15 +27,12 @@ export interface MapFloatingNavProps {
 export function MapFloatingNav({
   activeCategory,
   activeTourismDisplayGroup,
-  canNavigateBack,
   showTourismInfo,
   tourismFacets,
   tourismPlaces,
   tourismSourceReady,
   tourismLoading,
   tourismError,
-  globalUtility,
-  onNavigateBack,
   onSelectCategory,
   onSelectTourismDisplayGroup,
   onToggleTourismInfo,
@@ -77,7 +70,7 @@ export function MapFloatingNav({
   const renderFilterLabel = (item: FloatingFilterItem | undefined) => (
     <>
       <span className="map-floating-nav__filter-icon" aria-hidden="true">
-        {item?.icon ?? '🧭'}
+        {item?.icon ?? '✨'}
       </span>
       <span className="map-floating-nav__filter-label">{item?.label ?? '전체'}</span>
       <span className="map-floating-nav__filter-caret" aria-hidden="true">⌄</span>
@@ -86,25 +79,6 @@ export function MapFloatingNav({
 
   return (
     <div className="map-floating-nav" data-map-floating-nav="root">
-      <div className="map-floating-nav__leading">
-        <button type="button" className="map-floating-nav__icon-btn" aria-label="메뉴" aria-disabled="true">
-          <span aria-hidden="true">☰</span>
-        </button>
-        <button
-          type="button"
-          className="map-floating-nav__icon-btn"
-          aria-label="이전 화면으로 돌아가기"
-          aria-disabled={!canNavigateBack}
-          onClick={() => {
-            if (canNavigateBack) {
-              onNavigateBack();
-            }
-          }}
-        >
-          <span aria-hidden="true">←</span>
-        </button>
-      </div>
-
       <div className="map-floating-nav__filter" ref={filterRef}>
         <button
           type="button"
@@ -148,7 +122,7 @@ export function MapFloatingNav({
                   }}
                 >
                   <span className="map-floating-nav__dropdown-icon" aria-hidden="true">
-                    {item.icon ?? '🧭'}
+                    {item.icon ?? '✨'}
                   </span>
                   <span className="map-floating-nav__dropdown-label">{item.label}</span>
                 </button>
@@ -178,7 +152,6 @@ export function MapFloatingNav({
           {tourismError}
         </span>
       ) : null}
-      <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
     </div>
   );
 }
