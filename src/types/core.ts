@@ -3,7 +3,7 @@ import type { PlaceCategory, PlaceCategoryFilter } from '../lib/categories';
 export type Category = PlaceCategoryFilter;
 export type Tab = 'map' | 'event' | 'feed' | 'course' | 'my';
 export type MyPageTabKey = 'stamps' | 'feeds' | 'comments' | 'routes' | 'admin';
-export type DrawerState = 'closed' | 'partial' | 'full';
+export type DrawerState = 'closed' | 'peek' | 'half' | 'full';
 export type ReviewMood = '혼자서' | '친구랑' | '데이트' | '야경 맛집';
 export type CourseMood = '전체' | '데이트' | '사진' | '힐링' | '비 오는 날';
 export type ApiStatus = 'idle' | 'loading' | 'ready' | 'error';

@@ -7,7 +7,7 @@ export function resolveMapSheetState(hasSelection: boolean, drawerState: DrawerS
     return 'hidden';
   }
 
-  return drawerState === 'full' ? 'full' : 'peek';
+  return drawerState;
 }
 
 export function buildMapSheetClassName(baseClassName: string, sheetState: MapSheetState, drawerState: DrawerState) {
@@ -17,4 +17,27 @@ export function buildMapSheetClassName(baseClassName: string, sheetState: MapShe
     `${baseClassName}--${drawerState}`,
     `${baseClassName}--route-${drawerState}`,
   ])).join(' ');
+}
+
+export function getExpandedDrawerState(drawerState: DrawerState): DrawerState {
+  if (drawerState === 'closed') {
+    return 'peek';
+  }
+  if (drawerState === 'peek') {
+    return 'half';
+  }
+  return 'full';
+}
+
+export function getCollapsedDrawerState(drawerState: DrawerState): DrawerState {
+  if (drawerState === 'full') {
+    return 'half';
+  }
+  if (drawerState === 'half') {
+    return 'peek';
+  }
+  if (drawerState === 'peek') {
+    return 'closed';
+  }
+  return 'closed';
 }

@@ -46,7 +46,7 @@ describe('useAppShellNavigation', () => {
       activeTab: 'map',
       selectedPlaceId: 'place-1',
       selectedFestivalId: null,
-      drawerState: 'partial',
+      drawerState: 'peek',
       selectedRoutePreview: routePreview,
       setMyPageTab: vi.fn(),
       setActiveCommentReviewId: vi.fn(),

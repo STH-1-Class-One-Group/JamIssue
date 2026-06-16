@@ -12,7 +12,7 @@ import type { DrawerState } from '../types/core';
 import { MapBottomSheet } from './map-stage/MapBottomSheet';
 import type { MapSheetState } from './map-stage/mapSheetState';
 
-export type TourismInfoSheetState = 'partial' | 'full';
+export type TourismInfoSheetState = Exclude<DrawerState, 'closed'>;
 
 interface TourismInfoSheetProps {
   place: TourismPlaceItem | null;
@@ -134,8 +134,8 @@ export function TourismInfoSheet({
     return null;
   }
 
-  const drawerState: DrawerState = sheetState === 'full' ? 'full' : 'partial';
-  const mapSheetState: MapSheetState = sheetState === 'full' ? 'full' : 'peek';
+  const drawerState: DrawerState = sheetState;
+  const mapSheetState: MapSheetState = sheetState;
   const title = getTourismPlaceTitle(place);
   const address = getTourismPlaceAddress(place);
   const categoryLabel = getTourismDisplayGroupLabel(place);

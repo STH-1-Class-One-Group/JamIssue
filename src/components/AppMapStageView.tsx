@@ -52,7 +52,7 @@ interface AppMapStageViewProps {
     tourismError: string | null;
     tourismDetailLoading: boolean;
     tourismDetailError: string | null;
-    tourismSheetState: 'partial' | 'full';
+    tourismSheetState: Exclude<DrawerState, 'closed'>;
   };
   mapActions: {
     setActiveCategory: (category: Category) => void;

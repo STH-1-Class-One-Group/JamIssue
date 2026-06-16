@@ -4,6 +4,8 @@ import type { TourismPlaceDetailItem, TourismPlaceItem } from '../../tourismType
 import type { SessionUser } from '../../types/auth';
 import type { BootstrapResponse } from '../../types/review';
 
+type TourismSheetState = Exclude<DrawerState, 'closed'>;
+
 export interface MapTabStageProps {
   floatingNav?: ReactNode;
   mapData: {
@@ -62,7 +64,7 @@ export interface MapTabStageProps {
   tourismSheet: {
     selectedTourismPlace: TourismPlaceItem | null;
     selectedTourismDetail: TourismPlaceDetailItem | null;
-    sheetState: 'partial' | 'full';
+    sheetState: TourismSheetState;
     sourceReady: boolean;
     loading: boolean;
     error: string | null;

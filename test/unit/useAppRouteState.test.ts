@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildRouteUrl,
   buildHistoryState,
   getInitialNotice,
+  getInitialRouteState,
   getRoutePreviewFromHistoryState,
   type RouteState,
 } from '../../src/hooks/app-route/useAppRouteState';
@@ -35,6 +37,58 @@ describe('useAppRouteState helpers', () => {
     expect(getRoutePreviewFromHistoryState({ routePreview })).toEqual(routePreview);
     expect(getRoutePreviewFromHistoryState({ routePreview: { id: 'broken' } })).toBeNull();
     expect(getRoutePreviewFromHistoryState(null)).toBeNull();
+  });
+
+  it('normalizes legacy partial drawer query to peek', () => {
+    const originalWindow = globalThis.window;
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        location: {
+          search: '?tab=map&place=place-1&drawer=partial',
+          pathname: '/',
+          origin: 'https://daejeon.jamissue.com',
+        },
+      },
+      configurable: true,
+    });
+
+    expect(getInitialRouteState()).toEqual({
+      tab: 'map',
+      placeId: 'place-1',
+      festivalId: null,
+      drawerState: 'peek',
+    });
+
+    Object.defineProperty(globalThis, 'window', {
+      value: originalWindow,
+      configurable: true,
+    });
+  });
+
+  it('emits canonical peek drawer query for selected map items', () => {
+    const originalWindow = globalThis.window;
+    Object.defineProperty(globalThis, 'window', {
+      value: {
+        location: {
+          search: '',
+          pathname: '/',
+          origin: 'https://daejeon.jamissue.com',
+        },
+      },
+      configurable: true,
+    });
+
+    expect(buildRouteUrl({
+      tab: 'map',
+      placeId: 'place-1',
+      festivalId: null,
+      drawerState: 'peek',
+    })).toBe('/?tab=map&place=place-1&drawer=peek');
+
+    Object.defineProperty(globalThis, 'window', {
+      value: originalWindow,
+      configurable: true,
+    });
   });
 
   it('reads kakao auth query notices from the browser url', () => {

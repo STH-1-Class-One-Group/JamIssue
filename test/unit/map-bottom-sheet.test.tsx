@@ -3,14 +3,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { MapBottomSheet } from '../../src/components/map-stage/MapBottomSheet';
 
 describe('MapBottomSheet', () => {
-  it('expands from partial on handle click without collapsing', () => {
+  it('expands from peek on handle click without collapsing', () => {
     const onExpand = vi.fn();
     const onCollapse = vi.fn();
 
     render(
       <MapBottomSheet
         ariaLabel="테스트 시트"
-        drawerState="partial"
+        drawerState="peek"
         sheetState="peek"
         onExpand={onExpand}
         onCollapse={onCollapse}

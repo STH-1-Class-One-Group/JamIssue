@@ -104,7 +104,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       },
       onCloseTourismInfoSheet: () => setSelectedTourismPlaceId(null),
       onExpandTourismInfoSheet: () => setTourismSheetState('full'),
-      onCollapseTourismInfoSheet: () => setTourismSheetState('partial'),
+      onCollapseTourismInfoSheet: () => setTourismSheetState('peek'),
       onOpenPlaceFeed: mapStageActions.handleMapOpenPlaceFeed,
       onOpenPlace: mapStageActions.handleMapOpenPlace,
       onOpenRoutePreviewPlace: mapStageActions.handleMapOpenRoutePreviewPlace,

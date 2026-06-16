@@ -31,7 +31,7 @@ export function usePlaceDrawerHandle({
 
     if (delta > 72) {
       suppressNextClickRef.current = true;
-      if (drawerState === 'full') {
+      if (drawerState === 'full' || drawerState === 'half') {
         onCollapse();
         return;
       }
@@ -51,7 +51,7 @@ export function usePlaceDrawerHandle({
       return;
     }
 
-    if (drawerState === 'partial') {
+    if (drawerState === 'peek' || drawerState === 'half') {
       onExpand();
     }
   }

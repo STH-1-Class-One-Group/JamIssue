@@ -54,6 +54,9 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
   await expect(page.locator('[data-map-sheet-state="peek"]')).toBeVisible();
 
   await handle.click();
+  await expect(page.locator('[data-map-sheet-state="half"]')).toBeVisible();
+
+  await handle.click();
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
   await expect(bottomNav).toHaveCSS('pointer-events', 'auto');
   await expect(bottomNav).toHaveCSS('opacity', '1');
@@ -68,7 +71,7 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
 
   await page.getByRole('button', { name: '시트 최소화' }).click();
-  await expect(page.locator('[data-map-sheet-state="peek"]')).toBeVisible();
+  await expect(page.locator('[data-map-sheet-state="half"]')).toBeVisible();
 });
 
 test('UIUX-010 supports feed comment creation, like toggle, and place CTA', async ({ page }) => {
