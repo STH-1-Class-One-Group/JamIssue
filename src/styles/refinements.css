@@ -1,10 +1,10 @@
 /* 2026-03-18 drawer over map fix */
 .place-drawer {
-  z-index: 120 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
 .bottom-nav {
-  z-index: 130 !important;
+  z-index: var(--z-bottom-nav) !important;
 }
 
 .place-drawer--partial,
@@ -1480,7 +1480,7 @@ body {
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;
   height: auto !important;
   max-height: none !important;
-  z-index: 140 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
 .place-drawer--full .place-drawer__content {
@@ -1495,6 +1495,10 @@ body {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
+}
+
+.place-drawer--full .place-drawer__control-rail {
+  top: var(--map-sheet-full-control-top) !important;
 }
 
 .place-drawer__minimize,

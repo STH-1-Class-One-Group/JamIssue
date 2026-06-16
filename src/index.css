@@ -12,6 +12,7 @@
   --map-sheet-full-height: 60%;
   --map-sheet-closed-translate-y: 120%;
   --map-sheet-handle-reserved-height: 22px;
+  --map-sheet-full-control-top: calc(var(--shell-capsule-height) + 72px);
   --app-surface-background:
     radial-gradient(circle at top left, rgba(255, 214, 227, 0.82), transparent 36%),
     radial-gradient(circle at top right, rgba(179, 227, 255, 0.78), transparent 32%),
@@ -41,8 +42,13 @@
   --phone-shell-height-gap: 24px;
   --phone-shell-radius: 32px;
   --layer-app-header: 40;
-  --z-floating-nav: 96;
-  --z-floating-nav-dropdown: 97;
+  --z-map-sheet: 110;
+  --z-speed-dial: 118;
+  --z-bottom-nav: 120;
+  --z-floating-nav: 130;
+  --z-floating-nav-dropdown: 140;
+  --z-notification-panel: 150;
+  --z-side-drawer: 160;
   --speed-dial-bottom-offset: calc(var(--bottom-nav-offset) + 24px);
   --speed-dial-inline-offset: 20px;
   --z-splash: 200;
@@ -1143,7 +1149,7 @@ textarea {
   left: 0;
   right: 0;
   bottom: var(--bottom-nav-offset);
-  z-index: 30;
+  z-index: var(--z-map-sheet);
   margin: 0 12px;
   padding: 0;
   overflow: hidden;
@@ -1770,7 +1776,7 @@ textarea {
   right: 0;
   bottom: 0;
   min-height: var(--bottom-nav-offset);
-  z-index: 40;
+  z-index: var(--z-bottom-nav);
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
@@ -2960,7 +2966,7 @@ textarea {
 
 .app-capsule .global-settings-menu {
   flex: 0 0 auto;
-  z-index: calc(var(--z-floating-nav-dropdown) + 1);
+  z-index: var(--z-floating-nav-dropdown);
 }
 
 .map-floating-nav__status {
@@ -2984,13 +2990,13 @@ textarea {
 .app-capsule .global-settings-menu__menu {
   top: calc(100% + 10px);
   right: 0;
-  z-index: calc(var(--z-floating-nav-dropdown) + 2);
+  z-index: var(--z-floating-nav-dropdown);
 }
 
 .app-capsule .global-notification-panel {
   top: calc(100% + 58px);
   right: 0;
-  z-index: calc(var(--z-floating-nav-dropdown) + 3);
+  z-index: var(--z-notification-panel);
   width: min(var(--notification-panel-width), calc(100vw - 48px));
   max-height: min(var(--notification-panel-max-vh), var(--notification-panel-max-height));
 }
@@ -2998,7 +3004,7 @@ textarea {
 .side-drawer {
   position: absolute;
   inset: 0;
-  z-index: calc(var(--z-floating-nav-dropdown) + 4);
+  z-index: var(--z-side-drawer);
   pointer-events: none;
 }
 
@@ -3057,7 +3063,7 @@ textarea {
   position: absolute;
   right: var(--speed-dial-inline-offset);
   bottom: var(--speed-dial-bottom-offset);
-  z-index: calc(var(--z-floating-nav) - 1);
+  z-index: var(--z-speed-dial);
   display: grid;
   gap: 10px;
   justify-items: end;
@@ -3174,7 +3180,7 @@ textarea {
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap));
   height: auto;
   max-height: none;
-  z-index: 140;
+  z-index: var(--z-map-sheet);
 }
 
 .place-drawer--full .place-drawer__content {
@@ -3189,6 +3195,10 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.place-drawer--full .place-drawer__control-rail {
+  top: var(--map-sheet-full-control-top);
 }
 
 .place-drawer__minimize,

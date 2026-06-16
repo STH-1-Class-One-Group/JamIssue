@@ -48,4 +48,32 @@ describe('layout token source quality baseline', () => {
     expect(appShellSource).not.toContain('bottomTabHidden');
     expect(appSource).not.toContain('bottomTabHidden');
   });
+
+  it('keeps map overlay z-index policy owned by semantic CSS tokens', () => {
+    const indexCss = readSource('src/index.css');
+    const css = `${indexCss}\n${readSource('src/styles/refinements.css')}`;
+
+    for (const token of [
+      '--z-map-sheet: 110;',
+      '--z-speed-dial: 118;',
+      '--z-bottom-nav: 120;',
+      '--z-floating-nav: 130;',
+      '--z-floating-nav-dropdown: 140;',
+      '--z-notification-panel: 150;',
+      '--z-side-drawer: 160;',
+    ]) {
+      expect(indexCss).toContain(token);
+    }
+    expect(indexCss).toContain('--map-sheet-full-control-top: calc(var(--shell-capsule-height) + 72px);');
+
+    expect(css).toContain('z-index: var(--z-map-sheet)');
+    expect(css).toContain('z-index: var(--z-speed-dial)');
+    expect(css).toContain('z-index: var(--z-bottom-nav)');
+    expect(css).toContain('z-index: var(--z-notification-panel)');
+    expect(css).toContain('top: var(--map-sheet-full-control-top)');
+    expect(css).not.toMatch(/\.place-drawer\s*\{[^}]*z-index:\s*\d+/s);
+    expect(css).not.toMatch(/\.place-drawer--full\s*\{[^}]*z-index:\s*\d+/s);
+    expect(css).not.toMatch(/\.bottom-nav\s*\{[^}]*z-index:\s*\d+/s);
+    expect(css).not.toMatch(/\.speed-dial-fab\s*\{[^}]*z-index:\s*(?:\d+|calc\()/s);
+  });
 });
