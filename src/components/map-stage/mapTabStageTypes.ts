@@ -8,6 +8,7 @@ type TourismSheetState = Exclude<DrawerState, 'closed'>;
 
 export interface MapTabStageProps {
   floatingNav?: ReactNode;
+  quickActions?: ReactNode;
   mapData: {
     filteredPlaces: Place[];
     festivals: FestivalItem[];

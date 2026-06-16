@@ -11,6 +11,7 @@ import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
 import { AppCapsule } from './app-shell/AppCapsule';
+import { SpeedDialFAB } from './app-shell/SpeedDialFAB';
 import { MapTabStage } from './MapTabStage';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
 import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
@@ -119,6 +120,19 @@ export const AppMapStageView = memo(function AppMapStageView({
               onToggleTourismInfo={mapActions.onToggleTourismInfo}
             />
           )}
+        />
+      )}
+      quickActions={(
+        <SpeedDialFAB
+          actions={[
+            {
+              id: 'locate-current-position',
+              label: '내 위치 찾기',
+              icon: '⌖',
+              onClick: mapActions.onLocateCurrentPosition,
+            },
+          ]}
+          hidden={mapData.drawerState !== 'closed' || Boolean(mapData.selectedTourismPlace)}
         />
       )}
       mapData={{
