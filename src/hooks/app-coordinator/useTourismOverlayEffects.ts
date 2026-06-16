@@ -35,8 +35,8 @@ type TourismOverlayEffectsArgs = {
 /**
  * Coordinates KTO tourism list and detail requests for the optional map layer.
  *
- * The list request always uses `scope=all` so the map layer receives the full
- * selected display group instead of an arbitrary first page.
+ * The list request always uses `scope=all` so the map layer consumes the Worker
+ * KV snapshot compact read model instead of an arbitrary first page.
  */
 export function useTourismOverlayEffects({
   selectedTourismPlaceId,
@@ -80,15 +80,26 @@ export function useTourismOverlayEffects({
         if (!isActive) {
           return;
         }
+        if (!response.sourceReady) {
+          setTourismPlaces([]);
+          setTourismFacets(response.facets);
+          setTourismPlacesQueryKey(null);
+          setTourismSourceReady(false);
+          setTourismError('관광정보를 준비 중이에요. 잠시 후 다시 시도해 주세요.');
+          return;
+        }
         setTourismPlaces(response.items);
         setTourismFacets(response.facets);
         setTourismPlacesQueryKey(tourismQueryKey);
-        setTourismSourceReady(response.sourceReady);
+        setTourismSourceReady(true);
       })
       .catch((error: unknown) => {
         if (!isActive) {
           return;
         }
+        setTourismPlaces([]);
+        setTourismPlacesQueryKey(null);
+        setTourismSourceReady(false);
         setTourismError(formatTourismErrorMessage(error, formatErrorMessage));
       })
       .finally(() => {

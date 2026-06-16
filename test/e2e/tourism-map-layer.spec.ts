@@ -193,3 +193,33 @@ test('UIUX-022 keeps KTO display group switching local and responsive', async ({
   await page.screenshot({ timeout: 1000 });
   expect(tourismRequests).toHaveLength(1);
 });
+
+test('UIUX-023 keeps curated map usable when the KV snapshot is not ready', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: [cafeTourismPlace],
+  }), { tourismPlacesSourceReady: false });
+
+  await page.goto('/');
+  await page.locator('[data-tourism-toggle="map"]').click();
+
+  await expect(page.getByText('관광정보를 준비 중이에요. 잠시 후 다시 시도해 주세요.')).toBeVisible();
+  await expect(page.locator('[data-marker-hit-target="tourism"]')).toHaveCount(0);
+  await page.locator('[data-tab-key="feed"]').click();
+  await expect(page.locator('[data-tab-key="feed"]')).toHaveAttribute('aria-current', 'page');
+});
+
+test('UIUX-024 handles KTO snapshot 503 without freezing map navigation', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: [cafeTourismPlace],
+  }), { tourismPlacesStatus: 503 });
+
+  await page.goto('/');
+  await page.locator('[data-tourism-toggle="map"]').click();
+
+  await expect(page.getByText('관광정보 스냅샷을 준비 중입니다.')).toBeVisible();
+  await page.screenshot({ timeout: 1000 });
+  await page.locator('[data-tab-key="course"]').click();
+  await expect(page.locator('[data-tab-key="course"]')).toHaveAttribute('aria-current', 'page');
+});

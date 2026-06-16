@@ -239,6 +239,8 @@ function updateReview(state: E2EAppState, reviewId: string, updater: (review: Re
 
 interface E2EFixtureOptions {
   tourismPlacesDelayMs?: number;
+  tourismPlacesSourceReady?: boolean;
+  tourismPlacesStatus?: number;
 }
 
 async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixtureOptions = {}) {
@@ -278,15 +280,20 @@ async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixt
         setTimeout(resolve, options.tourismPlacesDelayMs);
       });
     }
+    if (options.tourismPlacesStatus === 503) {
+      await fulfillJson(route, { detail: '관광정보 스냅샷을 준비 중입니다.' }, 503);
+      return;
+    }
+    const sourceReady = options.tourismPlacesSourceReady ?? true;
     const displayGroup = url.searchParams.get('displayGroup');
     const items = displayGroup
       ? state.tourismPlaces.filter((place) => place.displayGroup === displayGroup)
       : state.tourismPlaces;
     const response: TourismPlacesResponse = {
-      sourceReady: true,
+      sourceReady,
       sourceName: 'kto',
       importedAt: '2026-06-13T00:00:00.000Z',
-      total: items.length,
+      total: sourceReady ? items.length : 0,
       facets: {
         categories: [],
         districts: [],
@@ -294,7 +301,7 @@ async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixt
         ktoFacets: [],
         displayGroups: buildTourismDisplayGroupFacets(state.tourismPlaces),
       },
-      items,
+      items: sourceReady ? items : [],
     };
     await fulfillJson(route, response);
     return;
