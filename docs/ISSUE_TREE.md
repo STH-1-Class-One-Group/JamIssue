@@ -53,3 +53,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/516
   - Merge commit: 9daac606e2e80fb9188085023f1d8dd161445be7
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/510
+  - Title: app capsule shell contract
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/510
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/519
+  - Merge commit: eabc8773ea1ec3d865a8d28cef03183ba7a3a737
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
