@@ -78,7 +78,7 @@ export interface TourismPlacesResponse {
   sourceReady: boolean;
   sourceName: string | null;
   importedAt: string | null;
-  total?: number;
+  total: number;
   facets: TourismFacets;
   items: TourismPlaceItem[];
 }

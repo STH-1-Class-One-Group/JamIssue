@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { invalidateApiCache } from '../../src/api/core';
-import { getTourismPlaceDetail, getTourismPlaces } from '../../src/api/tourismClient';
+import { buildTourismPlacesPath, getTourismPlaceDetail, getTourismPlaces } from '../../src/api/tourismClient';
 
 const fetchMock = vi.fn();
 
@@ -23,6 +23,11 @@ beforeEach(() => {
 });
 
 describe('tourismClient', () => {
+  it('builds the KV snapshot all-scope path without a legacy page limit', () => {
+    expect(buildTourismPlacesPath({ scope: 'all' })).toBe('/api/tourism/places?scope=all');
+    expect(buildTourismPlacesPath({ scope: 'all' })).not.toContain('limit=');
+  });
+
   it('requests all tourism places through the canonical Worker consumer contract', async () => {
     await getTourismPlaces({ scope: 'all', displayGroup: 'cafe', district: '중구' });
 

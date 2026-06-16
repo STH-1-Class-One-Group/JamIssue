@@ -73,7 +73,7 @@ export function MapFloatingNav({
   const renderFilterLabel = (item: FloatingFilterItem | undefined) => (
     <>
       <span className="map-floating-nav__filter-icon" aria-hidden="true">
-        {item?.icon ?? '✨'}
+        {item?.icon ?? '🧭'}
       </span>
       <span className="map-floating-nav__filter-label">{item?.label ?? '전체'}</span>
       <span className="map-floating-nav__filter-caret" aria-hidden="true">⌄</span>
@@ -129,7 +129,7 @@ export function MapFloatingNav({
                   }}
                 >
                   <span className="map-floating-nav__dropdown-icon" aria-hidden="true">
-                    {item.icon ?? '✨'}
+                    {item.icon ?? '🧭'}
                   </span>
                   <span className="map-floating-nav__dropdown-label">{item.label}</span>
                 </button>
