@@ -83,3 +83,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/529
   - Merge commit: 3d8be5e011eeb115d917034db17882e737accd3a
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-07: https://github.com/STH-1-Class-One-Group/JamIssue/issues/515
+  - Title: seventh UI/UX docs traceability
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/515
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/533
+  - Merge commit: 4eede38f7f23084001af868d33169e37ff5f56b9
+  - Evidence: GitHub Validation Evidence readback, Wiki commit `766b435`, and `docs/traceability/task-ledger.jsonl`
