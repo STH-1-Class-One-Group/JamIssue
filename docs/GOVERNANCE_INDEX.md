@@ -70,3 +70,33 @@ TSK-012는 Web Front UI/UX와 KTO 지도 consumer work를 소유합니다. 다�
 | [#472](https://github.com/STH-1-Class-One-Group/JamIssue/issues/472) | `fifth-uiux-qa-docs-traceability` | 완료 | PR #473 |
 | [#476](https://github.com/STH-1-Class-One-Group/JamIssue/issues/476) | `map-capsule-click-freeze-fix` | 완료 | PR #477 |
 | [#478](https://github.com/STH-1-Class-One-Group/JamIssue/issues/478) | `floating-capsule-label-layer-polish` | 진행 중 | 알림 패널 레이어, 필터 이모지, caret 정렬 보정 |
+
+## TSK-015 Core Row
+
+| Core | Parent Issue | Responsibility | Keywords | Misroute examples |
+| --- | --- | --- | --- | --- |
+| `TSK-015-00-SIXTH-UIUX-DRAWER-NAV-PWA-REDESIGN` | [#490](https://github.com/STH-1-Class-One-Group/JamIssue/issues/490) | 6차 UI/UX 바텀드로워, 하단 네비게이션, PWA/iOS 홈 화면 아이콘 개편 | bottom drawer; bottom navigation; PWA icon; app icon; map sheet; UIUX | backend provider contract, DB schema, OAuth flow, KTO provider contract |
+
+## TSK-015 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#491](https://github.com/STH-1-Class-One-Group/JamIssue/issues/491) | `sixth-uiux-audit-baseline` | in progress | baseline evidence pending |
+| [#492](https://github.com/STH-1-Class-One-Group/JamIssue/issues/492) | `map-drawer-state-model` | planned | pending |
+| [#493](https://github.com/STH-1-Class-One-Group/JamIssue/issues/493) | `map-drawer-shell-visual-redesign` | planned | pending |
+| [#494](https://github.com/STH-1-Class-One-Group/JamIssue/issues/494) | `bottom-nav-icon-pill-redesign` | planned | pending |
+| [#495](https://github.com/STH-1-Class-One-Group/JamIssue/issues/495) | `pwa-app-icon-brand-assets` | planned | pending |
+| [#496](https://github.com/STH-1-Class-One-Group/JamIssue/issues/496) | `drawer-nav-css-policy-cleanup` | planned | pending |
+| [#497](https://github.com/STH-1-Class-One-Group/JamIssue/issues/497) | `sixth-uiux-qa-traceability` | planned | pending |
+
+## TSK-015 Scope Guard
+
+TSK-015 owns only Web Front drawer, navigation, and branded app icon UI work.
+
+| Excluded target | Handling rule |
+| --- | --- |
+| Backend provider contract changes | Separate backend/admin contract issue |
+| DB schema changes | Separate migration issue |
+| OAuth success path changes | Separate auth issue |
+| KTO provider contract changes | Separate provider contract issue |
+| Review/stamp business logic changes | Separate product bug or feature issue |
