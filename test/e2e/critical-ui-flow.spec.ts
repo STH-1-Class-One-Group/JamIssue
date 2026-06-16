@@ -84,9 +84,18 @@ test('UIUX-010 supports feed comment creation, like toggle, and place CTA', asyn
   await page.locator('article[data-review-id="review-1"] .review-action-button').nth(1).click();
   await expect(page.locator('.feed-comment-sheet--open')).toBeVisible();
 
-  const commentBody = '댓글 작성 E2E 확인';
-  await page.locator('.feed-comment-sheet input').fill(commentBody);
-  await page.locator('.feed-comment-sheet button[type="submit"]').click();
+  const commentBody = 'feed comment e2e check';
+  const commentInput = page.locator('.feed-comment-sheet input');
+  const submitComment = page.locator('.feed-comment-sheet button[type="submit"]');
+  await expect(commentInput).toBeEditable();
+  await expect
+    .poll(async () => {
+      await commentInput.fill(commentBody);
+      return commentInput.inputValue();
+    })
+    .toBe(commentBody);
+  await expect(submitComment).toBeEnabled();
+  await submitComment.click();
   await expect(page.locator('.feed-comment-sheet')).toContainText(commentBody);
 
   await page.locator('.feed-comment-sheet__close').click();

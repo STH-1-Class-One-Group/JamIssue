@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { AppCapsule } from '../../src/components/app-shell/AppCapsule';
+import { SideDrawer } from '../../src/components/app-shell/SideDrawer';
 import type { GlobalSettingsMenuProps } from '../../src/components/GlobalSettingsMenu';
 
 const globalUtility: GlobalSettingsMenuProps = {
@@ -27,7 +28,7 @@ describe('AppCapsule shell contract', () => {
       />,
     );
 
-    const capsule = screen.getByRole('navigation', { name: '앱 캡슐 네비게이션' });
+    const capsule = screen.getByRole('navigation', { name: '앱 캡슐 내비게이션' });
 
     expect(within(capsule).getByRole('button', { name: '메뉴 열기' })).toBeInTheDocument();
     expect(within(capsule).getByRole('button', { name: '이전 화면으로 돌아가기' })).toBeEnabled();
@@ -75,15 +76,35 @@ describe('AppCapsule shell contract', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
+  it('renders SideDrawer shell with close paths and no unapproved placeholder copy', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+
+    render(<SideDrawer isOpen onClose={onClose} />);
+
+    const drawer = screen.getByRole('dialog', { name: '사이드 메뉴' });
+    expect(drawer).toBeInTheDocument();
+    expect(within(drawer).getByTestId('side-drawer-content')).toBeEmptyDOMElement();
+    expect(screen.queryByText('메뉴 준비 중')).not.toBeInTheDocument();
+
+    await user.click(screen.getAllByRole('button', { name: '메뉴 닫기' })[1]);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('does not introduce history, settings route, or ti icon coupling', () => {
-    const source = readFileSync(
+    const capsuleSource = readFileSync(
       join(process.cwd(), 'src/components/app-shell/AppCapsule.tsx'),
       'utf8',
     );
+    const sideDrawerSource = readFileSync(
+      join(process.cwd(), 'src/components/app-shell/SideDrawer.tsx'),
+      'utf8',
+    );
+    const source = `${capsuleSource}\n${sideDrawerSource}`;
 
     expect(source).not.toContain('window.history');
     expect(source).not.toContain('/settings');
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
-    expect(source).toContain('notificationPanelMode="floating"');
+    expect(capsuleSource).toContain('notificationPanelMode="floating"');
   });
 });

@@ -2993,6 +2993,64 @@ textarea {
   max-height: min(var(--notification-panel-max-vh), var(--notification-panel-max-height));
 }
 
+.side-drawer {
+  position: absolute;
+  inset: 0;
+  z-index: calc(var(--z-floating-nav-dropdown) + 4);
+  pointer-events: none;
+}
+
+.side-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(42, 24, 38, 0.18);
+  pointer-events: auto;
+}
+
+.side-drawer__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(312px, calc(100% - 56px));
+  overflow: hidden;
+  border: 1px solid rgba(255, 197, 217, 0.48);
+  border-radius: 0 28px 28px 0;
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 18px 0 42px rgba(66, 40, 60, 0.18);
+  pointer-events: auto;
+}
+
+.side-drawer__control-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 14px 0;
+}
+
+.side-drawer__close {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 129, 168, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--pink-deep);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.side-drawer__content {
+  min-height: 0;
+  padding: 16px;
+}
+
 .phone-shell--map.app-shell--header-hidden .map-surface-frame .map-floating-controls {
   top: calc(var(--shell-capsule-height) + 20px);
 }
