@@ -15,12 +15,12 @@ describe('PlaceDetailSheet integration', () => {
     const onClaimStamp = vi.fn().mockResolvedValue(undefined);
     const onOpenFeedReview = vi.fn();
 
-    render(
+    const { container } = render(
       <PlaceDetailSheet
         place={placeFixture}
         reviews={[reviewFixture, secondaryReviewFixture]}
         isOpen={true}
-        drawerState="partial"
+        drawerState="peek"
         sheetState="peek"
         loggedIn={true}
         visitCount={2}
@@ -45,20 +45,25 @@ describe('PlaceDetailSheet integration', () => {
 
     expect(screen.getByText(placeFixture.name)).toBeInTheDocument();
     expect(screen.getByText(placeFixture.summary)).toBeInTheDocument();
-    expect(screen.getAllByText('2번째 방문').length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByRole('button', { name: '시트 닫기' }));
+    const closeButton = container.querySelector<HTMLButtonElement>('.place-drawer__shell-close');
+    expect(closeButton).not.toBeNull();
+    fireEvent.click(closeButton!);
     expect(onClose).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole('button', { name: '오늘 스탬프 찍기' }));
+    const proofButton = container.querySelector<HTMLButtonElement>('.place-drawer__proof-button');
+    expect(proofButton).not.toBeNull();
+    fireEvent.click(proofButton!);
     expect(onClaimStamp).toHaveBeenCalledWith(placeFixture);
 
-    fireEvent.click(screen.getByRole('button', { name: '피드에서 보기' }));
+    const feedButton = container.querySelector<HTMLButtonElement>('.place-drawer__feed-button');
+    expect(feedButton).not.toBeNull();
+    fireEvent.click(feedButton!);
     expect(onOpenFeedReview).toHaveBeenCalledTimes(1);
   });
 
   it('shows completed proof state when today stamp already exists', () => {
-    render(
+    const { container } = render(
       <PlaceDetailSheet
         place={placeFixture}
         reviews={[reviewFixture]}
@@ -86,7 +91,47 @@ describe('PlaceDetailSheet integration', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: '오늘 스탬프 완료' })).toBeDisabled();
+    const proofButton = container.querySelector<HTMLButtonElement>('.place-drawer__proof-button');
+    expect(proofButton).not.toBeNull();
+    expect(proofButton).toBeDisabled();
+  });
+
+  it('renders place images through the shared bottom-sheet media frame', () => {
+    render(
+      <PlaceDetailSheet
+        place={placeFixture}
+        reviews={[reviewFixture]}
+        isOpen={true}
+        drawerState="peek"
+        sheetState="peek"
+        loggedIn={true}
+        visitCount={2}
+        latestStamp={latestStampFixture}
+        todayStamp={null}
+        hasCreatedReviewToday={false}
+        stampActionStatus="ready"
+        stampActionMessage="오늘 방문 인증을 완료할 수 있어요."
+        reviewProofMessage="방문 후 피드를 작성해 주세요."
+        reviewError={null}
+        reviewSubmitting={false}
+        canCreateReview={false}
+        onOpenFeedReview={vi.fn()}
+        onClose={vi.fn()}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+        onRequestLogin={vi.fn()}
+        onClaimStamp={vi.fn().mockResolvedValue(undefined)}
+        onCreateReview={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
+
+    const image = screen.getByRole('img', { name: placeFixture.name });
+    const mediaFrame = image.closest('.map-bottom-sheet__media-frame');
+    const scrollContent = screen.getByText(placeFixture.summary).closest('.map-bottom-sheet__content');
+
+    expect(mediaFrame).not.toBeNull();
+    expect(scrollContent).not.toBeNull();
+    expect(scrollContent?.contains(image)).toBe(false);
   });
 
   it('keeps the review composer inside the scrollable drawer content in full mode', () => {

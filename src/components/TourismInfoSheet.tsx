@@ -153,12 +153,10 @@ export function TourismInfoSheet({
       onClose={onClose}
       onCollapse={onCollapse}
       onExpand={onExpand}
-    >
-      {imageUrl ? (
-        <figure className="tourism-info-sheet__media">
-          <img src={imageUrl} alt={`${title} 관광정보 이미지`} loading="lazy" />
-        </figure>
+      media={imageUrl ? (
+        <img src={imageUrl} alt={title} className="map-bottom-sheet__media-image" loading="lazy" />
       ) : null}
+    >
 
       <div className="place-drawer__header tourism-info-sheet__intro">
         <div>

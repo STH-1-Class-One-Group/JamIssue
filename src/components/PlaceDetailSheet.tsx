@@ -60,14 +60,11 @@ export function PlaceDetailSheet({
       onClose={onClose}
       onCollapse={onCollapse}
       onExpand={onExpand}
+      media={place.imageUrl ? (
+        <img src={place.imageUrl} alt={place.name} className="map-bottom-sheet__media-image" loading="lazy" decoding="async" />
+      ) : null}
     >
       <PlaceDetailHeader name={place.name} summary={place.summary} />
-
-      {place.imageUrl && (
-        <div className="place-drawer__hero">
-          <img src={place.imageUrl} alt={place.name} className="place-drawer__hero-image" loading="lazy" decoding="async" />
-        </div>
-      )}
 
       <PlaceBadgeRow
         categoryLabel={categoryMeta.name}

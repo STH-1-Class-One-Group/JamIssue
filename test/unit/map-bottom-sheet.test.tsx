@@ -74,4 +74,28 @@ describe('MapBottomSheet', () => {
     expect(screen.getAllByRole('button', { name: '시트 최소화' })).toHaveLength(1);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('renders optional media in the shared full-bleed shell frame outside scroll content', () => {
+    render(
+      <MapBottomSheet
+        ariaLabel="테스트 시트"
+        drawerState="peek"
+        sheetState="peek"
+        media={<img src="/sample.jpg" alt="sample place" />}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+        onClose={vi.fn()}
+      >
+        <p>content</p>
+      </MapBottomSheet>,
+    );
+
+    const image = screen.getByRole('img', { name: 'sample place' });
+    const mediaFrame = image.closest('.map-bottom-sheet__media-frame');
+    const scrollContent = screen.getByText('content').closest('.map-bottom-sheet__content');
+
+    expect(mediaFrame).not.toBeNull();
+    expect(scrollContent).not.toBeNull();
+    expect(scrollContent?.contains(image)).toBe(false);
+  });
 });
