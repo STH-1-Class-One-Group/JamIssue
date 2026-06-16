@@ -1,0 +1,59 @@
+{
+  "Merge commit": "434aefb99430b121dd0b7b97998c2334810ca027",
+  "PR": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/526",
+  "claimedScope": [
+    "SpeedDialFAB action-array contract",
+    "MapTabStage quickActions render slot",
+    "Map stage locate action composition",
+    "FAB CSS safe offset tokens",
+    "Unit/source-quality/E2E validation seams"
+  ],
+  "documentPaths": [
+    "src/components/AppMapStageView.tsx",
+    "src/components/MapTabStage.tsx",
+    "src/components/app-shell/SpeedDialFAB.tsx",
+    "src/components/map-stage/mapTabStageTypes.ts",
+    "src/index.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
+    "docs/traceability/task-ledger/by-task/TSK-016-05.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "how": "Added SpeedDialFAB as an app-shell action-array component, exposed a MapTabStage quickActions slot, composed the map locate action from AppMapStageView, and guarded against route/history/settings/icon-library coupling with unit, source-quality, and E2E tests.",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/513",
+  "mergeCommit": "434aefb99430b121dd0b7b97998c2334810ca027",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/526",
+  "problem": "Map-level quick actions did not have a governed expansion boundary, so future actions could couple directly to route, map, settings, or icon-library internals.",
+  "remainingGap": "Capsule/FAB/drawer/notification z-index regression remains in TSK-016-06.",
+  "schemaVersion": "task-ledger-entry.v1",
+  "status": "completed",
+  "taskId": "TSK-016-05",
+  "updatedAt": "2026-06-16T10:36:13Z",
+  "validationSeams": [
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
+    "test/e2e/app-shell.spec.ts"
+  ],
+  "why": "The seventh UI/UX architecture needs quick actions to scale through an actions array while preserving AppCapsule, BottomNav, and MapBottomSheet boundaries.",
+  "남은 gap": "Capsule/FAB/drawer/notification z-index regression remains in TSK-016-06.",
+  "무슨 문제": "Map-level quick actions lacked a governed extension boundary and could regress into route/history/settings/icon-library coupling.",
+  "문서 경로": [
+    "src/components/AppMapStageView.tsx",
+    "src/components/MapTabStage.tsx",
+    "src/components/app-shell/SpeedDialFAB.tsx",
+    "src/components/map-stage/mapTabStageTypes.ts",
+    "src/index.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
+    "docs/traceability/task-ledger/by-task/TSK-016-05.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "어떻게 해결": "SpeedDialFAB was added under app-shell, MapTabStage exposes only a ReactNode quickActions slot, and AppMapStageView composes the locate action without adding route/history/API/icon-library coupling.",
+  "왜 해결": "Quick actions need a reusable actions-array contract before adding more global capsule/FAB behavior."
+}
