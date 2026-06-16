@@ -29,3 +29,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/483
   - Merge commit: 4f953b36427aa262528be493d78d1b1abe7b0165
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-012-21: https://github.com/STH-1-Class-One-Group/JamIssue/issues/485
+  - Title: KTO KV snapshot contract consumption
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/485
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/486
+  - Merge commit: a7e9a9b161dccd4106566d8a8bcd325d9bec19c6
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
