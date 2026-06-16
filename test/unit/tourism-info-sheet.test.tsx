@@ -94,7 +94,7 @@ describe('TourismInfoSheet', () => {
     );
 
     expect(screen.getByRole('region', { name: '관광정보 시트' })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: '귀빈돌솥밥 관광정보 이미지' })).toHaveAttribute(
+    expect(screen.getByRole('img', { name: '귀빈돌솥밥' })).toHaveAttribute(
       'src',
       tourismPlace.imageUrl,
     );
@@ -204,9 +204,14 @@ describe('TourismInfoSheet', () => {
 
     const sheet = screen.getByRole('region', { name: '관광정보 시트' });
     const content = sheet.querySelector('.map-bottom-sheet__content');
+    const image = sheet.querySelector('img');
+    const mediaFrame = image?.closest('.map-bottom-sheet__media-frame');
 
     expect(sheet).toHaveClass('place-drawer', 'place-drawer--full', 'place-drawer--route-full');
     expect(content).not.toBeNull();
+    expect(image).not.toBeNull();
+    expect(mediaFrame).not.toBeNull();
+    expect(content?.contains(image)).toBe(false);
   });
 
   it('keeps KTO user-facing modules free from mojibake regressions', () => {
