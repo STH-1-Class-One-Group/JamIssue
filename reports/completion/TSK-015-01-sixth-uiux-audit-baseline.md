@@ -2,7 +2,7 @@
 
 Scope-ID: `TSK-015-01`
 Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/491
-PR: `TBD-TSK-015-01-PR`
+PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/498
 Branch: `sixth-uiux-audit-baseline`
 Status: `implemented`
 Parent Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/490
