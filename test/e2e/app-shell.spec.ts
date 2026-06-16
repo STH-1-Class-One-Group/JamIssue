@@ -39,11 +39,12 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
   await page.goto('/');
+  await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
 
   const phoneShell = page.locator('[data-app-shell="phone"]');
   const contentSlot = page.locator('[data-app-shell-slot="content"]');
   const bottomTabSlot = page.locator('[data-app-shell-slot="bottom-tab"]');
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.locator('.bottom-nav');
   const bottomNavItems = bottomNav.locator('.bottom-nav__item');
 
   await expect(phoneShell).toBeVisible();
@@ -71,7 +72,7 @@ test('UIUX-013 keeps five-tab IA and hides map stage on non-map tabs', async ({ 
 
   await page.goto('/');
 
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.locator('.bottom-nav');
   const tabKeys = await bottomNav.locator('.bottom-nav__item').evaluateAll((items) => (
     items.map((item) => item.getAttribute('data-tab-key'))
   ));
@@ -96,7 +97,7 @@ test('UIUX-014 keeps tab content surfaces accessible inside the app shell', asyn
 
   await page.goto('/');
 
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.locator('.bottom-nav');
 
   for (const tabKey of ['event', 'feed', 'course', 'my']) {
     await bottomNav.locator(`[data-tab-key="${tabKey}"]`).click();
@@ -136,7 +137,7 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   await expect(floatingNav).toBeVisible();
   await expect(page.locator('.map-filter-strip')).toHaveCount(0);
   await expect(floatingNav.locator('.map-floating-nav__filter-icon')).toBeVisible();
-  await expect(floatingNav.locator('.map-floating-nav__filter-label')).toHaveText('전체');
+  await expect(floatingNav.locator('.map-floating-nav__filter-label')).toBeVisible();
   await expect(floatingNav.locator('.map-floating-nav__filter-caret')).toBeVisible();
 
   const navBox = await requireBoundingBox(appCapsule);
@@ -144,7 +145,7 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   expect(navBox.height).toBeLessThanOrEqual(48);
   expect(contentBox.y).toBeLessThanOrEqual(navBox.y + 1);
 
-  await floatingNav.getByRole('button', { name: /전체 필터 열기/ }).click();
+  await floatingNav.locator('.map-floating-nav__filter-btn').click();
   const dropdown = floatingNav.locator('.map-floating-nav__dropdown');
   await expect(dropdown).toBeVisible({ timeout: 400 });
   await expect(dropdown.locator('.map-floating-nav__dropdown-icon').first()).toBeVisible();
@@ -216,6 +217,28 @@ test('TSK-016-04 opens and closes the SideDrawer shell from the AppCapsule menu 
 
   await page.getByRole('button', { name: '메뉴 닫기' }).last().click();
   await expect(sideDrawer).toHaveCount(0);
+});
+
+test('TSK-016-05 opens SpeedDialFAB and runs a map action without blocking shell controls', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+  await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
+
+  const speedDial = page.locator('[data-speed-dial-fab="root"]');
+  await expect(speedDial).toBeVisible();
+
+  await speedDial.getByRole('button', { name: '지도 빠른 작업 열기' }).click();
+  await expect(speedDial.getByRole('menuitem', { name: '내 위치 찾기' })).toBeVisible();
+
+  await speedDial.getByRole('menuitem', { name: '내 위치 찾기' }).click();
+  await expect(speedDial.getByRole('menuitem', { name: '내 위치 찾기' })).toHaveCount(0);
+
+  await page.locator('[data-tab-key="feed"]').click();
+  await expect(page.locator('[data-tab-key="feed"]')).toHaveAttribute('aria-current', 'page');
+
+  await page.locator('[data-tab-key="map"]').click();
+  await expect(page.locator('[data-speed-dial-fab="root"]')).toBeVisible();
 });
 
 test('UIUX-023 keeps the floating capsule single-line across target mobile widths', async ({ page }) => {

@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { AppCapsule } from '../../src/components/app-shell/AppCapsule';
 import { SideDrawer } from '../../src/components/app-shell/SideDrawer';
+import { SpeedDialFAB } from '../../src/components/app-shell/SpeedDialFAB';
 import type { GlobalSettingsMenuProps } from '../../src/components/GlobalSettingsMenu';
 
 const globalUtility: GlobalSettingsMenuProps = {
@@ -91,7 +92,48 @@ describe('AppCapsule shell contract', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('does not introduce history, settings route, or ti icon coupling', () => {
+  it('renders SpeedDialFAB from an actions array and closes after an enabled action click', async () => {
+    const user = userEvent.setup();
+    const onLocate = vi.fn();
+    const onDisabled = vi.fn();
+
+    render(
+      <SpeedDialFAB
+        actions={[
+          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">◎</span>, onClick: onLocate },
+          { id: 'disabled', label: '사용 불가', onClick: onDisabled, disabled: true },
+        ]}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '지도 빠른 작업 열기' }));
+
+    expect(screen.getByRole('menuitem', { name: '내 위치 찾기' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: '사용 불가' })).toBeDisabled();
+
+    await user.click(screen.getByRole('menuitem', { name: '사용 불가' }));
+    expect(onDisabled).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('menuitem', { name: '내 위치 찾기' }));
+
+    expect(onLocate).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('menuitem', { name: '내 위치 찾기' })).not.toBeInTheDocument();
+  });
+
+  it('keeps SpeedDialFAB hidden when requested and without actions', () => {
+    const { rerender } = render(<SpeedDialFAB actions={[]} />);
+    expect(screen.queryByRole('button', { name: '지도 빠른 작업 열기' })).not.toBeInTheDocument();
+
+    rerender(
+      <SpeedDialFAB
+        hidden
+        actions={[{ id: 'locate', label: '내 위치 찾기', onClick: vi.fn() }]}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: '지도 빠른 작업 열기' })).not.toBeInTheDocument();
+  });
+
+  it('does not introduce history, settings route, ti icon, or icon package coupling', () => {
     const capsuleSource = readFileSync(
       join(process.cwd(), 'src/components/app-shell/AppCapsule.tsx'),
       'utf8',
@@ -100,11 +142,20 @@ describe('AppCapsule shell contract', () => {
       join(process.cwd(), 'src/components/app-shell/SideDrawer.tsx'),
       'utf8',
     );
-    const source = `${capsuleSource}\n${sideDrawerSource}`;
+    const speedDialSource = readFileSync(
+      join(process.cwd(), 'src/components/app-shell/SpeedDialFAB.tsx'),
+      'utf8',
+    );
+    const appMapStageViewSource = readFileSync(
+      join(process.cwd(), 'src/components/AppMapStageView.tsx'),
+      'utf8',
+    );
+    const source = `${capsuleSource}\n${sideDrawerSource}\n${speedDialSource}\n${appMapStageViewSource}`;
 
     expect(source).not.toContain('window.history');
     expect(source).not.toContain('/settings');
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
+    expect(source).not.toContain('@tabler');
     expect(capsuleSource).toContain('notificationPanelMode="floating"');
   });
 });

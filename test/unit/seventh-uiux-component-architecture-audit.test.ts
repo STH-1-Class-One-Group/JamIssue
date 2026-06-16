@@ -46,17 +46,18 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(mapFloatingNav).not.toContain('map-floating-nav__icon-btn');
   });
 
-  it('tracks the TSK-016 component implementation boundary after SideDrawer shell creation', () => {
+  it('tracks the TSK-016 app-shell component implementation boundary', () => {
     expect(repoFileExists('src/components/app-shell/AppCapsule.tsx')).toBe(true);
     expect(repoFileExists('src/components/app-shell/SideDrawer.tsx')).toBe(true);
+    expect(repoFileExists('src/components/app-shell/SpeedDialFAB.tsx')).toBe(true);
 
-    const deferredCandidateFiles = [
+    const forbiddenCandidateFiles = [
       'src/components/SideDrawer.tsx',
       'src/components/SpeedDialFAB.tsx',
       'src/components/map-stage/SpeedDialFAB.tsx',
     ];
 
-    for (const candidateFile of deferredCandidateFiles) {
+    for (const candidateFile of forbiddenCandidateFiles) {
       expect(repoFileExists(candidateFile), candidateFile).toBe(false);
     }
 
@@ -68,17 +69,35 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(sideDrawer).not.toContain('/settings');
   });
 
-  it('keeps the icon dependency baseline free of Tabler ti-* class assumptions', () => {
-    const packageJson = readRepoFile('package.json');
-    const mapFloatingNav = readRepoFile('src/components/map-stage/MapFloatingNav.tsx');
+  it('keeps SpeedDialFAB as an action-array contract without route or icon-library coupling', () => {
+    const speedDialFab = readRepoFile('src/components/app-shell/SpeedDialFAB.tsx');
+    const appMapStageView = readRepoFile('src/components/AppMapStageView.tsx');
 
-    expect(packageJson).not.toMatch(/tabler/i);
-    expect(mapFloatingNav).not.toMatch(/className=["'`][^"'`]*\bti-/);
+    expect(speedDialFab).toContain('export interface FABAction');
+    expect(speedDialFab).toContain('export interface SpeedDialFABProps');
+    expect(speedDialFab).toContain('actions: FABAction[]');
+    expect(speedDialFab).toContain('await action.onClick()');
+    expect(speedDialFab).not.toContain('/settings');
+    expect(speedDialFab).not.toContain('window.history');
+    expect(speedDialFab).not.toMatch(/\bti-/);
+    expect(appMapStageView).toContain("import { SpeedDialFAB } from './app-shell/SpeedDialFAB'");
+    expect(appMapStageView).toContain("id: 'locate-current-position'");
   });
 
-  it('records BottomNav and MapBottomSheet as separate contracts that future FAB work must avoid overlapping', () => {
+  it('keeps the icon dependency baseline free of Tabler ti-* class assumptions', () => {
+    const packageJson = readRepoFile('package.json');
+    const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
+    const speedDialFab = readRepoFile('src/components/app-shell/SpeedDialFAB.tsx');
+
+    expect(packageJson).not.toMatch(/tabler/i);
+    expect(appCapsule).not.toMatch(/className=["'`][^"'`]*\bti-/);
+    expect(speedDialFab).not.toMatch(/className=["'`][^"'`]*\bti-/);
+  });
+
+  it('records BottomNav and MapBottomSheet as separate contracts that FAB work must avoid overlapping', () => {
     const bottomNav = readRepoFile('src/components/BottomNav.tsx');
     const mapBottomSheet = readRepoFile('src/components/map-stage/MapBottomSheet.tsx');
+    const appMapStageView = readRepoFile('src/components/AppMapStageView.tsx');
 
     expect(bottomNav).toContain('export function BottomNav');
     expect(bottomNav).toContain('bottom-nav__active-pill');
@@ -90,5 +109,7 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(mapBottomSheet).toContain('onClose');
     expect(mapBottomSheet).toContain('onCollapse');
     expect(mapBottomSheet).toContain('onExpand');
+
+    expect(appMapStageView).toContain("hidden={mapData.drawerState !== 'closed' || Boolean(mapData.selectedTourismPlace)}");
   });
 });

@@ -43,6 +43,8 @@
   --layer-app-header: 40;
   --z-floating-nav: 96;
   --z-floating-nav-dropdown: 97;
+  --speed-dial-bottom-offset: calc(var(--bottom-nav-offset) + 24px);
+  --speed-dial-inline-offset: 20px;
   --z-splash: 200;
   --layer-utility: 1200;
   --layer-utility-panel: 1201;
@@ -3049,6 +3051,70 @@ textarea {
 .side-drawer__content {
   min-height: 0;
   padding: 16px;
+}
+
+.speed-dial-fab {
+  position: absolute;
+  right: var(--speed-dial-inline-offset);
+  bottom: var(--speed-dial-bottom-offset);
+  z-index: calc(var(--z-floating-nav) - 1);
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  pointer-events: none;
+}
+
+.speed-dial-fab__menu {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.speed-dial-fab__trigger,
+.speed-dial-fab__action {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 127, 168, 0.3);
+  background: rgba(255, 252, 249, 0.96);
+  box-shadow: 0 14px 28px rgba(66, 40, 60, 0.14);
+  color: var(--ink);
+  font-weight: 800;
+  pointer-events: auto;
+}
+
+.speed-dial-fab__trigger {
+  width: 48px;
+  height: 48px;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--pink-deep);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.speed-dial-fab__action {
+  min-height: 40px;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.speed-dial-fab__action:disabled {
+  cursor: default;
+  opacity: 0.54;
+}
+
+.speed-dial-fab__action-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.speed-dial-fab__action-label {
+  white-space: nowrap;
 }
 
 .phone-shell--map.app-shell--header-hidden .map-surface-frame .map-floating-controls {
