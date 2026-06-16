@@ -23,3 +23,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/477
   - Merge commit: 4d57037a77afb184320ba06887eb971d33d85044
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-012-20: https://github.com/STH-1-Class-One-Group/JamIssue/issues/482
+  - Title: KTO map interaction response under 300ms
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/482
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/483
+  - Merge commit: 4f953b36427aa262528be493d78d1b1abe7b0165
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
