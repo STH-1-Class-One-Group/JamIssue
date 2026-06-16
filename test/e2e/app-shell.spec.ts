@@ -9,6 +9,15 @@ async function requireBoundingBox(locator: Locator) {
   return box;
 }
 
+async function expectElementCenterToResolveInside(locator: Locator, closestSelector: string) {
+  const isTargetHit = await locator.evaluate((element, selector) => {
+    const rect = element.getBoundingClientRect();
+    const target = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    return Boolean(target?.closest(selector));
+  }, closestSelector);
+  expect(isTargetHit).toBe(true);
+}
+
 test('mobile app shell exposes primary tabs from the built bundle', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
@@ -195,6 +204,29 @@ test('UIUX-024 keeps notification panel above the floating capsule overlay layer
   expect(isPanelTopHitTarget).toBe(true);
 });
 
+test('TSK-016-06 keeps notification panel above the capsule across target mobile widths', async ({ page }) => {
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await installApiFixtures(page, createE2EAppState());
+
+    await page.goto('/');
+
+    const appCapsule = page.locator('[data-app-capsule="root"]');
+    await expect(appCapsule).toBeVisible();
+
+    await appCapsule.locator('.global-settings-menu__trigger').click();
+    await appCapsule.locator('.global-settings-menu__item').first().click();
+
+    const notificationPanel = page.locator('.global-notification-panel');
+    await expect(notificationPanel).toBeVisible();
+    await expectElementCenterToResolveInside(notificationPanel, '.global-notification-panel');
+
+    const capsuleBox = await requireBoundingBox(appCapsule);
+    const panelBox = await requireBoundingBox(notificationPanel);
+    expect(panelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height - 1);
+  }
+});
+
 test('TSK-016-04 opens and closes the SideDrawer shell from the AppCapsule menu action', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
@@ -239,6 +271,57 @@ test('TSK-016-05 opens SpeedDialFAB and runs a map action without blocking shell
 
   await page.locator('[data-tab-key="map"]').click();
   await expect(page.locator('[data-speed-dial-fab="root"]')).toBeVisible();
+});
+
+test('TSK-016-06 keeps FAB hidden and bottom navigation hittable while map drawers are open', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await installApiFixtures(page, createE2EAppState());
+
+  for (const drawerState of ['peek', 'half', 'full']) {
+    await page.goto(`/?tab=map&place=place-1&drawer=${drawerState}`);
+    await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
+
+    const drawer = page.locator(`[data-map-sheet-state="${drawerState}"]`);
+    const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+
+    await expect(drawer).toBeVisible();
+    await expect(page.locator('[data-speed-dial-fab="root"]')).toHaveCount(0);
+    await expect(bottomNav).toBeVisible();
+    await expect(bottomNav).toHaveCSS('pointer-events', 'auto');
+    await expect(bottomNav).toHaveCSS('opacity', '1');
+
+    const drawerBox = await requireBoundingBox(drawer);
+    const bottomNavBox = await requireBoundingBox(bottomNav);
+    expect(bottomNavBox.y - (drawerBox.y + drawerBox.height)).toBeGreaterThanOrEqual(10);
+    await expectElementCenterToResolveInside(bottomNav.locator('[data-tab-key="feed"]'), '.bottom-nav');
+  }
+});
+
+test('TSK-016-06 keeps KTO toggle and filter responsive after overlay layering changes', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+
+  const appCapsule = page.locator('[data-app-capsule="root"]');
+  const floatingNav = appCapsule.locator('[data-map-floating-nav="root"]');
+  await expect(appCapsule).toBeVisible();
+  await expect(floatingNav).toBeVisible();
+
+  await floatingNav.locator('[data-tourism-toggle="map"]').click();
+  await expect(floatingNav.locator('[data-tourism-toggle="map"]')).toHaveAttribute('aria-pressed', 'true', { timeout: 400 });
+  await expect.poll(() => tourismRequests.length).toBe(1);
+  expect(tourismRequests[0]).toContain('scope=all');
+
+  await floatingNav.locator('.map-floating-nav__filter-btn').click();
+  await expect(floatingNav.locator('.map-floating-nav__dropdown')).toBeVisible({ timeout: 400 });
+  await page.screenshot({ timeout: 1000 });
 });
 
 test('UIUX-023 keeps the floating capsule single-line across target mobile widths', async ({ page }) => {
