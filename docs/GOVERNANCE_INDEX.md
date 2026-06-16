@@ -100,3 +100,35 @@ TSK-015 owns only Web Front drawer, navigation, and branded app icon UI work.
 | OAuth success path changes | Separate auth issue |
 | KTO provider contract changes | Separate provider contract issue |
 | Review/stamp business logic changes | Separate product bug or feature issue |
+
+## TSK-016 Core Row
+
+| Core | Parent Issue | Responsibility | Keywords | Misroute examples |
+| --- | --- | --- | --- | --- |
+| `TSK-016-00-UIUX-GLOBAL-CAPSULE-NAV-ACTION-ARCHITECTURE` | [#508](https://github.com/STH-1-Class-One-Group/JamIssue/issues/508) | 7th UI/UX global capsule navigation, SideDrawer shell, and expandable action architecture | app capsule; global capsule; side drawer; speed dial; FAB; component architecture | 6th drawer/nav/PWA icon work, backend provider contract, DB schema, OAuth flow, KTO provider contract |
+
+## TSK-016 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#509](https://github.com/STH-1-Class-One-Group/JamIssue/issues/509) | `seventh-uiux-component-architecture-audit` | in progress | baseline evidence pending |
+| [#510](https://github.com/STH-1-Class-One-Group/JamIssue/issues/510) | `app-capsule-shell-contract` | planned | pending |
+| [#511](https://github.com/STH-1-Class-One-Group/JamIssue/issues/511) | `capsule-center-controls-migration` | planned | pending |
+| [#512](https://github.com/STH-1-Class-One-Group/JamIssue/issues/512) | `side-drawer-shell-foundation` | planned | pending |
+| [#513](https://github.com/STH-1-Class-One-Group/JamIssue/issues/513) | `speed-dial-fab-action-contract` | planned | pending |
+| [#514](https://github.com/STH-1-Class-One-Group/JamIssue/issues/514) | `capsule-fab-zindex-and-e2e-regression` | planned | pending |
+| [#515](https://github.com/STH-1-Class-One-Group/JamIssue/issues/515) | `seventh-uiux-docs-traceability` | planned | pending |
+
+## TSK-016 Scope Guard
+
+TSK-016 owns only Web Front global capsule navigation, SideDrawer shell, SpeedDialFAB contract, and related architecture traceability.
+
+| Excluded target | Handling rule |
+| --- | --- |
+| 6th drawer, bottom navigation, and PWA icon redesign | TSK-015 child issues |
+| Backend provider contract changes | Separate backend/admin contract issue |
+| DB schema changes | Separate migration issue |
+| OAuth success path changes | Separate auth issue |
+| KTO provider contract changes | Separate provider contract issue |
+| SideDrawer menu IA and new user-facing copy | Separate UI copy or IA issue |
+| New icon library adoption | Separate dependency and design-system issue |
