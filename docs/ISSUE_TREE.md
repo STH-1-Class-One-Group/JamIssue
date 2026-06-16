@@ -77,3 +77,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/526
   - Merge commit: 434aefb99430b121dd0b7b97998c2334810ca027
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-06: https://github.com/STH-1-Class-One-Group/JamIssue/issues/514
+  - Title: capsule FAB z-index and E2E regression
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/514
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/529
+  - Merge commit: 3d8be5e011eeb115d917034db17882e737accd3a
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
