@@ -1,13 +1,15 @@
 # Task ID Ledger
 
 Status: generated readback
-Source: docs/traceability/task-ledger.jsonl
+Source: docs/traceability/task-ledger/by-task/*.json
+Aggregate: docs/traceability/task-ledger.jsonl
 Scope: durable issue, PR, merge, document, and gap traceability for `agent_bootstrap` task artifacts.
 
 ## Rules
 
 - Markdown table은 generated readback이며 사람이 직접 row를 append하지 않습니다.
-- Canonical readback source는 `docs/traceability/task-ledger.jsonl`입니다.
+- Canonical finish write target은 task별 shard `docs/traceability/task-ledger/by-task/<task-id>.json`입니다.
+- Aggregate JSONL은 coordinator/integration render가 생성하는 readback입니다.
 - GitHub issue/checklist/PR/CI/merge/readback authority를 대체하지 않습니다.
 - Completed row는 PR URL, 40-hex merge commit, 문서 경로, 왜 해결, 무슨 문제, 어떻게 해결, 남은 gap을 가져야 합니다.
 - Legacy mojibake row는 `legacy-debt`로만 남기며 completion evidence가 아닙니다.
@@ -21,3 +23,4 @@ Scope: durable issue, PR, merge, document, and gap traceability for `agent_boots
 | TSK-012-18 | https://github.com/STH-1-Class-One-Group/JamIssue/issues/474 | https://github.com/STH-1-Class-One-Group/JamIssue/pull/477 | 4d57037a77afb184320ba06887eb971d33d85044 | docs/traceability/task-ledger.jsonl; docs/TASK_ID_LEDGER.md; docs/ISSUE_TREE.md | Prevent map floating capsule click freeze and Naver default control overlap. | The all filter should open without API calls, but production showed renderer freeze or screenshot timeout. | Added E2E coverage for dropdown opening, screenshot success, and no tourism API call. | Initial KTO full load performance stayed in a separate hardening scope. | completed |
 | TSK-012-20 | https://github.com/STH-1-Class-One-Group/JamIssue/issues/482 | https://github.com/STH-1-Class-One-Group/JamIssue/pull/483 | 4f953b36427aa262528be493d78d1b1abe7b0165 | docs/traceability/task-ledger.jsonl; docs/TASK_ID_LEDGER.md; docs/ISSUE_TREE.md | Keep KTO map interactions responsive under the 300ms interaction target. | Large marker insertion could still cause screenshot timeout and renderer freeze. | Changed caps, batch size, requestAnimationFrame scheduling, and diff-based SDK mutation. | Payload slimming, edge cache, and server-side viewport query remain backend candidates. | completed |
 | TSK-012-21 | https://github.com/STH-1-Class-One-Group/JamIssue/issues/485 | https://github.com/STH-1-Class-One-Group/JamIssue/pull/486 | a7e9a9b161dccd4106566d8a8bcd325d9bec19c6 | docs/traceability/task-ledger.jsonl; docs/TASK_ID_LEDGER.md; docs/ISSUE_TREE.md | Align Web Front with the KTO scope all KV snapshot compact read model. | The list response total was optional and snapshot not-ready states were not fixed as retryable disabled KTO layer states. | Made total required, kept KTO ON to one scope all call, kept filters local, and lazy-loaded detail by id. | Marker click detail sheet is not covered in E2E without a Naver client id, so lazy-load is covered through hook tests. | completed |
+| TSK-015-07 | https://github.com/STH-1-Class-One-Group/JamIssue/issues/497 | https://github.com/STH-1-Class-One-Group/JamIssue/pull/504 | fdccaee851b790b57cd6f99ff9735881bfb1317d | docs/ui-ux-qa-matrix.md; docs/release-candidate-1.3.5.md; reports/completion/TSK-015-07-sixth-uiux-qa-traceability.md; .tmp-wiki/Release-Notes-1.3.5.md; .tmp-wiki/UI-UX-QA-Matrix.md | Record the completed sixth UI/UX drawer, bottom navigation, and PWA icon redesign evidence in docs and Wiki. | TSK-015 implementation PRs were merged, but QA matrix, release candidate notes, Wiki navigation, and parent-child completion evidence were not yet aligned. | Updated repo QA/release/completion docs, updated Wiki Home/Release Notes/Sidebar/QA matrix/1.3.5 candidate, and recorded PR, merge SHA, CI, and validation evidence on #497 and #490. | None for traceability. 1.3.5 remains a release candidate until a separate release publication task issues the official tag/release. | completed |
