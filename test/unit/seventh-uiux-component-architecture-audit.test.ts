@@ -36,6 +36,7 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(appMapStageView).toContain("import { AppCapsule } from './app-shell/AppCapsule'");
     expect(appMapStageView).toContain('<AppCapsule');
     expect(appMapStageView).toContain('center={(');
+    expect(appMapStageView).toContain('onOpenMenu={onOpenMenu}');
     expect(mapFloatingNav).toContain('export interface MapFloatingNavProps');
     expect(mapFloatingNav).toContain('activeCategory');
     expect(mapFloatingNav).toContain('activeTourismDisplayGroup');
@@ -45,12 +46,12 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(mapFloatingNav).not.toContain('map-floating-nav__icon-btn');
   });
 
-  it('tracks the TSK-016 component implementation boundary after AppCapsule shell creation', () => {
+  it('tracks the TSK-016 component implementation boundary after SideDrawer shell creation', () => {
     expect(repoFileExists('src/components/app-shell/AppCapsule.tsx')).toBe(true);
+    expect(repoFileExists('src/components/app-shell/SideDrawer.tsx')).toBe(true);
 
     const deferredCandidateFiles = [
       'src/components/SideDrawer.tsx',
-      'src/components/app-shell/SideDrawer.tsx',
       'src/components/SpeedDialFAB.tsx',
       'src/components/map-stage/SpeedDialFAB.tsx',
     ];
@@ -58,6 +59,13 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     for (const candidateFile of deferredCandidateFiles) {
       expect(repoFileExists(candidateFile), candidateFile).toBe(false);
     }
+
+    const sideDrawer = readRepoFile('src/components/app-shell/SideDrawer.tsx');
+    expect(sideDrawer).toContain('export interface SideDrawerProps');
+    expect(sideDrawer).toContain('children?: ReactNode');
+    expect(sideDrawer).toContain('onClose');
+    expect(sideDrawer).not.toContain('메뉴 준비 중');
+    expect(sideDrawer).not.toContain('/settings');
   });
 
   it('keeps the icon dependency baseline free of Tabler ti-* class assumptions', () => {

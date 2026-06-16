@@ -194,6 +194,30 @@ test('UIUX-024 keeps notification panel above the floating capsule overlay layer
   expect(isPanelTopHitTarget).toBe(true);
 });
 
+test('TSK-016-04 opens and closes the SideDrawer shell from the AppCapsule menu action', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+
+  const appCapsule = page.locator('[data-app-capsule="root"]');
+  await expect(appCapsule).toBeVisible();
+
+  await appCapsule.getByRole('button', { name: '메뉴 열기' }).click();
+
+  const sideDrawer = page.getByRole('dialog', { name: '사이드 메뉴' });
+  await expect(sideDrawer).toBeVisible();
+  await expect(page.getByText('메뉴 준비 중')).toHaveCount(0);
+  await expect(page.locator('[data-side-drawer-slot="content"]')).toBeEmpty();
+
+  const drawerBox = await requireBoundingBox(sideDrawer);
+  const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+  expect(drawerBox.x).toBeGreaterThanOrEqual(phoneShellBox.x - 1);
+  expect(drawerBox.x + drawerBox.width).toBeLessThan(phoneShellBox.x + phoneShellBox.width);
+
+  await page.getByRole('button', { name: '메뉴 닫기' }).last().click();
+  await expect(sideDrawer).toHaveCount(0);
+});
+
 test('UIUX-023 keeps the floating capsule single-line across target mobile widths', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 

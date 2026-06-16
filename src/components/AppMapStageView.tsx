@@ -81,7 +81,9 @@ interface AppMapStageViewProps {
     onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
   };
   globalUtility: GlobalSettingsMenuProps;
+  menuOpen: boolean;
   onNavigateBack: () => void;
+  onOpenMenu: () => void;
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
@@ -89,7 +91,9 @@ export const AppMapStageView = memo(function AppMapStageView({
   mapData,
   mapActions,
   globalUtility,
+  menuOpen,
   onNavigateBack,
+  onOpenMenu,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
@@ -97,7 +101,9 @@ export const AppMapStageView = memo(function AppMapStageView({
         <AppCapsule
           canNavigateBack={canNavigateBack}
           globalUtility={globalUtility}
+          menuOpen={menuOpen}
           onNavigateBack={onNavigateBack}
+          onOpenMenu={onOpenMenu}
           center={(
             <MapFloatingNav
               activeCategory={mapData.activeCategory}
