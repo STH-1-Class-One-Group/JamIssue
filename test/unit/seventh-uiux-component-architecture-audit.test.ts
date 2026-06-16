@@ -29,15 +29,20 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(appHeader).not.toContain('window.history');
   });
 
-  it('records that the map capsule responsibilities are still owned by MapFloatingNav', () => {
+  it('records that map center controls moved under the AppCapsule shell', () => {
+    const appMapStageView = readRepoFile('src/components/AppMapStageView.tsx');
     const mapFloatingNav = readRepoFile('src/components/map-stage/MapFloatingNav.tsx');
 
+    expect(appMapStageView).toContain("import { AppCapsule } from './app-shell/AppCapsule'");
+    expect(appMapStageView).toContain('<AppCapsule');
+    expect(appMapStageView).toContain('center={(');
     expect(mapFloatingNav).toContain('export interface MapFloatingNavProps');
     expect(mapFloatingNav).toContain('activeCategory');
     expect(mapFloatingNav).toContain('activeTourismDisplayGroup');
     expect(mapFloatingNav).toContain('onToggleTourismInfo');
     expect(mapFloatingNav).toContain('buildTourismDisplayGroupItems');
-    expect(mapFloatingNav).toContain('<GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />');
+    expect(mapFloatingNav).not.toContain('GlobalSettingsMenu');
+    expect(mapFloatingNav).not.toContain('map-floating-nav__icon-btn');
   });
 
   it('tracks the TSK-016 component implementation boundary after AppCapsule shell creation', () => {

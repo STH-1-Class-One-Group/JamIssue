@@ -10,11 +10,13 @@ import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, 
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
+import { AppCapsule } from './app-shell/AppCapsule';
 import { MapTabStage } from './MapTabStage';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
 import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 
 interface AppMapStageViewProps {
+  canNavigateBack: boolean;
   mapData: {
     activeCategory: Category;
     activeTourismDisplayGroup: TourismDisplayGroupFilter;
@@ -79,29 +81,38 @@ interface AppMapStageViewProps {
     onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
   };
   globalUtility: GlobalSettingsMenuProps;
+  onNavigateBack: () => void;
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
+  canNavigateBack,
   mapData,
   mapActions,
   globalUtility,
+  onNavigateBack,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
       floatingNav={(
-        <MapFloatingNav
-          activeCategory={mapData.activeCategory}
-          activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
-          showTourismInfo={mapData.showTourismInfo}
-          tourismFacets={mapData.tourismFacets}
-          tourismPlaces={mapData.tourismPlaces}
-          tourismSourceReady={mapData.tourismSourceReady}
-          tourismLoading={mapData.tourismLoading}
-          tourismError={mapData.tourismError}
+        <AppCapsule
+          canNavigateBack={canNavigateBack}
           globalUtility={globalUtility}
-          onSelectCategory={mapActions.setActiveCategory}
-          onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
-          onToggleTourismInfo={mapActions.onToggleTourismInfo}
+          onNavigateBack={onNavigateBack}
+          center={(
+            <MapFloatingNav
+              activeCategory={mapData.activeCategory}
+              activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
+              showTourismInfo={mapData.showTourismInfo}
+              tourismFacets={mapData.tourismFacets}
+              tourismPlaces={mapData.tourismPlaces}
+              tourismSourceReady={mapData.tourismSourceReady}
+              tourismLoading={mapData.tourismLoading}
+              tourismError={mapData.tourismError}
+              onSelectCategory={mapActions.setActiveCategory}
+              onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
+              onToggleTourismInfo={mapActions.onToggleTourismInfo}
+            />
+          )}
         />
       )}
       mapData={{

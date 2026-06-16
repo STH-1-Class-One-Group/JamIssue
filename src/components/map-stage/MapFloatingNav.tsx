@@ -3,7 +3,6 @@ import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceItem } from 
 import type { Category } from '../../types/core';
 import { categoryInfo, categoryItems } from '../../lib/categories';
 import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
-import { GlobalSettingsMenu, type GlobalSettingsMenuProps } from '../GlobalSettingsMenu';
 
 type FloatingFilterItem = {
   key: string;
@@ -20,7 +19,6 @@ export interface MapFloatingNavProps {
   tourismSourceReady: boolean;
   tourismLoading: boolean;
   tourismError: string | null;
-  globalUtility: GlobalSettingsMenuProps;
   onSelectCategory: (category: Category) => void;
   onSelectTourismDisplayGroup: (displayGroup: TourismDisplayGroupFilter) => void;
   onToggleTourismInfo: () => void;
@@ -35,7 +33,6 @@ export function MapFloatingNav({
   tourismSourceReady,
   tourismLoading,
   tourismError,
-  globalUtility,
   onSelectCategory,
   onSelectTourismDisplayGroup,
   onToggleTourismInfo,
@@ -82,10 +79,6 @@ export function MapFloatingNav({
 
   return (
     <div className="map-floating-nav" data-map-floating-nav="root">
-      <button type="button" className="map-floating-nav__icon-btn" aria-label="메뉴" aria-disabled="true">
-        <span aria-hidden="true">☰</span>
-      </button>
-
       <div className="map-floating-nav__filter" ref={filterRef}>
         <button
           type="button"
@@ -159,7 +152,6 @@ export function MapFloatingNav({
           {tourismError}
         </span>
       ) : null}
-      <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
     </div>
   );
 }

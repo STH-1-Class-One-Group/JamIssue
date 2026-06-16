@@ -28,6 +28,7 @@ export function AppCapsule({
           className="app-capsule__menu-button"
           aria-label="메뉴 열기"
           aria-expanded={onOpenMenu ? menuOpen : undefined}
+          disabled={!onOpenMenu}
           onClick={onOpenMenu}
         >
           <span aria-hidden="true">☰</span>
@@ -46,7 +47,7 @@ export function AppCapsule({
         {center}
       </div>
       <div className="app-capsule__actions" data-app-capsule-slot="actions">
-        <GlobalSettingsMenu {...globalUtility} />
+        <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
       </div>
     </nav>
   );

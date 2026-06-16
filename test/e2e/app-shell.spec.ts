@@ -43,7 +43,7 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   const phoneShell = page.locator('[data-app-shell="phone"]');
   const contentSlot = page.locator('[data-app-shell-slot="content"]');
   const bottomTabSlot = page.locator('[data-app-shell-slot="bottom-tab"]');
-  const bottomNav = page.getByRole('navigation');
+  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
   const bottomNavItems = bottomNav.locator('.bottom-nav__item');
 
   await expect(phoneShell).toBeVisible();
@@ -71,7 +71,7 @@ test('UIUX-013 keeps five-tab IA and hides map stage on non-map tabs', async ({ 
 
   await page.goto('/');
 
-  const bottomNav = page.getByRole('navigation');
+  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
   const tabKeys = await bottomNav.locator('.bottom-nav__item').evaluateAll((items) => (
     items.map((item) => item.getAttribute('data-tab-key'))
   ));
@@ -96,7 +96,7 @@ test('UIUX-014 keeps tab content surfaces accessible inside the app shell', asyn
 
   await page.goto('/');
 
-  const bottomNav = page.getByRole('navigation');
+  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
 
   for (const tabKey of ['event', 'feed', 'course', 'my']) {
     await bottomNav.locator(`[data-tab-key="${tabKey}"]`).click();
@@ -124,20 +124,22 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   await page.goto('/');
 
   const phoneShell = page.locator('[data-app-shell="phone"]');
-  const floatingNav = page.locator('[data-map-floating-nav="root"]');
+  const appCapsule = page.locator('[data-app-capsule="root"]');
+  const floatingNav = appCapsule.locator('[data-map-floating-nav="root"]');
   const contentBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
 
   await expect(phoneShell).toHaveClass(/app-shell--header-hidden/);
   await expect(phoneShell).toHaveClass(/app-shell--no-subnav/);
   await expect(page.locator('[data-app-shell-slot="header"]')).toHaveCount(0);
   await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
+  await expect(appCapsule).toBeVisible();
   await expect(floatingNav).toBeVisible();
   await expect(page.locator('.map-filter-strip')).toHaveCount(0);
   await expect(floatingNav.locator('.map-floating-nav__filter-icon')).toBeVisible();
   await expect(floatingNav.locator('.map-floating-nav__filter-label')).toHaveText('전체');
   await expect(floatingNav.locator('.map-floating-nav__filter-caret')).toBeVisible();
 
-  const navBox = await requireBoundingBox(floatingNav);
+  const navBox = await requireBoundingBox(appCapsule);
   expect(navBox.height).toBeGreaterThanOrEqual(42);
   expect(navBox.height).toBeLessThanOrEqual(48);
   expect(contentBox.y).toBeLessThanOrEqual(navBox.y + 1);
@@ -167,17 +169,19 @@ test('UIUX-024 keeps notification panel above the floating capsule overlay layer
 
   await page.goto('/');
 
-  const floatingNav = page.locator('[data-map-floating-nav="root"]');
+  const appCapsule = page.locator('[data-app-capsule="root"]');
+  const floatingNav = appCapsule.locator('[data-map-floating-nav="root"]');
+  await expect(appCapsule).toBeVisible();
   await expect(floatingNav).toBeVisible();
 
-  await floatingNav.locator('.global-settings-menu__trigger').click();
-  await floatingNav.locator('.global-settings-menu__item').first().click();
+  await appCapsule.locator('.global-settings-menu__trigger').click();
+  await appCapsule.locator('.global-settings-menu__item').first().click();
 
   const notificationPanel = page.locator('.global-notification-panel');
   await expect(notificationPanel).toBeVisible();
   await expect(floatingNav.locator('.global-notification-panel')).toHaveCount(0);
 
-  const navBox = await requireBoundingBox(floatingNav);
+  const navBox = await requireBoundingBox(appCapsule);
   const panelBox = await requireBoundingBox(notificationPanel);
   expect(panelBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height - 1);
   expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(navBox.x + navBox.width + 1);
@@ -197,14 +201,16 @@ test('UIUX-023 keeps the floating capsule single-line across target mobile width
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/');
 
-    const floatingNav = page.locator('[data-map-floating-nav="root"]');
+    const appCapsule = page.locator('[data-app-capsule="root"]');
+    const floatingNav = appCapsule.locator('[data-map-floating-nav="root"]');
+    await expect(appCapsule).toBeVisible();
     await expect(floatingNav).toBeVisible();
 
-    const navBox = await requireBoundingBox(floatingNav);
+    const navBox = await requireBoundingBox(appCapsule);
     expect(navBox.height).toBeGreaterThanOrEqual(42);
     expect(navBox.height).toBeLessThanOrEqual(48);
 
-    const hasHorizontalOverflow = await floatingNav.evaluate((element) => element.scrollWidth > element.clientWidth + 1);
+    const hasHorizontalOverflow = await appCapsule.evaluate((element) => element.scrollWidth > element.clientWidth + 1);
     expect(hasHorizontalOverflow).toBe(false);
   }
 });

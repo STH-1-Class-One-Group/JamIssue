@@ -2762,7 +2762,7 @@ textarea {
   padding: 12px 12px calc(78px + env(safe-area-inset-bottom));
 }
 
-.map-floating-nav {
+.app-capsule {
   position: absolute;
   top: calc(env(safe-area-inset-top, 0px) + 12px);
   left: 16px;
@@ -2782,8 +2782,24 @@ textarea {
   backdrop-filter: blur(12px);
 }
 
-.map-floating-nav__icon-btn,
-.map-floating-nav .global-settings-menu__trigger {
+.app-capsule__leading,
+.app-capsule__actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.app-capsule__center {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.app-capsule__menu-button,
+.app-capsule__back-button,
+.app-capsule .global-settings-menu__trigger {
   display: inline-flex;
   width: 28px;
   min-width: 28px;
@@ -2799,8 +2815,30 @@ textarea {
   box-shadow: none;
 }
 
-.map-floating-nav__icon-btn[aria-disabled="true"] {
+.app-capsule__menu-button:disabled,
+.app-capsule__back-button:disabled {
+  cursor: default;
   opacity: 0.72;
+}
+
+.map-floating-nav {
+  position: static;
+  z-index: auto;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  overflow: visible;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .map-floating-nav__filter {
@@ -2918,7 +2956,7 @@ textarea {
   border-color: rgba(255, 93, 146, 0.42);
 }
 
-.map-floating-nav .global-settings-menu {
+.app-capsule .global-settings-menu {
   flex: 0 0 auto;
   z-index: calc(var(--z-floating-nav-dropdown) + 1);
 }
@@ -2941,13 +2979,13 @@ textarea {
   color: #9b405f;
 }
 
-.map-floating-nav .global-settings-menu__menu {
+.app-capsule .global-settings-menu__menu {
   top: calc(100% + 10px);
   right: 0;
   z-index: calc(var(--z-floating-nav-dropdown) + 2);
 }
 
-.map-floating-nav .global-notification-panel {
+.app-capsule .global-notification-panel {
   top: calc(100% + 58px);
   right: 0;
   z-index: calc(var(--z-floating-nav-dropdown) + 3);
