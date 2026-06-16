@@ -1141,6 +1141,47 @@ body {
   font-size: var(--type-sm) !important;
 }
 
+.bottom-nav__item {
+  position: relative !important;
+  isolation: isolate !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.bottom-nav__active-pill {
+  position: absolute;
+  inset: 5px 4px;
+  z-index: -1;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.bottom-nav__item.is-active .bottom-nav__active-pill {
+  background: var(--ui-control-active-bg);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bottom-nav__icon {
+  display: block;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.bottom-nav__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
 .map-route-preview-card {
   bottom: calc(var(--bottom-nav-offset) + 28px) !important;
 }

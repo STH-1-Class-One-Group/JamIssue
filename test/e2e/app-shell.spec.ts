@@ -50,6 +50,9 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   await expect(contentSlot).toBeVisible();
   await expect(bottomTabSlot).toBeAttached();
   await expect(bottomNavItems).toHaveCount(5);
+  await expect(bottomNavItems.locator('.bottom-nav__icon')).toHaveCount(5);
+  await expect(bottomNavItems.locator('.bottom-nav__label')).toHaveCount(5);
+  await expect(bottomNav.locator('[aria-current="page"] .bottom-nav__active-pill')).toHaveCount(1);
 
   const shellBox = await requireBoundingBox(phoneShell);
   const navBox = await requireBoundingBox(bottomNav);
