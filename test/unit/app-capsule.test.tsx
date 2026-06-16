@@ -84,5 +84,6 @@ describe('AppCapsule shell contract', () => {
     expect(source).not.toContain('window.history');
     expect(source).not.toContain('/settings');
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
+    expect(source).toContain('notificationPanelMode="floating"');
   });
 });
