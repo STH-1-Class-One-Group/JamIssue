@@ -70,7 +70,12 @@ export default function App() {
       showEntrySplash
     >
       {activeTab === 'map' ? (
-        <AppMapStageView {...mapStageProps} globalUtility={globalUtility} />
+        <AppMapStageView
+          {...mapStageProps}
+          canNavigateBack={canNavigateBack}
+          globalUtility={globalUtility}
+          onNavigateBack={handleNavigateBack}
+        />
       ) : (
         <AppPageStage {...pageStageProps} />
       )}

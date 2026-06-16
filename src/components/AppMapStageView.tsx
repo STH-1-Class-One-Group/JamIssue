@@ -15,6 +15,8 @@ import { MapFloatingNav } from './map-stage/MapFloatingNav';
 import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 
 interface AppMapStageViewProps {
+  canNavigateBack: boolean;
+  onNavigateBack: () => void;
   mapData: {
     activeCategory: Category;
     activeTourismDisplayGroup: TourismDisplayGroupFilter;
@@ -82,14 +84,17 @@ interface AppMapStageViewProps {
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
+  canNavigateBack,
   mapData,
   mapActions,
+  onNavigateBack,
   globalUtility,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
       floatingNav={(
         <MapFloatingNav
+          canNavigateBack={canNavigateBack}
           activeCategory={mapData.activeCategory}
           activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
           showTourismInfo={mapData.showTourismInfo}
@@ -99,6 +104,7 @@ export const AppMapStageView = memo(function AppMapStageView({
           tourismLoading={mapData.tourismLoading}
           tourismError={mapData.tourismError}
           globalUtility={globalUtility}
+          onNavigateBack={onNavigateBack}
           onSelectCategory={mapActions.setActiveCategory}
           onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
           onToggleTourismInfo={mapActions.onToggleTourismInfo}

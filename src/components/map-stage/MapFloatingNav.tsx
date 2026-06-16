@@ -14,6 +14,7 @@ type FloatingFilterItem = {
 export interface MapFloatingNavProps {
   activeCategory: Category;
   activeTourismDisplayGroup: TourismDisplayGroupFilter;
+  canNavigateBack: boolean;
   showTourismInfo: boolean;
   tourismFacets: TourismFacets | null;
   tourismPlaces: TourismPlaceItem[];
@@ -21,6 +22,7 @@ export interface MapFloatingNavProps {
   tourismLoading: boolean;
   tourismError: string | null;
   globalUtility: GlobalSettingsMenuProps;
+  onNavigateBack: () => void;
   onSelectCategory: (category: Category) => void;
   onSelectTourismDisplayGroup: (displayGroup: TourismDisplayGroupFilter) => void;
   onToggleTourismInfo: () => void;
@@ -29,6 +31,7 @@ export interface MapFloatingNavProps {
 export function MapFloatingNav({
   activeCategory,
   activeTourismDisplayGroup,
+  canNavigateBack,
   showTourismInfo,
   tourismFacets,
   tourismPlaces,
@@ -36,6 +39,7 @@ export function MapFloatingNav({
   tourismLoading,
   tourismError,
   globalUtility,
+  onNavigateBack,
   onSelectCategory,
   onSelectTourismDisplayGroup,
   onToggleTourismInfo,
@@ -82,9 +86,24 @@ export function MapFloatingNav({
 
   return (
     <div className="map-floating-nav" data-map-floating-nav="root">
-      <button type="button" className="map-floating-nav__icon-btn" aria-label="메뉴" aria-disabled="true">
-        <span aria-hidden="true">☰</span>
-      </button>
+      <div className="map-floating-nav__leading">
+        <button type="button" className="map-floating-nav__icon-btn" aria-label="메뉴" aria-disabled="true">
+          <span aria-hidden="true">☰</span>
+        </button>
+        <button
+          type="button"
+          className="map-floating-nav__icon-btn"
+          aria-label="이전 화면으로 돌아가기"
+          aria-disabled={!canNavigateBack}
+          onClick={() => {
+            if (canNavigateBack) {
+              onNavigateBack();
+            }
+          }}
+        >
+          <span aria-hidden="true">←</span>
+        </button>
+      </div>
 
       <div className="map-floating-nav__filter" ref={filterRef}>
         <button

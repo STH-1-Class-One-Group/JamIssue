@@ -98,4 +98,35 @@ describe('MapBottomSheet', () => {
     expect(scrollContent).not.toBeNull();
     expect(scrollContent?.contains(image)).toBe(false);
   });
+
+  it('keeps the shared control rail in a chrome row above the media frame', () => {
+    render(
+      <MapBottomSheet
+        ariaLabel="테스트 시트"
+        drawerState="full"
+        sheetState="full"
+        media={<img src="/sample.jpg" alt="sample place" />}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+        onClose={vi.fn()}
+      >
+        <p>content</p>
+      </MapBottomSheet>,
+    );
+
+    const chrome = document.querySelector('.place-drawer__chrome');
+    const rail = document.querySelector('.place-drawer__control-rail');
+    const mediaFrame = document.querySelector('.map-bottom-sheet__media-frame');
+    const closeButton = screen.getByRole('button', { name: '시트 닫기' });
+    const minimizeButton = screen.getByRole('button', { name: '시트 최소화' });
+
+    expect(chrome).not.toBeNull();
+    expect(rail).not.toBeNull();
+    expect(mediaFrame).not.toBeNull();
+    expect(chrome?.contains(rail!)).toBe(true);
+    expect(chrome?.contains(closeButton)).toBe(true);
+    expect(chrome?.contains(minimizeButton)).toBe(true);
+    expect(mediaFrame?.contains(closeButton)).toBe(false);
+    expect(mediaFrame?.contains(minimizeButton)).toBe(false);
+  });
 });
