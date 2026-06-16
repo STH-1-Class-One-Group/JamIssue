@@ -1,14 +1,8 @@
 {
-  "Merge commit": "434aefb99430b121dd0b7b97998c2334810ca027",
-  "PR": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/526",
-  "claimedScope": [
-    "SpeedDialFAB action-array contract",
-    "MapTabStage quickActions render slot",
-    "Map stage locate action composition",
-    "FAB CSS safe offset tokens",
-    "Unit/source-quality/E2E validation seams"
-  ],
   "documentPaths": [
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md",
+    "docs/traceability/task-ledger/by-task/TSK-016-05.json",
     "src/components/AppMapStageView.tsx",
     "src/components/MapTabStage.tsx",
     "src/components/app-shell/SpeedDialFAB.tsx",
@@ -16,44 +10,18 @@
     "src/index.css",
     "test/e2e/app-shell.spec.ts",
     "test/unit/app-capsule.test.tsx",
-    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
-    "docs/traceability/task-ledger/by-task/TSK-016-05.json",
-    "docs/traceability/task-ledger.jsonl",
-    "docs/TASK_ID_LEDGER.md",
-    "docs/ISSUE_TREE.md"
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts"
   ],
-  "how": "Added SpeedDialFAB as an app-shell action-array component, exposed a MapTabStage quickActions slot, composed the map locate action from AppMapStageView, and guarded against route/history/settings/icon-library coupling with unit, source-quality, and E2E tests.",
+  "how": "`SpeedDialFAB`를 app-shell boundary에 추가하고 `MapTabStage` quick action slot을 통해 지도 주요 액션을 주입했다.",
   "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/513",
-  "mergeCommit": "434aefb99430b121dd0b7b97998c2334810ca027",
-  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/526",
-  "problem": "Map-level quick actions did not have a governed expansion boundary, so future actions could couple directly to route, map, settings, or icon-library internals.",
-  "remainingGap": "Capsule/FAB/drawer/notification z-index regression remains in TSK-016-06.",
+  "mergeCommit": "434aefb99430b121dd0b7b97998c2334810ca027; 4037b7302d50620e60d130cc9b9f4d4893321f65",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/526; https://github.com/STH-1-Class-One-Group/JamIssue/pull/527",
+  "problem": "기존 구조에는 전역 FAB action contract가 없어 지도 주요 액션을 재사용 가능한 배열 계약으로 확장할 수 없었다.",
+  "remainingGap": "`TSK-016-06`에서 capsule, FAB, bottom nav, bottom sheet, notification panel z-index/E2E 회귀를 별도로 처리한다.",
   "schemaVersion": "task-ledger-entry.v1",
   "status": "completed",
+  "storageSchemaVersion": "task-ledger-shard.v1",
   "taskId": "TSK-016-05",
-  "updatedAt": "2026-06-16T10:36:13Z",
-  "validationSeams": [
-    "test/unit/app-capsule.test.tsx",
-    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
-    "test/e2e/app-shell.spec.ts"
-  ],
-  "why": "The seventh UI/UX architecture needs quick actions to scale through an actions array while preserving AppCapsule, BottomNav, and MapBottomSheet boundaries.",
-  "남은 gap": "Capsule/FAB/drawer/notification z-index regression remains in TSK-016-06.",
-  "무슨 문제": "Map-level quick actions lacked a governed extension boundary and could regress into route/history/settings/icon-library coupling.",
-  "문서 경로": [
-    "src/components/AppMapStageView.tsx",
-    "src/components/MapTabStage.tsx",
-    "src/components/app-shell/SpeedDialFAB.tsx",
-    "src/components/map-stage/mapTabStageTypes.ts",
-    "src/index.css",
-    "test/e2e/app-shell.spec.ts",
-    "test/unit/app-capsule.test.tsx",
-    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
-    "docs/traceability/task-ledger/by-task/TSK-016-05.json",
-    "docs/traceability/task-ledger.jsonl",
-    "docs/TASK_ID_LEDGER.md",
-    "docs/ISSUE_TREE.md"
-  ],
-  "어떻게 해결": "SpeedDialFAB was added under app-shell, MapTabStage exposes only a ReactNode quickActions slot, and AppMapStageView composes the locate action without adding route/history/API/icon-library coupling.",
-  "왜 해결": "Quick actions need a reusable actions-array contract before adding more global capsule/FAB behavior."
+  "updatedAt": "2026-06-16T11:11:23Z",
+  "why": "지도 전용 UI에 묶이지 않는 전역 FAB 확장 액션 계약을 추가해 7차 캡슐 아키텍처의 우측 하단 확장 지점을 확보했다."
 }
