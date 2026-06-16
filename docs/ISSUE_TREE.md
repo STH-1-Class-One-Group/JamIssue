@@ -59,3 +59,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/519
   - Merge commit: eabc8773ea1ec3d865a8d28cef03183ba7a3a737
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/511
+  - Title: capsule center controls migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/511
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/521
+  - Merge commit: 7267dbb3ce95937aef0820a8541bd73f6302f859
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
