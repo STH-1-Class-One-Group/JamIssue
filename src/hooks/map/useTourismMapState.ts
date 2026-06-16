@@ -7,13 +7,16 @@
  * Dependencies: React local state.
  */
 import { useState } from 'react';
+import type { DrawerState } from '../../types/core';
 import type { TourismDisplayGroupFilter } from '../../tourismTypes';
+
+export type TourismSheetState = Exclude<DrawerState, 'closed'>;
 
 export function useTourismMapState() {
   const [showTourismInfo, setShowTourismInfo] = useState(false);
   const [activeTourismDisplayGroup, setActiveTourismDisplayGroup] = useState<TourismDisplayGroupFilter>('all');
   const [selectedTourismPlaceId, setSelectedTourismPlaceId] = useState<string | null>(null);
-  const [tourismSheetState, setTourismSheetState] = useState<'partial' | 'full'>('partial');
+  const [tourismSheetState, setTourismSheetState] = useState<TourismSheetState>('peek');
 
   return {
     showTourismInfo,

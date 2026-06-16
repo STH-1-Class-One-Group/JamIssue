@@ -85,7 +85,7 @@ export function useAppRouteState() {
         tab: 'map',
         placeId,
         festivalId: null,
-        drawerState: 'partial',
+        drawerState: 'peek',
       });
     },
     [commitRouteState],
@@ -97,7 +97,7 @@ export function useAppRouteState() {
         tab: 'map',
         placeId: null,
         festivalId,
-        drawerState: 'partial',
+        drawerState: 'peek',
       });
     },
     [commitRouteState],

@@ -13,7 +13,7 @@ describe('useAppStageActions', () => {
       selectedFestival: null,
       selectedPlaceId: placeFixture.id,
       selectedFestivalId: null,
-      drawerState: 'partial',
+      drawerState: 'peek',
       selectedRoutePreview: {
         id: routeFixture.id,
         title: routeFixture.title,
@@ -35,7 +35,7 @@ describe('useAppStageActions', () => {
 
     expect(setSelectedRoutePreview).toHaveBeenCalledWith(null);
     expect(commitRouteState).toHaveBeenCalledWith(
-      { tab: 'map', placeId: 'place-2', festivalId: null, drawerState: 'partial' },
+      { tab: 'map', placeId: 'place-2', festivalId: null, drawerState: 'peek' },
       'push',
       { routePreview: null },
     );
@@ -57,7 +57,7 @@ describe('useAppStageActions', () => {
       selectedFestival: null,
       selectedPlaceId: placeFixture.id,
       selectedFestivalId: null,
-      drawerState: 'partial',
+      drawerState: 'peek',
       selectedRoutePreview,
       setSelectedRoutePreview: vi.fn(),
       commitRouteState,
@@ -71,7 +71,7 @@ describe('useAppStageActions', () => {
     });
 
     expect(commitRouteState).toHaveBeenCalledWith(
-      { tab: 'map', placeId: 'place-2', festivalId: null, drawerState: 'partial' },
+      { tab: 'map', placeId: 'place-2', festivalId: null, drawerState: 'peek' },
       'push',
       { routePreview: selectedRoutePreview },
     );
@@ -84,7 +84,7 @@ describe('useAppStageActions', () => {
       selectedFestival: null,
       selectedPlaceId: placeFixture.id,
       selectedFestivalId: null,
-      drawerState: 'partial',
+      drawerState: 'peek',
       selectedRoutePreview: null,
       setSelectedRoutePreview: vi.fn(),
       commitRouteState: vi.fn(),
@@ -98,5 +98,45 @@ describe('useAppStageActions', () => {
     });
 
     expect(goToTab).toHaveBeenCalledWith('my');
+  });
+
+  it('expands and collapses the place drawer one state at a time', () => {
+    const commitRouteState = vi.fn();
+    const { result, rerender } = renderHook(
+      ({ drawerState }: { drawerState: 'peek' | 'half' | 'full' }) => useAppStageActions({
+        selectedPlace: placeFixture,
+        selectedFestival: null,
+        selectedPlaceId: placeFixture.id,
+        selectedFestivalId: null,
+        drawerState,
+        selectedRoutePreview: null,
+        setSelectedRoutePreview: vi.fn(),
+        commitRouteState,
+        goToTab: vi.fn(),
+        handleOpenPlaceFeedWithReturn: vi.fn(),
+        refreshCurrentPosition: vi.fn().mockResolvedValue(undefined),
+      }),
+      { initialProps: { drawerState: 'peek' as const } },
+    );
+
+    act(() => {
+      result.current.handleExpandPlaceDrawer();
+    });
+
+    expect(commitRouteState).toHaveBeenLastCalledWith(
+      { tab: 'map', placeId: placeFixture.id, festivalId: null, drawerState: 'half' },
+      'replace',
+    );
+
+    rerender({ drawerState: 'full' });
+
+    act(() => {
+      result.current.handleCollapsePlaceDrawer();
+    });
+
+    expect(commitRouteState).toHaveBeenLastCalledWith(
+      { tab: 'map', placeId: placeFixture.id, festivalId: null, drawerState: 'half' },
+      'replace',
+    );
   });
 });

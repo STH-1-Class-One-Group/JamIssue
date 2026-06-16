@@ -1,4 +1,4 @@
-import type { RoutePreview, Tab } from '../../types/core';
+import type { DrawerState, RoutePreview, Tab } from '../../types/core';
 import type { RouteState, RouteStateCommitOptions } from './routeHistoryState';
 import { buildHistoryState, buildRouteUrl } from './routeHistoryState';
 
@@ -6,7 +6,7 @@ interface RouteStateSetterSet {
   setActiveTab: (tab: Tab) => void;
   setSelectedPlaceId: (placeId: string | null) => void;
   setSelectedFestivalId: (festivalId: string | null) => void;
-  setDrawerState: (state: 'closed' | 'partial' | 'full') => void;
+  setDrawerState: (state: DrawerState) => void;
   setSelectedRoutePreview: (preview: RoutePreview | null) => void;
 }
 

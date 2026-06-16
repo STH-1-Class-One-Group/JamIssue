@@ -1395,6 +1395,19 @@ body {
 }
 
 /* TSK-012-17: full map drawers fill the map content above persistent bottom tabs. */
+.place-drawer--peek,
+.place-drawer--half {
+  bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;
+}
+
+.place-drawer--peek {
+  height: var(--map-sheet-peek-height) !important;
+}
+
+.place-drawer--half {
+  height: var(--map-sheet-half-height) !important;
+}
+
 .place-drawer--full {
   top: 0 !important;
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;

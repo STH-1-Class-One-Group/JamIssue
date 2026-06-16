@@ -45,6 +45,10 @@ export function buildHistoryState(routeState: RouteState, routePreview: RoutePre
   };
 }
 
+function getRouteDrawerQuery(drawerState: DrawerState) {
+  return drawerState === 'closed' ? 'peek' : drawerState;
+}
+
 export function buildRouteUrl(routeState: RouteState) {
   if (typeof window === 'undefined') {
     return '/';
@@ -56,11 +60,11 @@ export function buildRouteUrl(routeState: RouteState) {
   if (routeState.tab === 'map' && routeState.placeId) {
     params.set('place', routeState.placeId);
     params.delete('festival');
-    params.set('drawer', routeState.drawerState === 'closed' ? 'partial' : routeState.drawerState);
+    params.set('drawer', getRouteDrawerQuery(routeState.drawerState));
   } else if (routeState.tab === 'map' && routeState.festivalId) {
     params.set('festival', routeState.festivalId);
     params.delete('place');
-    params.set('drawer', routeState.drawerState === 'closed' ? 'partial' : routeState.drawerState);
+    params.set('drawer', getRouteDrawerQuery(routeState.drawerState));
   } else {
     params.delete('place');
     params.delete('festival');

@@ -38,7 +38,7 @@ export function MapBottomSheet({
 }: MapBottomSheetProps) {
   const sheetClassName = buildMapSheetClassName('place-drawer', sheetState, drawerState);
   const isFull = sheetState === 'full' || drawerState === 'full';
-  const handleClick = onHandleClick ?? (drawerState === 'partial' ? onExpand : undefined);
+  const handleClick = onHandleClick ?? (drawerState === 'peek' || drawerState === 'half' ? onExpand : undefined);
 
   return (
     <section className={sheetClassName} data-map-sheet-state={sheetState} aria-label={ariaLabel}>

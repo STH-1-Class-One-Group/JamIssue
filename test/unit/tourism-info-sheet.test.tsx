@@ -86,7 +86,7 @@ describe('TourismInfoSheet', () => {
         detailLoading={false}
         detailError={null}
         isOpen
-        sheetState="partial"
+        sheetState="peek"
         onClose={vi.fn()}
         onExpand={vi.fn()}
         onCollapse={vi.fn()}
@@ -130,7 +130,7 @@ describe('TourismInfoSheet', () => {
         detailLoading={false}
         detailError={null}
         isOpen
-        sheetState="partial"
+        sheetState="peek"
         onClose={vi.fn()}
         onExpand={vi.fn()}
         onCollapse={vi.fn()}
@@ -150,7 +150,7 @@ describe('TourismInfoSheet', () => {
         detailLoading={false}
         detailError={null}
         isOpen
-        sheetState="partial"
+        sheetState="peek"
         onClose={vi.fn()}
         onExpand={vi.fn()}
         onCollapse={vi.fn()}
@@ -175,7 +175,7 @@ describe('TourismInfoSheet', () => {
         detailLoading
         detailError={null}
         isOpen
-        sheetState="partial"
+        sheetState="peek"
         onClose={vi.fn()}
         onExpand={vi.fn()}
         onCollapse={vi.fn()}

@@ -1,15 +1,26 @@
-import type { Tab } from '../../types/core';
+import type { DrawerState, Tab } from '../../types/core';
 
-type RouteDrawerState = 'closed' | 'partial' | 'full';
+type RouteDrawerQueryValue = DrawerState | 'partial';
 
 export type InitialRouteState = {
   tab: Tab;
   placeId: string | null;
   festivalId: string | null;
-  drawerState: RouteDrawerState;
+  drawerState: DrawerState;
 };
 
 const validTabs: Tab[] = ['map', 'event', 'feed', 'course', 'my'];
+
+export function normalizeRouteDrawerState(drawer: string | null, hasSelection: boolean): DrawerState {
+  const routeDrawer = drawer as RouteDrawerQueryValue | null;
+  if (routeDrawer === 'partial' || routeDrawer === 'peek') {
+    return 'peek';
+  }
+  if (routeDrawer === 'half' || routeDrawer === 'full') {
+    return routeDrawer;
+  }
+  return hasSelection ? 'peek' : 'closed';
+}
 
 export function getInitialRouteState(): InitialRouteState {
   if (typeof window === 'undefined') {
@@ -22,7 +33,7 @@ export function getInitialRouteState(): InitialRouteState {
   const festivalId = params.get('festival');
   const drawer = params.get('drawer');
   const resolvedTab = tab && validTabs.includes(tab as Tab) ? (tab as Tab) : params.get('auth') ? 'my' : 'map';
-  const resolvedDrawer = drawer === 'full' || drawer === 'partial' ? drawer : placeId || festivalId ? 'partial' : 'closed';
+  const resolvedDrawer = normalizeRouteDrawerState(drawer, Boolean(placeId || festivalId));
 
   return {
     tab: resolvedTab,

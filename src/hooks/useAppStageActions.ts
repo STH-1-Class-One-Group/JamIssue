@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { getCollapsedDrawerState, getExpandedDrawerState } from '../components/map-stage/mapSheetState';
 import type { RouteStateCommitOptions } from './app-route/useAppRouteState';
 import type { DrawerState, Place, RoutePreview } from '../types/core';
 
@@ -42,17 +43,17 @@ export function useAppStageActions({
 
   const handleMapOpenPlace = useCallback((placeId: string) => {
     setSelectedRoutePreview(null);
-    commitRouteState({ tab: 'map', placeId, festivalId: null, drawerState: 'partial' }, 'push', { routePreview: null });
+    commitRouteState({ tab: 'map', placeId, festivalId: null, drawerState: 'peek' }, 'push', { routePreview: null });
   }, [commitRouteState, setSelectedRoutePreview]);
 
   const handleMapOpenFestival = useCallback((festivalId: string) => {
     setSelectedRoutePreview(null);
-    commitRouteState({ tab: 'map', placeId: null, festivalId, drawerState: 'partial' }, 'push', { routePreview: null });
+    commitRouteState({ tab: 'map', placeId: null, festivalId, drawerState: 'peek' }, 'push', { routePreview: null });
   }, [commitRouteState, setSelectedRoutePreview]);
 
   const handleMapOpenRoutePreviewPlace = useCallback((placeId: string) => {
     commitRouteState(
-      { tab: 'map', placeId, festivalId: null, drawerState: 'partial' },
+      { tab: 'map', placeId, festivalId: null, drawerState: 'peek' },
       'push',
       { routePreview: selectedRoutePreview },
     );
@@ -71,29 +72,29 @@ export function useAppStageActions({
     if (!selectedPlace) {
       return;
     }
-    commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'full' }, 'replace');
-  }, [commitRouteState, selectedPlace]);
+    commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: getExpandedDrawerState(drawerState) }, 'replace');
+  }, [commitRouteState, drawerState, selectedPlace]);
 
   const handleCollapsePlaceDrawer = useCallback(() => {
     if (!selectedPlace) {
       return;
     }
-    commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: 'partial' }, 'replace');
-  }, [commitRouteState, selectedPlace]);
+    commitRouteState({ tab: 'map', placeId: selectedPlace.id, festivalId: null, drawerState: getCollapsedDrawerState(drawerState) }, 'replace');
+  }, [commitRouteState, drawerState, selectedPlace]);
 
   const handleExpandFestivalDrawer = useCallback(() => {
     if (!selectedFestival) {
       return;
     }
-    commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: 'full' }, 'replace');
-  }, [commitRouteState, selectedFestival]);
+    commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: getExpandedDrawerState(drawerState) }, 'replace');
+  }, [commitRouteState, drawerState, selectedFestival]);
 
   const handleCollapseFestivalDrawer = useCallback(() => {
     if (!selectedFestival) {
       return;
     }
-    commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: 'partial' }, 'replace');
-  }, [commitRouteState, selectedFestival]);
+    commitRouteState({ tab: 'map', placeId: null, festivalId: selectedFestival.id, drawerState: getCollapsedDrawerState(drawerState) }, 'replace');
+  }, [commitRouteState, drawerState, selectedFestival]);
 
   const handleRequestLogin = useCallback(() => {
     goToTab('my');

@@ -59,7 +59,7 @@ export function createTabNavigationHelpers({
       );
     }
     setSelectedRoutePreview(null);
-    commitRouteState({ tab: 'map', placeId, festivalId: null, drawerState: 'partial' }, 'push', { routePreview: null });
+    commitRouteState({ tab: 'map', placeId, festivalId: null, drawerState: 'peek' }, 'push', { routePreview: null });
   }
 
   function handleOpenFestivalWithReturn(festivalId: string) {
@@ -67,7 +67,7 @@ export function createTabNavigationHelpers({
       setReturnView(snapshotReturnView());
     }
     setSelectedRoutePreview(null);
-    commitRouteState({ tab: 'map', placeId: null, festivalId, drawerState: 'partial' }, 'push', { routePreview: null });
+    commitRouteState({ tab: 'map', placeId: null, festivalId, drawerState: 'peek' }, 'push', { routePreview: null });
   }
 
   function handleOpenCommunityRouteWithReturn(routeId: string) {
