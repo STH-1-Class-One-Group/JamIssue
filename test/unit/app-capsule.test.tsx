@@ -30,11 +30,20 @@ describe('AppCapsule shell contract', () => {
     );
 
     const capsule = screen.getByRole('navigation', { name: '앱 캡슐 내비게이션' });
+    const leading = capsule.querySelector('[data-app-capsule-slot="leading"]');
+    const actions = capsule.querySelector('[data-app-capsule-slot="actions"]');
+    const menuButton = within(capsule).getByRole('button', { name: '메뉴 열기' });
+    const backButton = within(capsule).getByRole('button', { name: '이전 화면으로 돌아가기' });
+    const settingsButton = within(capsule).getByRole('button', { name: '설정 열기' });
 
-    expect(within(capsule).getByRole('button', { name: '메뉴 열기' })).toBeInTheDocument();
-    expect(within(capsule).getByRole('button', { name: '이전 화면으로 돌아가기' })).toBeEnabled();
+    expect(menuButton).toBeInTheDocument();
+    expect(backButton).toBeEnabled();
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
-    expect(within(capsule).getByRole('button', { name: '설정 열기' })).toHaveClass('global-settings-menu__trigger');
+    expect(settingsButton).toHaveClass('global-settings-menu__trigger');
+    expect(leading?.contains(menuButton)).toBe(true);
+    expect(leading?.contains(backButton)).toBe(false);
+    expect(actions?.contains(backButton)).toBe(true);
+    expect(actions?.contains(settingsButton)).toBe(true);
   });
 
   it('uses canNavigateBack and onNavigateBack instead of reading browser history', async () => {

@@ -50,6 +50,7 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
   const drawer = page.locator('.place-drawer');
   const handle = page.locator('.place-drawer__handle');
   const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const floatingNav = page.locator('[data-map-floating-nav="root"]');
 
   await expect(page.locator('[data-map-sheet-state="peek"]')).toBeVisible();
 
@@ -62,9 +63,9 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
   await expect(bottomNav).toHaveCSS('opacity', '1');
 
   const fullBox = await requireBoundingBox(drawer);
-  const contentBox = await requireBoundingBox(page.locator('[data-app-shell-slot="content"]'));
+  const navBox = await requireBoundingBox(floatingNav);
   const bottomNavBox = await requireBoundingBox(bottomNav);
-  expect(fullBox.y).toBeLessThanOrEqual(contentBox.y + 1);
+  expect(fullBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height + 8);
   expect(bottomNavBox.y - (fullBox.y + fullBox.height)).toBeGreaterThanOrEqual(12);
 
   await handle.click();
@@ -72,6 +73,46 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
 
   await page.getByRole('button', { name: '시트 최소화' }).click();
   await expect(page.locator('[data-map-sheet-state="half"]')).toBeVisible();
+});
+
+test('UIUX-025 keeps the full drawer chrome below the floating capsule and separates controls from media/content', async ({ page }) => {
+  const state = createE2EAppState();
+  await installApiFixtures(page, state);
+
+  await page.goto('/?tab=map&place=place-1&drawer=full');
+
+  const floatingNav = page.locator('[data-map-floating-nav="root"]');
+  const drawer = page.locator('.place-drawer--full');
+  const chrome = drawer.locator('.place-drawer__chrome');
+  const controlRail = drawer.locator('.place-drawer__control-rail');
+  const mediaFrame = drawer.locator('.map-bottom-sheet__media-frame');
+  const title = drawer.locator('.place-drawer__header h2');
+  const closeButton = page.getByRole('button', { name: '시트 닫기' });
+  const minimizeButton = page.getByRole('button', { name: '시트 최소화' });
+
+  await expect(floatingNav).toBeVisible();
+  await expect(drawer).toBeVisible();
+  await expect(chrome).toBeVisible();
+  await expect(controlRail).toBeVisible();
+  await expect(title).toBeVisible();
+
+  const navBox = await requireBoundingBox(floatingNav);
+  const drawerBox = await requireBoundingBox(drawer);
+  const controlRailBox = await requireBoundingBox(controlRail);
+  const titleBox = await requireBoundingBox(title);
+  const closeBox = await requireBoundingBox(closeButton);
+  const minimizeBox = await requireBoundingBox(minimizeButton);
+
+  expect(drawerBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height + 8);
+  const mediaFrameCount = await mediaFrame.count();
+  if (mediaFrameCount > 0) {
+    const mediaBox = await requireBoundingBox(mediaFrame);
+    expect(controlRailBox.y + controlRailBox.height).toBeLessThanOrEqual(mediaBox.y + 1);
+    expect(mediaBox.y + mediaBox.height).toBeLessThanOrEqual(titleBox.y + 1);
+  } else {
+    expect(controlRailBox.y + controlRailBox.height).toBeLessThanOrEqual(titleBox.y + 1);
+  }
+  expect(Math.abs(closeBox.y - minimizeBox.y)).toBeLessThanOrEqual(2);
 });
 
 test('UIUX-010 supports feed comment creation, like toggle, and place CTA', async ({ page }) => {

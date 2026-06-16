@@ -12,9 +12,9 @@ import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood,
 import type { BootstrapResponse } from '../types/review';
 import { AppCapsule } from './app-shell/AppCapsule';
 import { SpeedDialFAB } from './app-shell/SpeedDialFAB';
+import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 import { MapTabStage } from './MapTabStage';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
-import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 
 interface AppMapStageViewProps {
   canNavigateBack: boolean;

@@ -33,6 +33,11 @@ export function AppCapsule({
         >
           <span aria-hidden="true">☰</span>
         </button>
+      </div>
+      <div className="app-capsule__center" data-app-capsule-slot="center">
+        {center}
+      </div>
+      <div className="app-capsule__actions" data-app-capsule-slot="actions">
         <button
           type="button"
           className="app-capsule__back-button"
@@ -42,11 +47,6 @@ export function AppCapsule({
         >
           <span aria-hidden="true">←</span>
         </button>
-      </div>
-      <div className="app-capsule__center" data-app-capsule-slot="center">
-        {center}
-      </div>
-      <div className="app-capsule__actions" data-app-capsule-slot="actions">
         <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
       </div>
     </nav>
