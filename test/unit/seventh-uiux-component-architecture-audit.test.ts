@@ -40,17 +40,17 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(mapFloatingNav).toContain('<GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />');
   });
 
-  it('proves AppCapsule, SideDrawer, and SpeedDialFAB are not implemented in the current baseline', () => {
-    const candidateFiles = [
-      'src/components/app-shell/AppCapsule.tsx',
-      'src/components/AppCapsule.tsx',
+  it('tracks the TSK-016 component implementation boundary after AppCapsule shell creation', () => {
+    expect(repoFileExists('src/components/app-shell/AppCapsule.tsx')).toBe(true);
+
+    const deferredCandidateFiles = [
       'src/components/SideDrawer.tsx',
       'src/components/app-shell/SideDrawer.tsx',
       'src/components/SpeedDialFAB.tsx',
       'src/components/map-stage/SpeedDialFAB.tsx',
     ];
 
-    for (const candidateFile of candidateFiles) {
+    for (const candidateFile of deferredCandidateFiles) {
       expect(repoFileExists(candidateFile), candidateFile).toBe(false);
     }
   });
