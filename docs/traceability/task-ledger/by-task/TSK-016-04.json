@@ -1,4 +1,14 @@
 {
+  "schemaVersion": "task-ledger-entry.v1",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "taskId": "TSK-016-04",
+  "status": "completed",
+  "updatedAt": "2026-06-16T09:15:00Z",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/512",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/523",
+  "PR": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/523",
+  "mergeCommit": "14c50d151aab481da00d8c4d98fae7a866ab86fe",
+  "Merge commit": "14c50d151aab481da00d8c4d98fae7a866ab86fe",
   "documentPaths": [
     "src/App.tsx",
     "src/components/AppMapStageView.tsx",
@@ -15,16 +25,42 @@
     "docs/TASK_ID_LEDGER.md",
     "docs/ISSUE_TREE.md"
   ],
-  "how": "Added an empty SideDrawer shell, wired AppCapsule menu open state through App composition, preserved GlobalSettingsMenu behavior, and guarded against placeholder copy, /settings route, window.history.length, ti-* classes, and icon package coupling.",
-  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/512",
-  "mergeCommit": "14c50d151aab481da00d8c4d98fae7a866ab86fe",
+  "문서 경로": [
+    "src/App.tsx",
+    "src/components/AppMapStageView.tsx",
+    "src/components/app-shell/AppCapsule.tsx",
+    "src/components/app-shell/SideDrawer.tsx",
+    "src/index.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/e2e/critical-ui-flow.spec.ts",
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/architecture-readability-source-quality.test.ts",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
+    "docs/traceability/task-ledger/by-task/TSK-016-04.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "why": "Allow the global capsule menu trigger to open a governed shell without introducing unapproved menu content or navigation coupling.",
+  "왜 해결": "Global capsule menu trigger needed a governed shell without unapproved menu content or navigation coupling.",
   "problem": "AppCapsule needed a left menu shell target, but the side menu IA and copy were not approved.",
-  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/523",
+  "무슨 문제": "AppCapsule needed a left menu shell target, while side menu IA and copy were not approved.",
+  "how": "Added an empty SideDrawer shell, wired AppCapsule menu open state through App composition, preserved GlobalSettingsMenu behavior, and guarded against placeholder copy, /settings route, window.history.length, ti-* classes, and icon package coupling.",
+  "어떻게 해결": "Added an empty SideDrawer shell and wired AppCapsule menu open state through App composition while preserving existing contracts.",
   "remainingGap": "SpeedDialFAB action contract remains in TSK-016-05 and capsule/FAB z-index regression remains in TSK-016-06.",
-  "schemaVersion": "task-ledger-entry.v1",
-  "status": "completed",
-  "storageSchemaVersion": "task-ledger-shard.v1",
-  "taskId": "TSK-016-04",
-  "updatedAt": "2026-06-16T09:15:00Z",
-  "why": "Allow the global capsule menu trigger to open a governed shell without introducing unapproved menu content or navigation coupling."
+  "남은 gap": "SpeedDialFAB action contract remains in TSK-016-05 and capsule/FAB z-index regression remains in TSK-016-06.",
+  "claimedScope": [
+    "SideDrawer shell creation",
+    "AppCapsule menu open callback wiring",
+    "App-level side drawer open state composition",
+    "Side drawer CSS shell and overlay styling",
+    "Unit and E2E validation seam expansion"
+  ],
+  "validationSeams": [
+    "test/unit/app-capsule.test.tsx",
+    "test/e2e/app-shell.spec.ts",
+    "test/e2e/critical-ui-flow.spec.ts",
+    "test/unit/architecture-readability-source-quality.test.ts",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts"
+  ]
 }
