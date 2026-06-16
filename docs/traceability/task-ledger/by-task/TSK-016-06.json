@@ -2,10 +2,10 @@
   "schemaVersion": "task-ledger-entry.v1",
   "taskId": "TSK-016-06",
   "status": "completed",
-  "updatedAt": "2026-06-16T11:55:00Z",
+  "updatedAt": "2026-06-16T12:10:00Z",
   "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/514",
-  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/529",
-  "mergeCommit": "3d8be5e011eeb115d917034db17882e737accd3a",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/529; https://github.com/STH-1-Class-One-Group/JamIssue/pull/530",
+  "mergeCommit": "3d8be5e011eeb115d917034db17882e737accd3a; aaef2dd1b5f99ecb41e6d628d4b6bc017d941156",
   "documentPaths": [
     "src/index.css",
     "src/styles/refinements.css",
