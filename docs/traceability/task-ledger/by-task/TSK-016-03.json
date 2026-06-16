@@ -1,0 +1,29 @@
+{
+  "documentPaths": [
+    "src/App.tsx",
+    "src/components/AppMapStageView.tsx",
+    "src/components/GlobalSettingsMenu.tsx",
+    "src/components/app-shell/AppCapsule.tsx",
+    "src/components/map-stage/MapFloatingNav.tsx",
+    "src/index.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/e2e/critical-ui-flow.spec.ts",
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "how": "Composed MapFloatingNav inside AppCapsule.center, removed duplicated menu/settings shell controls from MapFloatingNav, and updated notification anchoring plus E2E selectors.",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/511",
+  "mergeCommit": "7267dbb3ce95937aef0820a8541bd73f6302f859",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/521",
+  "problem": "TSK-016-02 added the AppCapsule shell, but the map screen still rendered the old MapFloatingNav shell.",
+  "remainingGap": "SideDrawer shell remains in TSK-016-04 and SpeedDialFAB remains in TSK-016-05.",
+  "schemaVersion": "task-ledger-entry.v1",
+  "status": "completed",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "taskId": "TSK-016-03",
+  "updatedAt": "2026-06-16T08:35:00Z",
+  "why": "Connect map-only capsule controls to the global AppCapsule architecture."
+}
