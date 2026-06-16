@@ -56,7 +56,6 @@ export default function App() {
   return (
     <AppShell
       activeTab={activeTab}
-      bottomTabHidden={false}
       canNavigateBack={canNavigateBack}
       globalStatus={globalStatus ? {
         tone: globalStatus.tone,

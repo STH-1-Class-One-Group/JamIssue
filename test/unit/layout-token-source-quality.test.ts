@@ -37,4 +37,15 @@ describe('layout token source quality baseline', () => {
     expect(css).not.toContain('calc(72px + env(safe-area-inset-bottom))');
     expect(css).not.toMatch(/padding:\s*10px\s+1[24]px\s+calc\(12px\s*\+\s*env\(safe-area-inset-bottom\)\)/);
   });
+
+  it('keeps bottom navigation visible instead of reintroducing hidden drawer-era policy', () => {
+    const css = `${readSource('src/index.css')}\n${readSource('src/styles/refinements.css')}`;
+    const appShellSource = readSource('src/components/app-shell/AppShell.tsx');
+    const appSource = readSource('src/App.tsx');
+
+    expect(css).not.toContain('app-shell__bottom-tab-slot--hidden');
+    expect(css).not.toContain('bottom-nav--hidden');
+    expect(appShellSource).not.toContain('bottomTabHidden');
+    expect(appSource).not.toContain('bottomTabHidden');
+  });
 });
