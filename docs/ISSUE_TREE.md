@@ -65,3 +65,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/521
   - Merge commit: 7267dbb3ce95937aef0820a8541bd73f6302f859
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-04: https://github.com/STH-1-Class-One-Group/JamIssue/issues/512
+  - Title: side drawer shell foundation
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/512
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/523
+  - Merge commit: 14c50d151aab481da00d8c4d98fae7a866ab86fe
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
