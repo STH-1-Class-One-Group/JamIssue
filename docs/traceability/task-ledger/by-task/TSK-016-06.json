@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "task-ledger-entry.v1",
+  "taskId": "TSK-016-06",
+  "status": "completed",
+  "updatedAt": "2026-06-16T11:55:00Z",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/514",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/529",
+  "mergeCommit": "3d8be5e011eeb115d917034db17882e737accd3a",
+  "documentPaths": [
+    "src/index.css",
+    "src/styles/refinements.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/unit/layout-token-source-quality.test.ts",
+    "docs/traceability/task-ledger/by-task/TSK-016-06.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "validationSeams": [
+    "test/e2e/app-shell.spec.ts",
+    "test/unit/layout-token-source-quality.test.ts"
+  ],
+  "why": "캡슐/FAB/드로워/하단 탭/알림 패널의 계층 책임을 명시 token과 E2E hit-target 검증으로 고정해야 했다.",
+  "problem": "AppCapsule, SpeedDialFAB, notification panel, map drawer, bottom nav가 서로 가릴 수 있는 overlay layering 회귀가 테스트로 고정되지 않았다.",
+  "how": "z-index token policy를 추가하고 legacy refinements override를 같은 token으로 연결했으며, notification panel, drawer peek/half/full, KTO toggle/filter hit-target E2E를 추가했다.",
+  "remainingGap": "TSK-016-07에서 Wiki, QA matrix, release candidate, parent completion evidence를 최종 정리한다."
+}
