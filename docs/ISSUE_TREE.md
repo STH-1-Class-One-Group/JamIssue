@@ -71,3 +71,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/523
   - Merge commit: 14c50d151aab481da00d8c4d98fae7a866ab86fe
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/513
+  - Title: speed dial FAB action contract
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/513
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/526
+  - Merge commit: 434aefb99430b121dd0b7b97998c2334810ca027
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
