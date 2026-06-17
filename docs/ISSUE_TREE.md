@@ -38,6 +38,13 @@ Scope: parent-child task traceability for JamIssue governance completion.
 
 ## TSK-015
 
+- [x] TSK-015-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/493
+  - Title: map drawer shell visual redesign
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/493
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/540
+  - Merge commit: 0463a4a521240106146c4e1e954d472cf3d48ce9
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-015-03.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+
 - [x] TSK-015-07: https://github.com/STH-1-Class-One-Group/JamIssue/issues/497
   - Title: sixth UI/UX QA traceability
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/497
