@@ -205,7 +205,8 @@
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  background: rgba(255, 244, 248, 0.86);
 }
 /* 2026-03-19 map brand header refinement */
 .map-stage__header--brand-only {
@@ -1553,6 +1554,12 @@ body {
   margin: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
+  background: rgba(255, 244, 248, 0.86) !important;
+}
+
+.map-bottom-sheet__media-image {
+  object-fit: contain !important;
+  background: rgba(255, 244, 248, 0.86) !important;
 }
 
 .place-drawer__content {

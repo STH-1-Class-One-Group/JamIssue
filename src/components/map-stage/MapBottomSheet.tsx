@@ -26,7 +26,6 @@ interface MapBottomSheetProps {
   onCollapse: () => void;
   onExpand: () => void;
   onHandleClick?: () => void;
-  media?: ReactNode;
   sheetState: MapSheetState;
 }
 
@@ -40,7 +39,6 @@ export function MapBottomSheet({
   onCollapse,
   onExpand,
   onHandleClick,
-  media,
   sheetState,
 }: MapBottomSheetProps) {
   const sheetClassName = buildMapSheetClassName('place-drawer', sheetState, drawerState);

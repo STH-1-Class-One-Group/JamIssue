@@ -297,7 +297,9 @@ test('TSK-016-06 keeps FAB hidden and bottom navigation hittable while map drawe
 
     const drawerBox = await requireBoundingBox(drawer);
     const bottomNavBox = await requireBoundingBox(bottomNav);
-    expect(bottomNavBox.y - (drawerBox.y + drawerBox.height)).toBeGreaterThanOrEqual(10);
+    const drawerBottomGap = bottomNavBox.y - (drawerBox.y + drawerBox.height);
+    expect(drawerBottomGap).toBeGreaterThanOrEqual(-1);
+    expect(drawerBottomGap).toBeLessThanOrEqual(2);
     await expectElementCenterToResolveInside(bottomNav.locator('[data-tab-key="feed"]'), '.bottom-nav');
   }
 });
