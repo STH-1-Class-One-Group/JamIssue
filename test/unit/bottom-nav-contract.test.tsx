@@ -7,13 +7,21 @@ import type { Tab } from '../../src/types/core';
 const expectedTabs: Tab[] = ['map', 'event', 'feed', 'course', 'my'];
 
 describe('BottomNav contract', () => {
-  it('exposes the five primary app tabs in order', () => {
+  it('exposes the five primary app tabs in order with icon, label, and active pill structure', () => {
     render(<BottomNav activeTab="event" onChange={vi.fn()} />);
 
     const items = screen.getAllByRole('button');
     expect(items).toHaveLength(expectedTabs.length);
     expect(items.map((item) => item.getAttribute('data-tab-key'))).toEqual(expectedTabs);
-    expect(screen.getByRole('button', { current: 'page' })).toHaveAttribute('data-tab-key', 'event');
+
+    for (const item of items) {
+      expect(item.querySelector('.bottom-nav__icon')).not.toBeNull();
+      expect(item.querySelector('.bottom-nav__label')).not.toBeNull();
+    }
+
+    const activeItem = screen.getByRole('button', { current: 'page' });
+    expect(activeItem).toHaveAttribute('data-tab-key', 'event');
+    expect(activeItem.querySelector('.bottom-nav__active-pill')).not.toBeNull();
   });
 
   it('emits the selected tab key without owning routing policy', async () => {

@@ -1,0 +1,22 @@
+{
+  "documentPaths": [
+    "docs/GOVERNANCE_INDEX.md",
+    "docs/TSK-016-01-seventh-uiux-component-architecture-audit.md",
+    "test/unit/seventh-uiux-component-architecture-audit.test.ts",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "how": "Added governance index rows, audit document, source-read baseline test, task ledger, and issue tree evidence.",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/509",
+  "mergeCommit": "9daac606e2e80fb9188085023f1d8dd161445be7; 392eb3adfc613168f979d33656e51efbdfb27563; d228b1b04101e30aea9ba139c42e8437b81a6a0f",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/516",
+  "problem": "AppHeader and MapFloatingNav split global utility and capsule responsibilities while AppCapsule, SideDrawer, and SpeedDialFAB did not exist.",
+  "remainingGap": "AppCapsule, SideDrawer, and SpeedDialFAB implementation remains in issues 510, 512, and 513.",
+  "schemaVersion": "task-ledger-entry.v1",
+  "status": "completed",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "taskId": "TSK-016-01",
+  "updatedAt": "2026-06-16T07:01:50Z",
+  "why": "Recorded current responsibility boundaries and missing components before TSK-016 runtime implementation."
+}

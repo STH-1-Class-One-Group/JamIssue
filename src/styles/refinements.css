@@ -1,10 +1,10 @@
 /* 2026-03-18 drawer over map fix */
 .place-drawer {
-  z-index: 120 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
 .bottom-nav {
-  z-index: 130 !important;
+  z-index: var(--z-bottom-nav) !important;
 }
 
 .place-drawer--partial,
@@ -1141,6 +1141,47 @@ body {
   font-size: var(--type-sm) !important;
 }
 
+.bottom-nav__item {
+  position: relative !important;
+  isolation: isolate !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.bottom-nav__active-pill {
+  position: absolute;
+  inset: 5px 4px;
+  z-index: -1;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.bottom-nav__item.is-active .bottom-nav__active-pill {
+  background: var(--ui-control-active-bg);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bottom-nav__icon {
+  display: block;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.bottom-nav__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
 .map-route-preview-card {
   bottom: calc(var(--bottom-nav-offset) + 28px) !important;
 }
@@ -1420,7 +1461,11 @@ body {
   }
 }
 
-/* TSK-012-17: full map drawers fill the map content above persistent bottom tabs. */
+/* TSK-015-03 + TSK-016-06: keep drawer chrome below the capsule and out of the media frame. */
+.place-drawer {
+  z-index: var(--z-map-sheet) !important;
+}
+
 .place-drawer--peek,
 .place-drawer--half {
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;
@@ -1435,38 +1480,86 @@ body {
 }
 
 .place-drawer--full {
-  top: 0 !important;
+  top: var(--map-sheet-full-top-inset) !important;
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap)) !important;
   height: auto !important;
   max-height: none !important;
-  z-index: 140 !important;
+  z-index: var(--z-map-sheet) !important;
 }
 
-.place-drawer--full .place-drawer__content {
-  padding-bottom: 18px !important;
+.place-drawer__chrome {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 16px 8px !important;
+}
+
+.place-drawer__chrome-spacer {
+  min-width: 34px !important;
+  min-height: 1px !important;
+}
+
+.place-drawer__handle {
+  justify-self: center !important;
+  width: 56px !important;
+  padding: 6px 0 !important;
 }
 
 .place-drawer__control-rail {
-  position: absolute !important;
-  top: 12px !important;
-  right: 16px !important;
-  z-index: 2 !important;
-  display: flex !important;
+  position: static !important;
+  justify-self: end !important;
+  display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
 }
 
-.place-drawer__minimize,
-.place-drawer__shell-close {
-  min-height: 36px !important;
-  padding: 0 12px !important;
-  border: 1px solid rgba(255, 129, 168, 0.32) !important;
+.place-drawer--full .place-drawer__control-rail {
+  top: var(--map-sheet-full-control-top) !important;
+}
+
+.place-drawer__control-btn {
+  display: inline-flex !important;
+  width: 34px !important;
+  height: 34px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255, 129, 168, 0.28) !important;
   border-radius: 999px !important;
   background: rgba(255, 252, 249, 0.96) !important;
   color: var(--pink-deep) !important;
-  font-size: 12px !important;
-  font-weight: 800 !important;
-  box-shadow: 0 10px 24px rgba(255, 127, 168, 0.12) !important;
+  box-shadow: 0 8px 18px rgba(255, 127, 168, 0.12) !important;
+}
+
+.place-drawer__control-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  fill: none !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.place-drawer__surface {
+  display: flex !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+}
+
+.map-bottom-sheet__media-frame {
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.place-drawer__content {
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  padding: 16px 18px 20px !important;
 }
 
 /* 2026-03-24 review image frame normalization */

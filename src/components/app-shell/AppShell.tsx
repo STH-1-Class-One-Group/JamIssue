@@ -9,7 +9,6 @@ import { SplashScreen } from '../SplashScreen';
 
 interface AppShellProps {
   activeTab: Tab;
-  bottomTabHidden?: boolean;
   canNavigateBack: boolean;
   children: ReactNode;
   globalStatus: ComponentProps<typeof GlobalStatusBanner> | null;
@@ -19,11 +18,11 @@ interface AppShellProps {
   headerMode?: 'default' | 'hidden';
   showEntrySplash?: boolean;
   subNav?: ReactNode;
+  topNavigation?: ReactNode;
 }
 
 export function AppShell({
   activeTab,
-  bottomTabHidden = false,
   canNavigateBack,
   children,
   globalStatus,
@@ -33,6 +32,7 @@ export function AppShell({
   onNavigateBack,
   showEntrySplash = false,
   subNav,
+  topNavigation,
 }: AppShellProps) {
   const [showSplash, setShowSplash] = useState(showEntrySplash);
   const isMapStage = activeTab === 'map';
@@ -52,6 +52,7 @@ export function AppShell({
         data-app-shell="phone"
         data-testid="app-shell-phone"
       >
+        {topNavigation}
         {globalStatus && (
           <div className="phone-shell__status-slot app-shell__status-safe-area" data-app-shell-slot="status">
             <GlobalStatusBanner
@@ -85,13 +86,7 @@ export function AppShell({
           >
             {children}
           </div>
-          <div
-            className={[
-              'app-shell__bottom-tab-slot',
-              bottomTabHidden ? 'app-shell__bottom-tab-slot--hidden' : '',
-            ].filter(Boolean).join(' ')}
-            data-app-shell-slot="bottom-tab"
-          >
+          <div className="app-shell__bottom-tab-slot" data-app-shell-slot="bottom-tab">
             <BottomNav activeTab={activeTab} onChange={onBottomTabChange} />
           </div>
         </div>

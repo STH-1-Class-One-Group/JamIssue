@@ -10,11 +10,10 @@ import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, 
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
+import { SpeedDialFAB } from './app-shell/SpeedDialFAB';
 import { MapTabStage } from './MapTabStage';
-import { MapFloatingNav } from './map-stage/MapFloatingNav';
-import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 
-interface AppMapStageViewProps {
+export interface AppMapStageViewProps {
   mapData: {
     activeCategory: Category;
     activeTourismDisplayGroup: TourismDisplayGroupFilter;
@@ -78,30 +77,26 @@ interface AppMapStageViewProps {
     onLocateCurrentPosition: () => void;
     onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
   };
-  globalUtility: GlobalSettingsMenuProps;
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
   mapData,
   mapActions,
-  globalUtility,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
-      floatingNav={(
-        <MapFloatingNav
-          activeCategory={mapData.activeCategory}
-          activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
-          showTourismInfo={mapData.showTourismInfo}
-          tourismFacets={mapData.tourismFacets}
-          tourismPlaces={mapData.tourismPlaces}
-          tourismSourceReady={mapData.tourismSourceReady}
-          tourismLoading={mapData.tourismLoading}
-          tourismError={mapData.tourismError}
-          globalUtility={globalUtility}
-          onSelectCategory={mapActions.setActiveCategory}
-          onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
-          onToggleTourismInfo={mapActions.onToggleTourismInfo}
+      floatingNav={null}
+      quickActions={(
+        <SpeedDialFAB
+          actions={[
+            {
+              id: 'locate-current-position',
+              label: '내 위치 찾기',
+              icon: '⌖',
+              onClick: mapActions.onLocateCurrentPosition,
+            },
+          ]}
+          hidden={mapData.drawerState !== 'closed' || Boolean(mapData.selectedTourismPlace)}
         />
       )}
       mapData={{

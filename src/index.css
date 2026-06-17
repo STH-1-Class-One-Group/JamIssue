@@ -12,6 +12,7 @@
   --map-sheet-full-height: 60%;
   --map-sheet-closed-translate-y: 120%;
   --map-sheet-handle-reserved-height: 22px;
+  --map-sheet-full-control-top: calc(var(--shell-capsule-height) + 72px);
   --app-surface-background:
     radial-gradient(circle at top left, rgba(255, 214, 227, 0.82), transparent 36%),
     radial-gradient(circle at top right, rgba(179, 227, 255, 0.78), transparent 32%),
@@ -36,13 +37,23 @@
   --app-header-gap: 10px;
   --app-header-action-size: 44px;
   --shell-capsule-height: 44px;
+  --map-floating-nav-top: calc(env(safe-area-inset-top, 0px) + 12px);
+  --map-floating-nav-gap: 12px;
+  --map-sheet-full-top-inset: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + var(--map-floating-nav-gap));
   --phone-shell-max-width: 430px;
   --phone-shell-max-height: 920px;
   --phone-shell-height-gap: 24px;
   --phone-shell-radius: 32px;
   --layer-app-header: 40;
-  --z-floating-nav: 96;
-  --z-floating-nav-dropdown: 97;
+  --z-map-sheet: 110;
+  --z-speed-dial: 118;
+  --z-bottom-nav: 120;
+  --z-floating-nav: 130;
+  --z-floating-nav-dropdown: 140;
+  --z-notification-panel: 150;
+  --z-side-drawer: 160;
+  --speed-dial-bottom-offset: calc(var(--bottom-nav-offset) + 24px);
+  --speed-dial-inline-offset: 20px;
   --z-splash: 200;
   --layer-utility: 1200;
   --layer-utility-panel: 1201;
@@ -181,6 +192,10 @@ textarea {
 .app-shell--header-hidden .phone-shell__body,
 .app-shell--header-hidden.app-shell--no-subnav .phone-shell__body {
   inset: 0;
+}
+
+.phone-shell.app-shell--header-hidden:not(.phone-shell--map) .page-panel {
+  inset: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + 12px) 12px var(--bottom-nav-offset) 12px;
 }
 
 .app-header {
@@ -432,12 +447,6 @@ textarea {
 .app-shell__overlay-slot,
 .app-shell__bottom-tab-slot {
   display: contents;
-}
-
-.app-shell__bottom-tab-slot--hidden .bottom-nav {
-  transform: translateY(100%);
-  opacity: 0;
-  pointer-events: none;
 }
 
 .phone-shell__status-slot .global-status-banner {
@@ -1147,7 +1156,7 @@ textarea {
   left: 0;
   right: 0;
   bottom: var(--bottom-nav-offset);
-  z-index: 30;
+  z-index: var(--z-map-sheet);
   margin: 0 12px;
   padding: 0;
   overflow: hidden;
@@ -1774,7 +1783,7 @@ textarea {
   right: 0;
   bottom: 0;
   min-height: var(--bottom-nav-offset);
-  z-index: 40;
+  z-index: var(--z-bottom-nav);
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
@@ -2768,9 +2777,9 @@ textarea {
   padding: 12px 12px calc(78px + env(safe-area-inset-bottom));
 }
 
-.map-floating-nav {
+.app-capsule {
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  top: var(--map-floating-nav-top);
   left: 16px;
   right: 16px;
   z-index: var(--z-floating-nav);
@@ -2788,8 +2797,35 @@ textarea {
   backdrop-filter: blur(12px);
 }
 
-.map-floating-nav__icon-btn,
-.map-floating-nav .global-settings-menu__trigger {
+.app-capsule__leading,
+.app-capsule__actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.app-capsule__center {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.app-capsule__page-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-capsule__menu-button,
+.app-capsule__back-button,
+.app-capsule .global-settings-menu__trigger {
   display: inline-flex;
   width: 28px;
   min-width: 28px;
@@ -2805,8 +2841,30 @@ textarea {
   box-shadow: none;
 }
 
-.map-floating-nav__icon-btn[aria-disabled="true"] {
+.app-capsule__menu-button:disabled,
+.app-capsule__back-button:disabled {
+  cursor: default;
   opacity: 0.72;
+}
+
+.map-floating-nav {
+  position: static;
+  z-index: auto;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  overflow: visible;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .map-floating-nav__filter {
@@ -2924,9 +2982,9 @@ textarea {
   border-color: rgba(255, 93, 146, 0.42);
 }
 
-.map-floating-nav .global-settings-menu {
+.app-capsule .global-settings-menu {
   flex: 0 0 auto;
-  z-index: calc(var(--z-floating-nav-dropdown) + 1);
+  z-index: var(--z-floating-nav-dropdown);
 }
 
 .map-floating-nav__status {
@@ -2947,18 +3005,140 @@ textarea {
   color: #9b405f;
 }
 
-.map-floating-nav .global-settings-menu__menu {
+.app-capsule .global-settings-menu__menu {
   top: calc(100% + 10px);
   right: 0;
-  z-index: calc(var(--z-floating-nav-dropdown) + 2);
+  z-index: var(--z-floating-nav-dropdown);
 }
 
-.map-floating-nav .global-notification-panel {
+.app-capsule .global-notification-panel {
   top: calc(100% + 58px);
   right: 0;
-  z-index: calc(var(--z-floating-nav-dropdown) + 3);
+  z-index: var(--z-notification-panel);
   width: min(var(--notification-panel-width), calc(100vw - 48px));
   max-height: min(var(--notification-panel-max-vh), var(--notification-panel-max-height));
+}
+
+.side-drawer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-side-drawer);
+  pointer-events: none;
+}
+
+.side-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(42, 24, 38, 0.18);
+  pointer-events: auto;
+}
+
+.side-drawer__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(312px, calc(100% - 56px));
+  overflow: hidden;
+  border: 1px solid rgba(255, 197, 217, 0.48);
+  border-radius: 0 28px 28px 0;
+  background: rgba(255, 252, 249, 0.98);
+  box-shadow: 18px 0 42px rgba(66, 40, 60, 0.18);
+  pointer-events: auto;
+}
+
+.side-drawer__control-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 14px 0;
+}
+
+.side-drawer__close {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 129, 168, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--pink-deep);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.side-drawer__content {
+  min-height: 0;
+  padding: 16px;
+}
+
+.speed-dial-fab {
+  position: absolute;
+  right: var(--speed-dial-inline-offset);
+  bottom: var(--speed-dial-bottom-offset);
+  z-index: var(--z-speed-dial);
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  pointer-events: none;
+}
+
+.speed-dial-fab__menu {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.speed-dial-fab__trigger,
+.speed-dial-fab__action {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 127, 168, 0.3);
+  background: rgba(255, 252, 249, 0.96);
+  box-shadow: 0 14px 28px rgba(66, 40, 60, 0.14);
+  color: var(--ink);
+  font-weight: 800;
+  pointer-events: auto;
+}
+
+.speed-dial-fab__trigger {
+  width: 48px;
+  height: 48px;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--pink-deep);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.speed-dial-fab__action {
+  min-height: 40px;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.speed-dial-fab__action:disabled {
+  cursor: default;
+  opacity: 0.54;
+}
+
+.speed-dial-fab__action-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.speed-dial-fab__action-label {
+  white-space: nowrap;
 }
 
 .phone-shell--map.app-shell--header-hidden .map-surface-frame .map-floating-controls {
@@ -3012,38 +3192,118 @@ textarea {
   font-display: swap;
 }
 
-/* Final map bottom-sheet policy: full fills the map content above the persistent bottom tabs. */
+/* Final map bottom-sheet policy: chrome row, full-bleed media, and capsule-safe full inset. */
+.place-drawer {
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-map-sheet);
+  border-radius: 28px;
+  background: rgba(255, 252, 249, 0.98);
+  border: 1px solid rgba(255, 216, 229, 0.58);
+  box-shadow: 0 -10px 28px rgba(66, 40, 60, 0.14);
+}
+
 .place-drawer--full {
-  top: 0;
+  top: var(--map-sheet-full-top-inset);
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap));
   height: auto;
   max-height: none;
-  z-index: 140;
+  z-index: var(--z-map-sheet);
 }
 
-.place-drawer--full .place-drawer__content {
-  padding-bottom: 18px;
+.place-drawer__chrome {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 8px;
+  background: rgba(255, 252, 249, 0.98);
+}
+
+.place-drawer__chrome-spacer {
+  min-width: 34px;
+  min-height: 1px;
+}
+
+.place-drawer__handle {
+  justify-self: center;
+  width: 56px;
+  padding: 6px 0;
 }
 
 .place-drawer__control-rail {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  z-index: 2;
-  display: flex;
+  justify-self: end;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.place-drawer__minimize,
-.place-drawer__shell-close {
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid rgba(255, 129, 168, 0.32);
+.place-drawer--full .place-drawer__control-rail {
+  top: var(--map-sheet-full-control-top);
+}
+
+.place-drawer__control-btn {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 129, 168, 0.28);
   border-radius: 999px;
   background: rgba(255, 252, 249, 0.96);
   color: var(--pink-deep);
-  font-size: 12px;
-  font-weight: 800;
-  box-shadow: 0 10px 24px rgba(255, 127, 168, 0.12);
+  box-shadow: 0 8px 18px rgba(255, 127, 168, 0.12);
+}
+
+.place-drawer__control-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.place-drawer__surface {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.map-bottom-sheet__media-frame {
+  overflow: hidden;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(255, 244, 248, 0.86);
+}
+
+.map-bottom-sheet__media-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.place-drawer__content {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: 16px 18px 20px;
+}
+
+.place-drawer--full .place-drawer__content {
+  padding-bottom: 20px;
+}
+
+.place-drawer__header {
+  display: grid;
+  gap: 10px;
+}
+
+.place-drawer__summary {
+  margin: 0;
 }

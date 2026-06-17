@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
+import { AppTopNavigation } from './components/AppTopNavigation';
 import { AppShell } from './components/app-shell/AppShell';
 import {
   useAppRouteState,
@@ -51,12 +52,9 @@ export default function App() {
     mapStageProps,
     pageStageProps,
   } = useAppStageProps(coordinator);
-  const headerMode = activeTab === 'map' ? 'hidden' : 'default';
-
   return (
     <AppShell
       activeTab={activeTab}
-      bottomTabHidden={false}
       canNavigateBack={canNavigateBack}
       globalStatus={globalStatus ? {
         tone: globalStatus.tone,
@@ -64,13 +62,23 @@ export default function App() {
         layout: activeTab === 'map' ? 'map' : 'page',
       } : null}
       globalUtility={globalUtility}
-      headerMode={headerMode}
+      headerMode="hidden"
       onBottomTabChange={handleBottomNavChange}
       onNavigateBack={handleNavigateBack}
       showEntrySplash
+      topNavigation={(
+        <AppTopNavigation
+          activeTab={activeTab}
+          canNavigateBack={canNavigateBack}
+          globalUtility={globalUtility}
+          mapActions={mapStageProps.mapActions}
+          mapData={mapStageProps.mapData}
+          onNavigateBack={handleNavigateBack}
+        />
+      )}
     >
       {activeTab === 'map' ? (
-        <AppMapStageView {...mapStageProps} globalUtility={globalUtility} />
+        <AppMapStageView {...mapStageProps} />
       ) : (
         <AppPageStage {...pageStageProps} />
       )}

@@ -62,7 +62,7 @@ export function GlobalSettingsMenu({
 
     const updateFloatingPanelPosition = () => {
       const root = rootRef.current;
-      const nav = root?.closest('[data-map-floating-nav="root"]') as HTMLElement | null;
+      const nav = root?.closest('[data-app-capsule="root"], [data-map-floating-nav="root"]') as HTMLElement | null;
       const anchorRect = (nav ?? root)?.getBoundingClientRect();
       if (!anchorRect) {
         return;

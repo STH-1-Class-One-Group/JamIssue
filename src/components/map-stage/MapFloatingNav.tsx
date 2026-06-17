@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
+import { categoryInfo, categoryItems } from '../../lib/categories';
 import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceItem } from '../../tourismTypes';
 import type { Category } from '../../types/core';
-import { categoryInfo, categoryItems } from '../../lib/categories';
-import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
-import { GlobalSettingsMenu, type GlobalSettingsMenuProps } from '../GlobalSettingsMenu';
 
 type FloatingFilterItem = {
   key: string;
@@ -20,7 +19,6 @@ export interface MapFloatingNavProps {
   tourismSourceReady: boolean;
   tourismLoading: boolean;
   tourismError: string | null;
-  globalUtility: GlobalSettingsMenuProps;
   onSelectCategory: (category: Category) => void;
   onSelectTourismDisplayGroup: (displayGroup: TourismDisplayGroupFilter) => void;
   onToggleTourismInfo: () => void;
@@ -35,7 +33,6 @@ export function MapFloatingNav({
   tourismSourceReady,
   tourismLoading,
   tourismError,
-  globalUtility,
   onSelectCategory,
   onSelectTourismDisplayGroup,
   onToggleTourismInfo,
@@ -73,7 +70,7 @@ export function MapFloatingNav({
   const renderFilterLabel = (item: FloatingFilterItem | undefined) => (
     <>
       <span className="map-floating-nav__filter-icon" aria-hidden="true">
-        {item?.icon ?? '🧭'}
+        {item?.icon ?? '✨'}
       </span>
       <span className="map-floating-nav__filter-label">{item?.label ?? '전체'}</span>
       <span className="map-floating-nav__filter-caret" aria-hidden="true">⌄</span>
@@ -82,10 +79,6 @@ export function MapFloatingNav({
 
   return (
     <div className="map-floating-nav" data-map-floating-nav="root">
-      <button type="button" className="map-floating-nav__icon-btn" aria-label="메뉴" aria-disabled="true">
-        <span aria-hidden="true">☰</span>
-      </button>
-
       <div className="map-floating-nav__filter" ref={filterRef}>
         <button
           type="button"
@@ -129,7 +122,7 @@ export function MapFloatingNav({
                   }}
                 >
                   <span className="map-floating-nav__dropdown-icon" aria-hidden="true">
-                    {item.icon ?? '🧭'}
+                    {item.icon ?? '✨'}
                   </span>
                   <span className="map-floating-nav__dropdown-label">{item.label}</span>
                 </button>
@@ -159,7 +152,6 @@ export function MapFloatingNav({
           {tourismError}
         </span>
       ) : null}
-      <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
     </div>
   );
 }
