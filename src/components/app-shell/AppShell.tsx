@@ -18,6 +18,7 @@ interface AppShellProps {
   headerMode?: 'default' | 'hidden';
   showEntrySplash?: boolean;
   subNav?: ReactNode;
+  topNavigation?: ReactNode;
 }
 
 export function AppShell({
@@ -31,6 +32,7 @@ export function AppShell({
   onNavigateBack,
   showEntrySplash = false,
   subNav,
+  topNavigation,
 }: AppShellProps) {
   const [showSplash, setShowSplash] = useState(showEntrySplash);
   const isMapStage = activeTab === 'map';
@@ -50,6 +52,7 @@ export function AppShell({
         data-app-shell="phone"
         data-testid="app-shell-phone"
       >
+        {topNavigation}
         {globalStatus && (
           <div className="phone-shell__status-slot app-shell__status-safe-area" data-app-shell-slot="status">
             <GlobalStatusBanner

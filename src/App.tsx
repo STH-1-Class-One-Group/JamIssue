@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
+import { AppTopNavigation } from './components/AppTopNavigation';
 import { AppShell } from './components/app-shell/AppShell';
-import { SideDrawer } from './components/app-shell/SideDrawer';
 import {
   useAppRouteState,
   getInitialMapViewport,
@@ -22,7 +22,6 @@ export default function App() {
   const routeState = useAppRouteState();
 
   const [initialMapViewport] = useState(getInitialMapViewport);
-  const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
 
   const domainState = {
     auth: useAuthDomainState(),
@@ -53,8 +52,6 @@ export default function App() {
     mapStageProps,
     pageStageProps,
   } = useAppStageProps(coordinator);
-  const headerMode = activeTab === 'map' ? 'hidden' : 'default';
-
   return (
     <AppShell
       activeTab={activeTab}
@@ -65,23 +62,23 @@ export default function App() {
         layout: activeTab === 'map' ? 'map' : 'page',
       } : null}
       globalUtility={globalUtility}
-      headerMode={headerMode}
+      headerMode="hidden"
       onBottomTabChange={handleBottomNavChange}
       onNavigateBack={handleNavigateBack}
       showEntrySplash
+      topNavigation={(
+        <AppTopNavigation
+          activeTab={activeTab}
+          canNavigateBack={canNavigateBack}
+          globalUtility={globalUtility}
+          mapActions={mapStageProps.mapActions}
+          mapData={mapStageProps.mapData}
+          onNavigateBack={handleNavigateBack}
+        />
+      )}
     >
       {activeTab === 'map' ? (
-        <>
-          <AppMapStageView
-            {...mapStageProps}
-            canNavigateBack={canNavigateBack}
-            globalUtility={globalUtility}
-            menuOpen={isSideDrawerOpen}
-            onNavigateBack={handleNavigateBack}
-            onOpenMenu={() => setIsSideDrawerOpen(true)}
-          />
-          <SideDrawer isOpen={isSideDrawerOpen} onClose={() => setIsSideDrawerOpen(false)} />
-        </>
+        <AppMapStageView {...mapStageProps} />
       ) : (
         <AppPageStage {...pageStageProps} />
       )}

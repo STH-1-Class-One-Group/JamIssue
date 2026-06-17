@@ -94,6 +94,8 @@ test('UIUX-013 keeps five-tab IA and hides map stage on non-map tabs', async ({ 
     await expect(bottomNav.locator(`[data-tab-key="${tabKey}"]`)).toHaveAttribute('aria-current', 'page');
     await expect(page.locator('.map-stage')).toHaveCount(0);
     await expect(page.locator('.page-stage')).toBeVisible();
+    await expect(page.locator('[data-app-shell-slot="header"]')).toHaveCount(0);
+    await expect(page.locator(`[data-app-capsule-center-tab="${tabKey}"]`)).toBeVisible();
   }
 
   await bottomNav.locator('[data-tab-key="map"]').click();
@@ -169,9 +171,12 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
 
   await page.locator('[data-tab-key="my"]').click();
 
+  await expect(phoneShell).toHaveClass(/app-shell--header-hidden/);
   await expect(phoneShell).toHaveClass(/app-shell--no-subnav/);
   await expect(page.locator('[data-app-shell-slot="sub-nav"]')).toHaveCount(0);
-  await expect(page.locator('[data-app-shell-slot="header"]')).toBeVisible();
+  await expect(page.locator('[data-app-shell-slot="header"]')).toHaveCount(0);
+  await expect(appCapsule).toBeVisible();
+  await expect(appCapsule.locator('[data-app-capsule-center-tab="my"]')).toBeVisible();
 });
 
 test('UIUX-024 keeps notification panel above the floating capsule overlay layer', async ({ page }) => {
