@@ -5,7 +5,7 @@ interface BottomNavProps {
   onChange: (nextTab: Tab) => void;
 }
 
-const items: Array<{ key: Tab; label: string; icon: string }> = [
+export const bottomNavItems: Array<{ key: Tab; label: string; icon: string }> = [
   { key: 'map', label: '지도', icon: '🗺️' },
   { key: 'event', label: '행사', icon: '🌸' },
   { key: 'feed', label: '피드', icon: '💬' },
@@ -16,7 +16,7 @@ const items: Array<{ key: Tab; label: string; icon: string }> = [
 export function BottomNav({ activeTab, onChange }: BottomNavProps) {
   return (
     <nav className="bottom-nav" aria-label="하단 네비게이션">
-      {items.map((item) => (
+      {bottomNavItems.map((item) => (
         <button
           key={item.key}
           type="button"

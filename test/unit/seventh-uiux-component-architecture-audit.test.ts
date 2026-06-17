@@ -29,14 +29,19 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(appHeader).not.toContain('window.history');
   });
 
-  it('records that map center controls moved under the AppCapsule shell', () => {
+  it('records that navigation-specific center controls are injected into the AppCapsule shell', () => {
+    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
     const appMapStageView = readRepoFile('src/components/AppMapStageView.tsx');
     const mapFloatingNav = readRepoFile('src/components/map-stage/MapFloatingNav.tsx');
 
-    expect(appMapStageView).toContain("import { AppCapsule } from './app-shell/AppCapsule'");
-    expect(appMapStageView).toContain('<AppCapsule');
-    expect(appMapStageView).toContain('center={(');
-    expect(appMapStageView).toContain('onOpenMenu={onOpenMenu}');
+    expect(appTopNavigation).toContain("import { AppCapsule } from './app-shell/AppCapsule'");
+    expect(appTopNavigation).toContain("import { MapFloatingNav } from './map-stage/MapFloatingNav'");
+    expect(appTopNavigation).toContain("import { SideDrawer } from './app-shell/SideDrawer'");
+    expect(appTopNavigation).toContain('<AppCapsule');
+    expect(appTopNavigation).toContain('center={center}');
+    expect(appTopNavigation).toContain('data-app-capsule-center-tab={activeTab}');
+    expect(appMapStageView).not.toContain("import { AppCapsule } from './app-shell/AppCapsule'");
+    expect(appMapStageView).not.toContain('<AppCapsule');
     expect(mapFloatingNav).toContain('export interface MapFloatingNavProps');
     expect(mapFloatingNav).toContain('activeCategory');
     expect(mapFloatingNav).toContain('activeTourismDisplayGroup');

@@ -194,6 +194,10 @@ textarea {
   inset: 0;
 }
 
+.phone-shell.app-shell--header-hidden:not(.phone-shell--map) .page-panel {
+  inset: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + 12px) 12px var(--bottom-nav-offset) 12px;
+}
+
 .app-header {
   position: absolute;
   top: 0;
@@ -2806,6 +2810,17 @@ textarea {
   min-width: 0;
   flex: 1 1 auto;
   align-items: center;
+}
+
+.app-capsule__page-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .app-capsule__menu-button,

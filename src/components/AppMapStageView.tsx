@@ -10,14 +10,10 @@ import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, 
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
-import { AppCapsule } from './app-shell/AppCapsule';
 import { SpeedDialFAB } from './app-shell/SpeedDialFAB';
-import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
 import { MapTabStage } from './MapTabStage';
-import { MapFloatingNav } from './map-stage/MapFloatingNav';
 
-interface AppMapStageViewProps {
-  canNavigateBack: boolean;
+export interface AppMapStageViewProps {
   mapData: {
     activeCategory: Category;
     activeTourismDisplayGroup: TourismDisplayGroupFilter;
@@ -81,47 +77,15 @@ interface AppMapStageViewProps {
     onLocateCurrentPosition: () => void;
     onMapViewportChange: (lat: number, lng: number, zoom: number) => void;
   };
-  globalUtility: GlobalSettingsMenuProps;
-  menuOpen: boolean;
-  onNavigateBack: () => void;
-  onOpenMenu: () => void;
 }
 
 export const AppMapStageView = memo(function AppMapStageView({
-  canNavigateBack,
   mapData,
   mapActions,
-  globalUtility,
-  menuOpen,
-  onNavigateBack,
-  onOpenMenu,
 }: AppMapStageViewProps) {
   return (
     <MapTabStage
-      floatingNav={(
-        <AppCapsule
-          canNavigateBack={canNavigateBack}
-          globalUtility={globalUtility}
-          menuOpen={menuOpen}
-          onNavigateBack={onNavigateBack}
-          onOpenMenu={onOpenMenu}
-          center={(
-            <MapFloatingNav
-              activeCategory={mapData.activeCategory}
-              activeTourismDisplayGroup={mapData.activeTourismDisplayGroup}
-              showTourismInfo={mapData.showTourismInfo}
-              tourismFacets={mapData.tourismFacets}
-              tourismPlaces={mapData.tourismPlaces}
-              tourismSourceReady={mapData.tourismSourceReady}
-              tourismLoading={mapData.tourismLoading}
-              tourismError={mapData.tourismError}
-              onSelectCategory={mapActions.setActiveCategory}
-              onSelectTourismDisplayGroup={mapActions.setActiveTourismDisplayGroup}
-              onToggleTourismInfo={mapActions.onToggleTourismInfo}
-            />
-          )}
-        />
-      )}
+      floatingNav={null}
       quickActions={(
         <SpeedDialFAB
           actions={[
