@@ -1,12 +1,12 @@
 :root {
   --app-height: 100dvh;
   --app-width: 100vw;
-  --bottom-nav-base-height: 76px;
+  --bottom-nav-base-height: 56px;
   --bottom-nav-offset: calc(var(--bottom-nav-base-height) + env(safe-area-inset-bottom));
-  --bottom-nav-padding-y: 10px;
+  --bottom-nav-padding-y: 8px;
   --bottom-nav-padding-x: 14px;
-  --bottom-nav-safe-padding-y: 12px;
-  --map-sheet-tab-gap: 0px;
+  --bottom-nav-safe-padding-y: 8px;
+  --map-sheet-tab-gap: 5px;
   --map-sheet-peek-height: 31%;
   --map-sheet-half-height: 50%;
   --map-sheet-full-height: 60%;
@@ -30,8 +30,8 @@
   --line: rgba(255, 255, 255, 0.76);
   --shadow: 0 18px 42px rgba(255, 143, 183, 0.18);
   --sheet-shadow: 0 -18px 34px rgba(66, 40, 60, 0.16);
-  --app-shell-safe-y: 16px;
-  --app-shell-safe-x: 14px;
+  --app-shell-safe-y: 0px;
+  --app-shell-safe-x: 0px;
   --app-header-height: 56px;
   --app-sub-nav-height: 48px;
   --app-header-gap: 10px;
@@ -42,8 +42,8 @@
   --map-sheet-full-top-inset: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + var(--map-floating-nav-gap));
   --phone-shell-max-width: 430px;
   --phone-shell-max-height: 920px;
-  --phone-shell-height-gap: 24px;
-  --phone-shell-radius: 32px;
+  --phone-shell-height-gap: 0px;
+  --phone-shell-radius: 0px;
   --layer-app-header: 40;
   --z-map-sheet: 110;
   --z-speed-dial: 118;
@@ -152,14 +152,15 @@ textarea {
 
 .phone-shell {
   position: relative;
-  width: min(100%, var(--phone-shell-max-width));
-  height: min(var(--phone-shell-max-height), calc(var(--app-height) - var(--phone-shell-height-gap)));
-  max-height: calc(var(--app-height) - var(--phone-shell-height-gap));
+  width: 100%;
+  height: calc(var(--app-height) - var(--phone-shell-height-gap));
+  max-width: none;
+  max-height: none;
   border-radius: var(--phone-shell-radius);
   overflow: hidden;
   background: rgba(255, 252, 249, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  box-shadow: var(--shadow);
+  border: 0;
+  box-shadow: none;
 }
 
 .phone-shell--map {
@@ -352,12 +353,6 @@ textarea {
 
 .app-shell__sub-nav-slot .map-filter-strip .chip-row::-webkit-scrollbar {
   display: none;
-}
-
-.tourism-toggle-chip {
-  flex: 0 0 auto;
-  margin-left: 8px;
-  white-space: nowrap;
 }
 
 .tourism-load-status {
@@ -992,7 +987,6 @@ textarea {
 .counter-pill,
 .mood-pill,
 .soft-tag,
-.bottom-nav__item,
 .file-picker,
 .map-locate-button {
   border-radius: 999px;
@@ -1001,7 +995,6 @@ textarea {
 .chip,
 .secondary-button,
 .file-picker,
-.bottom-nav__item,
 .map-locate-button {
   border: 1px solid rgba(255, 127, 168, 0.26);
   background: rgba(255, 255, 255, 0.82);
@@ -1009,7 +1002,6 @@ textarea {
 }
 
 .chip,
-.bottom-nav__item,
 .secondary-button,
 .map-locate-button,
 .text-button,
@@ -1035,7 +1027,6 @@ textarea {
 
 .secondary-button,
 .chip,
-.bottom-nav__item,
 .map-locate-button,
 .file-picker {
   font-weight: 600;
@@ -1782,22 +1773,25 @@ textarea {
   left: 0;
   right: 0;
   bottom: 0;
-  min-height: var(--bottom-nav-offset);
+  min-height: var(--bottom-nav-base-height);
   z-index: var(--z-bottom-nav);
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
+  gap: 6px;
   padding:
     var(--bottom-nav-padding-y)
     var(--bottom-nav-padding-x)
     calc(var(--bottom-nav-padding-y) + env(safe-area-inset-bottom));
   background: rgba(255, 252, 249, 0.9);
-  border-top: 1px solid rgba(255, 255, 255, 0.82);
+  border-top: 0.5px solid var(--border-subtle, #ece7e4);
   backdrop-filter: blur(14px);
 }
 
 .bottom-nav__item {
-  min-height: 48px;
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   font-weight: 700;
 }
 
@@ -1907,14 +1901,13 @@ textarea {
 }
 
 .bottom-nav__item {
-  border-radius: 999px;
-  border: 1px solid rgba(255, 127, 168, 0.16);
-  background: rgba(255, 255, 255, 0.92);
+  border: 0;
+  background: transparent;
 }
 
 .bottom-nav__item.is-active {
-  background: linear-gradient(180deg, #fff4f8, #ffe7ef);
-  border-color: rgba(255, 93, 146, 0.28);
+  border: 0;
+  background: transparent;
 }
 
 @media (max-width: 430px) {
@@ -2292,11 +2285,11 @@ textarea {
   padding:
     var(--bottom-nav-padding-y)
     12px
-    calc(var(--bottom-nav-safe-padding-y) + env(safe-area-inset-bottom));
+    calc(var(--bottom-nav-padding-y) + env(safe-area-inset-bottom));
 }
 
 .bottom-nav__item {
-  min-height: 46px;
+  min-height: 42px;
   font-size: 15px;
 }
 
@@ -2790,10 +2783,10 @@ textarea {
   padding: 0 8px;
   overflow: visible;
   white-space: nowrap;
-  border: 1px solid rgba(255, 197, 217, 0.46);
+  border: 0;
   border-radius: 999px;
   background: rgba(255, 252, 249, 0.9);
-  box-shadow: 0 16px 34px rgba(66, 40, 60, 0.14);
+  box-shadow: 0 2px 16px rgba(45, 42, 40, 0.1);
   backdrop-filter: blur(12px);
 }
 
@@ -2841,10 +2834,17 @@ textarea {
   box-shadow: none;
 }
 
+.app-capsule__icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
 .app-capsule__menu-button:disabled,
 .app-capsule__back-button:disabled {
   cursor: default;
-  opacity: 0.72;
+  opacity: 0.28;
+  pointer-events: none;
 }
 
 .map-floating-nav {
@@ -2959,27 +2959,89 @@ textarea {
   background: rgba(255, 240, 246, 0.88);
 }
 
-.map-floating-nav .tourism-toggle-chip {
+.map-floating-nav .tourism-toggle-switch {
   display: inline-flex;
   min-width: auto;
-  height: 30px;
   flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
   margin-left: auto;
-  padding: 0 10px;
-  border: 1px solid rgba(255, 127, 168, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
+}
+
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   color: var(--pink-deep);
   font-size: 12px;
   font-weight: 800;
+  line-height: 1;
   white-space: nowrap;
 }
 
-.map-floating-nav .tourism-toggle-chip.is-active {
-  background: linear-gradient(180deg, #fff4f8, #ffe7ef);
-  border-color: rgba(255, 93, 146, 0.42);
+.toggle-switch.is-disabled {
+  cursor: progress;
+  opacity: 0.62;
+}
+
+.toggle-switch__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.toggle-switch__track {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(107, 98, 104, 0.22);
+  transition: background 180ms ease;
+}
+
+.toggle-switch__thumb {
+  position: absolute;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(45, 42, 40, 0.16);
+  transition: transform 180ms ease;
+}
+
+.toggle-switch--sm .toggle-switch__track {
+  width: 32px;
+  height: 18px;
+}
+
+.toggle-switch--sm .toggle-switch__thumb {
+  width: 14px;
+  height: 14px;
+  transform: translateX(2px);
+}
+
+.toggle-switch--md .toggle-switch__track {
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch--md .toggle-switch__thumb {
+  width: 20px;
+  height: 20px;
+  transform: translateX(2px);
+}
+
+.toggle-switch.is-checked .toggle-switch__track {
+  background: var(--pink-deep);
+}
+
+.toggle-switch--sm.is-checked .toggle-switch__thumb {
+  transform: translateX(16px);
+}
+
+.toggle-switch--md.is-checked .toggle-switch__thumb {
+  transform: translateX(22px);
 }
 
 .app-capsule .global-settings-menu {

@@ -21,9 +21,11 @@ describe('layout token source quality baseline', () => {
   it('keeps app shell and map sheet spacing owned by root CSS tokens', () => {
     const indexCss = readSource('src/index.css');
 
-    expect(indexCss).toContain('--bottom-nav-base-height: 76px;');
+    expect(indexCss).toContain('--bottom-nav-base-height: 56px;');
     expect(indexCss).toContain('--bottom-nav-offset: calc(var(--bottom-nav-base-height) + env(safe-area-inset-bottom));');
-    expect(indexCss).toContain('--map-sheet-tab-gap: 0px;');
+    expect(indexCss).toContain('--phone-shell-height-gap: 0px;');
+    expect(indexCss).toContain('--phone-shell-radius: 0px;');
+    expect(indexCss).toContain('--map-sheet-tab-gap: 5px;');
     expect(indexCss).toContain('--map-sheet-peek-height: 31%;');
     expect(indexCss).toContain('--map-sheet-half-height: 50%;');
     expect(indexCss).toContain('--map-sheet-full-height: 60%;');
@@ -75,6 +77,16 @@ describe('layout token source quality baseline', () => {
     expect(css).not.toMatch(/\.place-drawer--full\s*\{[^}]*z-index:\s*\d+/s);
     expect(css).not.toMatch(/\.bottom-nav\s*\{[^}]*z-index:\s*\d+/s);
     expect(css).not.toMatch(/\.speed-dial-fab\s*\{[^}]*z-index:\s*(?:\d+|calc\()/s);
+  });
+
+  it('keeps bottom navigation outside shared pink chip/button outline groups', () => {
+    const css = `${readSource('src/index.css')}\n${readSource('src/styles/refinements.css')}`;
+
+    expect(css).not.toMatch(/\.bottom-nav__item,\s*\n\.chip,\s*\n\.map-filter-chip/);
+    expect(css).not.toMatch(/\.bottom-nav__item\.is-active,\s*\n\.chip\.is-active/);
+    expect(css).not.toContain('.tourism-toggle-chip');
+    expect(css).toContain('.tourism-toggle-switch');
+    expect(css).toContain('border: 0 !important;');
   });
 
   it('keeps map drawer media information visible instead of cropping source images', () => {

@@ -40,6 +40,10 @@ describe('AppCapsule shell contract', () => {
     expect(backButton).toBeEnabled();
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
     expect(settingsButton).toHaveClass('global-settings-menu__trigger');
+    expect(menuButton.querySelector('.app-capsule__icon')).not.toBeNull();
+    expect(backButton.querySelector('.app-capsule__icon')).not.toBeNull();
+    expect(menuButton).not.toHaveTextContent('☰');
+    expect(backButton).not.toHaveTextContent('←');
     expect(leading?.contains(menuButton)).toBe(true);
     expect(leading?.contains(backButton)).toBe(false);
     expect(actions?.contains(backButton)).toBe(true);

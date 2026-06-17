@@ -3,6 +3,7 @@ import { buildTourismDisplayGroupItems } from '../../lib/tourismTaxonomy';
 import { categoryInfo, categoryItems } from '../../lib/categories';
 import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceItem } from '../../tourismTypes';
 import type { Category } from '../../types/core';
+import { ToggleSwitch } from '../common/ToggleSwitch';
 
 type FloatingFilterItem = {
   key: string;
@@ -51,6 +52,11 @@ export function MapFloatingNav({
     tourismPlaces.length === 0 &&
     !tourismError;
   const shouldShowTourismLoading = tourismLoading || isTourismInitialPending;
+  const handleTourismSwitchChange = (nextChecked: boolean) => {
+    if (nextChecked !== showTourismInfo) {
+      onToggleTourismInfo();
+    }
+  };
 
   useEffect(() => {
     if (!filterOpen) {
@@ -132,16 +138,17 @@ export function MapFloatingNav({
         )}
       </div>
 
-      <button
-        type="button"
-        className={showTourismInfo ? 'tourism-toggle-chip is-active' : 'tourism-toggle-chip'}
+      <ToggleSwitch
+        className="tourism-toggle-switch"
         data-tourism-toggle="map"
         aria-busy={shouldShowTourismLoading || undefined}
         aria-pressed={showTourismInfo}
-        onClick={onToggleTourismInfo}
-      >
-        관광정보
-      </button>
+        checked={showTourismInfo}
+        disabled={shouldShowTourismLoading}
+        label="관광정보"
+        onChange={handleTourismSwitchChange}
+        size="sm"
+      />
       {showTourismInfo && shouldShowTourismLoading ? (
         <span className="map-floating-nav__status" data-tourism-load-status="initial" role="status">
           확인 중
