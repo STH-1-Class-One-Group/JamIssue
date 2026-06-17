@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "task-ledger-entry.v1",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "taskId": "TSK-015-03",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/493",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/540",
+  "mergeCommit": "0463a4a521240106146c4e1e954d472cf3d48ce9",
+  "status": "completed",
+  "updatedAt": "2026-06-17T00:00:00Z",
+  "why": "6차 UI/UX 바텀드로워 공통 셸이 실제 사용 중 KTO/curated 중복 drawer, 이미지 crop, drawer-bottom nav gap으로 회귀했기 때문에 완료 근거를 현재 구현 기준으로 다시 고정했다.",
+  "problem": "#493 body and repo traceability still pointed to stale PR #500 / merge 3fda7885 while the actual corrective implementation merged through PR #540 / 0463a4a.",
+  "how": "PR #540 added active sheet arbitration in MapStageSheets, repaired MapBottomSheet shell/media behavior, preserved images with contain fit, removed the visible drawer-bottom nav gap, and added unit/E2E regression evidence.",
+  "remainingGap": "없음.",
+  "documentPaths": [
+    "src/components/map-stage/MapStageSheets.tsx",
+    "src/components/map-stage/MapBottomSheet.tsx",
+    "src/index.css",
+    "src/styles/refinements.css",
+    "test/unit/map-stage-sheets.test.tsx",
+    "test/e2e/critical-ui-flow.spec.ts",
+    "test/e2e/app-shell.spec.ts",
+    "docs/traceability/task-ledger/by-task/TSK-015-03.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "왜 해결": "6차 UI/UX 바텀드로워 공통 셸이 실제 사용 중 KTO/curated 중복 drawer, 이미지 crop, drawer-bottom nav gap으로 회귀했기 때문에 완료 근거를 현재 구현 기준으로 다시 고정했다.",
+  "무슨 문제": "#493 body와 repo traceability가 실제 완료 PR #540 / merge 0463a4a가 아니라 과거 PR #500 / merge 3fda7885를 가리켰다.",
+  "어떻게 해결": "PR #540에서 active sheet arbitration, MapBottomSheet shell/media 보정, image contain, drawer-bottom nav gap 제거, unit/E2E 회귀 테스트를 반영했다.",
+  "Merge commit": "0463a4a521240106146c4e1e954d472cf3d48ce9",
+  "문서 경로": [
+    "docs/traceability/task-ledger/by-task/TSK-015-03.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "남은 gap": "없음."
+}
