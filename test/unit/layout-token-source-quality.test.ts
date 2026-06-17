@@ -23,7 +23,7 @@ describe('layout token source quality baseline', () => {
 
     expect(indexCss).toContain('--bottom-nav-base-height: 76px;');
     expect(indexCss).toContain('--bottom-nav-offset: calc(var(--bottom-nav-base-height) + env(safe-area-inset-bottom));');
-    expect(indexCss).toContain('--map-sheet-tab-gap: 12px;');
+    expect(indexCss).toContain('--map-sheet-tab-gap: 0px;');
     expect(indexCss).toContain('--map-sheet-peek-height: 31%;');
     expect(indexCss).toContain('--map-sheet-half-height: 50%;');
     expect(indexCss).toContain('--map-sheet-full-height: 60%;');
@@ -75,5 +75,13 @@ describe('layout token source quality baseline', () => {
     expect(css).not.toMatch(/\.place-drawer--full\s*\{[^}]*z-index:\s*\d+/s);
     expect(css).not.toMatch(/\.bottom-nav\s*\{[^}]*z-index:\s*\d+/s);
     expect(css).not.toMatch(/\.speed-dial-fab\s*\{[^}]*z-index:\s*(?:\d+|calc\()/s);
+  });
+
+  it('keeps map drawer media information visible instead of cropping source images', () => {
+    const css = `${readSource('src/index.css')}\n${readSource('src/styles/refinements.css')}`;
+
+    expect(css).toContain('.map-bottom-sheet__media-image');
+    expect(css).toContain('object-fit: contain');
+    expect(css).not.toMatch(/\.map-bottom-sheet__media-image\s*\{[^}]*object-fit:\s*cover/s);
   });
 });

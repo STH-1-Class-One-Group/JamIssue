@@ -6,7 +6,7 @@
   --bottom-nav-padding-y: 10px;
   --bottom-nav-padding-x: 14px;
   --bottom-nav-safe-padding-y: 12px;
-  --map-sheet-tab-gap: 12px;
+  --map-sheet-tab-gap: 0px;
   --map-sheet-peek-height: 31%;
   --map-sheet-half-height: 50%;
   --map-sheet-full-height: 60%;
@@ -3285,7 +3285,8 @@ textarea {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  background: rgba(255, 244, 248, 0.86);
 }
 
 .place-drawer__content {

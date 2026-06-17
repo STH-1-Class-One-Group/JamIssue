@@ -14,13 +14,15 @@ export function MapStageSheets({ placeSheet, festivalSheet, tourismSheet }: MapS
   const placeSheetState = resolveMapSheetState(Boolean(placeSheet.selectedPlace), placeSheet.drawerState);
   const festivalSheetState = resolveMapSheetState(Boolean(festivalSheet.selectedFestival), festivalSheet.drawerState);
   const isTourismSheetOpen = Boolean(tourismSheet.selectedTourismPlace);
+  const isFestivalSheetOpen = !isTourismSheetOpen && festivalSheetState !== 'hidden';
+  const isPlaceSheetOpen = !isTourismSheetOpen && !isFestivalSheetOpen && placeSheetState !== 'hidden';
 
   return (
     <>
       <PlaceDetailSheet
         place={placeSheet.selectedPlace}
         reviews={placeSheet.selectedPlaceReviews}
-        isOpen={placeSheetState !== 'hidden'}
+        isOpen={isPlaceSheetOpen}
         drawerState={placeSheet.drawerState}
         sheetState={placeSheetState}
         loggedIn={Boolean(placeSheet.sessionUser)}
@@ -45,7 +47,7 @@ export function MapStageSheets({ placeSheet, festivalSheet, tourismSheet }: MapS
 
       <FestivalDetailSheet
         festival={festivalSheet.selectedFestival}
-        isOpen={festivalSheetState !== 'hidden'}
+        isOpen={isFestivalSheetOpen}
         drawerState={festivalSheet.drawerState}
         sheetState={festivalSheetState}
         onClose={festivalSheet.onCloseDrawer}

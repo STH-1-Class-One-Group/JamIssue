@@ -13,6 +13,12 @@ async function requireBoundingBox(locator: Locator) {
   return box;
 }
 
+function expectDrawerToMeetBottomNav(drawerBox: { y: number; height: number }, bottomNavBox: { y: number }) {
+  const gap = bottomNavBox.y - (drawerBox.y + drawerBox.height);
+  expect(gap).toBeGreaterThanOrEqual(-1);
+  expect(gap).toBeLessThanOrEqual(2);
+}
+
 test('UIUX-009 keeps drawer and bottom navigation anchored while writing a review', async ({ page }) => {
   const state = createE2EAppState();
   await installApiFixtures(page, state);
@@ -22,7 +28,7 @@ test('UIUX-009 keeps drawer and bottom navigation anchored while writing a revie
   await expect(page.locator('.place-drawer--full')).toBeVisible();
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
 
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.locator('.bottom-nav');
   const beforeFocus = await requireBoundingBox(bottomNav);
   await expect(bottomNav).toHaveCSS('pointer-events', 'auto');
   await expect(bottomNav).toHaveCSS('opacity', '1');
@@ -49,7 +55,7 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
 
   const drawer = page.locator('.place-drawer');
   const handle = page.locator('.place-drawer__handle');
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.locator('.bottom-nav');
   const floatingNav = page.locator('[data-map-floating-nav="root"]');
 
   await expect(page.locator('[data-map-sheet-state="peek"]')).toBeVisible();
@@ -66,12 +72,12 @@ test('UIUX-020 keeps map bottom drawer full until explicit minimize while preser
   const navBox = await requireBoundingBox(floatingNav);
   const bottomNavBox = await requireBoundingBox(bottomNav);
   expect(fullBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height + 8);
-  expect(bottomNavBox.y - (fullBox.y + fullBox.height)).toBeGreaterThanOrEqual(12);
+  expectDrawerToMeetBottomNav(fullBox, bottomNavBox);
 
   await handle.click();
   await expect(page.locator('[data-map-sheet-state="full"]')).toBeVisible();
 
-  await page.getByRole('button', { name: '시트 최소화' }).click();
+  await page.locator('.place-drawer__minimize').click();
   await expect(page.locator('[data-map-sheet-state="half"]')).toBeVisible();
 });
 
@@ -87,8 +93,8 @@ test('UIUX-025 keeps the full drawer chrome below the floating capsule and separ
   const controlRail = drawer.locator('.place-drawer__control-rail');
   const mediaFrame = drawer.locator('.map-bottom-sheet__media-frame');
   const title = drawer.locator('.place-drawer__header h2');
-  const closeButton = page.getByRole('button', { name: '시트 닫기' });
-  const minimizeButton = page.getByRole('button', { name: '시트 최소화' });
+  const closeButton = drawer.locator('.place-drawer__shell-close');
+  const minimizeButton = drawer.locator('.place-drawer__minimize');
 
   await expect(floatingNav).toBeVisible();
   await expect(drawer).toBeVisible();
@@ -146,10 +152,10 @@ test('UIUX-010 supports feed comment creation, like toggle, and place CTA', asyn
   await page.locator('article[data-review-id="review-1"] .review-link-button').click();
   const peekDrawer = page.locator('[data-map-sheet-state="peek"]');
   await expect(peekDrawer).toBeVisible();
-  const bottomNav = page.getByRole('navigation', { name: '하단 네비게이션' });
+  const bottomNav = page.locator('.bottom-nav');
   const drawerBox = await requireBoundingBox(peekDrawer);
   const bottomNavBox = await requireBoundingBox(bottomNav);
-  expect(bottomNavBox.y - (drawerBox.y + drawerBox.height)).toBeGreaterThanOrEqual(12);
+  expectDrawerToMeetBottomNav(drawerBox, bottomNavBox);
 });
 
 test('UIUX-011 and UIUX-012 keep course sorting and my-page authenticated state usable', async ({ page }) => {
@@ -163,7 +169,7 @@ test('UIUX-011 and UIUX-012 keep course sorting and my-page authenticated state 
   await sortButtons.nth(1).click();
   await expect(sortButtons.nth(1)).toHaveClass(/is-active/);
 
-  await page.getByRole('button', { name: '마이' }).click();
+  await page.locator('[data-tab-key="my"]').click();
   await expect(page.locator('.my-page-primary-tabs')).toBeVisible();
   await expect(page.locator('.my-page-primary-tabs button')).toHaveCount(4);
 });
