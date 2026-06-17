@@ -96,3 +96,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/533; https://github.com/STH-1-Class-One-Group/JamIssue/pull/534
   - Merge commit: 4eede38f7f23084001af868d33169e37ff5f56b9; 74ff8bbb652dcaa9b1ff4d347ab8be3f242437d3
   - Evidence: GitHub Validation Evidence readback, Wiki commit `766b435`, and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-08: https://github.com/STH-1-Class-One-Group/JamIssue/issues/544
+  - Title: app chrome real-device polish
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/544
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/545
+  - Merge commit: 996f89d985d708d10009df3722fa97fb70f047b0
+  - Evidence: GitHub Validation Evidence readback, production-smoke, and `docs/traceability/task-ledger.jsonl`
