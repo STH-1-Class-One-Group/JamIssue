@@ -66,9 +66,15 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
 
   const shellBox = await requireBoundingBox(phoneShell);
   const navBox = await requireBoundingBox(bottomNav);
+  await expect(phoneShell).toHaveCSS('border-radius', '0px');
+  await expect(phoneShell).toHaveCSS('border-top-width', '0px');
+  await expect(phoneShell).toHaveCSS('box-shadow', 'none');
+  expect(shellBox.width).toBeGreaterThanOrEqual(389);
+  expect(shellBox.height).toBeGreaterThanOrEqual(843);
   expect(navBox.x).toBeGreaterThanOrEqual(shellBox.x - 1);
   expect(navBox.x + navBox.width).toBeLessThanOrEqual(shellBox.x + shellBox.width + 1);
   expect(navBox.y + navBox.height).toBeLessThanOrEqual(shellBox.y + shellBox.height + 1);
+  expect(navBox.height).toBeLessThanOrEqual(88);
 
   const itemBoxes = await bottomNavItems.evaluateAll((items) => items.map((item) => item.getBoundingClientRect().width));
   const widest = Math.max(...itemBoxes);
@@ -322,6 +328,7 @@ test('TSK-016-06 keeps KTO toggle and filter responsive after overlay layering c
   await expect(floatingNav).toBeVisible();
 
   await floatingNav.locator('[data-tourism-toggle="map"]').click();
+  await expect(floatingNav.getByRole('switch', { name: '관광정보' })).toBeChecked({ timeout: 400 });
   await expect(floatingNav.locator('[data-tourism-toggle="map"]')).toHaveAttribute('aria-pressed', 'true', { timeout: 400 });
   await expect.poll(() => tourismRequests.length).toBe(1);
   expect(tourismRequests[0]).toContain('scope=all');

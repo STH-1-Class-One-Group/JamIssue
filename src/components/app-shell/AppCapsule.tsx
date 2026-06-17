@@ -11,6 +11,22 @@ export interface AppCapsuleProps {
   onOpenMenu?: () => void;
 }
 
+function MenuIcon() {
+  return (
+    <svg className="app-capsule__icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function BackIcon() {
+  return (
+    <svg className="app-capsule__icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
 export function AppCapsule({
   ariaLabel = '앱 캡슐 내비게이션',
   canNavigateBack,
@@ -31,7 +47,7 @@ export function AppCapsule({
           disabled={!onOpenMenu}
           onClick={onOpenMenu}
         >
-          <span aria-hidden="true">☰</span>
+          <MenuIcon />
         </button>
       </div>
       <div className="app-capsule__center" data-app-capsule-slot="center">
@@ -45,7 +61,7 @@ export function AppCapsule({
           disabled={!canNavigateBack}
           onClick={canNavigateBack ? onNavigateBack : undefined}
         >
-          <span aria-hidden="true">←</span>
+          <BackIcon />
         </button>
         <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
       </div>

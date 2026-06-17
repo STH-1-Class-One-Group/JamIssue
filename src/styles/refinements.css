@@ -815,7 +815,6 @@ body {
 .secondary-button,
 .primary-button,
 .text-button,
-.bottom-nav__item,
 .chip,
 .map-filter-chip,
 .map-locate-button,
@@ -845,7 +844,6 @@ body {
   line-height: 1.35 !important;
 }
 
-.bottom-nav__item,
 .chip,
 .map-filter-chip,
 .secondary-button,
@@ -1102,7 +1100,6 @@ body {
   gap: 6px !important;
 }
 
-.bottom-nav__item,
 .chip,
 .map-filter-chip,
 .secondary-button,
@@ -1112,7 +1109,6 @@ body {
   color: var(--ui-control-text) !important;
 }
 
-.bottom-nav__item.is-active,
 .chip.is-active,
 .secondary-button.is-complete,
 .soft-tag.is-complete,
@@ -1140,6 +1136,10 @@ body {
   min-width: 0 !important;
   padding: 0 4px !important;
   font-size: var(--type-sm) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--role-tab-text) !important;
 }
 
 .bottom-nav__item {
@@ -1165,9 +1165,16 @@ body {
 }
 
 .bottom-nav__item.is-active .bottom-nav__active-pill {
-  background: var(--ui-control-active-bg);
+  background: rgba(255, 240, 246, 0.78);
   opacity: 1;
   transform: translateY(0);
+}
+
+.bottom-nav__item.is-active {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--role-tab-active-text) !important;
 }
 
 .bottom-nav__icon {
@@ -1226,7 +1233,6 @@ body {
   --role-button-shadow: 0 8px 18px rgba(255, 127, 168, 0.08);
 }
 
-.bottom-nav__item,
 .chip,
 .map-filter-chip {
   background: var(--role-tab-bg) !important;
@@ -1235,7 +1241,6 @@ body {
   box-shadow: 0 4px 12px rgba(255, 127, 168, 0.05) !important;
 }
 
-.bottom-nav__item.is-active,
 .chip.is-active,
 .map-filter-chip.is-active {
   background: var(--role-tab-active-bg) !important;
