@@ -115,12 +115,21 @@ export function useNaverTourismMarkers({
       tourismMarkersRef.current.set(place.id, marker);
     };
 
-    const stalePlaceIds = Array.from(tourismMarkersRef.current.keys()).filter((placeId) => !nextIds.has(placeId));
+    // Performance optimization: Avoid allocating a new array via Array.from().filter(...)
+    // Iterate over map keys directly to reduce O(N) memory allocation and GC pressure.
+    const stalePlaceIds: string[] = [];
+    for (const placeId of tourismMarkersRef.current.keys()) {
+      if (!nextIds.has(placeId)) {
+        stalePlaceIds.push(placeId);
+      }
+    }
+
     const placesToCreate = visiblePlaces.filter((place) => !tourismMarkersRef.current.has(place.id));
     const idsToRefresh = new Set([
       previousSelectedTourismPlaceIdRef.current,
       selectedTourismPlaceId,
     ].filter((placeId): placeId is string => Boolean(placeId)));
+
     const operations = [
       ...stalePlaceIds.map((placeId) => () => {
         const marker = tourismMarkersRef.current.get(placeId);
