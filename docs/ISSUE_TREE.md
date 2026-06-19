@@ -127,5 +127,5 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - Title: 피드 인스타형 UI/UX 완성도 보정
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/560
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/561
-  - Merge commit: 0b7ae58c0dd8d06ef8566cde15918fbb25fc2108
+  - Merge commit: 0b7ae58c0dd8d06ef8566cde15918fbb25fc2108; d986b0061cf8af51307cffa3351ecec846e8d594
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
