@@ -63,13 +63,14 @@ describe('feed Instagram layout polish', () => {
     expect(card).toHaveAttribute('data-feed-card', 'review');
     expect(within(card).getByText('솔레벤토')).toBeInTheDocument();
     expect(within(card).getByText('민지 · 2026. 06. 17.')).toBeInTheDocument();
+    expect(within(card).getByText('민')).toBeInTheDocument();
     expect(within(card).getByRole('img', { name: '솔레벤토 후기 이미지' })).toBeInTheDocument();
     expect(within(card).getByText(review.body)).toHaveClass('review-card__caption');
 
     const sections = Array.from(card.querySelectorAll('[data-feed-section]')).map((node) =>
       node.getAttribute('data-feed-section'),
     );
-    expect(sections).toEqual(['header', 'tags', 'media', 'caption', 'actions']);
+    expect(sections).toEqual(['header', 'media', 'actions', 'caption', 'tags']);
 
     await user.click(within(card).getByRole('button', { name: '좋아요 12개' }));
     await user.click(within(card).getByRole('button', { name: '댓글 3개 보기' }));
@@ -78,6 +79,21 @@ describe('feed Instagram layout polish', () => {
     expect(props.onToggleLike).toHaveBeenCalledWith('review-1', props.review);
     expect(props.onOpenComments).toHaveBeenCalledWith('review-1');
     expect(props.onOpenPlace).toHaveBeenCalledWith('place-1');
+  });
+
+  it('keeps image-less reviews in the same app-feed rhythm', () => {
+    renderReviewListItem({ imageUrl: null, thumbnailUrl: null });
+    const card = screen.getByTestId('feed-review-card');
+
+    expect(card).toHaveClass('review-card--text-only');
+    expect(card.querySelector('[data-feed-section="media"]')).toBeNull();
+    expect(card.querySelector('[data-feed-section="text"]')).not.toBeNull();
+    expect(within(card).getByText(review.body)).toHaveClass('review-card__caption');
+
+    const sections = Array.from(card.querySelectorAll('[data-feed-section]')).map((node) =>
+      node.getAttribute('data-feed-section'),
+    );
+    expect(sections).toEqual(['header', 'text', 'actions', 'tags']);
   });
 
   it('restores feed header and touched feed modules from mojibake', () => {

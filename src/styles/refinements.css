@@ -1717,23 +1717,56 @@ body {
 /* 2026-03-28 feed card density sample pass */
 .review-card--feed {
   display: grid !important;
-  gap: 11px !important;
-  padding: 14px !important;
-  border-radius: 26px !important;
+  gap: 10px !important;
+  padding: 12px !important;
+  border-radius: 24px !important;
   background: rgba(255, 253, 251, 0.98) !important;
-  border: 1px solid rgba(255, 207, 222, 0.42) !important;
-  box-shadow: 0 14px 34px rgba(94, 45, 67, 0.08) !important;
+  border: 1px solid rgba(255, 217, 230, 0.36) !important;
+  box-shadow: 0 10px 26px rgba(94, 45, 67, 0.06) !important;
 }
 
 .review-card--feed .review-card__top--feed {
   align-items: center !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
   gap: 10px !important;
   min-width: 0 !important;
 }
 
+.review-card--feed .review-card__feed-avatar {
+  display: grid !important;
+  width: 34px !important;
+  height: 34px !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, rgba(255, 231, 240, 0.96), rgba(255, 246, 251, 0.96)) !important;
+  border: 1px solid rgba(255, 180, 205, 0.36) !important;
+  color: var(--pink-deep) !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.review-card--feed .review-card__title-block--feed {
+  gap: 3px !important;
+}
+
+.review-card--feed .review-card__title-row {
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+.review-card--feed .review-card__feed-meta {
+  margin: 0 !important;
+  color: rgba(93, 77, 101, 0.68) !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+}
+
 .review-card--feed .review-card__tag-row {
   gap: 6px !important;
-  margin-top: -2px !important;
+  margin-top: -1px !important;
 }
 
 .review-card__media {
@@ -1742,29 +1775,39 @@ body {
 
 .review-card--feed .review-card__image-frame {
   margin: 0 !important;
-  border-radius: 22px !important;
-  border-color: rgba(255, 176, 201, 0.18) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  border-radius: 21px !important;
+  border-color: rgba(255, 176, 201, 0.14) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+.review-card--feed .review-card__text-frame {
+  padding: 16px 16px 15px !important;
+  border-radius: 21px !important;
+  background:
+    radial-gradient(circle at top left, rgba(255, 236, 244, 0.94), transparent 48%),
+    rgba(255, 249, 252, 0.86) !important;
+  border: 1px solid rgba(255, 205, 222, 0.28) !important;
 }
 
 .review-card--feed .review-card__caption {
   margin: 0 !important;
-  line-height: 1.58 !important;
+  line-height: 1.56 !important;
   color: rgba(54, 34, 48, 0.9) !important;
 }
 
 .review-card__actions--feed {
   align-items: center !important;
-  margin-top: -2px !important;
+  justify-content: space-between !important;
+  margin-top: -1px !important;
 }
 
 .review-card__action-group--feed {
-  gap: 4px !important;
+  gap: 2px !important;
 }
 
 .review-card--feed .review-action-button {
-  min-height: 34px !important;
-  padding: 6px 9px !important;
+  min-height: 32px !important;
+  padding: 6px 8px !important;
   border: 0 !important;
   background: transparent !important;
   color: rgba(119, 84, 108, 0.9) !important;
@@ -1773,11 +1816,11 @@ body {
 
 .review-card--feed .review-action-button.is-active {
   color: #ff5d92 !important;
-  background: rgba(255, 239, 246, 0.76) !important;
+  background: rgba(255, 239, 246, 0.72) !important;
 }
 
 .review-card--feed .review-action-button__icon {
-  font-size: 14px !important;
+  font-size: 15px !important;
 }
 
 .review-card--feed .review-action-button__label {
@@ -1786,10 +1829,11 @@ body {
 }
 
 .review-card--feed .review-link-button {
-  min-height: 34px !important;
-  padding: 7px 12px !important;
+  min-height: 32px !important;
+  padding: 6px 10px !important;
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.96) !important;
-  border-color: rgba(255, 196, 215, 0.46) !important;
+  background: rgba(255, 249, 252, 0.92) !important;
+  border-color: rgba(255, 196, 215, 0.34) !important;
   box-shadow: none !important;
+  font-size: 12px !important;
 }

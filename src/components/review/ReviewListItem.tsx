@@ -40,22 +40,26 @@ export const ReviewListItem = memo(function ReviewListItem({
   onOpenPlace,
   onOpenComments,
 }: ReviewListItemProps) {
+  const authorInitial = review.author.trim().slice(0, 1) || review.placeName.trim().slice(0, 1) || 'J';
+  const hasImage = Boolean(review.imageUrl);
+
   return (
     <article
       data-testid="feed-review-card"
       data-feed-card="review"
       data-review-id={review.id}
-      className={isHighlighted ? 'review-card review-card--feed review-card--highlighted' : 'review-card review-card--feed'}
+      className={[
+        'review-card review-card--feed',
+        hasImage ? 'review-card--with-media' : 'review-card--text-only',
+        isHighlighted ? 'review-card--highlighted' : '',
+      ].filter(Boolean).join(' ')}
     >
       <ReviewFeedCardHeader
         title={<strong className="review-card__title">{review.placeName}</strong>}
         mood={review.mood}
         meta={`${review.author} · ${review.visitedAt}`}
+        avatar={<span>{authorInitial}</span>}
       />
-
-      <div data-feed-section="tags">
-        <ReviewTagRow visitLabel={review.visitLabel} badge={review.badge} hasPublishedRoute={review.hasPublishedRoute} />
-      </div>
 
       {review.imageUrl && (
         <div className="review-card__media" data-feed-section="media">
@@ -67,9 +71,11 @@ export const ReviewListItem = memo(function ReviewListItem({
         </div>
       )}
 
-      <p className="review-card__body review-card__caption" data-feed-section="caption">
-        {review.body}
-      </p>
+      {!review.imageUrl && (
+        <div className="review-card__text-frame" data-feed-section="text">
+          <p className="review-card__body review-card__caption">{review.body}</p>
+        </div>
+      )}
 
       <div className="review-card__actions review-card__actions--feed" data-feed-section="actions">
         <div className="review-card__action-group review-card__action-group--feed">
@@ -112,6 +118,16 @@ export const ReviewListItem = memo(function ReviewListItem({
             장소 보기
           </button>
         )}
+      </div>
+
+      {review.imageUrl && (
+        <p className="review-card__body review-card__caption" data-feed-section="caption">
+          {review.body}
+        </p>
+      )}
+
+      <div data-feed-section="tags">
+        <ReviewTagRow visitLabel={review.visitLabel} badge={review.badge} hasPublishedRoute={review.hasPublishedRoute} />
       </div>
 
       {!onOpenComments && (
