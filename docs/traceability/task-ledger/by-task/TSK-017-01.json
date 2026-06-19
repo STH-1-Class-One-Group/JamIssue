@@ -5,7 +5,7 @@
   "status": "completed",
   "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/552",
   "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/553",
-  "mergeCommit": "158d09ef78430979c0c825997e4003a7fd8e313b",
+  "mergeCommit": "158d09ef78430979c0c825997e4003a7fd8e313b; e677675cd1ca0e847561f2b497aa2bfeb39bec8b",
   "documentPaths": [
     "docs/GOVERNANCE_INDEX.md",
     "src/components/review/ReviewFeedCardHeader.tsx",
@@ -22,5 +22,5 @@
   "problem": "이미지, 본문, action 위계가 약하고 접근성 라벨과 테스트 문자열이 불명확했다.",
   "how": "ReviewListItem section marker, caption/media wrapper, feed CSS rhythm, unit/regression/E2E 검증을 추가했다.",
   "remainingGap": "없음.",
-  "updatedAt": "2026-06-19T06:43:08Z"
+  "updatedAt": "2026-06-19T06:59:52Z"
 }
