@@ -108,3 +108,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/549
   - Merge commit: 6249fa4f877c379851ba87bc4fe21953751c2470
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+
+## TSK-017
+
+- [x] TSK-017-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/552
+  - Title: Feed Instagram layout polish
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/552
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/553
+  - Merge commit: 158d09ef78430979c0c825997e4003a7fd8e313b
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
