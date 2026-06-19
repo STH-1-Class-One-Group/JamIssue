@@ -5,7 +5,7 @@
   "status": "completed",
   "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/556",
   "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/557",
-  "mergeCommit": "ed8fbbcce052b6ef313b1a3aac4709adc699eb56",
+  "mergeCommit": "ed8fbbcce052b6ef313b1a3aac4709adc699eb56; aed62d66ca6ce8556c6b4c8a463e184436912b17",
   "documentPaths": [
     "docs/GOVERNANCE_INDEX.md",
     "test/unit/feed-instagram-layout.test.tsx",
