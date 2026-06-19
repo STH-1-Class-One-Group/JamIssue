@@ -102,3 +102,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/545
   - Merge commit: 996f89d985d708d10009df3722fa97fb70f047b0
   - Evidence: GitHub Validation Evidence readback, production-smoke, and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-016-09: https://github.com/STH-1-Class-One-Group/JamIssue/issues/548
+  - Title: app shell bottom nav and desktop preview polish
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/548
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/549
+  - Merge commit: 6249fa4f877c379851ba87bc4fe21953751c2470
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
