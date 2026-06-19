@@ -1097,7 +1097,7 @@ body {
 
 .bottom-nav {
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  gap: 6px !important;
+  gap: 4px !important;
 }
 
 .chip,
@@ -1150,24 +1150,35 @@ body {
   align-items: center !important;
   justify-content: center !important;
   gap: 2px !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   white-space: nowrap !important;
 }
 
+.bottom-nav__icon-frame {
+  position: relative !important;
+  display: grid !important;
+  width: 46px !important;
+  height: 26px !important;
+  place-items: center !important;
+  margin: 0 auto 2px !important;
+  isolation: isolate !important;
+}
+
 .bottom-nav__active-pill {
-  position: absolute;
-  inset: 5px 4px;
-  z-index: -1;
-  border-radius: 999px;
-  background: transparent;
-  opacity: 0;
+  position: absolute !important;
+  inset: 1px 2px !important;
+  z-index: -1 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  transform: scaleX(0.92) !important;
   transition: opacity 160ms ease, transform 160ms ease;
 }
 
 .bottom-nav__item.is-active .bottom-nav__active-pill {
-  background: rgba(255, 240, 246, 0.78);
-  opacity: 1;
-  transform: translateY(0);
+  background: rgba(255, 227, 239, 0.88) !important;
+  opacity: 1 !important;
+  transform: scaleX(1) !important;
 }
 
 .bottom-nav__item.is-active {
@@ -1178,9 +1189,21 @@ body {
 }
 
 .bottom-nav__icon {
-  display: block;
-  font-size: 17px;
-  line-height: 1;
+  display: grid !important;
+  place-items: center !important;
+  color: currentColor !important;
+  line-height: 1 !important;
+}
+
+.bottom-nav__icon svg {
+  width: 21px !important;
+  height: 21px !important;
+  display: block !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
 }
 
 .bottom-nav__label {

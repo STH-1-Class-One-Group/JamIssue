@@ -61,6 +61,7 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   await expect(bottomTabSlot).toBeAttached();
   await expect(bottomNavItems).toHaveCount(5);
   await expect(bottomNavItems.locator('.bottom-nav__icon')).toHaveCount(5);
+  await expect(bottomNavItems.locator('.bottom-nav__icon-frame')).toHaveCount(5);
   await expect(bottomNavItems.locator('.bottom-nav__label')).toHaveCount(5);
   await expect(bottomNav.locator('[aria-current="page"] .bottom-nav__active-pill')).toHaveCount(1);
 
@@ -80,6 +81,44 @@ test('UIUX-001 keeps shell slots and five-tab bar inside the phone shell', async
   const widest = Math.max(...itemBoxes);
   const narrowest = Math.min(...itemBoxes);
   expect(widest - narrowest).toBeLessThan(2);
+
+  const activeItem = bottomNav.locator('[aria-current="page"]');
+  const activeItemBox = await requireBoundingBox(activeItem);
+  const activePillBox = await requireBoundingBox(activeItem.locator('.bottom-nav__active-pill'));
+  expect(activePillBox.width).toBeLessThan(activeItemBox.width * 0.74);
+});
+
+test('TSK-016-09 restores a centered phone preview shell only on desktop hover viewports', async ({ browser }) => {
+  const context = await browser.newContext({
+    baseURL: 'http://127.0.0.1:4173',
+    hasTouch: false,
+    isMobile: false,
+    viewport: { width: 1280, height: 900 },
+  });
+  const page = await context.newPage();
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+
+  await page.goto('/');
+  await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
+
+  const phoneShell = page.locator('[data-app-shell="phone"]');
+  const bottomNav = page.locator('.bottom-nav');
+
+  await expect(phoneShell).toBeVisible();
+  await expect(phoneShell).not.toHaveCSS('border-radius', '0px');
+  await expect(phoneShell).not.toHaveCSS('box-shadow', 'none');
+
+  const shellBox = await requireBoundingBox(phoneShell);
+  const navBox = await requireBoundingBox(bottomNav);
+  expect(shellBox.width).toBeGreaterThanOrEqual(420);
+  expect(shellBox.width).toBeLessThanOrEqual(432);
+  expect(Math.abs(shellBox.x + shellBox.width / 2 - 640)).toBeLessThanOrEqual(2);
+  expect(shellBox.height).toBeLessThanOrEqual(920);
+  expect(shellBox.height).toBeLessThan(900);
+  expect(navBox.x).toBeGreaterThanOrEqual(shellBox.x - 1);
+  expect(navBox.x + navBox.width).toBeLessThanOrEqual(shellBox.x + shellBox.width + 1);
+  expect(navBox.y + navBox.height).toBeLessThanOrEqual(shellBox.y + shellBox.height + 1);
+  await context.close();
 });
 
 test('UIUX-013 keeps five-tab IA and hides map stage on non-map tabs', async ({ page }) => {
