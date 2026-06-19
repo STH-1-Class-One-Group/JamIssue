@@ -42,6 +42,8 @@ export const ReviewListItem = memo(function ReviewListItem({
 }: ReviewListItemProps) {
   return (
     <article
+      data-testid="feed-review-card"
+      data-feed-card="review"
       data-review-id={review.id}
       className={isHighlighted ? 'review-card review-card--feed review-card--highlighted' : 'review-card review-card--feed'}
     >
@@ -51,19 +53,25 @@ export const ReviewListItem = memo(function ReviewListItem({
         meta={`${review.author} · ${review.visitedAt}`}
       />
 
-      <ReviewTagRow visitLabel={review.visitLabel} badge={review.badge} hasPublishedRoute={review.hasPublishedRoute} />
+      <div data-feed-section="tags">
+        <ReviewTagRow visitLabel={review.visitLabel} badge={review.badge} hasPublishedRoute={review.hasPublishedRoute} />
+      </div>
 
       {review.imageUrl && (
-        <ReviewImageFrame
-          src={review.imageUrl}
-          thumbnailSrc={review.thumbnailUrl ?? null}
-          alt={`${review.placeName} 후기 이미지`}
-        />
+        <div className="review-card__media" data-feed-section="media">
+          <ReviewImageFrame
+            src={review.imageUrl}
+            thumbnailSrc={review.thumbnailUrl ?? null}
+            alt={`${review.placeName} 후기 이미지`}
+          />
+        </div>
       )}
 
-      <p className="review-card__body">{review.body}</p>
+      <p className="review-card__body review-card__caption" data-feed-section="caption">
+        {review.body}
+      </p>
 
-      <div className="review-card__actions review-card__actions--feed">
+      <div className="review-card__actions review-card__actions--feed" data-feed-section="actions">
         <div className="review-card__action-group review-card__action-group--feed">
           <button
             type="button"
@@ -71,6 +79,7 @@ export const ReviewListItem = memo(function ReviewListItem({
             disabled={isLiking}
             onClick={() => (canToggleLike ? onToggleLike(review.id, review) : onRequestLogin())}
             aria-pressed={review.likedByMe}
+            aria-label={`좋아요 ${review.likeCount}개`}
           >
             <span className="review-action-button__icon" aria-hidden="true">
               <HeartIcon filled={review.likedByMe} />

@@ -38,10 +38,10 @@ describe('ReviewList regression', () => {
     expect(article).toHaveClass('review-card--highlighted');
     expect(article).toHaveClass('review-card--feed');
 
-    fireEvent.click(getByRole('button', { name: String(review.likeCount) }));
+    fireEvent.click(getByRole('button', { name: `좋아요 ${review.likeCount}개` }));
     expect(onToggleLike).toHaveBeenCalledWith(review.id, review);
 
-    fireEvent.click(getByRole('button', { name: /댓글 4개/ }));
+    fireEvent.click(getByRole('button', { name: /댓글 4개 보기/ }));
     expect(onOpenComments).toHaveBeenCalledWith(review.id);
 
     fireEvent.click(getByRole('button', { name: /장소 보기/ }));
