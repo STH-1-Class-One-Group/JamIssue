@@ -1717,11 +1717,18 @@ body {
 /* 2026-03-28 feed card density sample pass */
 .review-card--feed {
   display: grid !important;
-  gap: 10px !important;
+  gap: 11px !important;
+  padding: 14px !important;
+  border-radius: 26px !important;
+  background: rgba(255, 253, 251, 0.98) !important;
+  border: 1px solid rgba(255, 207, 222, 0.42) !important;
+  box-shadow: 0 14px 34px rgba(94, 45, 67, 0.08) !important;
 }
 
 .review-card--feed .review-card__top--feed {
+  align-items: center !important;
   gap: 10px !important;
+  min-width: 0 !important;
 }
 
 .review-card--feed .review-card__tag-row {
@@ -1729,41 +1736,48 @@ body {
   margin-top: -2px !important;
 }
 
-.review-card--feed .review-card__image-frame {
-  margin: 0 !important;
+.review-card__media {
+  min-width: 0 !important;
 }
 
-.review-card--feed .review-card__body {
+.review-card--feed .review-card__image-frame {
+  margin: 0 !important;
+  border-radius: 22px !important;
+  border-color: rgba(255, 176, 201, 0.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.review-card--feed .review-card__caption {
   margin: 0 !important;
   line-height: 1.58 !important;
+  color: rgba(54, 34, 48, 0.9) !important;
 }
 
 .review-card__actions--feed {
   align-items: center !important;
-  margin-top: 2px !important;
+  margin-top: -2px !important;
 }
 
 .review-card__action-group--feed {
-  gap: 8px !important;
+  gap: 4px !important;
 }
 
 .review-card--feed .review-action-button {
-  min-height: 36px !important;
-  padding: 8px 12px !important;
-  border: 1px solid rgba(255, 196, 215, 0.42) !important;
-  background: rgba(255, 248, 251, 0.96) !important;
+  min-height: 34px !important;
+  padding: 6px 9px !important;
+  border: 0 !important;
+  background: transparent !important;
   color: rgba(119, 84, 108, 0.9) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  box-shadow: none !important;
 }
 
 .review-card--feed .review-action-button.is-active {
   color: #ff5d92 !important;
-  border-color: rgba(255, 127, 168, 0.34) !important;
-  background: linear-gradient(180deg, #fff4f8, #ffeef4) !important;
+  background: rgba(255, 239, 246, 0.76) !important;
 }
 
 .review-card--feed .review-action-button__icon {
-  font-size: 13px !important;
+  font-size: 14px !important;
 }
 
 .review-card--feed .review-action-button__label {
@@ -1772,8 +1786,8 @@ body {
 }
 
 .review-card--feed .review-link-button {
-  min-height: 38px !important;
-  padding: 8px 14px !important;
+  min-height: 34px !important;
+  padding: 7px 12px !important;
   border-radius: 999px !important;
   background: rgba(255, 255, 255, 0.96) !important;
   border-color: rgba(255, 196, 215, 0.46) !important;

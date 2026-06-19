@@ -8,7 +8,7 @@ interface ReviewFeedCardHeaderProps {
 
 export function ReviewFeedCardHeader({ title, mood, meta }: ReviewFeedCardHeaderProps) {
   return (
-    <div className="review-card__top review-card__top--feed">
+    <div className="review-card__top review-card__top--feed" data-feed-section="header">
       <div className="review-card__title-block review-card__title-block--feed">
         <div className="review-card__title-row">
           {title}

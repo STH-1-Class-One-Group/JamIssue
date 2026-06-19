@@ -12,6 +12,8 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-015` | [#490](https://github.com/STH-1-Class-One-Group/JamIssue/issues/490) | 6차 UI/UX 바텀드로워, 하단 네비게이션, PWA/iOS 아이콘 개편 | child issue별 목적형 브랜치 | PR 링크, merge SHA, QA matrix, release candidate |
 | `TSK-016` | [#508](https://github.com/STH-1-Class-One-Group/JamIssue/issues/508) | 7차 UI/UX 전역 캡슐 네비게이션, SideDrawer shell, SpeedDialFAB, overlay z-index 회귀 방지 | child issue별 목적형 브랜치 | PR 링크, merge SHA, QA matrix, release candidate, Wiki readback |
 
+| `TSK-017` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | 피드 탭 인스타형 레이아웃 개선 | child issue별 목적형 브랜치 | PR 링크, merge SHA, feed layout QA, CI 링크 |
+
 ## Core Rows
 
 | Core | Parent Issue | Responsibility | Keywords | Misroute examples |
@@ -21,6 +23,8 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-013-00-FIFTH-UIUX-FLOATING-CAPSULE-NAV` | [#466](https://github.com/STH-1-Class-One-Group/JamIssue/issues/466) | 5차 UI/UX 상단 헤더 제거와 지도 플로팅 캡슐 내비게이션 | floating capsule; map nav; splash; notification | backend provider contract, DB schema, OAuth flow |
 | `TSK-015-00-SIXTH-UIUX-DRAWER-NAV-PWA-REDESIGN` | [#490](https://github.com/STH-1-Class-One-Group/JamIssue/issues/490) | 6차 UI/UX 바텀드로워, 하단 네비게이션, PWA/iOS 홈 아이콘 | bottom drawer; bottom navigation; PWA icon; app icon | backend provider contract, DB schema, OAuth flow |
 | `TSK-016-00-UIUX-GLOBAL-CAPSULE-NAV-ACTION-ARCHITECTURE` | [#508](https://github.com/STH-1-Class-One-Group/JamIssue/issues/508) | 7차 UI/UX 전역 캡슐, SideDrawer shell, SpeedDialFAB, overlay regression hardening | app capsule; side drawer; speed dial; fab; z-index | 6차 drawer/nav/PWA icon work, backend provider contract, DB schema |
+
+| `TSK-017-00-FEED-INSTAGRAM-LAYOUT` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | Feed tab Instagram-like layout polish while preserving JamIssue tone and existing feed behavior | feed; review card; instagram layout; uiux | backend provider contract, DB schema, OAuth flow, KTO map work |
 
 ## TSK-012 Child Issues
 
@@ -76,6 +80,12 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | [#513](https://github.com/STH-1-Class-One-Group/JamIssue/issues/513) | `speed-dial-fab-action-contract` | completed | PR [#526](https://github.com/STH-1-Class-One-Group/JamIssue/pull/526) |
 | [#514](https://github.com/STH-1-Class-One-Group/JamIssue/issues/514) | `capsule-fab-zindex-and-e2e-regression` | completed | PR [#529](https://github.com/STH-1-Class-One-Group/JamIssue/pull/529), traceability PRs [#530](https://github.com/STH-1-Class-One-Group/JamIssue/pull/530), [#531](https://github.com/STH-1-Class-One-Group/JamIssue/pull/531), [#532](https://github.com/STH-1-Class-One-Group/JamIssue/pull/532) |
 | [#515](https://github.com/STH-1-Class-One-Group/JamIssue/issues/515) | `seventh-uiux-docs-traceability` | active | docs, Wiki, QA matrix, release candidate, parent/child readback finalization |
+
+## TSK-017 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#552](https://github.com/STH-1-Class-One-Group/JamIssue/issues/552) | `feed-instagram-layout-polish` | active | Feed Instagram-like layout implementation |
 
 ## Scope Guard
 
