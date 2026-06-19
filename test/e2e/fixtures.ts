@@ -437,6 +437,16 @@ async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixt
     return;
   }
 
+  if (method === 'GET' && path === '/api/history') {
+    await fulfillJson(route, []);
+    return;
+  }
+
+  if (method === 'GET' && path === '/api/chat-sessions') {
+    await fulfillJson(route, []);
+    return;
+  }
+
   throw new Error(`Unhandled E2E API fixture: ${method} ${path}`);
 }
 

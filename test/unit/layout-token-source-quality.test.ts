@@ -25,10 +25,20 @@ describe('layout token source quality baseline', () => {
     expect(indexCss).toContain('--bottom-nav-offset: calc(var(--bottom-nav-base-height) + env(safe-area-inset-bottom));');
     expect(indexCss).toContain('--phone-shell-height-gap: 0px;');
     expect(indexCss).toContain('--phone-shell-radius: 0px;');
+    expect(indexCss).toContain('--phone-shell-desktop-gap: 48px;');
+    expect(indexCss).toContain('--phone-shell-desktop-radius: 36px;');
     expect(indexCss).toContain('--map-sheet-tab-gap: 5px;');
     expect(indexCss).toContain('--map-sheet-peek-height: 31%;');
     expect(indexCss).toContain('--map-sheet-half-height: 50%;');
     expect(indexCss).toContain('--map-sheet-full-height: 60%;');
+  });
+
+  it('keeps mobile phone shell full-bleed and scopes the preview frame to desktop hover viewports', () => {
+    const indexCss = readSource('src/index.css');
+
+    expect(indexCss).toMatch(/\.phone-shell\s*\{[^}]*max-width:\s*none;[^}]*border-radius:\s*var\(--phone-shell-radius\);[^}]*border:\s*0;[^}]*box-shadow:\s*none;/s);
+    expect(indexCss).toContain('@media (min-width: 768px) and (hover: hover)');
+    expect(indexCss).toMatch(/@media \(min-width:\s*768px\) and \(hover:\s*hover\)\s*\{[\s\S]*?\.phone-shell\s*\{[\s\S]*?max-width:\s*var\(--phone-shell-max-width\);[\s\S]*?border-radius:\s*var\(--phone-shell-desktop-radius\);[\s\S]*?box-shadow:\s*var\(--phone-shell-desktop-shadow\);/);
   });
 
   it('prevents repeated bottom tab and sheet gap literals from returning', () => {
@@ -81,12 +91,24 @@ describe('layout token source quality baseline', () => {
 
   it('keeps bottom navigation outside shared pink chip/button outline groups', () => {
     const css = `${readSource('src/index.css')}\n${readSource('src/styles/refinements.css')}`;
+    const bottomNavSource = readSource('src/components/BottomNav.tsx');
 
     expect(css).not.toMatch(/\.bottom-nav__item,\s*\n\.chip,\s*\n\.map-filter-chip/);
     expect(css).not.toMatch(/\.bottom-nav__item\.is-active,\s*\n\.chip\.is-active/);
+    expect(css).not.toMatch(/\.chip\.is-active,\s*\n\.bottom-nav__item\.is-active/);
+    expect(css).not.toContain('inset: 5px 4px');
+    expect(css).toContain('.bottom-nav__icon-frame');
+    expect(css).toContain('width: 46px');
+    expect(css).toContain('height: 26px');
     expect(css).not.toContain('.tourism-toggle-chip');
     expect(css).toContain('.tourism-toggle-switch');
     expect(css).toContain('border: 0 !important;');
+    expect(bottomNavSource).toContain("label: '지도'");
+    expect(bottomNavSource).toContain("label: '행사'");
+    expect(bottomNavSource).toContain("label: '피드'");
+    expect(bottomNavSource).toContain("label: '코스'");
+    expect(bottomNavSource).toContain("label: '마이'");
+    expect(bottomNavSource).not.toMatch(new RegExp('\\uFFFD|\\\\uFFFD|吏|肄|寃뚯|鍮|愿'));
   });
 
   it('keeps map drawer media information visible instead of cropping source images', () => {
