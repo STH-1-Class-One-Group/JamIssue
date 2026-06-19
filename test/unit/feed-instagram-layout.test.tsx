@@ -81,11 +81,18 @@ describe('feed Instagram layout polish', () => {
   });
 
   it('restores feed header and touched feed modules from mojibake', () => {
-    render(<FeedTabHeader placeFilterName="솔레벤토" onClearPlaceFilter={vi.fn()} />);
+    const visibleCopy = {
+      placeName: '솔레벤토',
+      heading: '솔레벤토 피드',
+      description: '지도에서 고른 장소의 방문 피드만 먼저 보여줍니다.',
+      clearButton: '전체 피드 보기',
+    };
 
-    expect(screen.getByRole('heading', { name: '솔레벤토 피드' })).toBeInTheDocument();
-    expect(screen.getByText('지도에서 고른 장소의 방문 피드만 먼저 보여줍니다.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '전체 피드 보기' })).toBeInTheDocument();
+    render(<FeedTabHeader placeFilterName={visibleCopy.placeName} onClearPlaceFilter={vi.fn()} />);
+
+    expect(screen.getByRole('heading', { name: visibleCopy.heading })).toBeInTheDocument();
+    expect(screen.getByText(visibleCopy.description)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: visibleCopy.clearButton })).toBeInTheDocument();
 
     const files = [
       'src/components/FeedTab.tsx',
@@ -94,6 +101,11 @@ describe('feed Instagram layout polish', () => {
     ];
     const brokenFragments = [
       String.fromCodePoint(0xfffd),
+      '醫뗭븘',
+      '媛?',
+      '蹂닿린',
+      '吏',
+      '留쏆쭛',
       `${String.fromCodePoint(0x3f)}쇰뱶`,
       '諛⑸Ц',
       '쨌',

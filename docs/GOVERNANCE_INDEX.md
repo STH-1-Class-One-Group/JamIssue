@@ -86,6 +86,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | Child | Branch | Status | Evidence |
 | --- | --- | --- | --- |
 | [#552](https://github.com/STH-1-Class-One-Group/JamIssue/issues/552) | `feed-instagram-layout-polish` | active | Feed Instagram-like layout implementation |
+| [#556](https://github.com/STH-1-Class-One-Group/JamIssue/issues/556) | `feed-copy-accessibility-restoration` | active | Feed Korean copy, accessibility labels, and mojibake regression restoration |
 
 ## Scope Guard
 
