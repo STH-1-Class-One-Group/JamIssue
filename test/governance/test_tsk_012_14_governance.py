@@ -4,7 +4,14 @@ import json
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+def find_repo_root(start: Path) -> Path:
+    for candidate in (start, *start.parents):
+        if (candidate / "docs" / "traceability" / "task-ledger.jsonl").exists():
+            return candidate
+    raise RuntimeError("Could not locate repository root from governance test path.")
+
+
+ROOT = find_repo_root(Path(__file__).resolve())
 
 
 def load_ledger_records() -> list[dict[str, object]]:
