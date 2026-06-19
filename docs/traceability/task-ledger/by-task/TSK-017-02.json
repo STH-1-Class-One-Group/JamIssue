@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "task-ledger-entry.v1",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "taskId": "TSK-017-02",
+  "status": "completed",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/556",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/557",
+  "mergeCommit": "ed8fbbcce052b6ef313b1a3aac4709adc699eb56",
+  "documentPaths": [
+    "docs/GOVERNANCE_INDEX.md",
+    "test/unit/feed-instagram-layout.test.tsx",
+    "docs/traceability/task-ledger/by-task/TSK-017-02.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "why": "피드 인스타형 레이아웃 완료 여부를 깨진 콘솔 표시가 아니라 실제 UTF-8 파일과 정상 한글 접근성 계약으로 검증하기 위함.",
+  "problem": "PowerShell 표시 경로에서 정상 UTF-8 한글이 mojibake처럼 보일 수 있었고, feed layout test의 source-quality guard가 과거 피드/action 라벨 mojibake marker를 충분히 명시하지 않았다.",
+  "how": "feed layout test의 visible copy readback을 정상 한글 객체로 고정하고, 과거 좋아요/댓글/장소 보기 라벨에서 문제 됐던 mojibake marker를 source-quality guard에 추가했다.",
+  "remainingGap": "없음.",
+  "updatedAt": "2026-06-19T09:45:00Z"
+}

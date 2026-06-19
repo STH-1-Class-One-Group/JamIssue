@@ -117,3 +117,9 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/553
   - Merge commit: 158d09ef78430979c0c825997e4003a7fd8e313b
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-017-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/556
+  - Title: 피드 한글/접근성 라벨 복구와 레이아웃 검증
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/556
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/557
+  - Merge commit: ed8fbbcce052b6ef313b1a3aac4709adc699eb56
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
