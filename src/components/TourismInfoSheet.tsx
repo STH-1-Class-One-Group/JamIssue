@@ -98,17 +98,26 @@ function translateItemLabel(label: string) {
 }
 
 function getVisibleSections(sections: TourismDetailSection[]) {
-  return sections
-    .map((section) => ({
-      title: translateSectionTitle(section.title),
-      items: section.items
-        .map((item) => ({
+  const result = [];
+  for (const section of sections) {
+    const items = [];
+    for (const item of section.items) {
+      const normalizedValue = normalizeDetailValue(item.value);
+      if (normalizedValue.length > 0) {
+        items.push({
           label: translateItemLabel(item.label),
-          value: normalizeDetailValue(item.value),
-        }))
-        .filter((item) => item.value.length > 0),
-    }))
-    .filter((section) => section.items.length > 0);
+          value: normalizedValue,
+        });
+      }
+    }
+    if (items.length > 0) {
+      result.push({
+        title: translateSectionTitle(section.title),
+        items,
+      });
+    }
+  }
+  return result;
 }
 
 function renderMultilineValue(value: string) {

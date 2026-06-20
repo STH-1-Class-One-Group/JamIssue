@@ -1,0 +1,3 @@
+## 2024-06-20 - [Optimize Array Methods in Rendering Logic]
+**Learning:** Chaining `.map().filter()` or `.filter().map()` operations on arrays creates unnecessary intermediate arrays and can perform expensive operations on items that will ultimately be filtered out. In `TourismInfoSheet.tsx`, `.map()` was translating labels before filtering, resulting in wasted cycles.
+**Action:** Replace functional array method chains with imperative `for...of` loops, especially in rendering logic or data processing, to eliminate intermediate array allocations and defer expensive operations (like string transformations or translations) until after filter conditions are met.

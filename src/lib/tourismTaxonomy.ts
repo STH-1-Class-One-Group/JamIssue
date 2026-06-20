@@ -94,18 +94,19 @@ export function buildTourismDisplayGroupItems(facets: TourismFacetOption[] | und
     }
   }
 
-  const groups = defaultDisplayGroupOrder
-    .filter((key) => byKey.has(key))
-    .map((key) => {
+  const groups: TourismDisplayGroupItem[] = [];
+  for (const key of defaultDisplayGroupOrder) {
+    if (byKey.has(key)) {
       const facet = byKey.get(key);
       const info = tourismDisplayGroupInfo[key];
-      return {
+      groups.push({
         key,
         label: facet?.label || info.label,
         icon: info.icon,
         count: facet?.count,
-      };
-    });
+      });
+    }
+  }
 
   return [{ key: 'all', label: '전체', icon: '🧭' }, ...groups];
 }
