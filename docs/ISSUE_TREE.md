@@ -52,6 +52,15 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - Merge commit: fdccaee851b790b57cd6f99ff9735881bfb1317d
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
 
+## TSK-018
+
+- [x] TSK-018-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/573
+  - Title: profile avatar upload consumer
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/573
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/577
+  - Merge commit: 2d081e6f1eab628132710115831a6801ddf6cbc5
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+
 ## TSK-016
 
 - [x] TSK-016-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/509
