@@ -45,6 +45,8 @@ export function MyPagePanel({
     onRetry,
     onLogout,
     onSaveNickname,
+    onUploadAvatar,
+    onDeleteAvatar,
     onPublishRoute,
   } = panelActions;
   const { adminSummary, adminBusyPlaceId, adminLoading } = adminData;
@@ -84,6 +86,15 @@ export function MyPagePanel({
     setShowSettings(false);
   }
 
+  async function handleAvatarChange(event: { currentTarget: HTMLInputElement }) {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = '';
+    if (!file) {
+      return;
+    }
+    await onUploadAvatar(file);
+  }
+
   if (!sessionUser) {
     return (
       <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="my">
@@ -94,7 +105,7 @@ export function MyPagePanel({
 
   return (
     <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="my">
-      <MyPageHeader sessionUser={sessionUser} />
+      <MyPageHeader sessionUser={sessionUser} summary={myPage?.stats ?? null} />
 
       {!myPage && myPageError && <MyPageLoadError myPageError={myPageError} onRetry={onRetry} />}
 
@@ -116,6 +127,8 @@ export function MyPagePanel({
         profileError={profileError}
         onLinkProvider={onLinkProvider}
         onNicknameChange={setNickname}
+        onAvatarChange={handleAvatarChange}
+        onDeleteAvatar={onDeleteAvatar}
         onClose={() => setShowSettings(false)}
         onSubmit={handleNicknameSubmit}
       />

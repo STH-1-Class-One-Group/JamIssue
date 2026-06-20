@@ -36,6 +36,8 @@ export interface MyPagePanelProps {
     onRetry: () => Promise<void>;
     onLogout: () => Promise<void>;
     onSaveNickname: (nickname: string) => Promise<void>;
+    onUploadAvatar: (file: File) => Promise<void>;
+    onDeleteAvatar: () => Promise<void>;
     onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
   };
   adminData: {

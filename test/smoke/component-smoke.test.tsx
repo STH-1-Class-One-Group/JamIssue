@@ -83,6 +83,7 @@ describe('component smoke', () => {
         reviewActions={{
           onOpenPlace: vi.fn(),
           onOpenComment: vi.fn(),
+          onOpenRoute: vi.fn().mockResolvedValue(undefined),
           onOpenReview: vi.fn(),
           onUpdateReview: vi.fn().mockResolvedValue(undefined),
           onDeleteReview: vi.fn().mockResolvedValue(undefined),
@@ -95,6 +96,8 @@ describe('component smoke', () => {
           onRetry: vi.fn().mockResolvedValue(undefined),
           onLogout: vi.fn().mockResolvedValue(undefined),
           onSaveNickname: vi.fn().mockResolvedValue(undefined),
+          onUploadAvatar: vi.fn().mockResolvedValue(undefined),
+          onDeleteAvatar: vi.fn().mockResolvedValue(undefined),
           onPublishRoute: vi.fn().mockResolvedValue(undefined),
         }}
         notificationActions={{

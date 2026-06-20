@@ -1,5 +1,21 @@
 import type { AuthProvider, AuthSessionResponse, ProfileUpdateRequest } from '../types';
 import { fetchJson, getApiBaseUrl, invalidateApiCache } from './core';
+import { prepareProfileAvatarUpload } from '../lib/profileAvatarUpload';
+
+type AvatarMutationResponse = AuthSessionResponse | { auth: AuthSessionResponse };
+
+const AUTH_RELATED_CACHE_PREFIXES = [
+  '/api/auth/me',
+  '/api/map-bootstrap',
+  '/api/my/summary',
+  '/api/community-routes',
+  '/api/reviews',
+  '/api/review-feed',
+];
+
+function normalizeAuthResponse(response: AvatarMutationResponse) {
+  return 'auth' in response ? response.auth : response;
+}
 
 function getProviderUrlBase() {
   const apiBaseUrl = getApiBaseUrl();
@@ -30,16 +46,37 @@ export async function logout() {
   const response = await fetchJson<AuthSessionResponse>('/api/auth/logout', {
     method: 'POST',
   });
-  invalidateApiCache(['/api/auth/me', '/api/map-bootstrap', '/api/my/summary', '/api/community-routes', '/api/reviews']);
+  invalidateApiCache(AUTH_RELATED_CACHE_PREFIXES);
   return response;
 }
 
 export async function updateProfile(payload: ProfileUpdateRequest) {
   const response = await fetchJson<AuthSessionResponse>('/api/auth/profile', {
     method: 'PATCH',
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ nickname: payload.nickname }),
   });
-  invalidateApiCache(['/api/auth/me', '/api/my/summary', '/api/community-routes', '/api/reviews']);
+  invalidateApiCache(AUTH_RELATED_CACHE_PREFIXES);
   return response;
+}
+
+export async function uploadProfileAvatar(file: File) {
+  const preparedFile = await prepareProfileAvatarUpload(file);
+  const formData = new FormData();
+  formData.append('file', preparedFile);
+
+  const response = await fetchJson<AvatarMutationResponse>('/api/me/avatar', {
+    method: 'POST',
+    body: formData,
+  });
+  invalidateApiCache(AUTH_RELATED_CACHE_PREFIXES);
+  return normalizeAuthResponse(response);
+}
+
+export async function deleteProfileAvatar() {
+  const response = await fetchJson<AvatarMutationResponse>('/api/me/avatar', {
+    method: 'DELETE',
+  });
+  invalidateApiCache(AUTH_RELATED_CACHE_PREFIXES);
+  return normalizeAuthResponse(response);
 }
 

@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { CommentThread } from '../CommentThread';
+import { Avatar } from '../Avatar';
 import type { Review } from '../../types/review';
 import { CommentIcon, HeartIcon } from './ReviewActionIcons';
 import { ReviewFeedCardHeader } from './ReviewFeedCardHeader';
@@ -40,7 +41,6 @@ export const ReviewListItem = memo(function ReviewListItem({
   onOpenPlace,
   onOpenComments,
 }: ReviewListItemProps) {
-  const authorInitial = review.author.trim().slice(0, 1) || review.placeName.trim().slice(0, 1) || 'J';
   const hasImage = Boolean(review.imageUrl);
 
   return (
@@ -58,7 +58,7 @@ export const ReviewListItem = memo(function ReviewListItem({
         title={<strong className="review-card__title">{review.placeName}</strong>}
         mood={review.mood}
         meta={`${review.author} · ${review.visitedAt}`}
-        avatar={<span>{authorInitial}</span>}
+        avatar={<Avatar src={review.authorProfileImage ?? null} name={review.author || review.placeName} size="sm" />}
       />
 
       {review.imageUrl && (

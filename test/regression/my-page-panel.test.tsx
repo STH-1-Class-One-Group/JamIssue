@@ -38,6 +38,8 @@ function createPanelProps(activeTab: MyPageTabKey) {
       onRetry: vi.fn().mockResolvedValue(undefined),
       onLogout: vi.fn().mockResolvedValue(undefined),
       onSaveNickname: vi.fn().mockResolvedValue(undefined),
+      onUploadAvatar: vi.fn().mockResolvedValue(undefined),
+      onDeleteAvatar: vi.fn().mockResolvedValue(undefined),
       onPublishRoute: vi.fn().mockResolvedValue(undefined),
     },
     notificationActions: {

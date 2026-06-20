@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { CommentComposer } from './CommentComposer';
 import { CommentThreadItemActions } from './CommentThreadItemActions';
+import { Avatar } from '../Avatar';
 import type { CommentItemProps } from './types';
 import { useCommentThreadItemState } from './useCommentThreadItemState';
 
@@ -69,9 +70,12 @@ export const CommentThreadItem = memo(function CommentThreadItem({
 
       <div className="comment-thread__main">
         <div className={isHighlighted ? 'comment-thread__bubble is-highlighted' : 'comment-thread__bubble'}>
-          <div className="comment-thread__meta">
-            <strong>{comment.author}</strong>
-            <span>{comment.createdAt}</span>
+          <div className="comment-thread__meta-row">
+            <Avatar src={comment.authorProfileImage ?? null} name={comment.author} size="sm" />
+            <div className="comment-thread__meta">
+              <strong>{comment.author}</strong>
+              <span>{comment.createdAt}</span>
+            </div>
           </div>
 
           {editing && !comment.isDeleted ? (

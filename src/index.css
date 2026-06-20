@@ -743,6 +743,40 @@ textarea {
   font-size: 12px;
 }
 
+.settings-card__avatar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 127, 168, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.settings-card__avatar-actions {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.settings-card__avatar-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-card__avatar-upload {
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-card__avatar-upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .map-stage {
   position: relative;
   width: 100%;
@@ -922,6 +956,88 @@ textarea {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.my-page-profile-header {
+  justify-content: flex-start;
+}
+
+.my-page-profile-header__body {
+  min-width: 0;
+}
+
+.my-page-profile-header__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.my-page-profile-header__summary div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.my-page-profile-header__summary dt {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.my-page-profile-header__summary dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.avatar {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 231, 240, 0.96), rgba(255, 246, 251, 0.96));
+  color: var(--pink-deep);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.avatar--sm {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.avatar--md {
+  width: 44px;
+  height: 44px;
+  font-size: 16px;
+}
+
+.avatar--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
+}
+
+.avatar__image,
+.avatar__fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar__image {
+  display: block;
+  object-fit: cover;
+}
+
+.avatar__fallback {
+  display: grid;
+  place-items: center;
 }
 
 .eyebrow {
@@ -1360,6 +1476,12 @@ textarea {
 .review-card__meta-line {
   justify-content: flex-start;
   align-items: center;
+}
+
+.comment-thread__meta-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .review-card__visit-pill {

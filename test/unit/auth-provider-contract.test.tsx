@@ -61,6 +61,8 @@ function renderSettingsSection({
       profileError={null}
       onLinkProvider={onLinkProvider}
       onNicknameChange={vi.fn()}
+      onAvatarChange={vi.fn().mockResolvedValue(undefined)}
+      onDeleteAvatar={vi.fn().mockResolvedValue(undefined)}
       onClose={vi.fn()}
       onSubmit={async () => undefined}
     />,
