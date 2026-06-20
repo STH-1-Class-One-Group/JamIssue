@@ -60,6 +60,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/577
   - Merge commit: 2d081e6f1eab628132710115831a6801ddf6cbc5
   - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-018-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/574
+  - Title: my page avatar summary header
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/574
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/580
+  - Merge commit: bacee69aba480e6c2cd175918b9183d8943ba990
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
 
 ## TSK-016
 
