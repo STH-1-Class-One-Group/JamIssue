@@ -63,12 +63,26 @@ function createPanelProps(overrides: Partial<MyPagePanelProps> = {}): MyPagePane
 }
 
 describe('profile avatar UI consumption', () => {
-  it('renders My Page as a small avatar summary header without a large empty image slot', () => {
-    render(<MyPagePanel {...createPanelProps()} />);
+  it('renders My Page as an identity header without duplicate stat tiles or a large empty image slot', () => {
+    const { container } = render(<MyPagePanel {...createPanelProps()} />);
 
     expect(screen.getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--lg');
-    expect(screen.getByLabelText('내 활동 요약')).toHaveTextContent(String(myPageFixture.stats.uniquePlaceCount));
+    expect(screen.queryByLabelText('내 활동 요약')).not.toBeInTheDocument();
+    expect(container.querySelector('.my-page-profile-header__summary')).not.toBeInTheDocument();
+    expect(screen.getByText('방문한 고유 명소')).toBeInTheDocument();
     expect(screen.queryByText('프로필 사진 자리')).not.toBeInTheDocument();
+  });
+
+  it('renders avatar settings as one editor with consistent action controls', async () => {
+    const user = userEvent.setup();
+    render(<MyPagePanel {...createPanelProps()} />);
+    await user.click(screen.getByRole('button', { name: /설정/ }));
+
+    const editor = screen.getByRole('region', { name: '프로필 사진 설정' });
+    expect(within(editor).getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--md');
+    expect(within(editor).getByText('작은 프로필 이미지로 피드와 댓글에서 표시돼요.')).toBeInTheDocument();
+    expect(within(editor).getByText('사진 변경').closest('.settings-card__avatar-action')).not.toBeNull();
+    expect(within(editor).getByRole('button', { name: '사진 삭제' })).toHaveClass('settings-card__avatar-action');
   });
 
   it('routes avatar upload and delete controls through My Page settings', async () => {

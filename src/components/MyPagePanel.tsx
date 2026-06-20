@@ -105,7 +105,7 @@ export function MyPagePanel({
 
   return (
     <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="my">
-      <MyPageHeader sessionUser={sessionUser} summary={myPage?.stats ?? null} />
+      <MyPageHeader sessionUser={sessionUser} />
 
       {!myPage && myPageError && <MyPageLoadError myPageError={myPageError} onRetry={onRetry} />}
 
