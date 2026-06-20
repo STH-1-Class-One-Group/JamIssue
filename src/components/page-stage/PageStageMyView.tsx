@@ -41,6 +41,8 @@ export function PageStageMyView({
         onRetry: myPageActions.onRetryMyPage,
         onLogout: myPageActions.onLogout,
         onSaveNickname: myPageActions.onSaveNickname,
+        onUploadAvatar: myPageActions.onUploadAvatar,
+        onDeleteAvatar: myPageActions.onDeleteAvatar,
         onPublishRoute: myPageActions.onPublishRoute,
       }}
       adminData={{

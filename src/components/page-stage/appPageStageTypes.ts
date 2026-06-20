@@ -81,6 +81,8 @@ export interface AppPageStageMyPageActions {
   onRetryMyPage: () => Promise<void>;
   onLogout: () => Promise<void>;
   onSaveNickname: (nickname: string) => Promise<void>;
+  onUploadAvatar: (file: File) => Promise<void>;
+  onDeleteAvatar: () => Promise<void>;
   onPublishRoute: (payload: { travelSessionId: string; title: string; description: string; mood: string }) => Promise<void>;
   onOpenCommentFromMyPage: (reviewId: string, commentId: string) => void;
   onOpenRouteFromMyPage: (routeId: string) => Promise<void>;

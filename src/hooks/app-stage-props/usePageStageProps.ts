@@ -123,6 +123,8 @@ export function usePageStageProps(state: AppShellCoordinatorState) {
       onRetryMyPage: pageStageActions.handleRetryMyPage,
       onLogout: state.handleLogout,
       onSaveNickname: state.handleUpdateProfile,
+      onUploadAvatar: state.handleUploadAvatar,
+      onDeleteAvatar: state.handleDeleteAvatar,
       onPublishRoute: routeActions.handlePublishRoute,
       onOpenCommentFromMyPage: pageStageActions.handleOpenCommentFromMyPage,
       onOpenRouteFromMyPage: pageStageActions.handleOpenRouteFromMyPage,

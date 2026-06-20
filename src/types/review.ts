@@ -4,6 +4,7 @@ export interface Comment {
   id: string;
   userId: string;
   author: string;
+  authorProfileImage?: string | null;
   body: string;
   parentId: string | null;
   isDeleted: boolean;
@@ -17,6 +18,7 @@ export interface Review {
   placeId: string;
   placeName: string;
   author: string;
+  authorProfileImage?: string | null;
   body: string;
   mood: ReviewMood;
   badge: string;

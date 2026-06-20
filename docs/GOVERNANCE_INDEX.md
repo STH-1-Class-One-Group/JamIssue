@@ -14,6 +14,8 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-017` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | 피드 탭 인스타형 레이아웃 개선 | child issue별 목적형 브랜치 | PR 링크, merge SHA, feed layout QA, CI 링크 |
 
+| `TSK-018` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Profile avatar Web Front consumer contract, My Page summary avatar, feed/comment author avatar | child issue purpose branch | PR link, merge SHA, avatar contract tests, CI link |
+
 ## Core Rows
 
 | Core | Parent Issue | Responsibility | Keywords | Misroute examples |
@@ -25,6 +27,8 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-016-00-UIUX-GLOBAL-CAPSULE-NAV-ACTION-ARCHITECTURE` | [#508](https://github.com/STH-1-Class-One-Group/JamIssue/issues/508) | 7차 UI/UX 전역 캡슐, SideDrawer shell, SpeedDialFAB, overlay regression hardening | app capsule; side drawer; speed dial; fab; z-index | 6차 drawer/nav/PWA icon work, backend provider contract, DB schema |
 
 | `TSK-017-00-FEED-INSTAGRAM-LAYOUT` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | Feed tab Instagram-like layout polish while preserving JamIssue tone and existing feed behavior | feed; review card; instagram layout; uiux | backend provider contract, DB schema, OAuth flow, KTO map work |
+
+| `TSK-018-00-PROFILE-AVATAR-FRONT-CONSUMPTION` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Web Front consumes Backend/Admin profile avatar contract for upload/delete, My Page, feed, and comment avatar rendering | profile avatar; my page; feed author; comment author; consumer API | backend provider implementation, Supabase Storage direct call, DB schema, OAuth flow |
 
 ## TSK-012 Child Issues
 
@@ -87,6 +91,16 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | --- | --- | --- | --- |
 | [#552](https://github.com/STH-1-Class-One-Group/JamIssue/issues/552) | `feed-instagram-layout-polish` | active | Feed Instagram-like layout implementation |
 | [#556](https://github.com/STH-1-Class-One-Group/JamIssue/issues/556) | `feed-copy-accessibility-restoration` | active | Feed Korean copy, accessibility labels, and mojibake regression restoration |
+
+## TSK-018 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#572](https://github.com/STH-1-Class-One-Group/JamIssue/issues/572) | `profile-avatar-front-contract-audit` | planned | profile avatar front contract audit |
+| [#573](https://github.com/STH-1-Class-One-Group/JamIssue/issues/573) | `profile-avatar-front-consumption` | active | upload/delete consumer, My Page, feed/comment vertical slice |
+| [#574](https://github.com/STH-1-Class-One-Group/JamIssue/issues/574) | `my-page-avatar-summary-header` | planned | My Page avatar summary header evidence |
+| [#575](https://github.com/STH-1-Class-One-Group/JamIssue/issues/575) | `feed-comment-author-avatar` | planned | feed/comment author avatar evidence |
+| [#576](https://github.com/STH-1-Class-One-Group/JamIssue/issues/576) | `profile-avatar-front-traceability` | planned | docs and traceability evidence |
 
 ## Scope Guard
 
