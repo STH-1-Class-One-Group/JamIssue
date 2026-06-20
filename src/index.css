@@ -743,26 +743,34 @@ textarea {
   font-size: 12px;
 }
 
-.settings-card__avatar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+.settings-card__avatar-editor {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
   border: 1px solid rgba(255, 127, 168, 0.18);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.72);
 }
 
-.settings-card__avatar-actions {
-  display: grid;
+.settings-card__avatar-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-card__avatar-preview > div {
   min-width: 0;
+}
+
+.settings-card__avatar-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
-.settings-card__avatar-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.settings-card__avatar-action {
+  justify-content: center;
+  min-height: 42px;
 }
 
 .settings-card__avatar-upload {
@@ -964,34 +972,6 @@ textarea {
 
 .my-page-profile-header__body {
   min-width: 0;
-}
-
-.my-page-profile-header__summary {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 12px 0 0;
-}
-
-.my-page-profile-header__summary div {
-  display: grid;
-  gap: 4px;
-  padding: 10px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.my-page-profile-header__summary dt {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.my-page-profile-header__summary dd {
-  margin: 0;
-  color: var(--ink);
-  font-size: 18px;
-  font-weight: 900;
 }
 
 .avatar {

@@ -1,7 +1,7 @@
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AuthProvider, SessionUser } from '../../types/auth';
 import { getAuthProviderDisplayLabel } from '../../utils/authProviderDisplay';
-import { Avatar } from '../Avatar';
+import { ProfileAvatarEditor } from './ProfileAvatarEditor';
 
 type MyPageSettingsSectionProps = {
   sessionUser: SessionUser;
@@ -99,22 +99,12 @@ export function MyPageSettingsSection({
           </div>
         </div>
       )}
-      <div className="settings-card__avatar" aria-label="프로필 사진 설정">
-        <Avatar src={sessionUser.profileImage} name={sessionUser.nickname} size="md" />
-        <div className="settings-card__avatar-actions">
-          <p className="eyebrow">AVATAR</p>
-          <p className="section-copy">작은 프로필 이미지로 피드와 댓글에서 표시돼요.</p>
-          <div className="settings-card__avatar-buttons">
-            <label className="secondary-button settings-card__avatar-upload">
-              사진 변경
-              <input type="file" accept="image/*" onChange={(event) => void onAvatarChange(event)} disabled={profileSaving} />
-            </label>
-            <button type="button" className="text-button" onClick={() => void onDeleteAvatar()} disabled={profileSaving || !sessionUser.profileImage}>
-              사진 삭제
-            </button>
-          </div>
-        </div>
-      </div>
+      <ProfileAvatarEditor
+        sessionUser={sessionUser}
+        profileSaving={profileSaving}
+        onAvatarChange={onAvatarChange}
+        onDeleteAvatar={onDeleteAvatar}
+      />
       <form className="route-builder-form" onSubmit={(event) => void onSubmit(event)}>
         <label className="route-builder-field">
           <span>{'\uD504\uB85C\uD544\uBA85'}</span>
