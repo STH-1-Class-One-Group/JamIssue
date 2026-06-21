@@ -72,9 +72,15 @@ Scope: parent-child task traceability for JamIssue governance completion.
 - [x] TSK-019-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/583
   - Title: season theme audit baseline
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/583
-  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/589
-  - Merge commit: dc3a39ac49e7fc56bbae66448ab064737a95585d
-  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/589; https://github.com/STH-1-Class-One-Group/JamIssue/pull/590; https://github.com/STH-1-Class-One-Group/JamIssue/pull/591
+  - Merge commit: dc3a39ac49e7fc56bbae66448ab064737a95585d; a8bf2a9d93abed583af8c72f610327a3d2eaced2; 11f95ad9b301ee7902c429e90d11ff9291bc3ca6
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-01.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-019-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/584
+  - Title: season theme token boundary
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/584
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/594
+  - Merge commit: ef357fae13641cd5871a82dcc1dbb123da117af2
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-02.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 - [x] TSK-019-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/585
   - Title: season theme runtime application
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/585
@@ -90,8 +96,8 @@ Scope: parent-child task traceability for JamIssue governance completion.
 - [x] TSK-019-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/587
   - Title: season theme verification gate
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/587
-  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/601
-  - Merge commit: fda2cc95f9776b0569ee8033cec03c22a0e188e6
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/601; https://github.com/STH-1-Class-One-Group/JamIssue/pull/602
+  - Merge commit: fda2cc95f9776b0569ee8033cec03c22a0e188e6; 2081e3b027627be6b9cd6e50d869ef94d48a0a68
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-05.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
