@@ -138,6 +138,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/635
   - Merge commit: db621b3670e217e44468396b3ffc5c48ed8d2b14
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-04.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-06: https://github.com/STH-1-Class-One-Group/JamIssue/issues/626
+  - Title: hamburger-secondary-menu
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/626
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/638
+  - Merge commit: d2a0fde82579a44f633b915830e583e44c7f71b9
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-06.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
