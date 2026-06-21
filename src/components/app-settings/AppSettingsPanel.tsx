@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
+import { ToggleSwitch } from '../common/ToggleSwitch';
 import { NotificationPanel } from '../notifications/NotificationPanel';
 import { useNotificationPanelActions } from '../notifications/useNotificationPanelActions';
 import type { NotificationItem } from '../notifications/notificationTypes';
@@ -13,6 +14,10 @@ export type AppSettingsPanelProps = {
   onMarkAllNotificationsRead: () => Promise<void>;
   onDeleteNotification: (notificationId: string) => Promise<void>;
   notificationPanelMode?: 'anchored' | 'floating';
+  mapDisplayPreferences?: {
+    showCuratedWithTourism: boolean;
+    onShowCuratedWithTourismChange: (checked: boolean) => void;
+  };
 };
 
 function GearIcon() {
@@ -38,6 +43,7 @@ export function AppSettingsPanel({
   onMarkAllNotificationsRead,
   onDeleteNotification,
   notificationPanelMode = 'anchored',
+  mapDisplayPreferences,
 }: AppSettingsPanelProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -141,6 +147,19 @@ export function AppSettingsPanel({
           <a className="secondary-button global-settings-menu__item" href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer">
             <span>피드백</span>
           </a>
+          {mapDisplayPreferences ? (
+            <div className="global-settings-menu__section" data-app-settings-section="map-display">
+              <span className="global-settings-menu__section-label">지도 표시</span>
+              <ToggleSwitch
+                checked={mapDisplayPreferences.showCuratedWithTourism}
+                className="global-settings-menu__switch"
+                data-app-setting="show-curated-with-tourism"
+                label="관광정보와 큐레이션 함께 보기"
+                onChange={mapDisplayPreferences.onShowCuratedWithTourismChange}
+                size="sm"
+              />
+            </div>
+          ) : null}
         </div>
       )}
 
