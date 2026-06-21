@@ -1944,7 +1944,7 @@ textarea {
 }
 
 .bottom-nav__item.is-active .bottom-nav__active-pill {
-  background: rgba(255, 227, 239, 0.88);
+  background: var(--nav-pill-active);
   opacity: 1;
   transform: scaleX(1);
 }
@@ -3064,8 +3064,8 @@ textarea {
   overflow: hidden;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 240, 246, 0.92);
-  color: var(--pink-deep);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;

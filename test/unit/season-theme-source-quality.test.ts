@@ -21,11 +21,11 @@ type ColorOwner = {
 
 const allowedRawColorOwners: Record<string, ColorOwner> = {
   'src/index.css': {
-    maxCount: 124,
+    maxCount: 122,
     reason: 'remaining legacy app chrome CSS seasonal tokenization backlog after TSK-019-04 migration',
   },
   'src/styles/refinements.css': {
-    maxCount: 100,
+    maxCount: 99,
     reason: 'remaining seasonal refinement overrides after TSK-019-04 semantic token migration',
   },
   'src/styles/semantic.css': {
@@ -135,7 +135,7 @@ describe('season theme source quality baseline', () => {
     for (const repoPath of migrationBacklog) {
       const count = countRawColors(repoPath);
 
-      expect(count).toBeGreaterThanOrEqual(100);
+      expect(count).toBeGreaterThanOrEqual(90);
       expect(allowedRawColorOwners[repoPath].reason).toContain('seasonal');
     }
   });

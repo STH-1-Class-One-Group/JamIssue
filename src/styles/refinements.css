@@ -1176,7 +1176,7 @@ body {
 }
 
 .bottom-nav__item.is-active .bottom-nav__active-pill {
-  background: rgba(255, 227, 239, 0.88) !important;
+  background: var(--nav-pill-active) !important;
   opacity: 1 !important;
   transform: scaleX(1) !important;
 }
