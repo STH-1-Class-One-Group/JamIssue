@@ -3,11 +3,11 @@ import type { Tab } from '../types/core';
 import type { SessionUser } from '../types/auth';
 import { bottomNavItems } from './BottomNav';
 import type { AppMapStageViewProps } from './AppMapStageView';
+import { AppTopNavigationDrawers } from './AppTopNavigationDrawers';
 import { AppCapsule } from './app-shell/AppCapsule';
-import { SideDrawer } from './app-shell/SideDrawer';
-import { resolveSecondaryMenuItems } from './app-shell/secondaryMenu';
 import type { AppSettingsPanelProps } from './app-settings/AppSettingsPanel';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
+import type { NotificationDrawerContentProps } from './notifications/NotificationDrawer';
 
 interface AppTopNavigationProps {
   activeTab: Tab;
@@ -15,6 +15,7 @@ interface AppTopNavigationProps {
   globalUtility: AppSettingsPanelProps;
   mapActions: AppMapStageViewProps['mapActions'];
   mapData: AppMapStageViewProps['mapData'];
+  notificationUtility: NotificationDrawerContentProps;
   onNavigateBack: () => void;
   sessionUser: SessionUser | null;
 }
@@ -25,15 +26,13 @@ export function AppTopNavigation({
   globalUtility,
   mapActions,
   mapData,
+  notificationUtility,
   onNavigateBack,
   sessionUser,
 }: AppTopNavigationProps) {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
+  const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const activeBottomNavItem = bottomNavItems.find((item) => item.key === activeTab);
-  const secondaryMenuItems = resolveSecondaryMenuItems({
-    canOpenAdminTools: Boolean(sessionUser?.isAdmin),
-    isAdmin: Boolean(sessionUser?.isAdmin),
-  });
   const center = activeTab === 'map' ? (
     <MapFloatingNav
       activeCategory={mapData.activeCategory}
@@ -61,13 +60,19 @@ export function AppTopNavigation({
         center={center}
         globalUtility={globalUtility}
         menuOpen={isSideDrawerOpen}
+        notificationOpen={isNotificationDrawerOpen}
+        notificationUnreadCount={notificationUtility.unreadCount}
         onNavigateBack={onNavigateBack}
+        onOpenNotifications={() => setIsNotificationDrawerOpen(true)}
         onOpenMenu={() => setIsSideDrawerOpen(true)}
       />
-      <SideDrawer
-        isOpen={isSideDrawerOpen}
-        items={secondaryMenuItems}
-        onClose={() => setIsSideDrawerOpen(false)}
+      <AppTopNavigationDrawers
+        isNotificationDrawerOpen={isNotificationDrawerOpen}
+        isSideDrawerOpen={isSideDrawerOpen}
+        notificationUtility={notificationUtility}
+        onCloseNotifications={() => setIsNotificationDrawerOpen(false)}
+        onCloseSideDrawer={() => setIsSideDrawerOpen(false)}
+        sessionUser={sessionUser}
       />
     </>
   );

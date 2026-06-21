@@ -224,7 +224,7 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
   await expect(appCapsule.locator('[data-app-capsule-center-tab="my"]')).toBeVisible();
 });
 
-test('UIUX-024 keeps notification panel above the floating capsule overlay layer', async ({ page }) => {
+test('TSK-021-08 opens notifications in the left information drawer', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState());
 
   await page.goto('/');
@@ -234,17 +234,21 @@ test('UIUX-024 keeps notification panel above the floating capsule overlay layer
   await expect(appCapsule).toBeVisible();
   await expect(floatingNav).toBeVisible();
 
-  await appCapsule.locator('.global-settings-menu__trigger').click();
-  await appCapsule.locator('.global-settings-menu__item').first().click();
+  await appCapsule.getByRole('button', { name: '알림 열기' }).click();
 
+  const notificationDrawer = page.locator('.notification-drawer');
   const notificationPanel = page.locator('.global-notification-panel');
+  await expect(notificationDrawer).toBeVisible();
   await expect(notificationPanel).toBeVisible();
   await expect(floatingNav.locator('.global-notification-panel')).toHaveCount(0);
 
-  const navBox = await requireBoundingBox(appCapsule);
+  const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+  const drawerPanelBox = await requireBoundingBox(page.locator('.notification-drawer__panel'));
   const panelBox = await requireBoundingBox(notificationPanel);
-  expect(panelBox.y).toBeGreaterThanOrEqual(navBox.y + navBox.height - 1);
-  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(navBox.x + navBox.width + 1);
+  expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x - 1);
+  expect(drawerPanelBox.x).toBeLessThan(phoneShellBox.x + phoneShellBox.width / 2);
+  expect(panelBox.x).toBeGreaterThanOrEqual(drawerPanelBox.x);
+  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(drawerPanelBox.x + drawerPanelBox.width + 1);
 
   const isPanelTopHitTarget = await notificationPanel.evaluate((panel) => {
     const rect = panel.getBoundingClientRect();
@@ -254,7 +258,7 @@ test('UIUX-024 keeps notification panel above the floating capsule overlay layer
   expect(isPanelTopHitTarget).toBe(true);
 });
 
-test('TSK-016-06 keeps notification panel above the capsule across target mobile widths', async ({ page }) => {
+test('TSK-021-08 keeps the left notification drawer usable across target mobile widths', async ({ page }) => {
   for (const width of [360, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     await installApiFixtures(page, createE2EAppState());
@@ -264,16 +268,18 @@ test('TSK-016-06 keeps notification panel above the capsule across target mobile
     const appCapsule = page.locator('[data-app-capsule="root"]');
     await expect(appCapsule).toBeVisible();
 
-    await appCapsule.locator('.global-settings-menu__trigger').click();
-    await appCapsule.locator('.global-settings-menu__item').first().click();
+    await appCapsule.getByRole('button', { name: '알림 열기' }).click();
 
+    const notificationDrawer = page.locator('.notification-drawer');
     const notificationPanel = page.locator('.global-notification-panel');
+    await expect(notificationDrawer).toBeVisible();
     await expect(notificationPanel).toBeVisible();
     await expectElementCenterToResolveInside(notificationPanel, '.global-notification-panel');
 
-    const capsuleBox = await requireBoundingBox(appCapsule);
-    const panelBox = await requireBoundingBox(notificationPanel);
-    expect(panelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height - 1);
+    const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+    const drawerPanelBox = await requireBoundingBox(page.locator('.notification-drawer__panel'));
+    expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x - 1);
+    expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThan(phoneShellBox.x + phoneShellBox.width);
   }
 });
 

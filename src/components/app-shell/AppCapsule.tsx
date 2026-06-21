@@ -7,8 +7,11 @@ export interface AppCapsuleProps {
   center?: ReactNode;
   globalUtility: AppSettingsPanelProps;
   menuOpen?: boolean;
+  notificationOpen?: boolean;
+  notificationUnreadCount?: number;
   onNavigateBack: () => void;
   onOpenMenu?: () => void;
+  onOpenNotifications?: () => void;
 }
 
 function MenuIcon() {
@@ -27,14 +30,39 @@ function BackIcon() {
   );
 }
 
+function BellIcon() {
+  return (
+    <svg className="app-capsule__icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M12 4.75a4.25 4.25 0 0 0-4.25 4.25v2.23c0 .92-.3 1.81-.86 2.54l-1.1 1.47a1 1 0 0 0 .8 1.6h11.82a1 1 0 0 0 .8-1.6l-1.1-1.47a4.24 4.24 0 0 1-.86-2.54V9A4.25 4.25 0 0 0 12 4.75Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M10.25 18.25a2 2 0 0 0 3.5 0"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
 export function AppCapsule({
   ariaLabel = '앱 캡슐 내비게이션',
   canNavigateBack,
   center,
   globalUtility,
   menuOpen = false,
+  notificationOpen = false,
+  notificationUnreadCount = 0,
   onNavigateBack,
   onOpenMenu,
+  onOpenNotifications,
 }: AppCapsuleProps) {
   return (
     <nav className="app-capsule" aria-label={ariaLabel} data-app-capsule="root">
@@ -48,6 +76,18 @@ export function AppCapsule({
             onClick={onOpenMenu}
           >
             <MenuIcon />
+          </button>
+        )}
+        {onOpenNotifications && (
+          <button
+            type="button"
+            className={notificationOpen ? 'app-capsule__notification-button is-complete' : 'app-capsule__notification-button'}
+            aria-label="알림 열기"
+            aria-expanded={notificationOpen}
+            onClick={onOpenNotifications}
+          >
+            <BellIcon />
+            {notificationUnreadCount > 0 && <span className="notification-bell__dot" aria-hidden="true" />}
           </button>
         )}
       </div>
@@ -64,7 +104,7 @@ export function AppCapsule({
         >
           <BackIcon />
         </button>
-        <AppSettingsPanel {...globalUtility} notificationPanelMode="floating" />
+        <AppSettingsPanel {...globalUtility} />
       </div>
     </nav>
   );

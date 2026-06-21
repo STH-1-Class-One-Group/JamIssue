@@ -61,6 +61,7 @@
   --z-floating-nav-dropdown: 140;
   --z-notification-panel: 150;
   --z-side-drawer: 160;
+  --side-drawer-width: 312px;
   --speed-dial-bottom-offset: calc(var(--bottom-nav-offset) + 24px);
   --speed-dial-inline-offset: 20px;
   --z-splash: 200;
@@ -3018,6 +3019,7 @@ textarea {
 }
 
 .app-capsule__menu-button,
+.app-capsule__notification-button,
 .app-capsule__back-button,
 .app-capsule .global-settings-menu__trigger {
   display: inline-flex;
@@ -3042,10 +3044,15 @@ textarea {
 }
 
 .app-capsule__menu-button:disabled,
+.app-capsule__notification-button:disabled,
 .app-capsule__back-button:disabled {
   cursor: default;
   opacity: 0.28;
   pointer-events: none;
+}
+
+.app-capsule__notification-button {
+  position: relative;
 }
 
 .map-floating-nav {
@@ -3291,6 +3298,68 @@ textarea {
   inset: 0;
   z-index: var(--z-side-drawer);
   pointer-events: none;
+}
+
+.notification-drawer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-side-drawer);
+  pointer-events: none;
+}
+
+.notification-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: var(--surface-overlay);
+  opacity: 0.72;
+  pointer-events: auto;
+}
+
+.notification-drawer__panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: min(var(--side-drawer-width), calc(100% - 48px));
+  flex-direction: column;
+  padding: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + 14px) 14px calc(var(--bottom-nav-offset) + 14px);
+  border-right: var(--utility-panel-border);
+  border-radius: 0 28px 28px 0;
+  background: var(--utility-panel-background);
+  box-shadow: var(--utility-panel-shadow);
+  pointer-events: auto;
+}
+
+.notification-drawer__panel .global-notification-panel {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: 100%;
+  max-height: none;
+  flex: 1 1 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.notification-drawer__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  width: var(--utility-control-size);
+  height: var(--utility-control-size);
+  align-items: center;
+  justify-content: center;
+  border: var(--utility-control-border);
+  border-radius: var(--utility-control-radius);
+  background: var(--surface-card);
+  color: var(--color-accent-strong);
+  font-size: 20px;
+  font-weight: 800;
 }
 
 .side-drawer__overlay {

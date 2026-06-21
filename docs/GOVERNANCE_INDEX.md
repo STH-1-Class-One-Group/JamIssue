@@ -49,13 +49,18 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | Child | Branch | Status | Evidence |
 | --- | --- | --- | --- |
-| [#621](https://github.com/STH-1-Class-One-Group/JamIssue/issues/621) | `navigation-settings-responsibility-audit` | active | responsibility matrix, source-quality guard, PR evidence pending |
-| [#622](https://github.com/STH-1-Class-One-Group/JamIssue/issues/622) | `my-page-dashboard-hierarchy` | planned | My Page dashboard hierarchy evidence pending |
-| [#623](https://github.com/STH-1-Class-One-Group/JamIssue/issues/623) | `account-settings-boundary` | planned | account settings boundary evidence pending |
-| [#624](https://github.com/STH-1-Class-One-Group/JamIssue/issues/624) | `app-settings-panel` | planned | app settings panel evidence pending |
-| [#625](https://github.com/STH-1-Class-One-Group/JamIssue/issues/625) | `map-display-preferences` | planned | map preference behavior evidence pending |
-| [#626](https://github.com/STH-1-Class-One-Group/JamIssue/issues/626) | `hamburger-secondary-menu` | planned | secondary menu policy evidence pending |
-| [#627](https://github.com/STH-1-Class-One-Group/JamIssue/issues/627) | `settings-navigation-regression-tests` | planned | regression and traceability evidence pending |
+| [#621](https://github.com/STH-1-Class-One-Group/JamIssue/issues/621) | `navigation-settings-responsibility-audit` | completed | responsibility matrix, source-quality guard, PR evidence recorded |
+| [#622](https://github.com/STH-1-Class-One-Group/JamIssue/issues/622) | `my-page-dashboard-hierarchy` | completed | My Page dashboard hierarchy evidence recorded |
+| [#623](https://github.com/STH-1-Class-One-Group/JamIssue/issues/623) | `account-settings-boundary` | completed | account settings boundary evidence recorded |
+| [#624](https://github.com/STH-1-Class-One-Group/JamIssue/issues/624) | `app-settings-panel` | completed | app settings panel evidence recorded |
+| [#625](https://github.com/STH-1-Class-One-Group/JamIssue/issues/625) | `map-display-preferences` | completed | map preference behavior evidence recorded |
+| [#626](https://github.com/STH-1-Class-One-Group/JamIssue/issues/626) | `hamburger-secondary-menu` | completed | secondary menu policy evidence recorded |
+| [#627](https://github.com/STH-1-Class-One-Group/JamIssue/issues/627) | `settings-navigation-regression-tests` | completed | regression and traceability evidence recorded |
+| [#642](https://github.com/STH-1-Class-One-Group/JamIssue/issues/642) | `notification-left-drawer` | active | notification left drawer evidence pending |
+| [#643](https://github.com/STH-1-Class-One-Group/JamIssue/issues/643) | `app-settings-right-drawer` | planned | app settings right drawer evidence pending |
+| [#644](https://github.com/STH-1-Class-One-Group/JamIssue/issues/644) | `my-page-account-entry-hierarchy` | planned | my page account hierarchy evidence pending |
+| [#645](https://github.com/STH-1-Class-One-Group/JamIssue/issues/645) | `kto-marker-visibility-polish` | planned | KTO marker visibility evidence pending |
+| [#646](https://github.com/STH-1-Class-One-Group/JamIssue/issues/646) | `navigation-settings-polish-traceability` | planned | polish traceability evidence pending |
 
 ## TSK-012 Child Issues
 
