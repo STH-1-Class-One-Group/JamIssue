@@ -1300,12 +1300,25 @@ body {
 .review-link-button:hover,
 .review-card__place-link:hover,
 .soft-tag--button:hover {
-  border-color: rgba(255, 93, 146, 0.4) !important;
-  background: #fff7fa !important;
+  border-color: var(--control-hover-border) !important;
+  background: var(--control-hover-bg) !important;
 }
 
 .primary-button {
-  box-shadow: 0 14px 28px rgba(255, 93, 146, 0.22) !important;
+  box-shadow: var(--shadow-button) !important;
+}
+
+.account-action-row .secondary-button {
+  background: var(--control-bg) !important;
+  border-color: var(--control-border-strong) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.account-action-row .secondary-button:hover,
+.account-action-row .secondary-button:focus-visible {
+  background: var(--control-hover-bg) !important;
+  border-color: var(--control-hover-border) !important;
 }
 
 .review-card,
