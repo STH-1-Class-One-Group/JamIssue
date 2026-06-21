@@ -59,10 +59,12 @@ function renderSettingsSection({
       profileCompletedAt={user.profileCompletedAt}
       profileSaving={false}
       profileError={null}
+      isLoggingOut={false}
       onLinkProvider={onLinkProvider}
       onNicknameChange={vi.fn()}
       onAvatarChange={vi.fn().mockResolvedValue(undefined)}
       onDeleteAvatar={vi.fn().mockResolvedValue(undefined)}
+      onLogout={vi.fn()}
       onClose={vi.fn()}
       onSubmit={async () => undefined}
     />,

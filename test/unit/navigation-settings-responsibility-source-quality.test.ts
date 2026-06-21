@@ -53,6 +53,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     const myPagePanel = readRepoFile('src/components/MyPagePanel.tsx');
     const myPageAccountSection = readRepoFile('src/components/my-page/MyPageAccountSection.tsx');
     const myPageSettingsSection = readRepoFile('src/components/my-page/MyPageSettingsSection.tsx');
+    const profileAccountSettings = readRepoFile('src/components/my-page/ProfileAccountSettings.tsx');
     const myPageOverviewSection = readRepoFile('src/components/my-page/MyPageOverviewSection.tsx');
     const myPageTabContent = readRepoFile('src/components/my-page/MyPageTabContent.tsx');
 
@@ -64,10 +65,15 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(myPagePanel).not.toContain('GlobalSettingsMenu');
 
     expect(myPageAccountSection).toContain('onToggleSettings');
-    expect(myPageAccountSection).toContain('onLogout');
-    expect(myPageSettingsSection).toContain('ProfileAvatarEditor');
-    expect(myPageSettingsSection).toContain('onLinkProvider');
-    expect(myPageSettingsSection).toContain('onDeleteAvatar');
+    expect(myPageAccountSection).not.toContain('onLogout');
+    expect(myPageSettingsSection).toContain('ProfileAccountSettings');
+    expect(myPageSettingsSection).not.toContain('ProfileAvatarEditor');
+    expect(profileAccountSettings).toContain('ProfileAvatarEditor');
+    expect(profileAccountSettings).toContain('onLinkProvider');
+    expect(profileAccountSettings).toContain('onDeleteAvatar');
+    expect(profileAccountSettings).toContain('onLogout');
+    expect(profileAccountSettings).not.toContain('GlobalSettingsMenu');
+    expect(profileAccountSettings).not.toMatch(/tourism|curated|kto/i);
     expect(myPageOverviewSection).toContain('uniquePlaceCount');
     expect(myPageOverviewSection).toContain('stampCount');
     expect(myPageTabContent).toContain('MyStampTabSection');

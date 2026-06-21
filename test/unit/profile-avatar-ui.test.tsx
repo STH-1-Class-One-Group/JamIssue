@@ -79,10 +79,14 @@ describe('profile avatar UI consumption', () => {
     await user.click(screen.getByRole('button', { name: /설정/ }));
 
     const editor = screen.getByRole('region', { name: '프로필 사진 설정' });
+    const accountPanel = screen.getByRole('heading', { name: '프로필 설정' }).closest('.settings-card');
+
+    expect(accountPanel).not.toBeNull();
     expect(within(editor).getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--md');
     expect(within(editor).getByText('작은 프로필 이미지로 피드와 댓글에서 표시돼요.')).toBeInTheDocument();
     expect(within(editor).getByText('사진 변경').closest('.settings-card__avatar-action')).not.toBeNull();
     expect(within(editor).getByRole('button', { name: '사진 삭제' })).toHaveClass('settings-card__avatar-action');
+    expect(within(accountPanel as HTMLElement).getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
   });
 
   it('routes avatar upload and delete controls through My Page settings', async () => {
