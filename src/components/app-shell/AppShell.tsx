@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import type { Tab } from '../../types/core';
 import { AppHeader } from './AppHeader';
 import { BottomNav } from '../BottomNav';
-import { GlobalSettingsMenu } from '../GlobalSettingsMenu';
+import { AppSettingsPanel } from '../app-settings/AppSettingsPanel';
 import { GlobalStatusBanner } from '../GlobalStatusBanner';
 import { SplashScreen } from '../SplashScreen';
 
@@ -12,7 +12,7 @@ interface AppShellProps {
   canNavigateBack: boolean;
   children: ReactNode;
   globalStatus: ComponentProps<typeof GlobalStatusBanner> | null;
-  globalUtility: ComponentProps<typeof GlobalSettingsMenu>;
+  globalUtility: ComponentProps<typeof AppSettingsPanel>;
   onBottomTabChange: (nextTab: Tab) => void;
   onNavigateBack: () => void;
   headerMode?: 'default' | 'hidden';

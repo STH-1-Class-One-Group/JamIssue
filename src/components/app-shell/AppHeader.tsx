@@ -4,15 +4,15 @@
  * Primary Responsibility: Own the header brand, leading back action, and global utility action slot.
  * Design Intent: Keep navigation and utility controls in the shell flow instead of separate floating overlays.
  * Non-Goals: This component does not own sub-navigation, map filters, or page-specific content layout.
- * Dependencies: React component props, JamIssue logo asset, and GlobalSettingsMenu.
+ * Dependencies: React component props, JamIssue logo asset, and AppSettingsPanel.
  */
 import type { ComponentProps } from 'react';
 import jamissueLogo from '../../assets/jamissue-logo.png';
-import { GlobalSettingsMenu } from '../GlobalSettingsMenu';
+import { AppSettingsPanel } from '../app-settings/AppSettingsPanel';
 
 interface AppHeaderProps {
   canNavigateBack: boolean;
-  globalUtility: ComponentProps<typeof GlobalSettingsMenu>;
+  globalUtility: ComponentProps<typeof AppSettingsPanel>;
   onNavigateBack: () => void;
 }
 
@@ -62,7 +62,7 @@ export function AppHeader({
         data-app-header-slot="actions"
         data-app-shell-slot="header-actions"
       >
-        <GlobalSettingsMenu {...globalUtility} />
+        <AppSettingsPanel {...globalUtility} />
       </div>
     </header>
   );

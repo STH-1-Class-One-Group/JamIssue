@@ -23,10 +23,15 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
   it('keeps the app capsule as shell composition instead of account settings ownership', () => {
     const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
+    const appHeader = readRepoFile('src/components/app-shell/AppHeader.tsx');
+    const appShell = readRepoFile('src/components/app-shell/AppShell.tsx');
     const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
 
-    expect(appCapsule).toContain("import { GlobalSettingsMenu");
-    expect(appCapsule).toContain('<GlobalSettingsMenu');
+    expect(appCapsule).toContain("import { AppSettingsPanel");
+    expect(appCapsule).toContain('<AppSettingsPanel');
+    expect(appHeader).toContain("import { AppSettingsPanel");
+    expect(appHeader).toContain('<AppSettingsPanel');
+    expect(appShell).toContain("import { AppSettingsPanel");
     expect(appCapsule).toContain('canNavigateBack');
     expect(appCapsule).toContain('onNavigateBack');
     expect(appCapsule).not.toContain('/settings');
@@ -38,15 +43,19 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appTopNavigation).toContain("import { bottomNavItems } from './BottomNav'");
   });
 
-  it('keeps GlobalSettingsMenu scoped to app-wide utility entry points', () => {
+  it('keeps AppSettingsPanel scoped to app-wide utility entry points', () => {
+    const appSettingsPanel = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
     const globalSettingsMenu = readRepoFile('src/components/GlobalSettingsMenu.tsx');
 
-    expect(globalSettingsMenu).toContain('NotificationPanel');
-    expect(globalSettingsMenu).toContain('FEEDBACK_FORM_URL');
-    expect(globalSettingsMenu).not.toContain('ProfileAvatarEditor');
-    expect(globalSettingsMenu).not.toContain('onSaveNickname');
-    expect(globalSettingsMenu).not.toContain('onLogout');
-    expect(globalSettingsMenu).not.toMatch(/tourism|curated|kto/i);
+    expect(appSettingsPanel).toContain('NotificationPanel');
+    expect(appSettingsPanel).toContain('FEEDBACK_FORM_URL');
+    expect(appSettingsPanel).not.toContain('ProfileAvatarEditor');
+    expect(appSettingsPanel).not.toContain('onSaveNickname');
+    expect(appSettingsPanel).not.toContain('onLogout');
+    expect(appSettingsPanel).not.toMatch(/tourism|curated|kto/i);
+    expect(globalSettingsMenu).toContain('AppSettingsPanel');
+    expect(globalSettingsMenu).not.toContain('NotificationPanel');
+    expect(globalSettingsMenu).not.toContain('FEEDBACK_FORM_URL');
   });
 
   it('keeps My Page as a dashboard with account settings delegated to my-page components', () => {

@@ -6,9 +6,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { AppCapsule } from '../../src/components/app-shell/AppCapsule';
 import { SideDrawer } from '../../src/components/app-shell/SideDrawer';
 import { SpeedDialFAB } from '../../src/components/app-shell/SpeedDialFAB';
-import type { GlobalSettingsMenuProps } from '../../src/components/GlobalSettingsMenu';
+import type { AppSettingsPanelProps } from '../../src/components/app-settings/AppSettingsPanel';
 
-const globalUtility: GlobalSettingsMenuProps = {
+const globalUtility: AppSettingsPanelProps = {
   sessionUserName: 'tester',
   notifications: [],
   unreadCount: 0,
@@ -18,7 +18,7 @@ const globalUtility: GlobalSettingsMenuProps = {
 };
 
 describe('AppCapsule shell contract', () => {
-  it('renders menu, center slot, back action, and GlobalSettingsMenu action through props', () => {
+  it('renders menu, center slot, back action, and AppSettingsPanel action through props', () => {
     render(
       <AppCapsule
         canNavigateBack
@@ -40,6 +40,7 @@ describe('AppCapsule shell contract', () => {
     expect(backButton).toBeEnabled();
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
     expect(settingsButton).toHaveClass('global-settings-menu__trigger');
+    expect(capsule.querySelector('[data-app-settings-panel="root"]')).not.toBeNull();
     expect(menuButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(backButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(menuButton).not.toHaveTextContent('☰');
@@ -170,5 +171,6 @@ describe('AppCapsule shell contract', () => {
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
     expect(source).not.toContain('@tabler');
     expect(capsuleSource).toContain('notificationPanelMode="floating"');
+    expect(capsuleSource).toContain('AppSettingsPanel');
   });
 });
