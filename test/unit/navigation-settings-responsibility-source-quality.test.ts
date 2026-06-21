@@ -49,10 +49,14 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
     expect(appSettingsPanel).toContain('NotificationPanel');
     expect(appSettingsPanel).toContain('FEEDBACK_FORM_URL');
+    expect(appSettingsPanel).toContain('showCuratedWithTourism');
+    expect(appSettingsPanel).toContain('data-app-setting="show-curated-with-tourism"');
     expect(appSettingsPanel).not.toContain('ProfileAvatarEditor');
     expect(appSettingsPanel).not.toContain('onSaveNickname');
     expect(appSettingsPanel).not.toContain('onLogout');
-    expect(appSettingsPanel).not.toMatch(/tourism|curated|kto/i);
+    expect(appSettingsPanel).not.toContain('getTourismPlaces');
+    expect(appSettingsPanel).not.toContain('filterTourismPlacesByDisplayGroup');
+    expect(appSettingsPanel).not.toContain('selectedTourismPlaceId');
     expect(globalSettingsMenu).toContain('AppSettingsPanel');
     expect(globalSettingsMenu).not.toContain('NotificationPanel');
     expect(globalSettingsMenu).not.toContain('FEEDBACK_FORM_URL');

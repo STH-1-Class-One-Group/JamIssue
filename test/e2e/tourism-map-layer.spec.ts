@@ -223,3 +223,33 @@ test('UIUX-024 handles KTO snapshot 503 without freezing map navigation', async 
   await page.locator('[data-tab-key="course"]').click();
   await expect(page.locator('[data-tab-key="course"]')).toHaveAttribute('aria-current', 'page');
 });
+
+test('TSK-021 exposes map display preference without breaking KTO toggle flow', async ({ page }) => {
+  const tourismRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (url.includes('/api/tourism/places')) {
+      tourismRequests.push(url);
+    }
+  });
+
+  await installApiFixtures(page, createE2EAppState({
+    authenticated: false,
+    tourismPlaces: [cafeTourismPlace, lodgingTourismPlace],
+  }));
+
+  await page.goto('/');
+  await page.locator('.global-settings-menu__trigger').click();
+
+  const curatedWithTourismSwitch = page.getByRole('switch', { name: '관광정보와 큐레이션 함께 보기' });
+  await expect(curatedWithTourismSwitch).toBeChecked();
+  await page.locator('[data-app-setting="show-curated-with-tourism"]').click();
+  await expect(curatedWithTourismSwitch).not.toBeChecked();
+
+  await page.locator('[data-tourism-toggle="map"]').click();
+
+  await expect(page.locator('[data-tourism-toggle="map"]')).toHaveClass(/is-active/);
+  await expect.poll(() => tourismRequests.length).toBe(1);
+  expect(tourismRequests[0]).toContain('scope=all');
+  expect(tourismRequests[0]).not.toContain('limit=');
+});

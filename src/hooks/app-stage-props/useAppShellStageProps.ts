@@ -26,6 +26,10 @@ export function useAppShellStageProps(state: AppShellCoordinatorState) {
       onOpenNotification: state.handleOpenGlobalNotification,
       onMarkAllNotificationsRead: state.handleMarkAllNotificationsRead,
       onDeleteNotification: state.handleDeleteNotification,
+      mapDisplayPreferences: {
+        showCuratedWithTourism: state.showCuratedWithTourism,
+        onShowCuratedWithTourismChange: state.setShowCuratedWithTourism,
+      },
     },
   };
 }

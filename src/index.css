@@ -519,6 +519,26 @@ textarea {
   text-decoration: none;
 }
 
+.global-settings-menu__section {
+  display: grid;
+  gap: var(--utility-gap);
+  padding: var(--utility-panel-padding);
+  border-radius: var(--utility-panel-radius);
+  background: var(--surface-card);
+}
+
+.global-settings-menu__section-label {
+  color: var(--color-accent-strong);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.global-settings-menu__switch {
+  justify-content: space-between;
+}
+
 .feedback-button {
   min-width: var(--utility-control-size);
   width: var(--utility-control-size);
@@ -3161,6 +3181,10 @@ textarea {
 .toggle-switch.is-disabled {
   cursor: progress;
   opacity: 0.62;
+}
+
+.toggle-switch__label {
+  pointer-events: none;
 }
 
 .toggle-switch__input {

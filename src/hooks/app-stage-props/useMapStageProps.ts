@@ -1,4 +1,5 @@
 import { updateMapViewportInUrl } from '../app-route/useAppRouteState';
+import { shouldShowCuratedMapItems } from '../../lib/appPreferences';
 import { filterTourismPlacesByDisplayGroup } from '../../lib/tourismTaxonomy';
 import type { TourismDisplayGroupFilter } from '../../tourismTypes';
 import type { useAppShellCoordinator } from '../app-coordinator/useAppShellCoordinator';
@@ -29,6 +30,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     setSelectedTourismPlaceId,
     setShowTourismInfo,
     setTourismSheetState,
+    showCuratedWithTourism,
     selectedTourismPlaceId,
     showTourismInfo,
     tourismError,
@@ -43,6 +45,9 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     viewModels,
   } = state;
   const visibleTourismPlaces = filterTourismPlacesByDisplayGroup(tourismPlaces, activeTourismDisplayGroup);
+  const showCuratedMapItems = shouldShowCuratedMapItems({ showTourismInfo, showCuratedWithTourism });
+  const visibleCuratedPlaces = showCuratedMapItems ? viewModels.filteredPlaces : [];
+  const visibleRoutePreviewPlaces = showCuratedMapItems ? viewModels.routePreviewPlaces : [];
   const selectedTourismPlace = tourismPlaces.find((place) => place.id === selectedTourismPlaceId) ?? null;
   const selectedTourismDetail = selectedTourismPlaceId ? tourismDetailsById[selectedTourismPlaceId]?.item ?? null : null;
 
@@ -50,7 +55,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
     mapData: {
       activeCategory,
       activeTourismDisplayGroup,
-      filteredPlaces: viewModels.filteredPlaces,
+      filteredPlaces: visibleCuratedPlaces,
       festivals,
       selectedPlace: viewModels.selectedPlace,
       selectedFestival: viewModels.selectedFestival,
@@ -64,7 +69,7 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
       sessionUser,
       selectedPlaceReviews,
       routePreview: selectedRoutePreview,
-      routePreviewPlaces: viewModels.routePreviewPlaces,
+      routePreviewPlaces: visibleRoutePreviewPlaces,
       visitCount: viewModels.visitCount,
       latestStamp: viewModels.latestStamp,
       todayStamp: viewModels.todayStamp,

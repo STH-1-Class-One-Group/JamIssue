@@ -2,6 +2,7 @@ import { useAppCoordinatorActions } from './useAppCoordinatorActions';
 import { useAppCoordinatorEffects } from './useAppCoordinatorEffects';
 import { useAppCoordinatorServices } from './useAppCoordinatorServices';
 import { buildAppShellCoordinatorResult } from './buildAppShellCoordinatorResult';
+import { useAppPreferencesState } from '../useAppPreferencesState';
 import type { CoordinatorArgs } from './useAppShellCoordinator.types';
 
 export function useAppShellCoordinator({
@@ -12,6 +13,8 @@ export function useAppShellCoordinator({
   dataState,
   initialMapViewport,
 }: CoordinatorArgs) {
+  const appPreferencesState = useAppPreferencesState();
+
   const services = useAppCoordinatorServices({
     routeState,
     domainState,
@@ -43,6 +46,7 @@ export function useAppShellCoordinator({
     shellRuntimeState,
     pageRuntimeState,
     dataState,
+    appPreferencesState,
     initialMapViewport,
     services,
     actions,
