@@ -49,6 +49,7 @@ export default function App() {
     handleBottomNavChange,
     globalStatus,
     globalUtility,
+    notificationUtility,
     mapStageProps,
     pageStageProps,
   } = useAppStageProps(coordinator);
@@ -73,6 +74,7 @@ export default function App() {
           globalUtility={globalUtility}
           mapActions={mapStageProps.mapActions}
           mapData={mapStageProps.mapData}
+          notificationUtility={notificationUtility}
           onNavigateBack={handleNavigateBack}
           sessionUser={coordinator.sessionUser}
         />

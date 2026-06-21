@@ -13,23 +13,23 @@ import {
 import type { AppSettingsPanelProps } from '../../src/components/app-settings/AppSettingsPanel';
 
 const globalUtility: AppSettingsPanelProps = {
-  sessionUserName: 'tester',
-  notifications: [],
-  unreadCount: 0,
-  onOpenNotification: vi.fn(),
-  onMarkAllNotificationsRead: vi.fn(),
-  onDeleteNotification: vi.fn(),
+  mapDisplayPreferences: {
+    showCuratedWithTourism: true,
+    onShowCuratedWithTourismChange: vi.fn(),
+  },
 };
 
 describe('AppCapsule shell contract', () => {
-  it('renders menu, center slot, back action, and AppSettingsPanel action through props', () => {
+  it('renders menu, notification, center slot, back action, and settings action through props', () => {
     render(
       <AppCapsule
         canNavigateBack
         center={<button type="button">필터</button>}
         globalUtility={globalUtility}
+        notificationUnreadCount={2}
         onNavigateBack={vi.fn()}
         onOpenMenu={vi.fn()}
+        onOpenNotifications={vi.fn()}
       />,
     );
 
@@ -37,19 +37,22 @@ describe('AppCapsule shell contract', () => {
     const leading = capsule.querySelector('[data-app-capsule-slot="leading"]');
     const actions = capsule.querySelector('[data-app-capsule-slot="actions"]');
     const menuButton = within(capsule).getByRole('button', { name: '보조 메뉴 열기' });
+    const notificationButton = within(capsule).getByRole('button', { name: '알림 열기' });
     const backButton = within(capsule).getByRole('button', { name: '이전 화면으로 돌아가기' });
     const settingsButton = within(capsule).getByRole('button', { name: '설정 열기' });
 
     expect(menuButton).toBeInTheDocument();
+    expect(notificationButton).toBeInTheDocument();
+    expect(notificationButton.querySelector('.notification-bell__dot')).not.toBeNull();
     expect(backButton).toBeEnabled();
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
     expect(settingsButton).toHaveClass('global-settings-menu__trigger');
     expect(capsule.querySelector('[data-app-settings-panel="root"]')).not.toBeNull();
     expect(menuButton.querySelector('.app-capsule__icon')).not.toBeNull();
+    expect(notificationButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(backButton.querySelector('.app-capsule__icon')).not.toBeNull();
-    expect(menuButton).not.toHaveTextContent('☰');
-    expect(backButton).not.toHaveTextContent('←');
     expect(leading?.contains(menuButton)).toBe(true);
+    expect(leading?.contains(notificationButton)).toBe(true);
     expect(leading?.contains(backButton)).toBe(false);
     expect(actions?.contains(backButton)).toBe(true);
     expect(actions?.contains(settingsButton)).toBe(true);
@@ -74,6 +77,7 @@ describe('AppCapsule shell contract', () => {
     await user.click(backButton);
     expect(onNavigateBack).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: '보조 메뉴 열기' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '알림 열기' })).not.toBeInTheDocument();
   });
 
   it('emits the menu callback without rendering SideDrawer content itself', async () => {
@@ -96,19 +100,40 @@ describe('AppCapsule shell contract', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
+  it('emits the notification callback without owning notification content', async () => {
+    const user = userEvent.setup();
+    const onOpenNotifications = vi.fn();
+
+    render(
+      <AppCapsule
+        canNavigateBack={false}
+        center={null}
+        globalUtility={globalUtility}
+        notificationUnreadCount={1}
+        onNavigateBack={vi.fn()}
+        onOpenNotifications={onOpenNotifications}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '알림 열기' }));
+
+    expect(onOpenNotifications).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('dialog', { name: '알림' })).not.toBeInTheDocument();
+  });
+
   it('renders SideDrawer with general secondary items and close paths', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
 
-    render(<SideDrawer isOpen items={resolveSecondaryMenuItems()} onClose={onClose} />);
+    const { container } = render(<SideDrawer isOpen items={resolveSecondaryMenuItems()} onClose={onClose} />);
 
-    const drawer = screen.getByRole('dialog', { name: '보조 메뉴' });
+    const drawer = screen.getByRole('dialog');
     expect(drawer).toBeInTheDocument();
-    expect(within(drawer).getByRole('menuitem', { name: /이용 안내/ })).toBeInTheDocument();
-    expect(within(drawer).getByLabelText('이용 안내 상세')).toHaveTextContent('하단 탭은 주요 화면 이동');
-    expect(screen.queryByText('메뉴 준비 중')).not.toBeInTheDocument();
+    expect(within(drawer).getAllByRole('menuitem')).toHaveLength(1);
 
-    await user.click(screen.getAllByRole('button', { name: '보조 메뉴 닫기' })[1]);
+    const closeButton = container.querySelector('.side-drawer__close');
+    expect(closeButton).not.toBeNull();
+    await user.click(closeButton as HTMLElement);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -131,7 +156,7 @@ describe('AppCapsule shell contract', () => {
     render(
       <SpeedDialFAB
         actions={[
-          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">◎</span>, onClick: onLocate },
+          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">•</span>, onClick: onLocate },
           { id: 'disabled', label: '사용 불가', onClick: onDisabled, disabled: true },
         ]}
       />,
@@ -164,7 +189,7 @@ describe('AppCapsule shell contract', () => {
     expect(screen.queryByRole('button', { name: '지도 빠른 작업 열기' })).not.toBeInTheDocument();
   });
 
-  it('does not introduce history, settings route, ti icon, or icon package coupling', () => {
+  it('does not introduce history, settings route, notification ownership, ti icon, or icon package coupling', () => {
     const capsuleSource = readFileSync(
       join(process.cwd(), 'src/components/app-shell/AppCapsule.tsx'),
       'utf8',
@@ -181,19 +206,26 @@ describe('AppCapsule shell contract', () => {
       join(process.cwd(), 'src/components/app-shell/secondaryMenu.ts'),
       'utf8',
     );
+    const appSettingsPanelSource = readFileSync(
+      join(process.cwd(), 'src/components/app-settings/AppSettingsPanel.tsx'),
+      'utf8',
+    );
     const appMapStageViewSource = readFileSync(
       join(process.cwd(), 'src/components/AppMapStageView.tsx'),
       'utf8',
     );
-    const source = `${capsuleSource}\n${sideDrawerSource}\n${speedDialSource}\n${secondaryMenuSource}\n${appMapStageViewSource}`;
+    const source = `${capsuleSource}\n${sideDrawerSource}\n${speedDialSource}\n${secondaryMenuSource}\n${appSettingsPanelSource}\n${appMapStageViewSource}`;
 
     expect(source).not.toContain('window.history');
     expect(source).not.toContain('/settings');
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
     expect(source).not.toContain('@tabler');
     expect(source).not.toContain('\uFFFD');
-    expect(capsuleSource).toContain('notificationPanelMode="floating"');
+    expect(capsuleSource).toContain('onOpenNotifications');
+    expect(capsuleSource).toContain('notificationUnreadCount');
     expect(capsuleSource).toContain('AppSettingsPanel');
+    expect(appSettingsPanelSource).not.toContain('NotificationPanel');
+    expect(appSettingsPanelSource).not.toContain('useNotificationPanelActions');
     expect(secondaryMenuSource).not.toContain('bottomNavItems');
     expect(secondaryMenuSource).not.toContain('AppSettingsPanel');
     expect(secondaryMenuSource).not.toContain('ProfileAccountSettings');

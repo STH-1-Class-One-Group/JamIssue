@@ -36,8 +36,9 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
 
     expect(appTopNavigation).toContain("import { AppCapsule } from './app-shell/AppCapsule'");
     expect(appTopNavigation).toContain("import { MapFloatingNav } from './map-stage/MapFloatingNav'");
-    expect(appTopNavigation).toContain("import { SideDrawer } from './app-shell/SideDrawer'");
+    expect(appTopNavigation).toContain("import { AppTopNavigationDrawers } from './AppTopNavigationDrawers'");
     expect(appTopNavigation).toContain('<AppCapsule');
+    expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
     expect(appTopNavigation).toContain('center={center}');
     expect(appTopNavigation).toContain('data-app-capsule-center-tab={activeTab}');
     expect(appMapStageView).not.toContain("import { AppCapsule } from './app-shell/AppCapsule'");

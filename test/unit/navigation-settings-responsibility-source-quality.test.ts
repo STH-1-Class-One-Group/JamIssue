@@ -39,27 +39,29 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appCapsule).not.toContain('MyPageSettingsSection');
     expect(appCapsule).not.toContain('ProfileAvatarEditor');
 
-    expect(appTopNavigation).toContain("import { SideDrawer } from './app-shell/SideDrawer'");
-    expect(appTopNavigation).toContain('<SideDrawer');
+    expect(appTopNavigation).toContain("import { AppTopNavigationDrawers } from './AppTopNavigationDrawers'");
+    expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
     expect(appTopNavigation).toContain("import { bottomNavItems } from './BottomNav'");
-    expect(appTopNavigation).toContain('resolveSecondaryMenuItems');
+    expect(appTopNavigation).not.toContain('resolveSecondaryMenuItems');
     expect(secondaryMenu).not.toContain('bottomNavItems');
     expect(secondaryMenu).not.toContain('AppSettingsPanel');
     expect(secondaryMenu).not.toContain('ProfileAccountSettings');
   });
 
-  it('keeps AppSettingsPanel scoped to app-wide utility entry points', () => {
+  it('keeps AppSettingsPanel scoped to app-wide settings entry points', () => {
     const appSettingsPanel = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
     const globalSettingsMenu = readRepoFile('src/components/GlobalSettingsMenu.tsx');
 
-    expect(appSettingsPanel).toContain('NotificationPanel');
     expect(appSettingsPanel).toContain('FEEDBACK_FORM_URL');
     expect(appSettingsPanel).toContain('showCuratedWithTourism');
     expect(appSettingsPanel).toContain('data-app-setting="show-curated-with-tourism"');
     expect(appSettingsPanel).toContain('설정 열기');
-    expect(appSettingsPanel).toContain('알림');
     expect(appSettingsPanel).toContain('피드백');
     expect(appSettingsPanel).toContain('지도 표시');
+    expect(appSettingsPanel).not.toContain('NotificationPanel');
+    expect(appSettingsPanel).not.toContain('useNotificationPanelActions');
+    expect(appSettingsPanel).not.toContain('notifications');
+    expect(appSettingsPanel).not.toContain('unreadCount');
     expect(appSettingsPanel).not.toContain('ProfileAvatarEditor');
     expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
     expect(appSettingsPanel).not.toContain('MyPagePanel');
@@ -72,6 +74,26 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(globalSettingsMenu).toContain('AppSettingsPanel');
     expect(globalSettingsMenu).not.toContain('NotificationPanel');
     expect(globalSettingsMenu).not.toContain('FEEDBACK_FORM_URL');
+  });
+
+  it('keeps notification content in the left information drawer instead of settings', () => {
+    const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
+    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
+    const appTopNavigationDrawers = readRepoFile('src/components/AppTopNavigationDrawers.tsx');
+    const notificationDrawer = readRepoFile('src/components/notifications/NotificationDrawer.tsx');
+    const appSettingsPanel = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
+
+    expect(appCapsule).toContain('onOpenNotifications');
+    expect(appCapsule).toContain('notificationUnreadCount');
+    expect(appTopNavigation).toContain('AppTopNavigationDrawers');
+    expect(appTopNavigationDrawers).toContain('NotificationDrawer');
+    expect(notificationDrawer).toContain('NotificationPanel');
+    expect(notificationDrawer).toContain('aria-label="알림"');
+    expect(notificationDrawer).not.toContain('showCuratedWithTourism');
+    expect(notificationDrawer).not.toContain('FEEDBACK_FORM_URL');
+    expect(appSettingsPanel).not.toContain('NotificationPanel');
+    expect(appSettingsPanel).not.toContain('notifications');
+    expect(appSettingsPanel).not.toContain('unreadCount');
   });
 
   it('keeps My Page as a dashboard with account settings delegated to my-page components', () => {
@@ -119,15 +141,13 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
   it('keeps the hamburger side drawer as secondary support, not a duplicate app/settings/account menu', () => {
     const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
+    const appTopNavigationDrawers = readRepoFile('src/components/AppTopNavigationDrawers.tsx');
     const sideDrawer = readRepoFile('src/components/app-shell/SideDrawer.tsx');
     const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
 
-    expect(appTopNavigation).toContain('<SideDrawer');
-    expect(appTopNavigation).toContain('resolveSecondaryMenuItems');
-    expect(secondaryMenu).toContain('이용 안내');
-    expect(secondaryMenu).toContain('관리 도구');
-    expect(sideDrawer).toContain('보조 메뉴');
-    expect(sideDrawer).toContain('보조 기능');
+    expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
+    expect(appTopNavigationDrawers).toContain('<SideDrawer');
+    expect(appTopNavigationDrawers).toContain('resolveSecondaryMenuItems');
     expect(sideDrawer).not.toContain('메뉴 준비 중');
     expect(secondaryMenu).not.toContain('지도 / 행사 / 피드 / 코스 / 마이');
     expect(secondaryMenu).not.toContain("label: '로그아웃'");
@@ -136,18 +156,18 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
   it('keeps touched navigation and settings shell files UTF-8 readable', () => {
     const files = [
       'src/components/app-shell/AppCapsule.tsx',
-      'src/components/app-shell/SideDrawer.tsx',
       'src/components/app-shell/SpeedDialFAB.tsx',
-      'src/components/app-shell/secondaryMenu.ts',
       'src/components/app-settings/AppSettingsPanel.tsx',
+      'src/components/notifications/NotificationDrawer.tsx',
     ];
 
     for (const file of files) {
       const source = readRepoFile(file);
       expect(source).not.toContain('\uFFFD');
-      expect(source).not.toContain('吏');
-      expect(source).not.toContain('蹂댁');
-      expect(source).not.toContain('諛');
+      expect(source).not.toContain('筌');
+      expect(source).not.toContain('癰귣똻');
+      expect(source).not.toContain('獄');
+      expect(source).not.toContain('???');
     }
   });
 });

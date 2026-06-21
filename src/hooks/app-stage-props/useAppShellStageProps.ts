@@ -20,16 +20,18 @@ export function useAppShellStageProps(state: AppShellCoordinatorState) {
     handleBottomNavChange,
     globalStatus: viewModels.globalStatus,
     globalUtility: {
+      mapDisplayPreferences: {
+        showCuratedWithTourism: state.showCuratedWithTourism,
+        onShowCuratedWithTourismChange: state.setShowCuratedWithTourism,
+      },
+    },
+    notificationUtility: {
       sessionUserName: state.sessionUser?.nickname ?? null,
       notifications: viewModels.hydratedMyPage?.notifications ?? [],
       unreadCount: viewModels.hydratedMyPage?.unreadNotificationCount ?? 0,
       onOpenNotification: state.handleOpenGlobalNotification,
       onMarkAllNotificationsRead: state.handleMarkAllNotificationsRead,
       onDeleteNotification: state.handleDeleteNotification,
-      mapDisplayPreferences: {
-        showCuratedWithTourism: state.showCuratedWithTourism,
-        onShowCuratedWithTourismChange: state.setShowCuratedWithTourism,
-      },
     },
   };
 }
