@@ -36,12 +36,12 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | Child | Branch | Status | Evidence |
 | --- | --- | --- | --- |
-| [#583](https://github.com/STH-1-Class-One-Group/JamIssue/issues/583) | `season-theme-audit-baseline` | active | hardcoded color inventory and source-quality baseline |
-| [#584](https://github.com/STH-1-Class-One-Group/JamIssue/issues/584) | `season-theme-token-boundary` | planned | semantic token and seasonal theme CSS boundary |
-| [#585](https://github.com/STH-1-Class-One-Group/JamIssue/issues/585) | `season-theme-runtime-application` | planned | SeasonTheme resolver and root data attribute |
-| [#586](https://github.com/STH-1-Class-One-Group/JamIssue/issues/586) | `season-theme-component-migration` | planned | app chrome/feed component semantic token consumption |
-| [#587](https://github.com/STH-1-Class-One-Group/JamIssue/issues/587) | `season-theme-verification-gate` | planned | source-quality and 4-season E2E gate |
-| [#588](https://github.com/STH-1-Class-One-Group/JamIssue/issues/588) | `season-theme-docs-traceability` | planned | Wiki, QA matrix, release candidate, ledger evidence |
+| [#583](https://github.com/STH-1-Class-One-Group/JamIssue/issues/583) | `season-theme-audit-baseline` | completed | PR [#589](https://github.com/STH-1-Class-One-Group/JamIssue/pull/589), [#590](https://github.com/STH-1-Class-One-Group/JamIssue/pull/590), [#591](https://github.com/STH-1-Class-One-Group/JamIssue/pull/591) |
+| [#584](https://github.com/STH-1-Class-One-Group/JamIssue/issues/584) | `season-theme-token-boundary` | completed | PR [#594](https://github.com/STH-1-Class-One-Group/JamIssue/pull/594) |
+| [#585](https://github.com/STH-1-Class-One-Group/JamIssue/issues/585) | `season-theme-runtime-application` | completed | PR [#596](https://github.com/STH-1-Class-One-Group/JamIssue/pull/596) |
+| [#586](https://github.com/STH-1-Class-One-Group/JamIssue/issues/586) | `season-theme-component-migration` | completed | PR [#599](https://github.com/STH-1-Class-One-Group/JamIssue/pull/599) |
+| [#587](https://github.com/STH-1-Class-One-Group/JamIssue/issues/587) | `season-theme-verification-gate` | completed | PR [#601](https://github.com/STH-1-Class-One-Group/JamIssue/pull/601), [#602](https://github.com/STH-1-Class-One-Group/JamIssue/pull/602) |
+| [#588](https://github.com/STH-1-Class-One-Group/JamIssue/issues/588) | `season-theme-docs-traceability` | active | Wiki, QA matrix, release candidate, ledger evidence |
 
 ## TSK-012 Child Issues
 
@@ -130,7 +130,9 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 ## 관련 문서
 
 - [UI/UX QA Matrix](ui-ux-qa-matrix.md)
+- [계절 테마 QA와 운영 기준](season-theme-qa-and-operations.md)
 - [JamIssue 1.3.5 후보](release-candidate-1.3.5.md)
 - [JamIssue 1.3.6 후보](release-candidate-1.3.6.md)
+- [JamIssue 1.3.7 후보](release-candidate-1.3.7.md)
 - [TSK-016-01 7차 UI/UX 컴포넌트 아키텍처 Audit](TSK-016-01-seventh-uiux-component-architecture-audit.md)
 - [TSK-016-07 7차 UI/UX Docs Traceability](TSK-016-07-seventh-uiux-docs-traceability.md)
