@@ -724,7 +724,7 @@
 
 .review-card__mood-inline {
   flex: 0 0 auto !important;
-  color: rgba(216, 79, 134, 0.88) !important;
+  color: var(--control-active-text) !important;
   font-size: 11px !important;
   line-height: 1.2 !important;
   font-weight: 700 !important;
@@ -1321,6 +1321,27 @@ body {
   border-color: var(--control-hover-border) !important;
 }
 
+.global-settings-menu__trigger.is-complete {
+  background: var(--control-active-bg) !important;
+  border-color: var(--control-active-border) !important;
+  color: var(--control-active-text) !important;
+  box-shadow: var(--shadow-button) !important;
+}
+
+.global-settings-menu__item:hover,
+.global-settings-menu__item:focus-visible {
+  background: var(--control-hover-bg) !important;
+  border-color: var(--control-hover-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.global-settings-menu__item.is-complete {
+  background: var(--control-active-bg) !important;
+  border-color: var(--control-active-border) !important;
+  color: var(--control-active-text) !important;
+  box-shadow: var(--shadow-button) !important;
+}
+
 .review-card,
 .course-card,
 .sheet-card {
@@ -1391,7 +1412,7 @@ body {
   margin-bottom: 0 !important;
   background: transparent !important;
   border: 0 !important;
-  color: rgba(216, 79, 134, 0.92) !important;
+  color: var(--control-active-text) !important;
 }
 
 .review-card--comment-log .section-copy,
@@ -1683,7 +1704,7 @@ body {
 }
 
 .review-card__mood-inline {
-  color: rgba(216, 79, 134, 0.88) !important;
+  color: var(--control-active-text) !important;
   font-size: 11px !important;
   line-height: 1.2 !important;
   font-weight: 700 !important;

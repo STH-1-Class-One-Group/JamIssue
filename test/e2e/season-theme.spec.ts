@@ -69,10 +69,47 @@ async function readMyPageActionThemeSnapshot(page: Parameters<typeof installApiF
   });
 }
 
+async function readSettingsMenuFeedbackSnapshot(page: Parameters<typeof installApiFixtures>[0]) {
+  return page.evaluate(() => {
+    const trigger = document.querySelector<HTMLElement>('.global-settings-menu__trigger');
+    const menuItem = document.querySelector<HTMLElement>('.global-settings-menu__item');
+
+    if (!trigger || !menuItem) {
+      throw new Error('Expected settings trigger and menu item to be present.');
+    }
+
+    const triggerStyle = getComputedStyle(trigger);
+    const itemStyle = getComputedStyle(menuItem);
+
+    return {
+      triggerBackground: triggerStyle.backgroundColor,
+      triggerBorderColor: triggerStyle.borderColor,
+      menuItemBackground: itemStyle.backgroundColor,
+      menuItemBorderColor: itemStyle.borderColor,
+    };
+  });
+}
+
+async function readFeedMoodThemeSnapshot(page: Parameters<typeof installApiFixtures>[0]) {
+  return page.evaluate(() => {
+    const mood = document.querySelector<HTMLElement>('.review-card__mood-inline');
+
+    if (!mood) {
+      throw new Error('Expected feed mood label to be present.');
+    }
+
+    return {
+      moodColor: getComputedStyle(mood).color,
+    };
+  });
+}
+
 test('TSK-019-05 applies each forced season to semantic tokens without changing navigation structure', async ({ page }) => {
   const snapshots: Array<Awaited<ReturnType<typeof readThemeSnapshot>>> = [];
   const contentSnapshots: Array<Awaited<ReturnType<typeof readContentThemeSnapshot>>> = [];
   const myPageActionSnapshots: Array<Awaited<ReturnType<typeof readMyPageActionThemeSnapshot>>> = [];
+  const settingsFeedbackSnapshots: Array<Awaited<ReturnType<typeof readSettingsMenuFeedbackSnapshot>>> = [];
+  const feedMoodSnapshots: Array<Awaited<ReturnType<typeof readFeedMoodThemeSnapshot>>> = [];
 
   for (const season of seasons) {
     await installApiFixtures(page, createE2EAppState({
@@ -99,12 +136,19 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
 
     await page.locator('.bottom-nav__item[data-tab-key="feed"]').click();
     await expect(page.locator('.review-card')).toHaveCount(1);
+    feedMoodSnapshots.push(await readFeedMoodThemeSnapshot(page));
     contentSnapshots.push(await readContentThemeSnapshot(page));
 
     await page.locator('.bottom-nav__item[data-tab-key="my"]').click();
     await expect(page.locator('.account-action-row .secondary-button')).toHaveCount(2);
     await page.locator('.account-action-row .secondary-button').first().hover();
     myPageActionSnapshots.push(await readMyPageActionThemeSnapshot(page));
+
+    const settingsTrigger = page.locator('.global-settings-menu__trigger');
+    await settingsTrigger.click();
+    await expect(settingsTrigger).toHaveAttribute('aria-expanded', 'true');
+    await page.locator('.global-settings-menu__item').first().hover();
+    settingsFeedbackSnapshots.push(await readSettingsMenuFeedbackSnapshot(page));
   }
 
   expect(new Set(snapshots.map((snapshot) => snapshot.dataSeasonTheme))).toEqual(new Set(seasons));
@@ -117,6 +161,10 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
   expect(new Set(contentSnapshots.map((snapshot) => snapshot.reviewCardBorderColor)).size).toBeGreaterThan(1);
   expect(new Set(myPageActionSnapshots.map((snapshot) => snapshot.accountActionBackground)).size).toBeGreaterThan(1);
   expect(new Set(myPageActionSnapshots.map((snapshot) => snapshot.accountActionBorderColor)).size).toBeGreaterThan(1);
+  expect(new Set(feedMoodSnapshots.map((snapshot) => snapshot.moodColor)).size).toBeGreaterThan(1);
+  expect(new Set(settingsFeedbackSnapshots.map((snapshot) => snapshot.triggerBackground)).size).toBeGreaterThan(1);
+  expect(new Set(settingsFeedbackSnapshots.map((snapshot) => snapshot.menuItemBackground)).size).toBeGreaterThan(1);
+  expect(new Set(settingsFeedbackSnapshots.map((snapshot) => snapshot.menuItemBorderColor)).size).toBeGreaterThan(1);
 });
 
 test('TSK-019-05 keeps production-only season switcher controls out of the service UI', async ({ page }) => {
