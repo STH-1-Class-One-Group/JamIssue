@@ -132,6 +132,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/632
   - Merge commit: 6d4f5541f838c2e1e4bfb449f38caf10c37a747c
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-03.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-04: https://github.com/STH-1-Class-One-Group/JamIssue/issues/624
+  - Title: app-settings-panel
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/624
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/635
+  - Merge commit: db621b3670e217e44468396b3ffc5c48ed8d2b14
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-04.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
