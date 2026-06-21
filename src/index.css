@@ -312,11 +312,11 @@ textarea {
   height: var(--app-header-action-size);
   flex: 0 0 var(--app-header-action-size);
   padding: 0;
-  border: 1px solid rgba(255, 127, 168, 0.22);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
-  background: rgba(255, 249, 252, 0.96);
+  background: var(--control-bg);
   color: var(--ink);
-  box-shadow: 0 8px 18px rgba(74, 44, 63, 0.08);
+  box-shadow: var(--shadow-soft);
 }
 
 .app-header__back-button span {
@@ -537,7 +537,7 @@ textarea {
   overflow-y: auto;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 151, 187, 0.72) rgba(255, 241, 246, 0.92);
+  scrollbar-color: var(--color-accent) var(--control-active-bg);
   padding: var(--utility-panel-padding);
   border-radius: var(--utility-panel-radius);
   border: var(--utility-panel-border);
@@ -581,18 +581,18 @@ textarea {
 .global-notification-panel::-webkit-scrollbar-track {
   margin: 16px 0;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 244, 248, 0.96), rgba(255, 249, 251, 0.88));
+  background: var(--scrollbar-track);
 }
 
 .global-notification-panel::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  border: 2px solid rgba(255, 244, 248, 0.96);
-  background: linear-gradient(180deg, rgba(255, 138, 178, 0.92), rgba(255, 111, 161, 0.82));
-  box-shadow: 0 4px 10px rgba(255, 123, 168, 0.22);
+  border: 2px solid var(--surface-overlay-strong);
+  background: var(--scrollbar-thumb);
+  box-shadow: var(--shadow-soft);
 }
 
 .global-notification-panel::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(255, 126, 170, 0.96), rgba(255, 96, 150, 0.88));
+  background: var(--scrollbar-thumb-hover);
 }
 
 .notification-panel__header {
@@ -618,13 +618,13 @@ textarea {
   gap: 10px;
   padding: 14px;
   border-radius: 22px;
-  border: 1px solid rgba(255, 197, 217, 0.42);
-  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--control-border);
+  background: var(--surface-overlay);
 }
 
 .notification-item.is-unread {
-  background: rgba(255, 248, 251, 0.96);
-  box-shadow: 0 10px 20px rgba(255, 143, 183, 0.08);
+  background: var(--notification-unread-bg);
+  box-shadow: var(--shadow-soft);
 }
 
 .notification-item__content {
@@ -1117,8 +1117,8 @@ textarea {
 .secondary-button,
 .file-picker,
 .map-locate-button {
-  border: 1px solid rgba(255, 127, 168, 0.26);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
   color: var(--ink);
 }
 
@@ -1133,15 +1133,15 @@ textarea {
 .chip.is-active,
 .secondary-button.is-complete,
 .soft-tag.is-complete {
-  background: linear-gradient(135deg, rgba(255, 231, 239, 0.96), rgba(233, 246, 255, 0.94));
-  color: var(--pink-deep);
-  border-color: rgba(255, 127, 168, 0.42);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+  border-color: var(--control-active-border);
 }
 
 .primary-button {
   border: 0;
   background: linear-gradient(135deg, var(--pink), var(--pink-deep));
-  color: #fff;
+  color: var(--text-on-accent);
   font-weight: 700;
 }
 
@@ -1167,8 +1167,8 @@ textarea {
   align-items: center;
   justify-content: center;
   padding: 7px 11px;
-  background: rgba(255, 245, 249, 0.92);
-  color: var(--pink-deep);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
   font-size: 12px;
   font-weight: 700;
 }
@@ -1179,8 +1179,8 @@ textarea {
 
 .soft-tag.is-muted,
 .soft-tag--button.is-muted {
-  background: rgba(244, 244, 248, 0.94);
-  color: #8f8190;
+  background: var(--control-muted-bg);
+  color: var(--control-muted-text);
 }
 
 .provider-grid {
@@ -1195,9 +1195,9 @@ textarea {
   gap: 10px;
   width: 100%;
   padding: 16px 18px;
-  border: 1px solid rgba(255, 127, 168, 0.24);
+  border: 1px solid var(--control-border);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--surface-overlay);
   color: var(--ink);
 }
 
@@ -1908,8 +1908,8 @@ textarea {
     var(--bottom-nav-padding-y)
     var(--bottom-nav-padding-x)
     calc(var(--bottom-nav-padding-y) + env(safe-area-inset-bottom));
-  background: rgba(255, 252, 249, 0.88);
-  border-top: 0.5px solid rgba(236, 231, 228, 0.68);
+  background: var(--nav-surface);
+  border-top: 0.5px solid var(--line-soft);
   backdrop-filter: blur(14px);
 }
 
@@ -2056,9 +2056,9 @@ textarea {
 
 .map-locate-button {
   border-radius: 999px;
-  background: rgba(255, 251, 252, 0.96);
-  border: 1px solid rgba(255, 129, 168, 0.28);
-  box-shadow: 0 12px 24px rgba(255, 127, 168, 0.12);
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  box-shadow: var(--shadow-soft);
 }
 
 .place-drawer--partial {
@@ -2079,8 +2079,8 @@ textarea {
 }
 
 .bottom-nav {
-  background: rgba(255, 252, 249, 0.94);
-  box-shadow: 0 -10px 28px rgba(255, 143, 183, 0.12);
+  background: var(--nav-surface);
+  box-shadow: var(--shadow-soft);
 }
 
 .bottom-nav__item {
@@ -2150,15 +2150,15 @@ textarea {
 
 .map-location-pill,
 .map-caption {
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--surface-overlay-strong);
 }
 
 .place-drawer {
   margin: 0 12px;
   border-radius: 30px 30px 26px 26px;
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  background: rgba(255, 252, 249, 0.98);
-  box-shadow: 0 -14px 34px rgba(66, 40, 60, 0.16);
+  border: 1px solid var(--line-soft);
+  background: var(--sheet-surface);
+  box-shadow: var(--shadow-sheet);
 }
 
 .place-drawer--partial {
@@ -2172,7 +2172,7 @@ textarea {
 }
 
 .place-drawer__content {
-  background: linear-gradient(180deg, rgba(255, 252, 249, 0.99), rgba(255, 249, 246, 0.98));
+  background: var(--sheet-content-surface);
 }
 
 @media (max-width: 430px) {
@@ -2291,7 +2291,7 @@ textarea {
 .place-drawer {
   margin: 0 12px;
   bottom: var(--bottom-nav-offset);
-  background: rgba(255, 252, 249, 0.98);
+  background: var(--sheet-surface);
   border-radius: 28px 28px 24px 24px;
 }
 
@@ -2307,7 +2307,7 @@ textarea {
 
 .place-drawer__content {
   padding: 0 16px 16px;
-  background: rgba(255, 252, 249, 0.98);
+  background: var(--sheet-surface);
 }
 
 .place-drawer__summary {
@@ -2319,7 +2319,7 @@ textarea {
     var(--bottom-nav-padding-y)
     var(--bottom-nav-padding-x)
     calc(var(--bottom-nav-safe-padding-y) + env(safe-area-inset-bottom));
-  background: rgba(255, 252, 249, 0.96);
+  background: var(--nav-surface);
 }
 
 @media (max-width: 430px) {
@@ -2355,9 +2355,9 @@ textarea {
   inset: 12px 12px var(--bottom-nav-offset) 12px;
   overflow: hidden;
   border-radius: 28px;
-  border: 1px solid rgba(255,255,255,0.84);
-  background: linear-gradient(180deg, rgba(255,252,249,0.97), rgba(255,248,251,0.94));
-  box-shadow: 0 18px 36px rgba(255, 143, 183, 0.12);
+  border: 1px solid var(--line-soft);
+  background: var(--page-panel-surface);
+  box-shadow: var(--shadow-panel);
 }
 
 .page-panel--scrollable {
@@ -2371,7 +2371,7 @@ textarea {
 }
 
 .page-stage {
-  background: linear-gradient(180deg, rgba(255,248,251,0.82), rgba(255,253,248,0.94));
+  background: var(--page-stage-surface);
 }
 
 .map-stage__header {
@@ -2533,9 +2533,9 @@ textarea {
   z-index: 4;
   padding: 10px 12px 9px;
   border-radius: 24px;
-  background: rgba(255, 252, 249, 0.96);
-  border: 1px solid rgba(255, 214, 231, 0.9);
-  box-shadow: 0 10px 22px rgba(255, 143, 183, 0.08);
+  background: var(--surface-overlay-strong);
+  border: 1px solid var(--control-border);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-filter-strip .chip-row {
@@ -3106,10 +3106,10 @@ textarea {
   display: grid;
   width: 110px;
   overflow: hidden;
-  border: 1px solid rgba(255, 197, 217, 0.46);
+  border: 1px solid var(--control-border);
   border-radius: 12px;
-  background: rgba(255, 252, 249, 0.98);
-  box-shadow: 0 18px 34px rgba(66, 40, 60, 0.16);
+  background: var(--surface-overlay-strong);
+  box-shadow: var(--shadow-panel);
 }
 
 .map-floating-nav__dropdown-item {
@@ -3237,17 +3237,17 @@ textarea {
   top: calc(100% + 6px);
   right: 48px;
   padding: 7px 10px;
-  border: 1px solid rgba(255, 111, 163, 0.24);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--surface-overlay);
   color: var(--pink-deep);
   font-size: 11px;
   font-weight: 800;
-  box-shadow: 0 8px 18px rgba(255, 111, 163, 0.12);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-floating-nav__status.is-error {
-  color: #9b405f;
+  color: var(--text-danger);
 }
 
 .app-capsule .global-settings-menu__menu {
@@ -3443,9 +3443,9 @@ textarea {
   flex-direction: column;
   z-index: var(--z-map-sheet);
   border-radius: 28px;
-  background: rgba(255, 252, 249, 0.98);
-  border: 1px solid rgba(255, 216, 229, 0.58);
-  box-shadow: 0 -10px 28px rgba(66, 40, 60, 0.14);
+  background: var(--sheet-surface);
+  border: 1px solid var(--control-border);
+  box-shadow: var(--shadow-sheet);
 }
 
 .place-drawer--full {
@@ -3462,7 +3462,7 @@ textarea {
   align-items: center;
   gap: 8px;
   padding: 10px 16px 8px;
-  background: rgba(255, 252, 249, 0.98);
+  background: var(--sheet-surface);
 }
 
 .place-drawer__chrome-spacer {
