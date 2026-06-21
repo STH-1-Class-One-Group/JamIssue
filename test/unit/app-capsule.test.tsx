@@ -6,6 +6,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { AppCapsule } from '../../src/components/app-shell/AppCapsule';
 import { SideDrawer } from '../../src/components/app-shell/SideDrawer';
 import { SpeedDialFAB } from '../../src/components/app-shell/SpeedDialFAB';
+import {
+  isReservedPrimaryOrSettingsLabel,
+  resolveSecondaryMenuItems,
+} from '../../src/components/app-shell/secondaryMenu';
 import type { AppSettingsPanelProps } from '../../src/components/app-settings/AppSettingsPanel';
 
 const globalUtility: AppSettingsPanelProps = {
@@ -32,7 +36,7 @@ describe('AppCapsule shell contract', () => {
     const capsule = screen.getByRole('navigation', { name: '앱 캡슐 내비게이션' });
     const leading = capsule.querySelector('[data-app-capsule-slot="leading"]');
     const actions = capsule.querySelector('[data-app-capsule-slot="actions"]');
-    const menuButton = within(capsule).getByRole('button', { name: '메뉴 열기' });
+    const menuButton = within(capsule).getByRole('button', { name: '보조 메뉴 열기' });
     const backButton = within(capsule).getByRole('button', { name: '이전 화면으로 돌아가기' });
     const settingsButton = within(capsule).getByRole('button', { name: '설정 열기' });
 
@@ -69,9 +73,10 @@ describe('AppCapsule shell contract', () => {
     expect(backButton).toBeDisabled();
     await user.click(backButton);
     expect(onNavigateBack).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: '보조 메뉴 열기' })).not.toBeInTheDocument();
   });
 
-  it('emits the menu callback without rendering SideDrawer content or copy', async () => {
+  it('emits the menu callback without rendering SideDrawer content itself', async () => {
     const user = userEvent.setup();
     const onOpenMenu = vi.fn();
 
@@ -85,25 +90,37 @@ describe('AppCapsule shell contract', () => {
       />,
     );
 
-    await user.click(screen.getByRole('button', { name: '메뉴 열기' }));
+    await user.click(screen.getByRole('button', { name: '보조 메뉴 열기' }));
 
     expect(onOpenMenu).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('renders SideDrawer shell with close paths and no unapproved placeholder copy', async () => {
+  it('renders SideDrawer with general secondary items and close paths', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
 
-    render(<SideDrawer isOpen onClose={onClose} />);
+    render(<SideDrawer isOpen items={resolveSecondaryMenuItems()} onClose={onClose} />);
 
-    const drawer = screen.getByRole('dialog', { name: '사이드 메뉴' });
+    const drawer = screen.getByRole('dialog', { name: '보조 메뉴' });
     expect(drawer).toBeInTheDocument();
-    expect(within(drawer).getByTestId('side-drawer-content')).toBeEmptyDOMElement();
+    expect(within(drawer).getByRole('menuitem', { name: /이용 안내/ })).toBeInTheDocument();
+    expect(within(drawer).getByLabelText('이용 안내 상세')).toHaveTextContent('하단 탭은 주요 화면 이동');
     expect(screen.queryByText('메뉴 준비 중')).not.toBeInTheDocument();
 
-    await user.click(screen.getAllByRole('button', { name: '메뉴 닫기' })[1]);
+    await user.click(screen.getAllByRole('button', { name: '보조 메뉴 닫기' })[1]);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps secondary menu labels out of primary tabs and settings ownership', () => {
+    const generalItems = resolveSecondaryMenuItems();
+    const adminItems = resolveSecondaryMenuItems({ isAdmin: true, canOpenAdminTools: true });
+
+    expect(generalItems.map((item) => item.id)).toEqual(['usage-guide']);
+    expect(adminItems.map((item) => item.id)).toEqual(['usage-guide', 'admin-tools']);
+    for (const item of adminItems) {
+      expect(isReservedPrimaryOrSettingsLabel(item.label)).toBe(false);
+    }
   });
 
   it('renders SpeedDialFAB from an actions array and closes after an enabled action click', async () => {
@@ -114,7 +131,7 @@ describe('AppCapsule shell contract', () => {
     render(
       <SpeedDialFAB
         actions={[
-          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">◎</span>, onClick: onLocate },
+          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">⌖</span>, onClick: onLocate },
           { id: 'disabled', label: '사용 불가', onClick: onDisabled, disabled: true },
         ]}
       />,
@@ -160,11 +177,15 @@ describe('AppCapsule shell contract', () => {
       join(process.cwd(), 'src/components/app-shell/SpeedDialFAB.tsx'),
       'utf8',
     );
+    const secondaryMenuSource = readFileSync(
+      join(process.cwd(), 'src/components/app-shell/secondaryMenu.ts'),
+      'utf8',
+    );
     const appMapStageViewSource = readFileSync(
       join(process.cwd(), 'src/components/AppMapStageView.tsx'),
       'utf8',
     );
-    const source = `${capsuleSource}\n${sideDrawerSource}\n${speedDialSource}\n${appMapStageViewSource}`;
+    const source = `${capsuleSource}\n${sideDrawerSource}\n${speedDialSource}\n${secondaryMenuSource}\n${appMapStageViewSource}`;
 
     expect(source).not.toContain('window.history');
     expect(source).not.toContain('/settings');
@@ -172,5 +193,8 @@ describe('AppCapsule shell contract', () => {
     expect(source).not.toContain('@tabler');
     expect(capsuleSource).toContain('notificationPanelMode="floating"');
     expect(capsuleSource).toContain('AppSettingsPanel');
+    expect(secondaryMenuSource).not.toContain('bottomNavItems');
+    expect(secondaryMenuSource).not.toContain('AppSettingsPanel');
+    expect(secondaryMenuSource).not.toContain('ProfileAccountSettings');
   });
 });

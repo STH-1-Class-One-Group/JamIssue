@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { Tab } from '../types/core';
+import type { SessionUser } from '../types/auth';
 import { bottomNavItems } from './BottomNav';
 import type { AppMapStageViewProps } from './AppMapStageView';
 import { AppCapsule } from './app-shell/AppCapsule';
 import { SideDrawer } from './app-shell/SideDrawer';
+import { resolveSecondaryMenuItems } from './app-shell/secondaryMenu';
 import type { AppSettingsPanelProps } from './app-settings/AppSettingsPanel';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
 
@@ -14,6 +16,7 @@ interface AppTopNavigationProps {
   mapActions: AppMapStageViewProps['mapActions'];
   mapData: AppMapStageViewProps['mapData'];
   onNavigateBack: () => void;
+  sessionUser: SessionUser | null;
 }
 
 export function AppTopNavigation({
@@ -23,9 +26,14 @@ export function AppTopNavigation({
   mapActions,
   mapData,
   onNavigateBack,
+  sessionUser,
 }: AppTopNavigationProps) {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const activeBottomNavItem = bottomNavItems.find((item) => item.key === activeTab);
+  const secondaryMenuItems = resolveSecondaryMenuItems({
+    canOpenAdminTools: Boolean(sessionUser?.isAdmin),
+    isAdmin: Boolean(sessionUser?.isAdmin),
+  });
   const center = activeTab === 'map' ? (
     <MapFloatingNav
       activeCategory={mapData.activeCategory}
@@ -56,7 +64,11 @@ export function AppTopNavigation({
         onNavigateBack={onNavigateBack}
         onOpenMenu={() => setIsSideDrawerOpen(true)}
       />
-      <SideDrawer isOpen={isSideDrawerOpen} onClose={() => setIsSideDrawerOpen(false)} />
+      <SideDrawer
+        isOpen={isSideDrawerOpen}
+        items={secondaryMenuItems}
+        onClose={() => setIsSideDrawerOpen(false)}
+      />
     </>
   );
 }

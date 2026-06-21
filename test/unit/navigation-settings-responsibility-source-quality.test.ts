@@ -26,6 +26,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     const appHeader = readRepoFile('src/components/app-shell/AppHeader.tsx');
     const appShell = readRepoFile('src/components/app-shell/AppShell.tsx');
     const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
+    const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
 
     expect(appCapsule).toContain("import { AppSettingsPanel");
     expect(appCapsule).toContain('<AppSettingsPanel');
@@ -41,6 +42,10 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appTopNavigation).toContain("import { SideDrawer } from './app-shell/SideDrawer'");
     expect(appTopNavigation).toContain('<SideDrawer');
     expect(appTopNavigation).toContain("import { bottomNavItems } from './BottomNav'");
+    expect(appTopNavigation).toContain('resolveSecondaryMenuItems');
+    expect(secondaryMenu).not.toContain('bottomNavItems');
+    expect(secondaryMenu).not.toContain('AppSettingsPanel');
+    expect(secondaryMenu).not.toContain('ProfileAccountSettings');
   });
 
   it('keeps AppSettingsPanel scoped to app-wide utility entry points', () => {
