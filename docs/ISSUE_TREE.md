@@ -90,8 +90,8 @@ Scope: parent-child task traceability for JamIssue governance completion.
 - [x] TSK-019-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/587
   - Title: season theme verification gate
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/587
-  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/601
-  - Merge commit: fda2cc95f9776b0569ee8033cec03c22a0e188e6
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/601; https://github.com/STH-1-Class-One-Group/JamIssue/pull/602
+  - Merge commit: fda2cc95f9776b0569ee8033cec03c22a0e188e6; 2081e3b027627be6b9cd6e50d869ef94d48a0a68
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-05.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
