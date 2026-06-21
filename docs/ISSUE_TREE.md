@@ -112,6 +112,15 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - Merge commit: a98008ae624f8bbe3466674b19ba5594d377c6df
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-07.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
+## TSK-021
+
+- [x] TSK-021-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/621
+  - Title: navigation-settings-responsibility-audit
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/621
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/628
+  - Merge commit: fc8f40ecfe6054fea07a843ae3bcbca9bb663e1c
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-01.json`, `docs/traceability/task-ledger.jsonl`, `docs/ISSUE_TREE.md`
+
 ## TSK-016
 
 - [x] TSK-016-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/509
