@@ -141,7 +141,7 @@ export function AppSettingsPanel({
               }
             }}
           >
-            <span>알람</span>
+            <span>알림</span>
             {unreadCount > 0 && <strong>{unreadCount}</strong>}
           </button>
           <a className="secondary-button global-settings-menu__item" href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer">

@@ -56,7 +56,14 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsPanel).toContain('FEEDBACK_FORM_URL');
     expect(appSettingsPanel).toContain('showCuratedWithTourism');
     expect(appSettingsPanel).toContain('data-app-setting="show-curated-with-tourism"');
+    expect(appSettingsPanel).toContain('설정 열기');
+    expect(appSettingsPanel).toContain('알림');
+    expect(appSettingsPanel).toContain('피드백');
+    expect(appSettingsPanel).toContain('지도 표시');
     expect(appSettingsPanel).not.toContain('ProfileAvatarEditor');
+    expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
+    expect(appSettingsPanel).not.toContain('MyPagePanel');
+    expect(appSettingsPanel).not.toContain('SideDrawer');
     expect(appSettingsPanel).not.toContain('onSaveNickname');
     expect(appSettingsPanel).not.toContain('onLogout');
     expect(appSettingsPanel).not.toContain('getTourismPlaces');
@@ -91,6 +98,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(profileAccountSettings).toContain('onDeleteAvatar');
     expect(profileAccountSettings).toContain('onLogout');
     expect(profileAccountSettings).not.toContain('GlobalSettingsMenu');
+    expect(profileAccountSettings).not.toContain('AppSettingsPanel');
     expect(profileAccountSettings).not.toMatch(/tourism|curated|kto/i);
     expect(myPageOverviewSection).toContain('uniquePlaceCount');
     expect(myPageOverviewSection).toContain('stampCount');
@@ -100,12 +108,46 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(myPageTabContent).toContain('MyRoutesTabSection');
   });
 
-  it('records that map display preferences are not implemented in the audit slice', () => {
+  it('records that map display preferences moved out of the audit slice into TSK-021-05', () => {
     const auditDoc = readRepoFile('docs/TSK-021-01-navigation-settings-responsibility-audit.md');
 
     expect(auditDoc).toContain('Map Preferences');
     expect(auditDoc).toContain('TSK-021-05');
     expect(auditDoc).toContain('showCuratedWithTourism');
-    expect(auditDoc).toContain('TSK-021-01은 문서와 source-quality guard만 다룬다');
+    expect(auditDoc).toContain('source-quality');
+  });
+
+  it('keeps the hamburger side drawer as secondary support, not a duplicate app/settings/account menu', () => {
+    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
+    const sideDrawer = readRepoFile('src/components/app-shell/SideDrawer.tsx');
+    const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
+
+    expect(appTopNavigation).toContain('<SideDrawer');
+    expect(appTopNavigation).toContain('resolveSecondaryMenuItems');
+    expect(secondaryMenu).toContain('이용 안내');
+    expect(secondaryMenu).toContain('관리 도구');
+    expect(sideDrawer).toContain('보조 메뉴');
+    expect(sideDrawer).toContain('보조 기능');
+    expect(sideDrawer).not.toContain('메뉴 준비 중');
+    expect(secondaryMenu).not.toContain('지도 / 행사 / 피드 / 코스 / 마이');
+    expect(secondaryMenu).not.toContain("label: '로그아웃'");
+  });
+
+  it('keeps touched navigation and settings shell files UTF-8 readable', () => {
+    const files = [
+      'src/components/app-shell/AppCapsule.tsx',
+      'src/components/app-shell/SideDrawer.tsx',
+      'src/components/app-shell/SpeedDialFAB.tsx',
+      'src/components/app-shell/secondaryMenu.ts',
+      'src/components/app-settings/AppSettingsPanel.tsx',
+    ];
+
+    for (const file of files) {
+      const source = readRepoFile(file);
+      expect(source).not.toContain('\uFFFD');
+      expect(source).not.toContain('吏');
+      expect(source).not.toContain('蹂댁');
+      expect(source).not.toContain('諛');
+    }
   });
 });

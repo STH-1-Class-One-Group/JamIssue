@@ -131,7 +131,7 @@ describe('AppCapsule shell contract', () => {
     render(
       <SpeedDialFAB
         actions={[
-          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">⌖</span>, onClick: onLocate },
+          { id: 'locate', label: '내 위치 찾기', icon: <span aria-hidden="true">◎</span>, onClick: onLocate },
           { id: 'disabled', label: '사용 불가', onClick: onDisabled, disabled: true },
         ]}
       />,
@@ -191,6 +191,7 @@ describe('AppCapsule shell contract', () => {
     expect(source).not.toContain('/settings');
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
     expect(source).not.toContain('@tabler');
+    expect(source).not.toContain('\uFFFD');
     expect(capsuleSource).toContain('notificationPanelMode="floating"');
     expect(capsuleSource).toContain('AppSettingsPanel');
     expect(secondaryMenuSource).not.toContain('bottomNavItems');

@@ -57,7 +57,7 @@ export function SpeedDialFAB({
               onClick={() => void handleActionClick(action)}
             >
               <span className="speed-dial-fab__action-icon" aria-hidden="true">
-                {action.icon ?? '•'}
+                {action.icon ?? '+'}
               </span>
               <span className="speed-dial-fab__action-label">{action.label}</span>
             </button>
