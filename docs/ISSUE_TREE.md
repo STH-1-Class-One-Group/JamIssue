@@ -120,6 +120,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/628
   - Merge commit: fc8f40ecfe6054fea07a843ae3bcbca9bb663e1c
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-01.json`, `docs/traceability/task-ledger.jsonl`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/622
+  - Title: my-page-dashboard-hierarchy
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/622
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/630
+  - Merge commit: 93ffeb3d2d3ae8a907e4e007a20d0726b05abeda
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-02.json`, `docs/traceability/task-ledger.jsonl`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
