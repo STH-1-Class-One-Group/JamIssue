@@ -1,0 +1,36 @@
+{
+  "documentPaths": [
+    "src/styles/semantic.css",
+    "src/index.css",
+    "src/styles/refinements.css",
+    "test/unit/season-theme-source-quality.test.ts",
+    "test/e2e/season-theme.spec.ts",
+    "docs/traceability/task-ledger/by-task/TSK-019-07.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "how": "앱 chrome, 지도 캡슐, 하단 탭, 피드 카드, 드로워, 설정/상태 패널에 남아 있던 visible hardcoded pink와 pastel surface 값을 semantic season token으로 치환했다. source-quality budget을 낮추고, 제거 대상 pink literal 재유입 방지 테스트와 피드 카드 계절별 computed style E2E를 추가했다.",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/606",
+  "mergeCommit": "a98008ae624f8bbe3466674b19ba5594d377c6df",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/607",
+  "problem": "summer/autumn/winter 테마에서도 화면이 spring pink pastel 톤으로 남아 보여 계절 테마가 일부 chrome과 콘텐츠 surface에 제대로 적용되지 않았다.",
+  "remainingGap": "없음. TSK-019-07 범위의 hardcoded pink cleanup은 PR #607로 main에 병합됐고, #606과 #582는 완료 근거를 남기고 닫았다.",
+  "schemaVersion": "task-ledger-entry.v1",
+  "status": "completed",
+  "taskId": "TSK-019-07",
+  "updatedAt": "2026-06-21T08:10:00Z",
+  "validationSeams": [
+    "npm.cmd run check:numeric-literals",
+    "npm.cmd run lint",
+    "npm.cmd run typecheck",
+    "npm.cmd run test:unit",
+    "npm.cmd run test:integration",
+    "npm.cmd run test:regression",
+    "npm.cmd run test:e2e",
+    "npm.cmd run build",
+    "git diff --check",
+    "touched files UTF-8 integrity check"
+  ],
+  "why": "계절 테마는 토큰화만으로 끝나지 않고 실제 사용 화면에서 semantic token을 소비해야 하므로, 남은 pink hardcoding을 제거해 계절 팔레트가 앱 전체 chrome과 주요 콘텐츠에 반영되도록 했다."
+}
