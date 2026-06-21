@@ -81,6 +81,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/596
   - Merge commit: 34f7a3f2feacaca1a9963be1a77679980d8f8acf
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-03.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-019-04: https://github.com/STH-1-Class-One-Group/JamIssue/issues/586
+  - Title: season theme component migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/586
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/599
+  - Merge commit: 5acd328e481d46b1414dcaf77ea8b37c173fc5e1
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-04.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
