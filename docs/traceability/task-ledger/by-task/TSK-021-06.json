@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "task-ledger-entry.v1",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "taskId": "TSK-021-06",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/626",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/638",
+  "mergeCommit": "d2a0fde82579a44f633b915830e583e44c7f71b9",
+  "documentPaths": [
+    "src/App.tsx",
+    "src/components/AppTopNavigation.tsx",
+    "src/components/app-shell/AppCapsule.tsx",
+    "src/components/app-shell/SideDrawer.tsx",
+    "src/components/app-shell/secondaryMenu.ts",
+    "src/index.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/architecture-readability-source-quality.test.ts",
+    "test/unit/navigation-settings-responsibility-source-quality.test.ts",
+    "docs/traceability/task-ledger/by-task/TSK-021-06.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md",
+    "docs/ISSUE_TREE.md"
+  ],
+  "why": "일반 사용자도 보조 메뉴를 열 수 있어야 하지만 하단 네비, 앱 설정, 계정 설정과 책임이 겹치지 않아야 했다.",
+  "problem": "햄버거가 모든 메뉴를 모으는 위치가 되면 BottomNav, AppSettingsPanel, Account Settings와 중복되어 navigation responsibility가 섞일 위험이 있었다.",
+  "how": "secondary menu resolver와 SideDrawer item/detail shell을 추가하고 reserved label source-quality, AppCapsule unit, E2E drawer regression으로 중복 책임 회귀를 차단했다.",
+  "remainingGap": "TSK-021-07 settings-navigation-regression-tests가 남아 있으므로 parent #620은 계속 open 상태를 유지한다.",
+  "status": "completed",
+  "updatedAt": "2026-06-21T14:57:49Z",
+  "validationSeams": [
+    "npm.cmd run check:numeric-literals",
+    "npm.cmd run lint",
+    "npm.cmd run typecheck",
+    "npm.cmd run test:unit",
+    "npm.cmd run test:integration",
+    "npm.cmd run test:regression",
+    "npm.cmd run test:e2e",
+    "npm.cmd run build",
+    "git diff --check",
+    "touched files UTF-8 no BOM check"
+  ]
+}
