@@ -1,0 +1,21 @@
+:root,
+:root[data-season-theme='spring'] {
+  --season-surface-app:
+    radial-gradient(circle at top left, rgba(255, 214, 227, 0.82), transparent 36%),
+    radial-gradient(circle at top right, rgba(179, 227, 255, 0.78), transparent 32%),
+    linear-gradient(180deg, #fff8fb 0%, #fffdf8 100%);
+  --season-surface-card: #fffdfb;
+  --season-surface-panel: #fff8fb;
+  --season-surface-info: #eef7ff;
+  --season-surface-success: #eefbf9;
+  --season-accent: #ff7fa8;
+  --season-accent-strong: #ff5d92;
+  --season-control-active-bg: #fff0f6;
+  --season-nav-pill-active: #ffe6f0;
+  --season-progress-fill: #ff6f9f;
+  --season-text-primary: #3e2833;
+  --season-text-muted: #7b6470;
+  --season-line-soft: rgba(255, 255, 255, 0.76);
+  --season-shadow-button: 0 18px 42px rgba(255, 143, 183, 0.18);
+  --season-shadow-sheet: 0 -18px 34px rgba(66, 40, 60, 0.16);
+}

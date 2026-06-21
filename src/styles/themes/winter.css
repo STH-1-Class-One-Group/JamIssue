@@ -1,0 +1,20 @@
+:root[data-season-theme='winter'] {
+  --season-surface-app:
+    radial-gradient(circle at top left, rgba(207, 234, 249, 0.86), transparent 36%),
+    radial-gradient(circle at top right, rgba(223, 218, 247, 0.78), transparent 34%),
+    linear-gradient(180deg, #f2fbff 0%, #f8f6ff 100%);
+  --season-surface-card: #fcfeff;
+  --season-surface-panel: #f2f9ff;
+  --season-surface-info: #eaf6ff;
+  --season-surface-success: #eef8ff;
+  --season-accent: #6ba8d1;
+  --season-accent-strong: #4387b6;
+  --season-control-active-bg: #e8f4ff;
+  --season-nav-pill-active: #d7ecfb;
+  --season-progress-fill: #5d9bc7;
+  --season-text-primary: #203444;
+  --season-text-muted: #60778a;
+  --season-line-soft: rgba(226, 243, 255, 0.9);
+  --season-shadow-button: 0 18px 42px rgba(107, 168, 209, 0.16);
+  --season-shadow-sheet: 0 -18px 34px rgba(32, 52, 68, 0.14);
+}

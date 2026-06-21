@@ -1,3 +1,9 @@
+@import './styles/semantic.css';
+@import './styles/themes/spring.css';
+@import './styles/themes/summer.css';
+@import './styles/themes/autumn.css';
+@import './styles/themes/winter.css';
+
 :root {
   --app-height: 100dvh;
   --app-width: 100vw;
@@ -14,22 +20,20 @@
   --map-sheet-handle-reserved-height: 22px;
   --map-sheet-full-control-top: calc(var(--shell-capsule-height) + 72px);
   --app-surface-background:
-    radial-gradient(circle at top left, rgba(255, 214, 227, 0.82), transparent 36%),
-    radial-gradient(circle at top right, rgba(179, 227, 255, 0.78), transparent 32%),
-    linear-gradient(180deg, #fff8fb 0%, #fffdf8 100%);
+    var(--surface-app);
   font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', 'Segoe UI', sans-serif;
-  color: #3e2833;
+  color: var(--text-primary);
   background: var(--app-surface-background);
-  --pink: #ff7fa8;
-  --pink-deep: #ff5d92;
-  --pink-soft: #fff0f6;
-  --blue-soft: #eef7ff;
-  --mint-soft: #eefbf9;
-  --ink: #3e2833;
-  --muted: #7b6470;
-  --line: rgba(255, 255, 255, 0.76);
-  --shadow: 0 18px 42px rgba(255, 143, 183, 0.18);
-  --sheet-shadow: 0 -18px 34px rgba(66, 40, 60, 0.16);
+  --pink: var(--color-accent);
+  --pink-deep: var(--color-accent-strong);
+  --pink-soft: var(--control-active-bg);
+  --blue-soft: var(--surface-info);
+  --mint-soft: var(--surface-success);
+  --ink: var(--text-primary);
+  --muted: var(--text-muted);
+  --line: var(--line-soft);
+  --shadow: var(--shadow-button);
+  --sheet-shadow: var(--shadow-sheet);
   --app-shell-safe-y: 0px;
   --app-shell-safe-x: 0px;
   --app-header-height: 56px;

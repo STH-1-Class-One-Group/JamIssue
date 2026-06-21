@@ -1,0 +1,17 @@
+:root {
+  --surface-app: var(--season-surface-app);
+  --surface-card: var(--season-surface-card);
+  --surface-panel: var(--season-surface-panel);
+  --surface-info: var(--season-surface-info);
+  --surface-success: var(--season-surface-success);
+  --color-accent: var(--season-accent);
+  --color-accent-strong: var(--season-accent-strong);
+  --control-active-bg: var(--season-control-active-bg);
+  --nav-pill-active: var(--season-nav-pill-active);
+  --progress-fill: var(--season-progress-fill);
+  --text-primary: var(--season-text-primary);
+  --text-muted: var(--season-text-muted);
+  --line-soft: var(--season-line-soft);
+  --shadow-button: var(--season-shadow-button);
+  --shadow-sheet: var(--season-shadow-sheet);
+}
