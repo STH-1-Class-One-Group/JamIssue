@@ -98,17 +98,32 @@ function translateItemLabel(label: string) {
 }
 
 function getVisibleSections(sections: TourismDetailSection[]) {
-  return sections
-    .map((section) => ({
-      title: translateSectionTitle(section.title),
-      items: section.items
-        .map((item) => ({
+  // Use a single nested for...of loop instead of .map().filter() chains
+  // to avoid creating multiple intermediate arrays.
+  const visibleSections: { title: string; items: { label: string; value: string }[] }[] = [];
+
+  for (const section of sections) {
+    const visibleItems: { label: string; value: string }[] = [];
+
+    for (const item of section.items) {
+      const normalizedValue = normalizeDetailValue(item.value);
+      if (normalizedValue.length > 0) {
+        visibleItems.push({
           label: translateItemLabel(item.label),
-          value: normalizeDetailValue(item.value),
-        }))
-        .filter((item) => item.value.length > 0),
-    }))
-    .filter((section) => section.items.length > 0);
+          value: normalizedValue,
+        });
+      }
+    }
+
+    if (visibleItems.length > 0) {
+      visibleSections.push({
+        title: translateSectionTitle(section.title),
+        items: visibleItems,
+      });
+    }
+  }
+
+  return visibleSections;
 }
 
 function renderMultilineValue(value: string) {
