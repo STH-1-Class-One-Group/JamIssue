@@ -138,6 +138,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/635
   - Merge commit: db621b3670e217e44468396b3ffc5c48ed8d2b14
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-04.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/625
+  - Title: map-display-preferences
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/625
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/637
+  - Merge commit: 55188e07427cc12fabd3e0c7c047d5efba214774
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-05.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
