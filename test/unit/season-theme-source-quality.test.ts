@@ -182,6 +182,8 @@ describe('season theme source quality baseline', () => {
       'background: rgba(255, 240, 246, 0.96) !important;',
       'background: rgba(255, 249, 252, 0.98) !important;',
       'color: #ff4f93 !important;',
+      'border-color: rgba(255, 93, 146, 0.4) !important;',
+      'background: #fff7fa !important;',
       'background: linear-gradient(135deg, #ff7fab, #ff5d92) !important;',
       'radial-gradient(circle at top left, rgba(255, 236, 244, 0.94), transparent 48%)',
       'border: 1px solid rgba(255, 127, 168, 0.22);',
