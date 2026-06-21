@@ -16,6 +16,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-018` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Profile avatar Web Front consumer contract, My Page summary avatar, feed/comment author avatar | child issue purpose branch | PR link, merge SHA, avatar contract tests, CI link |
 | `TSK-019` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme token hardening and raw color literal regression guard | child issue purpose branch | PR link, merge SHA, seasonal token tests, CI link |
+| `TSK-021` | [#620](https://github.com/STH-1-Class-One-Group/JamIssue/issues/620) | 앱 내비게이션, 마이페이지, 계정 설정, 앱 설정, 햄버거, 지도 표시 설정 책임 분리 | child issue별 목적형 브랜치 | PR 링크, merge SHA, responsibility matrix, CI 링크 |
 
 ## Core Rows
 
@@ -31,6 +32,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-018-00-PROFILE-AVATAR-FRONT-CONSUMPTION` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Web Front consumes Backend/Admin profile avatar contract for upload/delete, My Page, feed, and comment avatar rendering | profile avatar; my page; feed author; comment author; consumer API | backend provider implementation, Supabase Storage direct call, DB schema, OAuth flow |
 | `TSK-019-00-SEASON-THEME-TOKEN-HARDENING` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme tokenization, runtime season resolution, and hardcoded color regression guard | season theme; design token; color token; source quality; app chrome | tab/navigation feature changes, backend provider contract, DB schema, OAuth flow |
+| `TSK-021-00-NAVIGATION-SETTINGS-RESPONSIBILITY-SPLIT` | [#620](https://github.com/STH-1-Class-One-Group/JamIssue/issues/620) | 앱 내비게이션, 마이페이지 대시보드, 계정 설정, 앱 설정, 햄버거 메뉴, 지도 표시 설정의 책임 경계 분리 | navigation; settings; my page; account settings; app settings; hamburger; map preferences | TSK-020 activity view work, backend provider contract, DB schema, OAuth flow, unrelated UI redesign |
 
 ## TSK-019 Child Issues
 
@@ -42,6 +44,18 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | [#586](https://github.com/STH-1-Class-One-Group/JamIssue/issues/586) | `season-theme-component-migration` | completed | PR [#599](https://github.com/STH-1-Class-One-Group/JamIssue/pull/599) |
 | [#587](https://github.com/STH-1-Class-One-Group/JamIssue/issues/587) | `season-theme-verification-gate` | completed | PR [#601](https://github.com/STH-1-Class-One-Group/JamIssue/pull/601), [#602](https://github.com/STH-1-Class-One-Group/JamIssue/pull/602) |
 | [#588](https://github.com/STH-1-Class-One-Group/JamIssue/issues/588) | `season-theme-docs-traceability` | active | Wiki, QA matrix, release candidate, ledger evidence |
+
+## TSK-021 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#621](https://github.com/STH-1-Class-One-Group/JamIssue/issues/621) | `navigation-settings-responsibility-audit` | active | responsibility matrix, source-quality guard, PR evidence pending |
+| [#622](https://github.com/STH-1-Class-One-Group/JamIssue/issues/622) | `my-page-dashboard-hierarchy` | planned | My Page dashboard hierarchy evidence pending |
+| [#623](https://github.com/STH-1-Class-One-Group/JamIssue/issues/623) | `account-settings-boundary` | planned | account settings boundary evidence pending |
+| [#624](https://github.com/STH-1-Class-One-Group/JamIssue/issues/624) | `app-settings-panel` | planned | app settings panel evidence pending |
+| [#625](https://github.com/STH-1-Class-One-Group/JamIssue/issues/625) | `map-display-preferences` | planned | map preference behavior evidence pending |
+| [#626](https://github.com/STH-1-Class-One-Group/JamIssue/issues/626) | `hamburger-secondary-menu` | planned | secondary menu policy evidence pending |
+| [#627](https://github.com/STH-1-Class-One-Group/JamIssue/issues/627) | `settings-navigation-regression-tests` | planned | regression and traceability evidence pending |
 
 ## TSK-012 Child Issues
 

@@ -146,7 +146,7 @@ describe('season theme source quality baseline', () => {
       expect(existsSync(join(workspaceRoot, repoPath)), repoPath).toBe(true);
     }
 
-    const indexCss = readFileSync(join(workspaceRoot, 'src/index.css'), 'utf8');
+    const indexCss = readFileSync(join(workspaceRoot, 'src/index.css'), 'utf8').replace(/\r\n/g, '\n');
 
     expect(indexCss).toContain("@import './styles/semantic.css';");
     expect(indexCss).toContain('--pink: var(--color-accent);');
