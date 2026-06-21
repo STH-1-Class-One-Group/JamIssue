@@ -74,6 +74,7 @@ export default function App() {
           mapActions={mapStageProps.mapActions}
           mapData={mapStageProps.mapData}
           onNavigateBack={handleNavigateBack}
+          sessionUser={coordinator.sessionUser}
         />
       )}
     >

@@ -277,7 +277,7 @@ test('TSK-016-06 keeps notification panel above the capsule across target mobile
   }
 });
 
-test('TSK-016-04 opens and closes the SideDrawer shell from the AppCapsule menu action', async ({ page }) => {
+test('TSK-021-06 opens general secondary SideDrawer items without duplicating primary navigation', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
   await page.goto('/');
@@ -285,19 +285,26 @@ test('TSK-016-04 opens and closes the SideDrawer shell from the AppCapsule menu 
   const appCapsule = page.locator('[data-app-capsule="root"]');
   await expect(appCapsule).toBeVisible();
 
-  await appCapsule.getByRole('button', { name: '메뉴 열기' }).click();
+  await appCapsule.getByRole('button', { name: '보조 메뉴 열기' }).click();
 
-  const sideDrawer = page.getByRole('dialog', { name: '사이드 메뉴' });
+  const sideDrawer = page.getByRole('dialog', { name: '보조 메뉴' });
   await expect(sideDrawer).toBeVisible();
-  await expect(page.getByText('메뉴 준비 중')).toHaveCount(0);
-  await expect(page.locator('[data-side-drawer-slot="content"]')).toBeEmpty();
+  await expect(sideDrawer.getByRole('menuitem', { name: /이용 안내/ })).toBeVisible();
+  await expect(sideDrawer.getByLabel('이용 안내 상세')).toContainText('하단 탭은 주요 화면 이동');
+  await expect(sideDrawer.getByRole('menuitem', { name: /^지도$/ })).toHaveCount(0);
+  await expect(sideDrawer.getByRole('menuitem', { name: /^행사$/ })).toHaveCount(0);
+  await expect(sideDrawer.getByRole('menuitem', { name: /^피드$/ })).toHaveCount(0);
+  await expect(sideDrawer.getByRole('menuitem', { name: /^코스$/ })).toHaveCount(0);
+  await expect(sideDrawer.getByRole('menuitem', { name: /^마이$/ })).toHaveCount(0);
+  await expect(sideDrawer.getByRole('menuitem', { name: /^설정$/ })).toHaveCount(0);
+  await expect(sideDrawer.getByRole('menuitem', { name: /^로그아웃$/ })).toHaveCount(0);
 
   const drawerBox = await requireBoundingBox(sideDrawer);
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   expect(drawerBox.x).toBeGreaterThanOrEqual(phoneShellBox.x - 1);
   expect(drawerBox.x + drawerBox.width).toBeLessThan(phoneShellBox.x + phoneShellBox.width);
 
-  await page.getByRole('button', { name: '메뉴 닫기' }).last().click();
+  await page.getByRole('button', { name: '보조 메뉴 닫기' }).last().click();
   await expect(sideDrawer).toHaveCount(0);
 });
 
