@@ -11,7 +11,7 @@
 .place-drawer--peek,
 .place-drawer--half,
 .place-drawer--full {
-  box-shadow: 0 -20px 40px rgba(66, 40, 60, 0.2) !important;
+  box-shadow: var(--shadow-sheet) !important;
 }
 
 .place-drawer::after {
@@ -21,7 +21,7 @@
   right: 0;
   bottom: -72px;
   height: 72px;
-  background: rgba(255, 252, 249, 0.99);
+  background: var(--sheet-surface);
 }
 
 
@@ -1085,14 +1085,14 @@ body {
 
 /* 2026-03-21 interaction cleanup */
 :root {
-  --ui-control-bg: rgba(255, 255, 255, 0.94);
-  --ui-control-border: rgba(255, 127, 168, 0.22);
-  --ui-control-text: #5f4660;
-  --ui-control-active-bg: linear-gradient(180deg, #fff4f8, #ffe7ef);
-  --ui-control-active-border: rgba(255, 93, 146, 0.28);
-  --ui-pill-bg: rgba(255, 240, 246, 0.92);
-  --ui-pill-border: rgba(255, 127, 168, 0.18);
-  --ui-pill-text: #c84d7d;
+  --ui-control-bg: var(--control-bg);
+  --ui-control-border: var(--control-border);
+  --ui-control-text: var(--text-primary);
+  --ui-control-active-bg: var(--control-active-bg);
+  --ui-control-active-border: var(--control-active-border);
+  --ui-pill-bg: var(--control-active-bg);
+  --ui-pill-border: var(--control-border);
+  --ui-pill-text: var(--control-active-text);
 }
 
 .bottom-nav {
@@ -1239,21 +1239,21 @@ body {
 
 /* 2026-03-21 role-based visual hierarchy */
 :root {
-  --role-tab-bg: rgba(255, 255, 255, 0.96);
-  --role-tab-border: rgba(255, 127, 168, 0.24);
-  --role-tab-text: #4f3552;
-  --role-tab-active-bg: linear-gradient(180deg, #fff0f6, #ffdfe9);
-  --role-tab-active-border: rgba(255, 93, 146, 0.34);
-  --role-tab-active-text: #ff4f93;
+  --role-tab-bg: var(--nav-surface);
+  --role-tab-border: var(--control-border);
+  --role-tab-text: var(--text-primary);
+  --role-tab-active-bg: var(--nav-pill-active);
+  --role-tab-active-border: var(--control-active-border);
+  --role-tab-active-text: var(--color-accent-strong);
 
-  --role-tag-bg: rgba(255, 241, 246, 0.88);
-  --role-tag-border: rgba(255, 127, 168, 0.16);
-  --role-tag-text: #d84f86;
+  --role-tag-bg: var(--control-active-bg);
+  --role-tag-border: var(--control-border);
+  --role-tag-text: var(--control-active-text);
 
-  --role-button-bg: rgba(255, 255, 255, 0.98);
-  --role-button-border: rgba(255, 127, 168, 0.3);
-  --role-button-text: #5b3a57;
-  --role-button-shadow: 0 8px 18px rgba(255, 127, 168, 0.08);
+  --role-button-bg: var(--control-bg);
+  --role-button-border: var(--control-border-strong);
+  --role-button-text: var(--text-primary);
+  --role-button-shadow: var(--shadow-soft);
 }
 
 .chip,
@@ -1261,7 +1261,7 @@ body {
   background: var(--role-tab-bg) !important;
   border: 1px solid var(--role-tab-border) !important;
   color: var(--role-tab-text) !important;
-  box-shadow: 0 4px 12px rgba(255, 127, 168, 0.05) !important;
+  box-shadow: var(--shadow-soft) !important;
 }
 
 .chip.is-active,
@@ -1269,7 +1269,7 @@ body {
   background: var(--role-tab-active-bg) !important;
   border-color: var(--role-tab-active-border) !important;
   color: var(--role-tab-active-text) !important;
-  box-shadow: 0 10px 22px rgba(255, 127, 168, 0.16) !important;
+  box-shadow: var(--shadow-button) !important;
 }
 
 .counter-pill,
@@ -1411,15 +1411,15 @@ body {
   }
 }
 .provider-button.primary-button {
-  background: linear-gradient(180deg, #fff3f7, #ffe8f0) !important;
-  border: 1px solid rgba(255, 127, 168, 0.26) !important;
-  color: #b14978 !important;
-  box-shadow: 0 8px 20px rgba(255, 127, 168, 0.08) !important;
+  background: var(--control-active-bg) !important;
+  border: 1px solid var(--control-border) !important;
+  color: var(--control-active-text) !important;
+  box-shadow: var(--shadow-soft) !important;
 }
 
 .provider-button.primary-button:hover {
-  background: linear-gradient(180deg, #fff7fa, #ffeef4) !important;
-  border-color: rgba(255, 93, 146, 0.34) !important;
+  background: var(--surface-overlay-strong) !important;
+  border-color: var(--control-active-border) !important;
 }
 .review-card__top--stamp-log {
   justify-content: space-between !important;
@@ -1554,11 +1554,11 @@ body {
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
-  border: 1px solid rgba(255, 129, 168, 0.28) !important;
+  border: 1px solid var(--control-border) !important;
   border-radius: 999px !important;
-  background: rgba(255, 252, 249, 0.96) !important;
+  background: var(--control-bg) !important;
   color: var(--pink-deep) !important;
-  box-shadow: 0 8px 18px rgba(255, 127, 168, 0.12) !important;
+  box-shadow: var(--shadow-soft) !important;
 }
 
 .place-drawer__control-btn svg {
@@ -1582,7 +1582,7 @@ body {
   margin: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: rgba(255, 244, 248, 0.86) !important;
+  background: var(--control-active-bg) !important;
 }
 
 .map-bottom-sheet__media-image {
@@ -1720,9 +1720,9 @@ body {
   gap: 10px !important;
   padding: 12px !important;
   border-radius: 24px !important;
-  background: rgba(255, 253, 251, 0.98) !important;
-  border: 1px solid rgba(255, 217, 230, 0.36) !important;
-  box-shadow: 0 10px 26px rgba(94, 45, 67, 0.06) !important;
+  background: var(--surface-overlay-strong) !important;
+  border: 1px solid var(--control-border) !important;
+  box-shadow: var(--shadow-soft) !important;
 }
 
 .review-card--feed .review-card__top--feed {
@@ -1739,8 +1739,8 @@ body {
   height: 34px !important;
   place-items: center !important;
   border-radius: 999px !important;
-  background: linear-gradient(135deg, rgba(255, 231, 240, 0.96), rgba(255, 246, 251, 0.96)) !important;
-  border: 1px solid rgba(255, 180, 205, 0.36) !important;
+  background: var(--feed-avatar-bg) !important;
+  border: 1px solid var(--control-border) !important;
   color: var(--pink-deep) !important;
   font-size: 13px !important;
   font-weight: 900 !important;

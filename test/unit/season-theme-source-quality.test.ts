@@ -21,12 +21,16 @@ type ColorOwner = {
 
 const allowedRawColorOwners: Record<string, ColorOwner> = {
   'src/index.css': {
-    maxCount: 181,
-    reason: 'legacy app chrome and component CSS seasonal tokenization backlog for TSK-019-04',
+    maxCount: 124,
+    reason: 'remaining legacy app chrome CSS seasonal tokenization backlog after TSK-019-04 migration',
   },
   'src/styles/refinements.css': {
-    maxCount: 140,
-    reason: 'legacy refinement overrides to migrate behind seasonal semantic tokens',
+    maxCount: 100,
+    reason: 'remaining seasonal refinement overrides after TSK-019-04 semantic token migration',
+  },
+  'src/styles/semantic.css': {
+    maxCount: 24,
+    reason: 'component-facing semantic token aliases may compose seasonal palette values with color-mix',
   },
   'src/styles/themes/autumn.css': {
     maxCount: 17,
@@ -131,7 +135,7 @@ describe('season theme source quality baseline', () => {
     for (const repoPath of migrationBacklog) {
       const count = countRawColors(repoPath);
 
-      expect(count).toBeGreaterThan(100);
+      expect(count).toBeGreaterThanOrEqual(100);
       expect(allowedRawColorOwners[repoPath].reason).toContain('seasonal');
     }
   });
@@ -155,6 +159,21 @@ describe('season theme source quality baseline', () => {
     expect(indexCss).toContain('--pink: var(--color-accent);');
     expect(indexCss).toContain('--pink-deep: var(--color-accent-strong);');
     expect(indexCss).toContain('--app-surface-background:\n    var(--surface-app);');
+  });
+
+  it('routes migrated app chrome surfaces through semantic component tokens', () => {
+    const indexCss = readFileSync(join(workspaceRoot, 'src/index.css'), 'utf8');
+    const refinementsCss = readFileSync(join(workspaceRoot, 'src/styles/refinements.css'), 'utf8');
+    const semanticCss = readFileSync(join(workspaceRoot, 'src/styles/semantic.css'), 'utf8');
+
+    expect(semanticCss).toContain('--nav-surface:');
+    expect(semanticCss).toContain('--sheet-surface:');
+    expect(semanticCss).toContain('--feed-avatar-bg:');
+    expect(indexCss).toContain('background: var(--nav-surface);');
+    expect(indexCss).toContain('background: var(--sheet-surface);');
+    expect(indexCss).toContain('background: var(--page-panel-surface);');
+    expect(refinementsCss).toContain('--ui-control-bg: var(--control-bg);');
+    expect(refinementsCss).toContain('background: var(--feed-avatar-bg) !important;');
   });
 
   it('does not expose a production season switcher in source', () => {
