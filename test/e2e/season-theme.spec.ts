@@ -140,9 +140,11 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
     contentSnapshots.push(await readContentThemeSnapshot(page));
 
     await page.locator('.bottom-nav__item[data-tab-key="my"]').click();
-    await expect(page.locator('.account-action-row .secondary-button')).toHaveCount(2);
-    await page.locator('.account-action-row .secondary-button').first().hover();
+    await expect(page.locator('.account-action-row .secondary-button')).toHaveCount(1);
+    await page.locator('.account-action-row .secondary-button').hover();
     myPageActionSnapshots.push(await readMyPageActionThemeSnapshot(page));
+    await page.locator('.account-action-row .secondary-button').click();
+    await expect(page.locator('.settings-card').getByRole('button', { name: '로그아웃' })).toBeVisible();
 
     const settingsTrigger = page.locator('.global-settings-menu__trigger');
     await settingsTrigger.click();

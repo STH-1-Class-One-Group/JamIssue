@@ -153,10 +153,8 @@ export function MyPagePanel({
 
       <MyPageAccountSection
         sessionUser={sessionUser}
-        isLoggingOut={isLoggingOut}
         showSettings={showSettings}
         onToggleSettings={() => setShowSettings((current) => !current)}
-        onLogout={() => void onLogout()}
       />
 
       <MyPageSettingsSection
@@ -167,10 +165,12 @@ export function MyPagePanel({
         profileCompletedAt={sessionUser.profileCompletedAt}
         profileSaving={profileSaving}
         profileError={profileError}
+        isLoggingOut={isLoggingOut}
         onLinkProvider={onLinkProvider}
         onNicknameChange={setNickname}
         onAvatarChange={handleAvatarChange}
         onDeleteAvatar={onDeleteAvatar}
+        onLogout={() => void onLogout()}
         onClose={() => setShowSettings(false)}
         onSubmit={handleNicknameSubmit}
       />

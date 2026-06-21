@@ -2,18 +2,14 @@ import type { SessionUser } from '../../types/auth';
 
 type MyPageAccountSectionProps = {
   sessionUser: SessionUser;
-  isLoggingOut: boolean;
   showSettings: boolean;
   onToggleSettings: () => void;
-  onLogout: () => void;
 };
 
 export function MyPageAccountSection({
   sessionUser,
-  isLoggingOut,
   showSettings,
   onToggleSettings,
-  onLogout,
 }: MyPageAccountSectionProps) {
   return (
     <section className="sheet-card stack-gap account-action-card">
@@ -27,9 +23,6 @@ export function MyPageAccountSection({
         <button type="button" className={showSettings ? 'secondary-button is-complete' : 'secondary-button'} onClick={onToggleSettings}>
           <span aria-hidden="true">⚙</span>{' '}
           {showSettings ? '설정 닫기' : '설정 열기'}
-        </button>
-        <button type="button" className="secondary-button" onClick={onLogout} disabled={isLoggingOut}>
-          {isLoggingOut ? '정리 중' : '로그아웃'}
         </button>
       </div>
       {!sessionUser.profileCompletedAt && (
