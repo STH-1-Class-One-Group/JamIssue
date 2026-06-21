@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
-import { GlobalSettingsMenu, type GlobalSettingsMenuProps } from '../GlobalSettingsMenu';
+import { AppSettingsPanel, type AppSettingsPanelProps } from '../app-settings/AppSettingsPanel';
 
 export interface AppCapsuleProps {
   ariaLabel?: string;
   canNavigateBack: boolean;
   center?: ReactNode;
-  globalUtility: GlobalSettingsMenuProps;
+  globalUtility: AppSettingsPanelProps;
   menuOpen?: boolean;
   onNavigateBack: () => void;
   onOpenMenu?: () => void;
@@ -63,7 +63,7 @@ export function AppCapsule({
         >
           <BackIcon />
         </button>
-        <GlobalSettingsMenu {...globalUtility} notificationPanelMode="floating" />
+        <AppSettingsPanel {...globalUtility} notificationPanelMode="floating" />
       </div>
     </nav>
   );

@@ -4,13 +4,13 @@ import { bottomNavItems } from './BottomNav';
 import type { AppMapStageViewProps } from './AppMapStageView';
 import { AppCapsule } from './app-shell/AppCapsule';
 import { SideDrawer } from './app-shell/SideDrawer';
-import type { GlobalSettingsMenuProps } from './GlobalSettingsMenu';
+import type { AppSettingsPanelProps } from './app-settings/AppSettingsPanel';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
 
 interface AppTopNavigationProps {
   activeTab: Tab;
   canNavigateBack: boolean;
-  globalUtility: GlobalSettingsMenuProps;
+  globalUtility: AppSettingsPanelProps;
   mapActions: AppMapStageViewProps['mapActions'];
   mapData: AppMapStageViewProps['mapData'];
   onNavigateBack: () => void;
