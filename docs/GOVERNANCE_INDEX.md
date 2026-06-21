@@ -15,6 +15,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-017` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | 피드 탭 인스타형 레이아웃 개선 | child issue별 목적형 브랜치 | PR 링크, merge SHA, feed layout QA, CI 링크 |
 
 | `TSK-018` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Profile avatar Web Front consumer contract, My Page summary avatar, feed/comment author avatar | child issue purpose branch | PR link, merge SHA, avatar contract tests, CI link |
+| `TSK-019` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme token hardening and raw color literal regression guard | child issue purpose branch | PR link, merge SHA, seasonal token tests, CI link |
 
 ## Core Rows
 
@@ -29,6 +30,18 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-017-00-FEED-INSTAGRAM-LAYOUT` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | Feed tab Instagram-like layout polish while preserving JamIssue tone and existing feed behavior | feed; review card; instagram layout; uiux | backend provider contract, DB schema, OAuth flow, KTO map work |
 
 | `TSK-018-00-PROFILE-AVATAR-FRONT-CONSUMPTION` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Web Front consumes Backend/Admin profile avatar contract for upload/delete, My Page, feed, and comment avatar rendering | profile avatar; my page; feed author; comment author; consumer API | backend provider implementation, Supabase Storage direct call, DB schema, OAuth flow |
+| `TSK-019-00-SEASON-THEME-TOKEN-HARDENING` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme tokenization, runtime season resolution, and hardcoded color regression guard | season theme; design token; color token; source quality; app chrome | tab/navigation feature changes, backend provider contract, DB schema, OAuth flow |
+
+## TSK-019 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#583](https://github.com/STH-1-Class-One-Group/JamIssue/issues/583) | `season-theme-audit-baseline` | active | hardcoded color inventory and source-quality baseline |
+| [#584](https://github.com/STH-1-Class-One-Group/JamIssue/issues/584) | `season-theme-token-boundary` | planned | semantic token and seasonal theme CSS boundary |
+| [#585](https://github.com/STH-1-Class-One-Group/JamIssue/issues/585) | `season-theme-runtime-application` | planned | SeasonTheme resolver and root data attribute |
+| [#586](https://github.com/STH-1-Class-One-Group/JamIssue/issues/586) | `season-theme-component-migration` | planned | app chrome/feed component semantic token consumption |
+| [#587](https://github.com/STH-1-Class-One-Group/JamIssue/issues/587) | `season-theme-verification-gate` | planned | source-quality and 4-season E2E gate |
+| [#588](https://github.com/STH-1-Class-One-Group/JamIssue/issues/588) | `season-theme-docs-traceability` | planned | Wiki, QA matrix, release candidate, ledger evidence |
 
 ## TSK-012 Child Issues
 
