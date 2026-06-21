@@ -117,6 +117,7 @@ export function GlobalSettingsMenu({
         }}
         aria-label="설정 열기"
         title="설정 열기"
+        aria-expanded={isMenuOpen}
       >
         <GearIcon />
         {unreadCount > 0 && <span className="notification-bell__dot" aria-hidden="true" />}
