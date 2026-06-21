@@ -51,8 +51,8 @@
   --phone-shell-desktop-gap: 48px;
   --phone-shell-desktop-padding: 24px;
   --phone-shell-desktop-radius: 36px;
-  --phone-shell-desktop-border: rgba(255, 210, 226, 0.72);
-  --phone-shell-desktop-shadow: 0 24px 80px rgba(95, 54, 74, 0.2);
+  --phone-shell-desktop-border: var(--control-border);
+  --phone-shell-desktop-shadow: var(--shadow-frame);
   --layer-app-header: 40;
   --z-map-sheet: 110;
   --z-speed-dial: 118;
@@ -76,9 +76,9 @@
   --utility-panel-viewport-gap: 40px;
   --utility-panel-padding: 14px;
   --utility-panel-radius: 24px;
-  --utility-panel-border: 1px solid rgba(255, 197, 217, 0.42);
-  --utility-panel-background: rgba(255, 252, 249, 0.98);
-  --utility-panel-shadow: 0 20px 42px rgba(66, 40, 60, 0.18);
+  --utility-panel-border: 1px solid var(--control-border);
+  --utility-panel-background: var(--surface-overlay-strong);
+  --utility-panel-shadow: var(--shadow-panel);
   --utility-panel-blur: 18px;
   --notification-panel-top: 156px;
   --notification-panel-width: 332px;
@@ -109,7 +109,7 @@ body {
   overflow-x: hidden;
   overflow-y: hidden;
   overscroll-behavior: none;
-  background-color: #fff8fb;
+  background-color: var(--surface-app);
 }
 
 body {
@@ -167,7 +167,7 @@ textarea {
   max-height: none;
   border-radius: var(--phone-shell-radius);
   overflow: hidden;
-  background: rgba(255, 252, 249, 0.9);
+  background: var(--surface-glass);
   border: 0;
   box-shadow: none;
 }
@@ -236,8 +236,8 @@ textarea {
   justify-content: space-between;
   gap: var(--app-header-gap);
   padding: 0 var(--app-shell-safe-x);
-  background: rgba(255, 252, 249, 0.96);
-  border-bottom: 1px solid rgba(255, 197, 217, 0.28);
+  background: var(--surface-glass-strong);
+  border-bottom: 1px solid var(--control-border);
   backdrop-filter: blur(14px);
 }
 
@@ -334,8 +334,8 @@ textarea {
   display: flex;
   align-items: center;
   padding: 0 var(--app-shell-safe-x);
-  background: rgba(255, 252, 249, 0.96);
-  border-bottom: 1px solid rgba(255, 197, 217, 0.22);
+  background: var(--surface-glass-strong);
+  border-bottom: 1px solid var(--control-border);
   backdrop-filter: blur(14px);
 }
 
@@ -384,15 +384,15 @@ textarea {
   flex: 0 0 auto;
   align-self: center;
   padding: 7px 10px;
-  border: 1px solid rgba(255, 111, 163, 0.22);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  color: var(--color-pink-strong);
+  background: var(--control-bg);
+  color: var(--control-active-text);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  box-shadow: 0 8px 18px rgba(255, 111, 163, 0.12);
+  box-shadow: var(--shadow-soft);
 }
 
 .tourism-load-status.is-error {
@@ -403,8 +403,8 @@ textarea {
   overflow: hidden;
   margin: 0 0 14px;
   border-radius: 22px;
-  border: 1px solid rgba(255, 197, 217, 0.42);
-  background: rgba(255, 240, 246, 0.72);
+  border: 1px solid var(--control-border);
+  background: var(--image-placeholder-bg);
 }
 
 .tourism-info-sheet__media img {
@@ -702,9 +702,9 @@ textarea {
   width: 100%;
   min-height: 48px;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 127, 168, 0.22);
+  border: 1px solid var(--control-border);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--control-bg);
   color: var(--ink);
   text-decoration: none;
 }
@@ -719,8 +719,8 @@ textarea {
 }
 
 .settings-card__social-action:hover {
-  border-color: rgba(255, 89, 146, 0.58);
-  background: rgba(255, 248, 251, 0.96);
+  border-color: var(--control-hover-border);
+  background: var(--control-hover-bg);
 }
 
 .settings-card__social-provider {
@@ -741,9 +741,9 @@ textarea {
 
 .settings-card__social-status {
   padding: 5px 9px;
-  border: 1px solid rgba(255, 89, 146, 0.32);
+  border: 1px solid var(--control-active-border);
   border-radius: 999px;
-  background: rgba(255, 240, 246, 0.94);
+  background: var(--control-active-bg);
   font-size: 12px;
 }
 
@@ -751,9 +751,9 @@ textarea {
   display: grid;
   gap: 14px;
   padding: 14px;
-  border: 1px solid rgba(255, 127, 168, 0.18);
+  border: 1px solid var(--control-border);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-glass);
 }
 
 .settings-card__avatar-preview {
@@ -793,16 +793,14 @@ textarea {
   position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(255, 248, 251, 0.94), rgba(255, 252, 248, 0.9));
+  background: var(--map-stage-gradient);
 }
 
 .map-stage__gradient {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255, 248, 251, 0.74) 0%, rgba(255, 248, 251, 0.08) 26%, rgba(255, 248, 251, 0) 46%),
-    linear-gradient(180deg, rgba(255, 248, 251, 0) 62%, rgba(255, 248, 251, 0.24) 100%);
+  background: var(--map-stage-vignette);
 }
 
 .map-stage__header {
@@ -820,10 +818,10 @@ textarea {
   max-width: 196px;
   padding: 10px 12px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  background: rgba(255, 252, 249, 0.84);
+  border: 1px solid var(--control-border);
+  background: var(--surface-glass);
   backdrop-filter: blur(10px);
-  box-shadow: 0 10px 24px rgba(255, 143, 183, 0.12);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-stage__headline {
@@ -842,9 +840,9 @@ textarea {
   z-index: 22;
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--surface-glass-strong);
   border: 1px solid var(--line);
-  box-shadow: 0 12px 28px rgba(255, 143, 183, 0.12);
+  box-shadow: var(--shadow-soft);
   color: var(--ink);
   font-size: 13px;
   font-weight: 600;
@@ -859,7 +857,7 @@ textarea {
 }
 
 .floating-status--error {
-  background: rgba(255, 240, 244, 0.94);
+  background: var(--surface-danger);
   color: #9a294f;
 }
 
@@ -879,22 +877,22 @@ textarea {
   position: relative;
   height: 100%;
   padding-bottom: calc(var(--bottom-nav-offset) + 4px);
-  background: linear-gradient(180deg, rgba(255, 248, 251, 0.92), rgba(255, 253, 248, 0.96));
+  background: var(--page-stage-surface);
 }
 
 .global-status-banner {
   padding: 12px 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface-glass-strong);
   border: 1px solid var(--line);
-  box-shadow: 0 14px 28px rgba(255, 143, 183, 0.14);
+  box-shadow: var(--shadow-panel);
   color: var(--ink);
   font-size: 13px;
   font-weight: 600;
 }
 
 .global-status-banner--error {
-  background: rgba(255, 240, 244, 0.96);
+  background: var(--surface-danger);
   color: #9a294f;
 }
 
@@ -921,7 +919,7 @@ textarea {
   padding: 0 0 12px;
   border-radius: 30px 30px 0 0;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--sheet-surface);
   box-shadow: var(--sheet-shadow);
 }
 
@@ -984,7 +982,7 @@ textarea {
   place-items: center;
   overflow: hidden;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(255, 231, 240, 0.96), rgba(255, 246, 251, 0.96));
+  background: var(--feed-avatar-bg);
   color: var(--pink-deep);
   font-weight: 900;
   line-height: 1;
@@ -1039,8 +1037,8 @@ textarea {
 .map-status-card {
   border-radius: 26px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 14px 30px rgba(255, 143, 183, 0.12);
+  background: var(--sheet-surface);
+  box-shadow: var(--shadow-card-soft);
 }
 
 .sheet-card,
@@ -1140,7 +1138,7 @@ textarea {
 
 .primary-button {
   border: 0;
-  background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
   color: var(--text-on-accent);
   font-weight: 700;
 }
@@ -1214,9 +1212,9 @@ textarea {
   inset: 164px 12px calc(236px + env(safe-area-inset-bottom)) 12px;
   overflow: hidden;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  box-shadow: 0 16px 30px rgba(255, 143, 183, 0.12);
-  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--control-border);
+  box-shadow: var(--shadow-panel);
+  background: var(--surface-glass);
 }
 
 .map-status-card {
@@ -1247,9 +1245,9 @@ textarea {
   z-index: 12;
   padding: 10px 12px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 24px rgba(255, 143, 183, 0.12);
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--control-border);
+  box-shadow: var(--shadow-soft);
   font-size: 12px;
 }
 
@@ -1410,8 +1408,8 @@ textarea {
   width: 100%;
   padding: 14px 16px;
   border-radius: 18px;
-  border: 1px solid rgba(255, 127, 168, 0.2);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--control-border);
+  background: var(--surface-field);
   color: var(--ink);
 }
 
@@ -1471,8 +1469,8 @@ textarea {
 .review-card__visit-pill {
   padding: 5px 9px;
   border-radius: 999px;
-  background: rgba(255, 236, 243, 0.92);
-  color: var(--pink-deep);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
   font-size: 11px;
   font-weight: 700;
 }
@@ -1516,7 +1514,7 @@ textarea {
   padding: 6px 10px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 245, 249, 0.92);
+  background: var(--control-bg);
   color: var(--muted);
   font-size: 13px;
   font-weight: 600;
@@ -1542,8 +1540,8 @@ textarea {
   padding: 6px 12px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 236, 243, 0.92);
-  color: var(--pink-deep);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
@@ -1554,9 +1552,9 @@ textarea {
   gap: 10px;
   padding: 15px 16px 14px;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(255, 239, 246, 0.95);
-  box-shadow: 0 8px 18px rgba(255, 169, 198, 0.06);
+  background: var(--sheet-surface);
+  border: 1px solid var(--control-border);
+  box-shadow: var(--shadow-soft);
 }
 
 .festival-card-list {
@@ -1580,9 +1578,9 @@ textarea {
   align-items: center;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(255, 240, 246, 0.92);
-  border: 1px solid rgba(255, 164, 197, 0.28) !important;
-  color: var(--pink-deep);
+  background: var(--control-active-bg);
+  border: 1px solid var(--control-active-border) !important;
+  color: var(--control-active-text);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -1651,7 +1649,7 @@ textarea {
   border-radius: 999px;
   border: 0;
   background: transparent;
-  color: color-mix(in srgb, var(--pink-deep) 88%, #ffffff 12%);
+  color: var(--control-active-text);
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
@@ -1683,8 +1681,8 @@ textarea {
   padding: 9px 12px;
   border: 0;
   border-radius: 18px;
-  background: linear-gradient(135deg, var(--pink), var(--pink-deep));
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+  color: var(--text-on-accent);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -1731,7 +1729,7 @@ textarea {
   margin: 6px 0 0 0;
   padding: 0 0 0 8px;
   list-style: none;
-  border-left: 2px solid rgba(255, 127, 168, 0.18);
+  border-left: 2px solid var(--control-border);
 }
 
 .comment-thread__children .comment-thread__children {
@@ -1836,7 +1834,7 @@ textarea {
   gap: 6px;
   padding: 14px;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255, 240, 246, 0.96), rgba(233, 246, 255, 0.94));
+  background: var(--feed-avatar-bg);
 }
 
 .my-stats-grid strong {
@@ -2029,8 +2027,8 @@ textarea {
 }
 
 .counter-pill--festival {
-  color: #ff4f93;
-  background: rgba(255, 240, 246, 0.92);
+  color: var(--control-active-text);
+  background: var(--control-active-bg);
 }
 
 .map-stage__brand {
@@ -2115,7 +2113,7 @@ textarea {
 .map-surface-frame {
   inset: 186px 14px calc(332px + env(safe-area-inset-bottom)) 14px;
   border-radius: 30px;
-  box-shadow: 0 18px 36px rgba(255, 143, 183, 0.14);
+  box-shadow: var(--shadow-panel);
 }
 
 .map-stage__header {
@@ -2126,7 +2124,7 @@ textarea {
   max-width: 236px;
   padding: 12px 14px;
   border-radius: 24px;
-  background: rgba(255, 252, 249, 0.94);
+  background: var(--surface-glass-strong);
 }
 
 .map-filter-strip {
@@ -2205,8 +2203,8 @@ textarea {
   max-width: 164px;
   padding: 9px 11px;
   border-radius: 20px;
-  background: rgba(255, 252, 249, 0.95);
-  box-shadow: 0 10px 22px rgba(255, 143, 183, 0.12);
+  background: var(--surface-glass-strong);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-stage__headline {
@@ -2255,14 +2253,14 @@ textarea {
 .chip {
   padding: 10px 14px;
   white-space: nowrap;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--control-bg);
 }
 
 .map-surface-frame {
   inset: 138px 12px calc(298px + env(safe-area-inset-bottom)) 12px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 16px 28px rgba(255, 143, 183, 0.12);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-panel);
 }
 
 .map-floating-controls {
@@ -2273,7 +2271,7 @@ textarea {
 .map-locate-button {
   padding: 10px 13px;
   font-size: 13px;
-  box-shadow: 0 8px 18px rgba(255, 143, 183, 0.1);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-location-pill {
@@ -2385,8 +2383,8 @@ textarea {
   max-width: 164px;
   padding: 8px 10px;
   border-radius: 20px;
-  background: rgba(255,252,249,0.96);
-  box-shadow: 0 8px 18px rgba(255, 143, 183, 0.08);
+  background: var(--surface-glass-strong);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-stage__headline {
@@ -2421,7 +2419,7 @@ textarea {
 .map-surface-frame {
   inset: 132px 12px calc(350px + env(safe-area-inset-bottom)) 12px;
   border-radius: 28px;
-  box-shadow: 0 12px 20px rgba(255, 143, 183, 0.09);
+  box-shadow: var(--shadow-soft);
 }
 
 .map-floating-controls {
@@ -2640,7 +2638,7 @@ textarea {
   gap: 6px;
   padding: 9px 10px 8px;
   border-radius: 22px;
-  background: rgba(255, 252, 249, 0.97);
+  background: var(--surface-glass-strong);
 }
 
 .map-filter-strip .chip-row {
@@ -2722,8 +2720,8 @@ textarea {
   display: flex;
   flex-direction: column;
   border-radius: 24px 24px 0 0;
-  background: rgba(255, 252, 249, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.84);
+  background: var(--sheet-surface);
+  border: 1px solid var(--control-border);
   box-shadow: var(--sheet-shadow);
   transition: transform 220ms ease, opacity 220ms ease;
   overflow: hidden;
@@ -2827,7 +2825,7 @@ textarea {
 
 .feed-comment-sheet__divider {
   height: 1px;
-  background: rgba(255, 127, 168, 0.15);
+  background: var(--control-border);
   margin: 0 0 4px;
 }
 
@@ -2842,9 +2840,9 @@ textarea {
 .page-panel__loading-copy {
   padding: 14px 18px;
   border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.84);
-  background: rgba(255,255,255,0.82);
-  box-shadow: 0 12px 24px rgba(255, 143, 183, 0.1);
+  border: 1px solid var(--control-border);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-soft);
   color: var(--muted);
   font-size: 14px;
   font-weight: 600;
@@ -2921,7 +2919,7 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 16px;
-  background: rgba(255, 240, 246, 0.94);
+  background: var(--control-active-bg);
 }
 
 .app-splash__mark-image {
@@ -2968,7 +2966,7 @@ textarea {
   white-space: nowrap;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 252, 249, 0.9);
+  background: var(--surface-glass-strong);
   box-shadow: 0 2px 16px rgba(45, 42, 40, 0.1);
   backdrop-filter: blur(12px);
 }
@@ -3119,7 +3117,7 @@ textarea {
   width: 100%;
   padding: 9px 12px;
   border: 0;
-  border-top: 1px solid rgba(255, 197, 217, 0.24);
+  border-top: 1px solid var(--control-border);
   background: transparent;
   color: var(--ink);
   font-size: 12px;
@@ -3138,8 +3136,8 @@ textarea {
 }
 
 .map-floating-nav__dropdown-item.is-active {
-  color: var(--pink-deep);
-  background: rgba(255, 240, 246, 0.88);
+  color: var(--control-active-text);
+  background: var(--control-active-bg);
 }
 
 .map-floating-nav .tourism-toggle-switch {
@@ -3289,10 +3287,10 @@ textarea {
   left: 0;
   width: min(312px, calc(100% - 56px));
   overflow: hidden;
-  border: 1px solid rgba(255, 197, 217, 0.48);
+  border: 1px solid var(--control-border);
   border-radius: 0 28px 28px 0;
-  background: rgba(255, 252, 249, 0.98);
-  box-shadow: 18px 0 42px rgba(66, 40, 60, 0.18);
+  background: var(--surface-overlay-strong);
+  box-shadow: var(--shadow-panel);
   pointer-events: auto;
 }
 
@@ -3309,10 +3307,10 @@ textarea {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid rgba(255, 129, 168, 0.32);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--pink-deep);
+  background: var(--control-bg);
+  color: var(--control-active-text);
   font-size: 18px;
   font-weight: 800;
 }
@@ -3343,8 +3341,8 @@ textarea {
 .speed-dial-fab__action {
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(255, 127, 168, 0.3);
-  background: rgba(255, 252, 249, 0.96);
+  border: 1px solid var(--control-border);
+  background: var(--surface-overlay-strong);
   box-shadow: 0 14px 28px rgba(66, 40, 60, 0.14);
   color: var(--ink);
   font-weight: 800;
@@ -3356,7 +3354,7 @@ textarea {
   height: 48px;
   justify-content: center;
   border-radius: 999px;
-  color: var(--pink-deep);
+  color: var(--control-active-text);
   font-size: 24px;
   line-height: 1;
 }
@@ -3494,11 +3492,11 @@ textarea {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid rgba(255, 129, 168, 0.28);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
-  background: rgba(255, 252, 249, 0.96);
-  color: var(--pink-deep);
-  box-shadow: 0 8px 18px rgba(255, 127, 168, 0.12);
+  background: var(--control-bg);
+  color: var(--control-active-text);
+  box-shadow: var(--shadow-soft);
 }
 
 .place-drawer__control-btn svg {
@@ -3523,7 +3521,7 @@ textarea {
   margin: 0;
   border: 0;
   border-radius: 0;
-  background: rgba(255, 244, 248, 0.86);
+  background: var(--image-placeholder-bg);
 }
 
 .map-bottom-sheet__media-image {
@@ -3531,7 +3529,7 @@ textarea {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: contain;
-  background: rgba(255, 244, 248, 0.86);
+  background: var(--image-placeholder-bg);
 }
 
 .place-drawer__content {

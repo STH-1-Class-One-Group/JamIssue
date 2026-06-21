@@ -32,8 +32,29 @@ async function readThemeSnapshot(page: Parameters<typeof installApiFixtures>[0])
   });
 }
 
+async function readContentThemeSnapshot(page: Parameters<typeof installApiFixtures>[0]) {
+  return page.evaluate(() => {
+    const pageStage = document.querySelector<HTMLElement>('.page-stage');
+    const reviewCard = document.querySelector<HTMLElement>('.review-card');
+
+    if (!pageStage || !reviewCard) {
+      throw new Error('Expected seasonal content probe elements to be present.');
+    }
+
+    const pageStageStyle = getComputedStyle(pageStage);
+    const reviewCardStyle = getComputedStyle(reviewCard);
+
+    return {
+      pageStageBackground: pageStageStyle.backgroundImage || pageStageStyle.backgroundColor,
+      reviewCardBackground: reviewCardStyle.backgroundColor,
+      reviewCardBorderColor: reviewCardStyle.borderColor,
+    };
+  });
+}
+
 test('TSK-019-05 applies each forced season to semantic tokens without changing navigation structure', async ({ page }) => {
   const snapshots: Array<Awaited<ReturnType<typeof readThemeSnapshot>>> = [];
+  const contentSnapshots: Array<Awaited<ReturnType<typeof readContentThemeSnapshot>>> = [];
 
   for (const season of seasons) {
     await installApiFixtures(page, createE2EAppState({
@@ -57,6 +78,10 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
     await expect(page.locator('.map-floating-nav__filter-btn')).toBeVisible();
 
     snapshots.push(await readThemeSnapshot(page));
+
+    await page.locator('.bottom-nav__item[data-tab-key="feed"]').click();
+    await expect(page.locator('.review-card')).toHaveCount(1);
+    contentSnapshots.push(await readContentThemeSnapshot(page));
   }
 
   expect(new Set(snapshots.map((snapshot) => snapshot.dataSeasonTheme))).toEqual(new Set(seasons));
@@ -66,6 +91,7 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
   expect(new Set(snapshots.map((snapshot) => snapshot.surfaceApp)).size).toBe(seasons.length);
   expect(new Set(snapshots.map((snapshot) => snapshot.activePillBackground)).size).toBeGreaterThan(1);
   expect(new Set(snapshots.map((snapshot) => snapshot.filterButtonBackground)).size).toBeGreaterThan(1);
+  expect(new Set(contentSnapshots.map((snapshot) => snapshot.reviewCardBorderColor)).size).toBeGreaterThan(1);
 });
 
 test('TSK-019-05 keeps production-only season switcher controls out of the service UI', async ({ page }) => {

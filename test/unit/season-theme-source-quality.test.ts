@@ -21,15 +21,15 @@ type ColorOwner = {
 
 const allowedRawColorOwners: Record<string, ColorOwner> = {
   'src/index.css': {
-    maxCount: 122,
-    reason: 'remaining legacy app chrome CSS seasonal tokenization backlog after TSK-019-04 migration',
+    maxCount: 25,
+    reason: 'remaining non-app-chrome legacy colors after TSK-019-07 visible seasonal token cleanup',
   },
   'src/styles/refinements.css': {
-    maxCount: 99,
-    reason: 'remaining seasonal refinement overrides after TSK-019-04 semantic token migration',
+    maxCount: 45,
+    reason: 'remaining non-app-chrome refinement colors after TSK-019-07 visible seasonal token cleanup',
   },
   'src/styles/semantic.css': {
-    maxCount: 24,
+    maxCount: 37,
     reason: 'component-facing semantic token aliases may compose seasonal palette values with color-mix',
   },
   'src/styles/themes/autumn.css': {
@@ -127,17 +127,10 @@ describe('season theme source quality baseline', () => {
   });
 
   it('documents the current app chrome seasonal-theme migration backlog', () => {
-    const migrationBacklog = [
-      'src/index.css',
-      'src/styles/refinements.css',
-    ];
-
-    for (const repoPath of migrationBacklog) {
-      const count = countRawColors(repoPath);
-
-      expect(count).toBeGreaterThanOrEqual(90);
-      expect(allowedRawColorOwners[repoPath].reason).toContain('seasonal');
-    }
+    expect(countRawColors('src/index.css')).toBeLessThanOrEqual(25);
+    expect(countRawColors('src/styles/refinements.css')).toBeLessThanOrEqual(45);
+    expect(allowedRawColorOwners['src/index.css'].reason).toContain('visible seasonal token cleanup');
+    expect(allowedRawColorOwners['src/styles/refinements.css'].reason).toContain('visible seasonal token cleanup');
   });
 
   it('keeps the seasonal semantic token boundary in source', () => {
@@ -174,6 +167,36 @@ describe('season theme source quality baseline', () => {
     expect(indexCss).toContain('background: var(--page-panel-surface);');
     expect(refinementsCss).toContain('--ui-control-bg: var(--control-bg);');
     expect(refinementsCss).toContain('background: var(--feed-avatar-bg) !important;');
+  });
+
+  it('keeps visible app chrome and content surfaces off hardcoded pink values', () => {
+    const indexCss = readFileSync(join(workspaceRoot, 'src/index.css'), 'utf8');
+    const refinementsCss = readFileSync(join(workspaceRoot, 'src/styles/refinements.css'), 'utf8');
+    const visibleCss = `${indexCss}\n${refinementsCss}`;
+
+    const removedHardcodedSurfaces = [
+      'background-color: #fff8fb;',
+      'background: rgba(255, 252, 249, 0.9);',
+      'background: rgba(255, 252, 249, 0.96);',
+      'background: rgba(255, 252, 249, 0.98) !important;',
+      'background: rgba(255, 240, 246, 0.96) !important;',
+      'background: rgba(255, 249, 252, 0.98) !important;',
+      'color: #ff4f93 !important;',
+      'background: linear-gradient(135deg, #ff7fab, #ff5d92) !important;',
+      'radial-gradient(circle at top left, rgba(255, 236, 244, 0.94), transparent 48%)',
+      'border: 1px solid rgba(255, 127, 168, 0.22);',
+      'box-shadow: 0 14px 30px rgba(255, 143, 183, 0.12);',
+    ];
+
+    for (const snippet of removedHardcodedSurfaces) {
+      expect(visibleCss).not.toContain(snippet);
+    }
+
+    expect(indexCss).toContain('background: var(--page-stage-surface);');
+    expect(indexCss).toContain('background: var(--sheet-surface);');
+    expect(indexCss).toContain('background: var(--surface-glass-strong);');
+    expect(refinementsCss).toContain('background: var(--feed-card-text-surface) !important;');
+    expect(refinementsCss).toContain('color: var(--control-active-text) !important;');
   });
 
   it('does not expose a production season switcher in source', () => {
