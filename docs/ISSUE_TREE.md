@@ -144,6 +144,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/638
   - Merge commit: d2a0fde82579a44f633b915830e583e44c7f71b9
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-06.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-07: https://github.com/STH-1-Class-One-Group/JamIssue/issues/627
+  - Title: settings-navigation-regression-tests
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/627
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/640
+  - Merge commit: ec3ba4a5aa6aaf5b23ff20c67dc8336ba8d04e3d
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-07.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
