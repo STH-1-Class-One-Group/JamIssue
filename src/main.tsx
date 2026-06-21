@@ -1,7 +1,14 @@
-﻿import { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { RoadmapBannerPreview } from './components/RoadmapBannerPreview';
+import { getClientConfig } from './config';
+import {
+  applySeasonThemeToRoot,
+  isSeasonThemeOverrideAllowed,
+  readSeasonThemeOverride,
+  resolveSeasonTheme,
+} from './lib/seasonTheme';
 import { resolveViewportMetrics, type ViewportMetricsState } from './lib/viewportMetrics';
 import './index.css';
 import './styles/refinements.css';
@@ -33,6 +40,16 @@ function syncViewportMetrics() {
 }
 
 if (typeof window !== 'undefined') {
+  const clientConfig = getClientConfig();
+
+  applySeasonThemeToRoot(
+    document.documentElement,
+    resolveSeasonTheme(
+      new Date(),
+      readSeasonThemeOverride(window.location.search, clientConfig.seasonThemeOverride),
+      { allowOverride: isSeasonThemeOverrideAllowed(window.location.hostname) },
+    ),
+  );
   syncViewportMetrics();
   window.addEventListener('resize', syncViewportMetrics, { passive: true });
   window.addEventListener('orientationchange', syncViewportMetrics, { passive: true });
@@ -64,4 +81,3 @@ createRoot(rootElement).render(
     {resolveEntry()}
   </StrictMode>,
 );
-

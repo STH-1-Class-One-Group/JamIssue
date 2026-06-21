@@ -68,6 +68,7 @@ async function readPublicEnv() {
     naverMapClientId: mapKey,
     supabaseUrl: values.PUBLIC_SUPABASE_URL || values.APP_SUPABASE_URL || '',
     supabaseAnonKey: values.PUBLIC_SUPABASE_ANON_KEY || values.APP_SUPABASE_ANON_KEY || '',
+    seasonThemeOverride: values.PUBLIC_SEASON_THEME_OVERRIDE || '',
   };
 }
 

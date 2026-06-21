@@ -4,6 +4,7 @@ export interface ClientConfig {
   naverMapClientId: string;
   supabaseUrl: string;
   supabaseAnonKey: string;
+  seasonThemeOverride: string;
 }
 
 declare global {
@@ -18,11 +19,13 @@ export function getClientConfig(): ClientConfig {
   const naverMapClientId = browserConfig?.naverMapClientId?.trim() || '';
   const supabaseUrl = browserConfig?.supabaseUrl?.trim() || '';
   const supabaseAnonKey = browserConfig?.supabaseAnonKey?.trim() || '';
+  const seasonThemeOverride = browserConfig?.seasonThemeOverride?.trim() || '';
 
   return {
     apiBaseUrl,
     naverMapClientId,
     supabaseUrl,
     supabaseAnonKey,
+    seasonThemeOverride,
   };
 }
