@@ -126,6 +126,12 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/630
   - Merge commit: 93ffeb3d2d3ae8a907e4e007a20d0726b05abeda
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-02.json`, `docs/traceability/task-ledger.jsonl`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/623
+  - Title: account-settings-boundary
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/623
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/632
+  - Merge commit: 6d4f5541f838c2e1e4bfb449f38caf10c37a747c
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-03.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
