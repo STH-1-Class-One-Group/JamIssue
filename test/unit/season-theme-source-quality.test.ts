@@ -21,12 +21,28 @@ type ColorOwner = {
 
 const allowedRawColorOwners: Record<string, ColorOwner> = {
   'src/index.css': {
-    maxCount: 195,
-    reason: 'legacy app chrome and component CSS seasonal tokenization backlog for TSK-019-02~04',
+    maxCount: 181,
+    reason: 'legacy app chrome and component CSS seasonal tokenization backlog for TSK-019-04',
   },
   'src/styles/refinements.css': {
     maxCount: 140,
     reason: 'legacy refinement overrides to migrate behind seasonal semantic tokens',
+  },
+  'src/styles/themes/autumn.css': {
+    maxCount: 17,
+    reason: 'seasonal palette token file allowed to own autumn raw color values',
+  },
+  'src/styles/themes/spring.css': {
+    maxCount: 17,
+    reason: 'seasonal palette token file allowed to own spring raw color values',
+  },
+  'src/styles/themes/summer.css': {
+    maxCount: 17,
+    reason: 'seasonal palette token file allowed to own summer raw color values',
+  },
+  'src/styles/themes/winter.css': {
+    maxCount: 17,
+    reason: 'seasonal palette token file allowed to own winter raw color values',
   },
   'src/lib/categories.ts': {
     maxCount: 8,
@@ -118,6 +134,27 @@ describe('season theme source quality baseline', () => {
       expect(count).toBeGreaterThan(100);
       expect(allowedRawColorOwners[repoPath].reason).toContain('seasonal');
     }
+  });
+
+  it('keeps the seasonal semantic token boundary in source', () => {
+    const expectedTokenFiles = [
+      'src/styles/semantic.css',
+      'src/styles/themes/autumn.css',
+      'src/styles/themes/spring.css',
+      'src/styles/themes/summer.css',
+      'src/styles/themes/winter.css',
+    ];
+
+    for (const repoPath of expectedTokenFiles) {
+      expect(existsSync(join(workspaceRoot, repoPath)), repoPath).toBe(true);
+    }
+
+    const indexCss = readFileSync(join(workspaceRoot, 'src/index.css'), 'utf8');
+
+    expect(indexCss).toContain("@import './styles/semantic.css';");
+    expect(indexCss).toContain('--pink: var(--color-accent);');
+    expect(indexCss).toContain('--pink-deep: var(--color-accent-strong);');
+    expect(indexCss).toContain('--app-surface-background:\n    var(--surface-app);');
   });
 
   it('does not expose a production season switcher in source', () => {

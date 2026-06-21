@@ -1,0 +1,20 @@
+:root[data-season-theme='summer'] {
+  --season-surface-app:
+    radial-gradient(circle at top left, rgba(169, 237, 239, 0.82), transparent 36%),
+    radial-gradient(circle at top right, rgba(210, 244, 218, 0.76), transparent 34%),
+    linear-gradient(180deg, #efffff 0%, #f7fff8 100%);
+  --season-surface-card: #fbfffd;
+  --season-surface-panel: #f0fffd;
+  --season-surface-info: #e8fbff;
+  --season-surface-success: #e9fff2;
+  --season-accent: #17b8c5;
+  --season-accent-strong: #0796a6;
+  --season-control-active-bg: #dff9fb;
+  --season-nav-pill-active: #c9f4f7;
+  --season-progress-fill: #09aebc;
+  --season-text-primary: #193943;
+  --season-text-muted: #5c7580;
+  --season-line-soft: rgba(224, 251, 252, 0.86);
+  --season-shadow-button: 0 18px 42px rgba(23, 184, 197, 0.16);
+  --season-shadow-sheet: 0 -18px 34px rgba(25, 57, 67, 0.14);
+}
