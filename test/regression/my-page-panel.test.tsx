@@ -61,6 +61,20 @@ function createPanelProps(activeTab: MyPageTabKey) {
 }
 
 describe('MyPagePanel regression', () => {
+  it('keeps activity dashboard content before account management controls', () => {
+    const { container } = render(<MyPagePanel {...createPanelProps('stamps')} />);
+
+    const stats = container.querySelector('.my-stats-grid');
+    const tabs = container.querySelector('.my-page-primary-tabs');
+    const account = container.querySelector('.account-action-card');
+
+    expect(stats).not.toBeNull();
+    expect(tabs).not.toBeNull();
+    expect(account).not.toBeNull();
+    expect(stats?.compareDocumentPosition(account as Element)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(tabs?.compareDocumentPosition(account as Element)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
   it('renders the extracted tab sections without losing their representative content', () => {
     const { rerender } = render(<MyPagePanel {...createPanelProps('stamps')} />);
     expect(screen.getByText('STAMP LOG')).toBeInTheDocument();

@@ -109,30 +109,6 @@ export function MyPagePanel({
 
       {!myPage && myPageError && <MyPageLoadError myPageError={myPageError} onRetry={onRetry} />}
 
-      <MyPageAccountSection
-        sessionUser={sessionUser}
-        isLoggingOut={isLoggingOut}
-        showSettings={showSettings}
-        onToggleSettings={() => setShowSettings((current) => !current)}
-        onLogout={() => void onLogout()}
-      />
-
-      <MyPageSettingsSection
-        sessionUser={sessionUser}
-        providers={providers}
-        nickname={nickname}
-        showSettings={showSettings}
-        profileCompletedAt={sessionUser.profileCompletedAt}
-        profileSaving={profileSaving}
-        profileError={profileError}
-        onLinkProvider={onLinkProvider}
-        onNicknameChange={setNickname}
-        onAvatarChange={handleAvatarChange}
-        onDeleteAvatar={onDeleteAvatar}
-        onClose={() => setShowSettings(false)}
-        onSubmit={handleNicknameSubmit}
-      />
-
       {myPage && (
         <>
           <MyPageOverviewSection
@@ -174,6 +150,30 @@ export function MyPagePanel({
           />
         </>
       )}
+
+      <MyPageAccountSection
+        sessionUser={sessionUser}
+        isLoggingOut={isLoggingOut}
+        showSettings={showSettings}
+        onToggleSettings={() => setShowSettings((current) => !current)}
+        onLogout={() => void onLogout()}
+      />
+
+      <MyPageSettingsSection
+        sessionUser={sessionUser}
+        providers={providers}
+        nickname={nickname}
+        showSettings={showSettings}
+        profileCompletedAt={sessionUser.profileCompletedAt}
+        profileSaving={profileSaving}
+        profileError={profileError}
+        onLinkProvider={onLinkProvider}
+        onNicknameChange={setNickname}
+        onAvatarChange={handleAvatarChange}
+        onDeleteAvatar={onDeleteAvatar}
+        onClose={() => setShowSettings(false)}
+        onSubmit={handleNicknameSubmit}
+      />
     </section>
   );
 }
