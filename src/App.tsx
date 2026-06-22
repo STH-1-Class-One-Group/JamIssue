@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
-import { AppTopNavigation } from './components/AppTopNavigation';
-import { AppShell } from './components/app-shell/AppShell';
+import { MapFloatingNav } from './components/map-stage/MapFloatingNav';
+import { AppChrome, AppShell } from './components/app-shell';
 import {
   useAppRouteState,
   getInitialMapViewport,
@@ -53,6 +53,22 @@ export default function App() {
     mapStageProps,
     pageStageProps,
   } = useAppStageProps(coordinator);
+  const appChromeCenter = activeTab === 'map' ? (
+    <MapFloatingNav
+      activeCategory={mapStageProps.mapData.activeCategory}
+      activeTourismDisplayGroup={mapStageProps.mapData.activeTourismDisplayGroup}
+      showTourismInfo={mapStageProps.mapData.showTourismInfo}
+      tourismFacets={mapStageProps.mapData.tourismFacets}
+      tourismPlaces={mapStageProps.mapData.tourismPlaces}
+      tourismSourceReady={mapStageProps.mapData.tourismSourceReady}
+      tourismLoading={mapStageProps.mapData.tourismLoading}
+      tourismError={mapStageProps.mapData.tourismError}
+      onSelectCategory={mapStageProps.mapActions.setActiveCategory}
+      onSelectTourismDisplayGroup={mapStageProps.mapActions.setActiveTourismDisplayGroup}
+      onToggleTourismInfo={mapStageProps.mapActions.onToggleTourismInfo}
+    />
+  ) : undefined;
+
   return (
     <AppShell
       activeTab={activeTab}
@@ -68,12 +84,11 @@ export default function App() {
       onNavigateBack={handleNavigateBack}
       showEntrySplash
       topNavigation={(
-        <AppTopNavigation
+        <AppChrome
           activeTab={activeTab}
           canNavigateBack={canNavigateBack}
+          center={appChromeCenter}
           globalUtility={globalUtility}
-          mapActions={mapStageProps.mapActions}
-          mapData={mapStageProps.mapData}
           notificationUtility={notificationUtility}
           onNavigateBack={handleNavigateBack}
           sessionUser={coordinator.sessionUser}
