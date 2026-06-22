@@ -245,6 +245,9 @@ test('TSK-021 exposes map display preference without breaking KTO toggle flow', 
   await expect(curatedWithTourismSwitch).toBeChecked();
   await page.locator('[data-app-setting="show-curated-with-tourism"]').click();
   await expect(curatedWithTourismSwitch).not.toBeChecked();
+  const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
+  await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
+  await expect(settingsDrawer).toHaveCount(0);
 
   await page.locator('[data-tourism-toggle="map"]').click();
 

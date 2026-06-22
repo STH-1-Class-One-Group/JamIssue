@@ -1,42 +1,35 @@
 import type { SessionUser } from '../types/auth';
 import { SideDrawer } from './app-shell/SideDrawer';
 import { resolveSecondaryMenuItems } from './app-shell/secondaryMenu';
-import { NotificationDrawer, type NotificationDrawerContentProps } from './notifications/NotificationDrawer';
+import { NotificationDrawerContent, type NotificationDrawerContentProps } from './notifications/NotificationDrawerContent';
 
 interface AppTopNavigationDrawersProps {
-  isNotificationDrawerOpen: boolean;
   isSideDrawerOpen: boolean;
   notificationUtility: NotificationDrawerContentProps;
-  onCloseNotifications: () => void;
   onCloseSideDrawer: () => void;
   sessionUser: SessionUser | null;
 }
 
 export function AppTopNavigationDrawers({
-  isNotificationDrawerOpen,
   isSideDrawerOpen,
   notificationUtility,
-  onCloseNotifications,
   onCloseSideDrawer,
   sessionUser,
 }: AppTopNavigationDrawersProps) {
   const secondaryMenuItems = resolveSecondaryMenuItems({
     canOpenAdminTools: Boolean(sessionUser?.isAdmin),
     isAdmin: Boolean(sessionUser?.isAdmin),
+    unreadNotificationCount: notificationUtility.unreadCount,
   });
 
   return (
-    <>
-      <NotificationDrawer
-        isOpen={isNotificationDrawerOpen}
-        onClose={onCloseNotifications}
-        {...notificationUtility}
-      />
-      <SideDrawer
-        isOpen={isSideDrawerOpen}
-        items={secondaryMenuItems}
-        onClose={onCloseSideDrawer}
-      />
-    </>
+    <SideDrawer
+      isOpen={isSideDrawerOpen}
+      items={secondaryMenuItems}
+      onClose={onCloseSideDrawer}
+      renderItemContent={(itemId) => (
+        itemId === 'notification' ? <NotificationDrawerContent {...notificationUtility} onClose={onCloseSideDrawer} /> : null
+      )}
+    />
   );
 }

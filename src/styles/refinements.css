@@ -1328,20 +1328,6 @@ body {
   box-shadow: var(--shadow-button) !important;
 }
 
-.global-settings-menu__item:hover,
-.global-settings-menu__item:focus-visible {
-  background: var(--control-hover-bg) !important;
-  border-color: var(--control-hover-border) !important;
-  color: var(--text-primary) !important;
-}
-
-.global-settings-menu__item.is-complete {
-  background: var(--control-active-bg) !important;
-  border-color: var(--control-active-border) !important;
-  color: var(--control-active-text) !important;
-  box-shadow: var(--shadow-button) !important;
-}
-
 .review-card,
 .course-card,
 .sheet-card {

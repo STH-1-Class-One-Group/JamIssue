@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
-import { ToggleSwitch } from '../common/ToggleSwitch';
+import { AppSettingsDrawer } from './AppSettingsDrawer';
 
 export type AppSettingsPanelProps = {
   mapDisplayPreferences?: {
@@ -27,41 +26,25 @@ function GearIcon() {
 export function AppSettingsPanel({
   mapDisplayPreferences,
 }: AppSettingsPanelProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <div className="global-settings-menu" data-app-settings-panel="root">
       <button
         type="button"
-        className={isMenuOpen ? 'secondary-button icon-button global-settings-menu__trigger is-complete' : 'secondary-button icon-button global-settings-menu__trigger'}
-        onClick={() => setIsMenuOpen((current) => !current)}
-        aria-label="설정 열기"
-        title="설정 열기"
-        aria-expanded={isMenuOpen}
+        className={isDrawerOpen ? 'secondary-button icon-button global-settings-menu__trigger is-complete' : 'secondary-button icon-button global-settings-menu__trigger'}
+        onClick={() => setIsDrawerOpen(true)}
+        aria-label="앱 설정 열기"
+        title="앱 설정 열기"
+        aria-expanded={isDrawerOpen}
       >
         <GearIcon />
       </button>
-
-      {isMenuOpen && (
-        <div className="global-settings-menu__menu">
-          <a className="secondary-button global-settings-menu__item" href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer">
-            <span>피드백</span>
-          </a>
-          {mapDisplayPreferences ? (
-            <div className="global-settings-menu__section" data-app-settings-section="map-display">
-              <span className="global-settings-menu__section-label">지도 표시</span>
-              <ToggleSwitch
-                checked={mapDisplayPreferences.showCuratedWithTourism}
-                className="global-settings-menu__switch"
-                data-app-setting="show-curated-with-tourism"
-                label="관광정보와 큐레이션 함께 보기"
-                onChange={mapDisplayPreferences.onShowCuratedWithTourismChange}
-                size="sm"
-              />
-            </div>
-          ) : null}
-        </div>
-      )}
+      <AppSettingsDrawer
+        isOpen={isDrawerOpen}
+        mapDisplayPreferences={mapDisplayPreferences}
+        onClose={() => setIsDrawerOpen(false)}
+      />
     </div>
   );
 }

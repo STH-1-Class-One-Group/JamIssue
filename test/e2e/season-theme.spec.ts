@@ -72,10 +72,10 @@ async function readMyPageActionThemeSnapshot(page: Parameters<typeof installApiF
 async function readSettingsMenuFeedbackSnapshot(page: Parameters<typeof installApiFixtures>[0]) {
   return page.evaluate(() => {
     const trigger = document.querySelector<HTMLElement>('.global-settings-menu__trigger');
-    const menuItem = document.querySelector<HTMLElement>('.global-settings-menu__item');
+    const menuItem = document.querySelector<HTMLElement>('.app-settings-drawer__feedback');
 
     if (!trigger || !menuItem) {
-      throw new Error('Expected settings trigger and menu item to be present.');
+      throw new Error('Expected settings trigger and drawer feedback link to be present.');
     }
 
     const triggerStyle = getComputedStyle(trigger);
@@ -149,7 +149,7 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
     const settingsTrigger = page.locator('.global-settings-menu__trigger');
     await settingsTrigger.click();
     await expect(settingsTrigger).toHaveAttribute('aria-expanded', 'true');
-    await page.locator('.global-settings-menu__item').first().hover();
+    await page.locator('.app-settings-drawer__feedback').first().hover();
     settingsFeedbackSnapshots.push(await readSettingsMenuFeedbackSnapshot(page));
   }
 

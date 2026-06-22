@@ -7,7 +7,7 @@ import { AppTopNavigationDrawers } from './AppTopNavigationDrawers';
 import { AppCapsule } from './app-shell/AppCapsule';
 import type { AppSettingsPanelProps } from './app-settings/AppSettingsPanel';
 import { MapFloatingNav } from './map-stage/MapFloatingNav';
-import type { NotificationDrawerContentProps } from './notifications/NotificationDrawer';
+import type { NotificationDrawerContentProps } from './notifications/NotificationDrawerContent';
 
 interface AppTopNavigationProps {
   activeTab: Tab;
@@ -31,7 +31,6 @@ export function AppTopNavigation({
   sessionUser,
 }: AppTopNavigationProps) {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
-  const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const activeBottomNavItem = bottomNavItems.find((item) => item.key === activeTab);
   const center = activeTab === 'map' ? (
     <MapFloatingNav
@@ -59,18 +58,14 @@ export function AppTopNavigation({
         canNavigateBack={canNavigateBack}
         center={center}
         globalUtility={globalUtility}
+        menuBadgeCount={notificationUtility.unreadCount}
         menuOpen={isSideDrawerOpen}
-        notificationOpen={isNotificationDrawerOpen}
-        notificationUnreadCount={notificationUtility.unreadCount}
         onNavigateBack={onNavigateBack}
-        onOpenNotifications={() => setIsNotificationDrawerOpen(true)}
         onOpenMenu={() => setIsSideDrawerOpen(true)}
       />
       <AppTopNavigationDrawers
-        isNotificationDrawerOpen={isNotificationDrawerOpen}
         isSideDrawerOpen={isSideDrawerOpen}
         notificationUtility={notificationUtility}
-        onCloseNotifications={() => setIsNotificationDrawerOpen(false)}
         onCloseSideDrawer={() => setIsSideDrawerOpen(false)}
         sessionUser={sessionUser}
       />
