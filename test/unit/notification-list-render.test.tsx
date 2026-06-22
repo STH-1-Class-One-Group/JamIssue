@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { NotificationPanel } from '../../src/components/notifications/NotificationPanel';
 import type { NotificationItem, NotificationPanelActions } from '../../src/components/notifications/notificationTypes';
@@ -77,5 +77,35 @@ describe('NotificationPanel item render stability', () => {
 
     expect(labelRenderCounts.get('n-1')).toBe(2);
     expect(labelRenderCounts.get('n-2')).toBe(1);
+  });
+
+  it('calls the mark-all action while unread notifications remain', () => {
+    stableHandlers.handleMarkAll.mockClear();
+
+    render(
+      <NotificationPanel
+        sessionUserName="tester"
+        notifications={[createNotification('n-1')]}
+        unreadCount={1}
+        actions={createActions(null)}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '모두 읽음' }));
+
+    expect(stableHandlers.handleMarkAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('disables the mark-all action when there is no unread notification', () => {
+    render(
+      <NotificationPanel
+        sessionUserName="tester"
+        notifications={[{ ...createNotification('n-1'), isRead: true }]}
+        unreadCount={0}
+        actions={createActions(null)}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: '모두 읽음' })).toBeDisabled();
   });
 });
