@@ -155,7 +155,13 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/642
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/647
   - Merge commit: a58906c6aaaf040f401110515699a5eacdc6c357
-  - Evidence: `docs/GOVERNANCE_INDEX.md`, `docs/TASK_ID_LEDGER.md`, `docs/traceability/task-ledger.jsonl`, `docs/ISSUE_TREE.md`
+  - Evidence: `docs/GOVERNANCE_INDEX.md`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`, `docs/traceability/task-ledger/by-task/TSK-021-08.json`, `docs/traceability/task-ledger.jsonl`
+- [x] TSK-021-09: https://github.com/STH-1-Class-One-Group/JamIssue/issues/643
+  - Title: app-settings-right-drawer
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/643
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/651
+  - Merge commit: 7882f02eb6883765a7b4c2e3e3fba061c84da9bb
+  - Evidence: `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`, `docs/traceability/task-ledger/by-task/TSK-021-09.json`, `docs/traceability/task-ledger.jsonl`
 
 ## TSK-016
 
