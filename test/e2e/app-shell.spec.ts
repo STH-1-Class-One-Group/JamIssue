@@ -1,6 +1,33 @@
 import { expect, test, type Locator } from '@playwright/test';
 import { createE2EAppState, installApiFixtures } from './fixtures';
 
+const unreadNotifications = [
+  {
+    id: 'notification-feed-1',
+    type: 'review-like',
+    title: '피드 작성이 완료되었습니다.',
+    body: '컨트라스 피드를 남겼어요.',
+    createdAt: '03. 30. 18:05',
+    isRead: false,
+    reviewId: 'review-1',
+    commentId: null,
+    routeId: null,
+    actorName: 'code305',
+  },
+  {
+    id: 'notification-feed-2',
+    type: 'review-comment',
+    title: '피드 작성이 완료되었습니다.',
+    body: '오타 피드를 남겼어요.',
+    createdAt: '03. 30. 17:37',
+    isRead: false,
+    reviewId: 'review-1',
+    commentId: 'comment-1',
+    routeId: null,
+    actorName: 'code305',
+  },
+] as const;
+
 async function requireBoundingBox(locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) {
@@ -225,7 +252,7 @@ test('UIUX-023 replaces the map header and subnav with a one-line floating capsu
 });
 
 test('TSK-021-08 opens notifications in the left information drawer', async ({ page }) => {
-  await installApiFixtures(page, createE2EAppState());
+  await installApiFixtures(page, createE2EAppState({ notifications: [...unreadNotifications] }));
 
   await page.goto('/');
 
@@ -243,6 +270,13 @@ test('TSK-021-08 opens notifications in the left information drawer', async ({ p
   await expect(notificationDrawer).toBeVisible();
   await expect(notificationPanel).toBeVisible();
   await expect(floatingNav.locator('.global-notification-panel')).toHaveCount(0);
+  await expect(notificationPanel.locator('.notification-item.is-unread')).toHaveCount(2);
+
+  const markAllButton = notificationPanel.getByRole('button', { name: '모두 읽음' });
+  await expect(markAllButton).toBeEnabled();
+  await markAllButton.click();
+  await expect(notificationPanel.locator('.notification-item.is-unread')).toHaveCount(0);
+  await expect(markAllButton).toBeDisabled();
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));

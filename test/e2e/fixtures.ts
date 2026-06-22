@@ -133,6 +133,7 @@ const curatedCourse: Course = {
 
 interface E2EStateOptions {
   authenticated?: boolean;
+  notifications?: UserNotification[];
   reviews?: Review[];
   tourismPlaces?: TourismPlaceItem[];
 }
@@ -156,7 +157,7 @@ function cloneReview(review: Review): Review {
   };
 }
 
-export function createE2EAppState({ authenticated = true, reviews = [], tourismPlaces = [] }: E2EStateOptions = {}): E2EAppState {
+export function createE2EAppState({ authenticated = true, notifications = [], reviews = [], tourismPlaces = [] }: E2EStateOptions = {}): E2EAppState {
   const clonedReviews = reviews.map(cloneReview);
   return {
     user: authenticated ? e2eUser : null,
@@ -171,7 +172,7 @@ export function createE2EAppState({ authenticated = true, reviews = [], tourismP
       popular: [popularRoute],
       latest: [latestRoute],
     },
-    notifications: [],
+    notifications,
     tourismPlaces,
   };
 }
@@ -248,6 +249,11 @@ async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixt
   const url = new URL(request.url());
   const method = request.method();
   const path = url.pathname;
+
+  if (method === 'GET' && path === '/api/auth/me') {
+    await fulfillJson(route, authPayload(state));
+    return;
+  }
 
   if (method === 'GET' && path === '/api/map-bootstrap') {
     await fulfillJson(route, {
@@ -434,6 +440,19 @@ async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixt
 
   if (method === 'GET' && path === '/api/my/notifications') {
     await fulfillJson(route, state.notifications);
+    return;
+  }
+
+  if (method === 'PATCH' && path === '/api/notifications/read-all') {
+    let updated = 0;
+    state.notifications = state.notifications.map((notification) => {
+      if (notification.isRead) {
+        return notification;
+      }
+      updated++;
+      return { ...notification, isRead: true };
+    });
+    await fulfillJson(route, { updated });
     return;
   }
 
