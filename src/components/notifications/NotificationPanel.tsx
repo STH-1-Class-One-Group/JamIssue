@@ -28,7 +28,7 @@ export function NotificationPanel({
   return (
     <section className={embedded ? 'global-notification-panel global-notification-panel--embedded' : 'global-notification-panel'}>
       <div className="notification-panel__header">
-        <div>
+        <div className="notification-panel__heading">
           <p className="eyebrow">ALERT</p>
           <h3>{sessionUserName ? `${sessionUserName}님의 새 알림` : '새 알림'}</h3>
           <p className="section-copy">탭에 있던 내용을 닫지 않고 바로 확인하고 이동할 수 있어요.</p>

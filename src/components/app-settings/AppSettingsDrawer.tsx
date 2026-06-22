@@ -51,15 +51,12 @@ export function AppSettingsDrawer({
           </button>
         </header>
         <div className="app-settings-drawer__content">
-          {accountSettings ? (
-            <section className="app-settings-drawer__section" data-app-settings-section="account">
-              <span className="app-settings-drawer__section-label">계정 관리</span>
-              {accountSettings}
-            </section>
-          ) : null}
           {mapDisplayPreferences ? (
             <section className="app-settings-drawer__section" data-app-settings-section="map-display">
-              <span className="app-settings-drawer__section-label">지도 표시</span>
+              <div className="app-settings-drawer__section-heading">
+                <span className="app-settings-drawer__section-label">MAP DISPLAY</span>
+                <h3>지도 표시</h3>
+              </div>
               <ToggleSwitch
                 checked={mapDisplayPreferences.showCuratedWithTourism}
                 className="app-settings-drawer__switch"
@@ -70,9 +67,25 @@ export function AppSettingsDrawer({
               />
             </section>
           ) : null}
+          {accountSettings ? (
+            <details className="app-settings-drawer__section app-settings-drawer__details" data-app-settings-section="account">
+              <summary className="app-settings-drawer__summary">
+                <span className="app-settings-drawer__section-label">ACCOUNT</span>
+                <span className="app-settings-drawer__summary-title">계정 관리</span>
+              </summary>
+              <div className="app-settings-drawer__details-content">
+                {accountSettings}
+              </div>
+            </details>
+          ) : null}
         </div>
         <footer className="app-settings-drawer__footer">
-          <a className="secondary-button app-settings-drawer__feedback" href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer">
+          <a
+            className="secondary-button app-settings-drawer__feedback"
+            href={FEEDBACK_FORM_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
             피드백
           </a>
         </footer>

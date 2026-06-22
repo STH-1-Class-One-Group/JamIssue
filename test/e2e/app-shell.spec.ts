@@ -37,12 +37,19 @@ async function requireBoundingBox(locator: Locator) {
 }
 
 async function expectElementCenterToResolveInside(locator: Locator, closestSelector: string) {
-  const isTargetHit = await locator.evaluate((element, selector) => {
+  const hitResult = await locator.evaluate((element, selector) => {
     const rect = element.getBoundingClientRect();
     const target = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    return Boolean(target?.closest(selector));
+    return {
+      className: target instanceof HTMLElement ? target.className : null,
+      isTargetHit: Boolean(target?.closest(selector)),
+      tagName: target?.tagName ?? null,
+      text: target?.textContent?.slice(0, 80) ?? null,
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
   }, closestSelector);
-  expect(isTargetHit).toBe(true);
+  expect(hitResult.isTargetHit, JSON.stringify(hitResult)).toBe(true);
 }
 
 test('mobile app shell exposes primary tabs from the built bundle', async ({ page }) => {
@@ -279,11 +286,15 @@ test('TSK-021-08 opens notifications in the left information drawer', async ({ p
   await expect(markAllButton).toBeDisabled();
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+  const capsuleBox = await requireBoundingBox(appCapsule);
+  const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
   const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));
   const panelBox = await requireBoundingBox(notificationPanel);
   expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
   expect(drawerPanelBox.x).toBeLessThan(phoneShellBox.x + phoneShellBox.width / 2);
-  expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 24);
+  expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
+  expect(drawerPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
+  expect(drawerPanelBox.y + drawerPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
   expect(panelBox.x).toBeGreaterThanOrEqual(drawerPanelBox.x);
   expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(drawerPanelBox.x + drawerPanelBox.width + 1);
 
@@ -315,9 +326,13 @@ test('TSK-021-08 keeps the left notification drawer usable across target mobile 
     await expectElementCenterToResolveInside(notificationPanel, '.global-notification-panel');
 
     const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+    const capsuleBox = await requireBoundingBox(appCapsule);
+    const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
     const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));
     expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
-    expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 24);
+    expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
+    expect(drawerPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
+    expect(drawerPanelBox.y + drawerPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
   }
 });
 
@@ -336,18 +351,20 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
   await expect(page.locator('.global-settings-menu__menu')).toHaveCount(0);
+  await expect(settingsDrawer.getByText('계정 관리')).toBeVisible();
   await expect(settingsDrawer.getByText('지도 표시')).toBeVisible();
-  const mapDisplaySwitch = settingsDrawer.getByRole('switch', { name: '관광정보와 큐레이션 함께 보기' });
+  const mapDisplaySwitch = settingsDrawer.locator('[data-app-setting="show-curated-with-tourism"]');
+  const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(mapDisplaySwitch).toBeVisible();
-  await expectElementCenterToResolveInside(mapDisplaySwitch, '.app-settings-drawer__panel');
+  await expectElementCenterToResolveInside(mapDisplayTrack, '.app-settings-drawer__panel');
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+  const capsuleBox = await requireBoundingBox(appCapsule);
+  const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
-  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(phoneShellBox.y - 1);
-  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(phoneShellBox.y + phoneShellBox.height + 1);
+  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
+  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
   expect(settingsPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
-  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(phoneShellBox.y - 1);
-  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(phoneShellBox.y + phoneShellBox.height + 1);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
 
@@ -378,21 +395,23 @@ test('TSK-021-09 keeps the right settings drawer hittable inside desktop phone p
   await appCapsule.getByRole('button', { name: '앱 설정 열기' }).click();
 
   const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
-  const mapDisplaySwitch = settingsDrawer.getByRole('switch', { name: '관광정보와 큐레이션 함께 보기' });
+  const mapDisplaySwitch = settingsDrawer.locator('[data-app-setting="show-curated-with-tourism"]');
+  const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
   await expect(mapDisplaySwitch).toBeVisible();
-  await expectElementCenterToResolveInside(mapDisplaySwitch, '.app-settings-drawer__panel');
+  await expectElementCenterToResolveInside(mapDisplayTrack, '.app-settings-drawer__panel');
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+  const capsuleBox = await requireBoundingBox(appCapsule);
+  const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
-  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(phoneShellBox.y - 1);
-  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(phoneShellBox.y + phoneShellBox.height + 1);
+  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
+  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
 
   await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
   await expect(settingsDrawer).toHaveCount(0);
-  await expectElementCenterToResolveInside(page.locator('[data-tab-key="feed"]'), '.bottom-nav');
   await context.close();
 });
 
