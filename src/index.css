@@ -62,6 +62,8 @@
   --z-notification-panel: 150;
   --z-side-drawer: 160;
   --side-drawer-width: 312px;
+  --drawer-inline-inset: 8px;
+  --drawer-trailing-gap: 48px;
   --speed-dial-bottom-offset: calc(var(--bottom-nav-offset) + 24px);
   --speed-dial-inline-offset: 20px;
   --z-splash: 200;
@@ -513,10 +515,10 @@ textarea {
 .app-settings-drawer__panel {
   position: absolute;
   top: 0;
-  right: max(0px, calc((100vw - var(--phone-shell-max-width)) / 2));
+  right: max(var(--drawer-inline-inset), calc((100vw - var(--phone-shell-max-width)) / 2 + var(--drawer-inline-inset)));
   bottom: 0;
   display: grid;
-  width: min(var(--side-drawer-width), calc(100% - 56px));
+  width: min(var(--side-drawer-width), calc(100% - var(--drawer-inline-inset) - var(--drawer-trailing-gap)));
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
   border: 1px solid var(--control-border);
@@ -3381,11 +3383,11 @@ textarea {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
-  width: min(312px, calc(100% - 56px));
+  left: var(--drawer-inline-inset);
+  width: min(var(--side-drawer-width), calc(100% - var(--drawer-inline-inset) - var(--drawer-trailing-gap)));
   overflow: hidden;
   border: 1px solid var(--control-border);
-  border-radius: 0 28px 28px 0;
+  border-radius: 28px;
   background: var(--surface-overlay-strong);
   box-shadow: var(--shadow-panel);
   pointer-events: auto;
