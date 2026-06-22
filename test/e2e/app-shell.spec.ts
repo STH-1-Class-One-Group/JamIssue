@@ -343,7 +343,11 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
+  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(phoneShellBox.y - 1);
+  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(phoneShellBox.y + phoneShellBox.height + 1);
   expect(settingsPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
+  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(phoneShellBox.y - 1);
+  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(phoneShellBox.y + phoneShellBox.height + 1);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
 
@@ -381,6 +385,8 @@ test('TSK-021-09 keeps the right settings drawer hittable inside desktop phone p
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
+  expect(settingsPanelBox.y).toBeGreaterThanOrEqual(phoneShellBox.y - 1);
+  expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(phoneShellBox.y + phoneShellBox.height + 1);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
 

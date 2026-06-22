@@ -130,10 +130,11 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(existsSync(join(repoRoot, 'src/components/notifications/NotificationDrawer.tsx'))).toBe(false);
   });
 
-  it('keeps My Page as a dashboard with account settings delegated to my-page components', () => {
+  it('keeps My Page as a dashboard while account settings live in the app settings drawer', () => {
     const myPagePanel = readRepoFile('src/components/MyPagePanel.tsx');
-    const myPageAccountSection = readRepoFile('src/components/my-page/MyPageAccountSection.tsx');
-    const myPageSettingsSection = readRepoFile('src/components/my-page/MyPageSettingsSection.tsx');
+    const appChrome = readRepoFile('src/components/app-shell/AppChrome.tsx');
+    const appSettingsDrawer = readRepoFile('src/components/app-settings/AppSettingsDrawer.tsx');
+    const appAccountSettingsSlot = readRepoFile('src/components/app-settings/AppAccountSettingsSlot.tsx');
     const profileAccountSettings = readRepoFile('src/components/my-page/ProfileAccountSettings.tsx');
     const myPageOverviewSection = readRepoFile('src/components/my-page/MyPageOverviewSection.tsx');
     const myPageTabContent = readRepoFile('src/components/my-page/MyPageTabContent.tsx');
@@ -141,14 +142,14 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(myPagePanel).toContain('MyPageHeader');
     expect(myPagePanel).toContain('MyPageOverviewSection');
     expect(myPagePanel).toContain('MyPageTabContent');
-    expect(myPagePanel).toContain('MyPageAccountSection');
-    expect(myPagePanel).toContain('MyPageSettingsSection');
+    expect(myPagePanel).not.toContain('MyPageAccountSection');
+    expect(myPagePanel).not.toContain('MyPageSettingsSection');
     expect(myPagePanel).not.toContain('GlobalSettingsMenu');
+    expect(myPagePanel).not.toContain('ProfileAccountSettings');
 
-    expect(myPageAccountSection).toContain('onToggleSettings');
-    expect(myPageAccountSection).not.toContain('onLogout');
-    expect(myPageSettingsSection).toContain('ProfileAccountSettings');
-    expect(myPageSettingsSection).not.toContain('ProfileAvatarEditor');
+    expect(appChrome).toContain('AppAccountSettingsSlot');
+    expect(appSettingsDrawer).toContain('accountSettings');
+    expect(appAccountSettingsSlot).toContain('ProfileAccountSettings');
     expect(profileAccountSettings).toContain('ProfileAvatarEditor');
     expect(profileAccountSettings).toContain('onLinkProvider');
     expect(profileAccountSettings).toContain('onDeleteAvatar');
@@ -182,7 +183,8 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(css).toContain('--drawer-inline-inset');
     expect(css).toContain('--drawer-trailing-gap');
     expect(css).toContain('left: var(--drawer-inline-inset)');
-    expect(css).toContain('right: max(var(--drawer-inline-inset)');
+    expect(css).toContain('right: var(--drawer-inline-inset)');
+    expect(css).not.toContain('right: max(var(--drawer-inline-inset)');
     expect(css).not.toContain('left: 0;\n  width: min(312px, calc(100% - 56px))');
   });
 
@@ -192,6 +194,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       'src/components/app-shell/AppChrome.tsx',
       'src/components/app-shell/SideDrawer.tsx',
       'src/components/app-shell/secondaryMenu.ts',
+      'src/components/app-settings/AppAccountSettingsSlot.tsx',
       'src/components/app-settings/AppSettingsButton.tsx',
       'src/components/app-settings/AppSettingsPanel.tsx',
       'src/components/app-settings/AppSettingsDrawer.tsx',

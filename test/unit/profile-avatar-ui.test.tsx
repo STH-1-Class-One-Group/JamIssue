@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { AppAccountSettingsSlot } from '../../src/components/app-settings/AppAccountSettingsSlot';
 import { CommentThreadItem } from '../../src/components/comment-thread/CommentThreadItem';
 import { MyPagePanel } from '../../src/components/MyPagePanel';
 import { ReviewListItem } from '../../src/components/review/ReviewListItem';
@@ -71,38 +72,53 @@ describe('profile avatar UI consumption', () => {
     expect(container.querySelector('.my-page-profile-header__summary')).not.toBeInTheDocument();
     expect(screen.getByText('방문한 고유 명소')).toBeInTheDocument();
     expect(screen.queryByText('프로필 사진 자리')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: '프로필 사진 설정' })).not.toBeInTheDocument();
   });
 
-  it('renders avatar settings as one editor with consistent action controls', async () => {
-    const user = userEvent.setup();
-    render(<MyPagePanel {...createPanelProps()} />);
-    await user.click(screen.getByRole('button', { name: /설정/ }));
+  it('renders avatar settings as one editor in the app settings account slot', () => {
+    render(
+      <AppAccountSettingsSlot
+        sessionUser={{ ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' }}
+        providers={[]}
+        profileSaving={false}
+        profileError={null}
+        isLoggingOut={false}
+        onLinkProvider={vi.fn()}
+        onSaveNickname={vi.fn().mockResolvedValue(undefined)}
+        onUploadAvatar={vi.fn().mockResolvedValue(undefined)}
+        onDeleteAvatar={vi.fn().mockResolvedValue(undefined)}
+        onLogout={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
 
     const editor = screen.getByRole('region', { name: '프로필 사진 설정' });
-    const accountPanel = screen.getByRole('heading', { name: '프로필 설정' }).closest('.settings-card');
 
-    expect(accountPanel).not.toBeNull();
     expect(within(editor).getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--md');
     expect(within(editor).getByText('작은 프로필 이미지로 피드와 댓글에서 표시돼요.')).toBeInTheDocument();
     expect(within(editor).getByText('사진 변경').closest('.settings-card__avatar-action')).not.toBeNull();
     expect(within(editor).getByRole('button', { name: '사진 삭제' })).toHaveClass('settings-card__avatar-action');
-    expect(within(accountPanel as HTMLElement).getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
   });
 
-  it('routes avatar upload and delete controls through My Page settings', async () => {
+  it('routes avatar upload and delete controls through the app settings account slot', async () => {
     const user = userEvent.setup();
     const onUploadAvatar = vi.fn().mockResolvedValue(undefined);
     const onDeleteAvatar = vi.fn().mockResolvedValue(undefined);
-    const props = createPanelProps({
-      panelActions: {
-        ...createPanelProps().panelActions,
-        onUploadAvatar,
-        onDeleteAvatar,
-      },
-    });
 
-    render(<MyPagePanel {...props} />);
-    await user.click(screen.getByRole('button', { name: /설정/ }));
+    render(
+      <AppAccountSettingsSlot
+        sessionUser={{ ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' }}
+        providers={[]}
+        profileSaving={false}
+        profileError={null}
+        isLoggingOut={false}
+        onLinkProvider={vi.fn()}
+        onSaveNickname={vi.fn().mockResolvedValue(undefined)}
+        onUploadAvatar={onUploadAvatar}
+        onDeleteAvatar={onDeleteAvatar}
+        onLogout={vi.fn().mockResolvedValue(undefined)}
+      />,
+    );
 
     const fileInput = screen.getByLabelText('사진 변경', { selector: 'input' });
     const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });

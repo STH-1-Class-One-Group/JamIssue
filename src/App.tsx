@@ -68,6 +68,7 @@ export default function App() {
       onToggleTourismInfo={mapStageProps.mapActions.onToggleTourismInfo}
     />
   ) : undefined;
+  const sessionUser = coordinator.sessionUser;
 
   return (
     <AppShell
@@ -80,13 +81,24 @@ export default function App() {
       } : null}
       chrome={(
         <AppChrome
+          accountSettings={{
+            providers: pageStageProps.myPageData.providers,
+            profileSaving: pageStageProps.myPageData.profileSaving,
+            profileError: pageStageProps.myPageData.profileError,
+            isLoggingOut: pageStageProps.myPageData.isLoggingOut,
+            onLinkProvider: pageStageProps.myPageActions.onLinkProvider,
+            onSaveNickname: pageStageProps.myPageActions.onSaveNickname,
+            onUploadAvatar: pageStageProps.myPageActions.onUploadAvatar,
+            onDeleteAvatar: pageStageProps.myPageActions.onDeleteAvatar,
+            onLogout: pageStageProps.myPageActions.onLogout,
+          }}
           activeTab={activeTab}
           canNavigateBack={canNavigateBack}
           center={appChromeCenter}
           globalUtility={globalUtility}
           notificationUtility={notificationUtility}
           onNavigateBack={handleNavigateBack}
-          sessionUser={coordinator.sessionUser}
+          sessionUser={sessionUser}
         />
       )}
       headerMode="hidden"

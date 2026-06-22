@@ -42,7 +42,7 @@ export function ProfileAccountSettings({
   ];
 
   return (
-    <>
+    <div className="settings-card__account-content">
       {socialProviderKeys.length > 0 && (
         <div className="settings-card__social" aria-label="연결된 소셜 계정">
           <p className="eyebrow">소셜 계정</p>
@@ -90,7 +90,7 @@ export function ProfileAccountSettings({
       <form className="route-builder-form" onSubmit={(event) => void onSubmit(event)}>
         <label className="route-builder-field">
           <span>프로필명</span>
-          <input value={nickname} onChange={(event) => onNicknameChange(event.target.value)} placeholder="예: 대전산책러" maxLength={40} />
+          <input value={nickname} onChange={(event) => onNicknameChange(event.target.value)} placeholder="닉네임을 입력하세요" maxLength={40} />
         </label>
         {profileError && <p className="form-error-copy">{profileError}</p>}
         <button type="submit" className="primary-button route-submit-button" disabled={profileSaving || nickname.trim().length < 2}>
@@ -100,6 +100,6 @@ export function ProfileAccountSettings({
       <button type="button" className="secondary-button route-submit-button" onClick={onLogout} disabled={isLoggingOut}>
         {isLoggingOut ? '정리 중' : '로그아웃'}
       </button>
-    </>
+    </div>
   );
 }

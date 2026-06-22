@@ -108,4 +108,17 @@ describe('NotificationPanel item render stability', () => {
 
     expect(screen.getByRole('button', { name: '모두 읽음' })).toBeDisabled();
   });
+
+  it('shows progress feedback while the mark-all action is busy', () => {
+    render(
+      <NotificationPanel
+        sessionUserName="tester"
+        notifications={[createNotification('n-1')]}
+        unreadCount={1}
+        actions={{ ...createActions(null), busyAll: true }}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: '처리 중' })).toBeDisabled();
+  });
 });

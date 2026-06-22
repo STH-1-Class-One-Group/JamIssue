@@ -54,10 +54,10 @@ async function readContentThemeSnapshot(page: Parameters<typeof installApiFixtur
 
 async function readMyPageActionThemeSnapshot(page: Parameters<typeof installApiFixtures>[0]) {
   return page.evaluate(() => {
-    const accountAction = document.querySelector<HTMLElement>('.account-action-row .secondary-button');
+    const accountAction = document.querySelector<HTMLElement>('.settings-card__avatar-action');
 
     if (!accountAction) {
-      throw new Error('Expected My Page account action button to be present.');
+      throw new Error('Expected app settings account action button to be present.');
     }
 
     const actionStyle = getComputedStyle(accountAction);
@@ -140,15 +140,17 @@ test('TSK-019-05 applies each forced season to semantic tokens without changing 
     contentSnapshots.push(await readContentThemeSnapshot(page));
 
     await page.locator('.bottom-nav__item[data-tab-key="my"]').click();
-    await expect(page.locator('.account-action-row .secondary-button')).toHaveCount(1);
-    await page.locator('.account-action-row .secondary-button').hover();
-    myPageActionSnapshots.push(await readMyPageActionThemeSnapshot(page));
-    await page.locator('.account-action-row .secondary-button').click();
-    await expect(page.locator('.settings-card').getByRole('button', { name: '로그아웃' })).toBeVisible();
+    await expect(page.locator('.account-action-row .secondary-button')).toHaveCount(0);
 
     const settingsTrigger = page.locator('.global-settings-menu__trigger');
     await settingsTrigger.click();
     await expect(settingsTrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByRole('dialog', { name: '앱 설정' })).toBeVisible();
+    await expect(page.getByRole('region', { name: '프로필 사진 설정' })).toBeVisible();
+    await page.locator('.settings-card__avatar-action').first().hover();
+    myPageActionSnapshots.push(await readMyPageActionThemeSnapshot(page));
+    await expect(page.getByRole('dialog', { name: '앱 설정' }).getByRole('button', { name: '로그아웃' })).toBeVisible();
+
     await page.locator('.app-settings-drawer__feedback').first().hover();
     settingsFeedbackSnapshots.push(await readSettingsMenuFeedbackSnapshot(page));
   }

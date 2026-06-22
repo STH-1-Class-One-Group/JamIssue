@@ -1,8 +1,9 @@
-import { createPortal } from 'react-dom';
+import type { ReactNode } from 'react';
 import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
 import { ToggleSwitch } from '../common/ToggleSwitch';
 
 export type AppSettingsDrawerProps = {
+  accountSettings?: ReactNode;
   isOpen: boolean;
   mapDisplayPreferences?: {
     showCuratedWithTourism: boolean;
@@ -12,6 +13,7 @@ export type AppSettingsDrawerProps = {
 };
 
 export function AppSettingsDrawer({
+  accountSettings,
   isOpen,
   mapDisplayPreferences,
   onClose,
@@ -20,7 +22,7 @@ export function AppSettingsDrawer({
     return null;
   }
 
-  const drawer = (
+  return (
     <div className="app-settings-drawer" data-app-settings-drawer="root">
       <button
         type="button"
@@ -36,7 +38,7 @@ export function AppSettingsDrawer({
       >
         <header className="app-settings-drawer__header">
           <div>
-            <p className="section-eyebrow">Settings</p>
+            <p className="section-eyebrow">SETTINGS</p>
             <h2>설정</h2>
           </div>
           <button
@@ -49,6 +51,12 @@ export function AppSettingsDrawer({
           </button>
         </header>
         <div className="app-settings-drawer__content">
+          {accountSettings ? (
+            <section className="app-settings-drawer__section" data-app-settings-section="account">
+              <span className="app-settings-drawer__section-label">계정 관리</span>
+              {accountSettings}
+            </section>
+          ) : null}
           {mapDisplayPreferences ? (
             <section className="app-settings-drawer__section" data-app-settings-section="map-display">
               <span className="app-settings-drawer__section-label">지도 표시</span>
@@ -71,6 +79,4 @@ export function AppSettingsDrawer({
       </aside>
     </div>
   );
-
-  return createPortal(drawer, document.body);
 }

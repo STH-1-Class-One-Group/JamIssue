@@ -61,7 +61,7 @@ function createPanelProps(activeTab: MyPageTabKey) {
 }
 
 describe('MyPagePanel regression', () => {
-  it('keeps activity dashboard content before account management controls', () => {
+  it('keeps My Page focused on activity dashboard content without account management controls', () => {
     const { container } = render(<MyPagePanel {...createPanelProps('stamps')} />);
 
     const stats = container.querySelector('.my-stats-grid');
@@ -70,9 +70,9 @@ describe('MyPagePanel regression', () => {
 
     expect(stats).not.toBeNull();
     expect(tabs).not.toBeNull();
-    expect(account).not.toBeNull();
-    expect(stats?.compareDocumentPosition(account as Element)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(tabs?.compareDocumentPosition(account as Element)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(account).toBeNull();
+    expect(screen.queryByRole('region', { name: '프로필 사진 설정' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
   });
 
   it('renders the extracted tab sections without losing their representative content', () => {

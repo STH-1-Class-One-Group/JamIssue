@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildProviderAuthUrl, getProviderLinkUrl, getProviderLoginUrl } from '../../src/api/authClient';
 import { ProviderButtons } from '../../src/components/ProviderButtons';
-import { MyPageSettingsSection } from '../../src/components/my-page/MyPageSettingsSection';
+import { ProfileAccountSettings } from '../../src/components/my-page/ProfileAccountSettings';
 import type { AuthProvider, SessionUser } from '../../src/types/auth';
 
 const API_BASE_URL = 'https://api.example.test';
@@ -51,12 +51,10 @@ function renderSettingsSection({
   onLinkProvider?: (provider: AuthProvider) => void;
 } = {}) {
   render(
-    <MyPageSettingsSection
+    <ProfileAccountSettings
       sessionUser={user}
       providers={providers}
       nickname={user.nickname}
-      showSettings
-      profileCompletedAt={user.profileCompletedAt}
       profileSaving={false}
       profileError={null}
       isLoggingOut={false}
@@ -65,7 +63,6 @@ function renderSettingsSection({
       onAvatarChange={vi.fn().mockResolvedValue(undefined)}
       onDeleteAvatar={vi.fn().mockResolvedValue(undefined)}
       onLogout={vi.fn()}
-      onClose={vi.fn()}
       onSubmit={async () => undefined}
     />,
   );

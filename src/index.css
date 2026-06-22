@@ -495,7 +495,7 @@ textarea {
 }
 
 .app-settings-drawer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: var(--z-side-drawer);
   pointer-events: none;
@@ -515,7 +515,7 @@ textarea {
 .app-settings-drawer__panel {
   position: absolute;
   top: 0;
-  right: max(var(--drawer-inline-inset), calc((100vw - var(--phone-shell-max-width)) / 2 + var(--drawer-inline-inset)));
+  right: var(--drawer-inline-inset);
   bottom: 0;
   display: grid;
   width: min(var(--side-drawer-width), calc(100% - var(--drawer-inline-inset) - var(--drawer-trailing-gap)));
