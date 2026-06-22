@@ -526,6 +526,7 @@ textarea {
   background: var(--surface-overlay-strong);
   box-shadow: var(--shadow-panel);
   pointer-events: auto;
+  z-index: 1;
 }
 
 .app-settings-drawer__header {

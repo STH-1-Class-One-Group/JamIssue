@@ -1,5 +1,6 @@
 import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
 import { ToggleSwitch } from '../common/ToggleSwitch';
+import { createPortal } from 'react-dom';
 
 export type AppSettingsDrawerProps = {
   isOpen: boolean;
@@ -19,7 +20,7 @@ export function AppSettingsDrawer({
     return null;
   }
 
-  return (
+  const drawer = (
     <div className="app-settings-drawer" data-app-settings-drawer="root">
       <button
         type="button"
@@ -70,4 +71,6 @@ export function AppSettingsDrawer({
       </aside>
     </div>
   );
+
+  return createPortal(drawer, document.body);
 }

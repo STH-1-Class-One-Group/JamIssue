@@ -303,7 +303,9 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
   await expect(page.locator('.global-settings-menu__menu')).toHaveCount(0);
   await expect(settingsDrawer.getByText('지도 표시')).toBeVisible();
-  await expect(settingsDrawer.getByRole('switch', { name: '관광정보와 큐레이션 함께 보기' })).toBeVisible();
+  const mapDisplaySwitch = settingsDrawer.getByRole('switch', { name: '관광정보와 큐레이션 함께 보기' });
+  await expect(mapDisplaySwitch).toBeVisible();
+  await expectElementCenterToResolveInside(mapDisplaySwitch, '.app-settings-drawer__panel');
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
@@ -318,6 +320,40 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   await expectElementCenterToResolveInside(feedTab, '.bottom-nav');
   await feedTab.click();
   await expect(feedTab).toHaveAttribute('aria-current', 'page');
+});
+
+test('TSK-021-09 keeps the right settings drawer hittable inside desktop phone preview', async ({ browser }) => {
+  const context = await browser.newContext({
+    baseURL: 'http://127.0.0.1:4173',
+    hasTouch: false,
+    isMobile: false,
+    viewport: { width: 1280, height: 900 },
+  });
+  const page = await context.newPage();
+  await installApiFixtures(page, createE2EAppState());
+
+  await page.goto('/');
+  await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
+
+  const appCapsule = page.locator('[data-app-capsule="root"]');
+  await expect(appCapsule).toBeVisible();
+  await appCapsule.getByRole('button', { name: '앱 설정 열기' }).click();
+
+  const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
+  const mapDisplaySwitch = settingsDrawer.getByRole('switch', { name: '관광정보와 큐레이션 함께 보기' });
+  await expect(settingsDrawer).toBeVisible({ timeout: 300 });
+  await expect(mapDisplaySwitch).toBeVisible();
+  await expectElementCenterToResolveInside(mapDisplaySwitch, '.app-settings-drawer__panel');
+
+  const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
+  const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
+  expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
+  expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
+
+  await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
+  await expect(settingsDrawer).toHaveCount(0);
+  await expectElementCenterToResolveInside(page.locator('[data-tab-key="feed"]'), '.bottom-nav');
+  await context.close();
 });
 
 test('TSK-021-06 opens general secondary SideDrawer items without duplicating primary navigation', async ({ page }) => {
