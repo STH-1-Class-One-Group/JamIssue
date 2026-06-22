@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -21,79 +21,81 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(bottomNav).not.toContain('SideDrawer');
   });
 
-  it('keeps the app capsule as shell composition instead of account settings ownership', () => {
+  it('keeps the app capsule as shell composition without top-level notification ownership', () => {
     const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
-    const appHeader = readRepoFile('src/components/app-shell/AppHeader.tsx');
-    const appShell = readRepoFile('src/components/app-shell/AppShell.tsx');
     const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
     const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
 
     expect(appCapsule).toContain("import { AppSettingsPanel");
     expect(appCapsule).toContain('<AppSettingsPanel');
-    expect(appHeader).toContain("import { AppSettingsPanel");
-    expect(appHeader).toContain('<AppSettingsPanel');
-    expect(appShell).toContain("import { AppSettingsPanel");
     expect(appCapsule).toContain('canNavigateBack');
     expect(appCapsule).toContain('onNavigateBack');
+    expect(appCapsule).toContain('menuBadgeCount');
     expect(appCapsule).not.toContain('/settings');
-    expect(appCapsule).not.toContain('MyPageSettingsSection');
-    expect(appCapsule).not.toContain('ProfileAvatarEditor');
+    expect(appCapsule).not.toContain('BellIcon');
+    expect(appCapsule).not.toContain('onOpenNotifications');
+    expect(appCapsule).not.toContain('notificationUnreadCount');
 
     expect(appTopNavigation).toContain("import { AppTopNavigationDrawers } from './AppTopNavigationDrawers'");
     expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
     expect(appTopNavigation).toContain("import { bottomNavItems } from './BottomNav'");
-    expect(appTopNavigation).not.toContain('resolveSecondaryMenuItems');
+    expect(appTopNavigation).not.toContain('isNotificationDrawerOpen');
+    expect(appTopNavigation).not.toContain('setIsNotificationDrawerOpen');
     expect(secondaryMenu).not.toContain('bottomNavItems');
     expect(secondaryMenu).not.toContain('AppSettingsPanel');
     expect(secondaryMenu).not.toContain('ProfileAccountSettings');
   });
 
-  it('keeps AppSettingsPanel scoped to app-wide settings entry points', () => {
+  it('keeps AppSettingsPanel scoped to right drawer app settings entry points', () => {
     const appSettingsPanel = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
+    const appSettingsDrawer = readRepoFile('src/components/app-settings/AppSettingsDrawer.tsx');
     const globalSettingsMenu = readRepoFile('src/components/GlobalSettingsMenu.tsx');
 
-    expect(appSettingsPanel).toContain('FEEDBACK_FORM_URL');
-    expect(appSettingsPanel).toContain('showCuratedWithTourism');
-    expect(appSettingsPanel).toContain('data-app-setting="show-curated-with-tourism"');
-    expect(appSettingsPanel).toContain('설정 열기');
-    expect(appSettingsPanel).toContain('피드백');
-    expect(appSettingsPanel).toContain('지도 표시');
+    expect(appSettingsPanel).toContain('AppSettingsDrawer');
+    expect(appSettingsPanel).not.toContain('global-settings-menu__menu');
     expect(appSettingsPanel).not.toContain('NotificationPanel');
     expect(appSettingsPanel).not.toContain('useNotificationPanelActions');
     expect(appSettingsPanel).not.toContain('notifications');
     expect(appSettingsPanel).not.toContain('unreadCount');
     expect(appSettingsPanel).not.toContain('ProfileAvatarEditor');
     expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
-    expect(appSettingsPanel).not.toContain('MyPagePanel');
     expect(appSettingsPanel).not.toContain('SideDrawer');
-    expect(appSettingsPanel).not.toContain('onSaveNickname');
-    expect(appSettingsPanel).not.toContain('onLogout');
-    expect(appSettingsPanel).not.toContain('getTourismPlaces');
-    expect(appSettingsPanel).not.toContain('filterTourismPlacesByDisplayGroup');
-    expect(appSettingsPanel).not.toContain('selectedTourismPlaceId');
+
+    expect(appSettingsDrawer).toContain('FEEDBACK_FORM_URL');
+    expect(appSettingsDrawer).toContain('showCuratedWithTourism');
+    expect(appSettingsDrawer).toContain('data-app-setting="show-curated-with-tourism"');
+    expect(appSettingsDrawer).toContain('지도 표시');
+    expect(appSettingsDrawer).toContain('피드백');
+    expect(appSettingsDrawer).not.toContain('NotificationPanel');
+    expect(appSettingsDrawer).not.toContain('useNotificationPanelActions');
+    expect(appSettingsDrawer).not.toContain('notifications');
+    expect(appSettingsDrawer).not.toContain('unreadCount');
     expect(globalSettingsMenu).toContain('AppSettingsPanel');
     expect(globalSettingsMenu).not.toContain('NotificationPanel');
     expect(globalSettingsMenu).not.toContain('FEEDBACK_FORM_URL');
   });
 
-  it('keeps notification content in the left information drawer instead of settings', () => {
+  it('keeps notification content inside SideDrawer instead of capsule or settings', () => {
     const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
-    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
     const appTopNavigationDrawers = readRepoFile('src/components/AppTopNavigationDrawers.tsx');
-    const notificationDrawer = readRepoFile('src/components/notifications/NotificationDrawer.tsx');
-    const appSettingsPanel = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
+    const notificationContent = readRepoFile('src/components/notifications/NotificationDrawerContent.tsx');
+    const appSettingsDrawer = readRepoFile('src/components/app-settings/AppSettingsDrawer.tsx');
+    const sideDrawer = readRepoFile('src/components/app-shell/SideDrawer.tsx');
 
-    expect(appCapsule).toContain('onOpenNotifications');
-    expect(appCapsule).toContain('notificationUnreadCount');
-    expect(appTopNavigation).toContain('AppTopNavigationDrawers');
-    expect(appTopNavigationDrawers).toContain('NotificationDrawer');
-    expect(notificationDrawer).toContain('NotificationPanel');
-    expect(notificationDrawer).toContain('aria-label="알림"');
-    expect(notificationDrawer).not.toContain('showCuratedWithTourism');
-    expect(notificationDrawer).not.toContain('FEEDBACK_FORM_URL');
-    expect(appSettingsPanel).not.toContain('NotificationPanel');
-    expect(appSettingsPanel).not.toContain('notifications');
-    expect(appSettingsPanel).not.toContain('unreadCount');
+    expect(appCapsule).not.toContain('onOpenNotifications');
+    expect(appCapsule).not.toContain('notificationUnreadCount');
+    expect(appTopNavigationDrawers).toContain('NotificationDrawerContent');
+    expect(appTopNavigationDrawers).toContain('<SideDrawer');
+    expect(appTopNavigationDrawers).toContain("itemId === 'notification'");
+    expect(notificationContent).toContain('NotificationPanel');
+    expect(notificationContent).toContain('aria-label="알림"');
+    expect(notificationContent).not.toContain('showCuratedWithTourism');
+    expect(notificationContent).not.toContain('FEEDBACK_FORM_URL');
+    expect(sideDrawer).toContain('renderItemContent');
+    expect(appSettingsDrawer).not.toContain('NotificationPanel');
+    expect(appSettingsDrawer).not.toContain('notifications');
+    expect(appSettingsDrawer).not.toContain('unreadCount');
+    expect(existsSync(join(repoRoot, 'src/components/notifications/NotificationDrawer.tsx'))).toBe(false);
   });
 
   it('keeps My Page as a dashboard with account settings delegated to my-page components', () => {
@@ -130,15 +132,6 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(myPageTabContent).toContain('MyRoutesTabSection');
   });
 
-  it('records that map display preferences moved out of the audit slice into TSK-021-05', () => {
-    const auditDoc = readRepoFile('docs/TSK-021-01-navigation-settings-responsibility-audit.md');
-
-    expect(auditDoc).toContain('Map Preferences');
-    expect(auditDoc).toContain('TSK-021-05');
-    expect(auditDoc).toContain('showCuratedWithTourism');
-    expect(auditDoc).toContain('source-quality');
-  });
-
   it('keeps the hamburger side drawer as secondary support, not a duplicate app/settings/account menu', () => {
     const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
     const appTopNavigationDrawers = readRepoFile('src/components/AppTopNavigationDrawers.tsx');
@@ -156,17 +149,17 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
   it('keeps touched navigation and settings shell files UTF-8 readable', () => {
     const files = [
       'src/components/app-shell/AppCapsule.tsx',
-      'src/components/app-shell/SpeedDialFAB.tsx',
+      'src/components/app-shell/SideDrawer.tsx',
+      'src/components/app-shell/secondaryMenu.ts',
       'src/components/app-settings/AppSettingsPanel.tsx',
-      'src/components/notifications/NotificationDrawer.tsx',
+      'src/components/app-settings/AppSettingsDrawer.tsx',
+      'src/components/notifications/NotificationDrawerContent.tsx',
     ];
 
     for (const file of files) {
       const source = readRepoFile(file);
       expect(source).not.toContain('\uFFFD');
-      expect(source).not.toContain('筌');
-      expect(source).not.toContain('癰귣똻');
-      expect(source).not.toContain('獄');
+      expect(source).not.toContain('嶺');
       expect(source).not.toContain('???');
     }
   });

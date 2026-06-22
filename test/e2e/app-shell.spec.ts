@@ -234,16 +234,18 @@ test('TSK-021-08 opens notifications in the left information drawer', async ({ p
   await expect(appCapsule).toBeVisible();
   await expect(floatingNav).toBeVisible();
 
-  await appCapsule.getByRole('button', { name: '알림 열기' }).click();
+  await appCapsule.getByRole('button', { name: '보조 메뉴 열기' }).click();
 
-  const notificationDrawer = page.locator('.notification-drawer');
+  const notificationDrawer = page.getByRole('dialog', { name: '보조 메뉴' });
+  await expect(notificationDrawer.getByRole('menuitem', { name: /알림/ })).toBeVisible();
+  await notificationDrawer.getByRole('menuitem', { name: /알림/ }).click();
   const notificationPanel = page.locator('.global-notification-panel');
   await expect(notificationDrawer).toBeVisible();
   await expect(notificationPanel).toBeVisible();
   await expect(floatingNav.locator('.global-notification-panel')).toHaveCount(0);
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
-  const drawerPanelBox = await requireBoundingBox(page.locator('.notification-drawer__panel'));
+  const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));
   const panelBox = await requireBoundingBox(notificationPanel);
   expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x - 1);
   expect(drawerPanelBox.x).toBeLessThan(phoneShellBox.x + phoneShellBox.width / 2);
@@ -268,16 +270,17 @@ test('TSK-021-08 keeps the left notification drawer usable across target mobile 
     const appCapsule = page.locator('[data-app-capsule="root"]');
     await expect(appCapsule).toBeVisible();
 
-    await appCapsule.getByRole('button', { name: '알림 열기' }).click();
+    await appCapsule.getByRole('button', { name: '보조 메뉴 열기' }).click();
 
-    const notificationDrawer = page.locator('.notification-drawer');
+    const notificationDrawer = page.getByRole('dialog', { name: '보조 메뉴' });
+    await notificationDrawer.getByRole('menuitem', { name: /알림/ }).click();
     const notificationPanel = page.locator('.global-notification-panel');
     await expect(notificationDrawer).toBeVisible();
     await expect(notificationPanel).toBeVisible();
     await expectElementCenterToResolveInside(notificationPanel, '.global-notification-panel');
 
     const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
-    const drawerPanelBox = await requireBoundingBox(page.locator('.notification-drawer__panel'));
+    const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));
     expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x - 1);
     expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThan(phoneShellBox.x + phoneShellBox.width);
   }
@@ -296,6 +299,7 @@ test('TSK-021-06 opens general secondary SideDrawer items without duplicating pr
   const sideDrawer = page.getByRole('dialog', { name: '보조 메뉴' });
   await expect(sideDrawer).toBeVisible();
   await expect(sideDrawer.getByRole('menuitem', { name: /이용 안내/ })).toBeVisible();
+  await sideDrawer.getByRole('menuitem', { name: /이용 안내/ }).click();
   await expect(sideDrawer.getByLabel('이용 안내 상세')).toContainText('하단 탭은 주요 화면 이동');
   await expect(sideDrawer.getByRole('menuitem', { name: /^지도$/ })).toHaveCount(0);
   await expect(sideDrawer.getByRole('menuitem', { name: /^행사$/ })).toHaveCount(0);
