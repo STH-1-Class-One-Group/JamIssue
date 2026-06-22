@@ -3,17 +3,16 @@
  * Purpose: Render the shared app header used by the Web Front shell.
  * Primary Responsibility: Own the header brand, leading back action, and global utility action slot.
  * Design Intent: Keep navigation and utility controls in the shell flow instead of separate floating overlays.
- * Non-Goals: This component does not own sub-navigation, map filters, or page-specific content layout.
- * Dependencies: React component props, JamIssue logo asset, and AppSettingsPanel.
+ * Non-Goals: This component does not own sub-navigation, map filters, settings drawers, or page-specific content layout.
+ * Dependencies: React component props and JamIssue logo asset.
  */
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import jamissueLogo from '../../assets/jamissue-logo.png';
-import { AppSettingsPanel } from '../app-settings/AppSettingsPanel';
 
 interface AppHeaderProps {
   canNavigateBack: boolean;
-  globalUtility: ComponentProps<typeof AppSettingsPanel>;
   onNavigateBack: () => void;
+  utilityAction?: ReactNode;
 }
 
 function AppHeaderBrand() {
@@ -34,13 +33,12 @@ function AppHeaderBrand() {
  * Renders the full-width shell header.
  *
  * The leading slot switches between brand-first and back-navigation states, while
- * the utility slot keeps notification and feedback entry points inside the
- * header boundary.
+ * the utility slot receives its action from the app chrome owner.
  */
 export function AppHeader({
   canNavigateBack,
-  globalUtility,
   onNavigateBack,
+  utilityAction,
 }: AppHeaderProps) {
   return (
     <header className="app-header" aria-label="Jam Issue app header" data-app-shell-slot="header">
@@ -62,7 +60,7 @@ export function AppHeader({
         data-app-header-slot="actions"
         data-app-shell-slot="header-actions"
       >
-        <AppSettingsPanel {...globalUtility} />
+        {utilityAction}
       </div>
     </header>
   );

@@ -3,7 +3,6 @@ import type { ComponentProps, ReactNode } from 'react';
 import type { Tab } from '../../types/core';
 import { AppHeader } from './AppHeader';
 import { BottomNav } from '../BottomNav';
-import { AppSettingsPanel } from '../app-settings/AppSettingsPanel';
 import { GlobalStatusBanner } from '../GlobalStatusBanner';
 import { SplashScreen } from '../SplashScreen';
 
@@ -11,28 +10,28 @@ interface AppShellProps {
   activeTab: Tab;
   canNavigateBack: boolean;
   children: ReactNode;
+  chrome?: ReactNode;
   globalStatus: ComponentProps<typeof GlobalStatusBanner> | null;
-  globalUtility: ComponentProps<typeof AppSettingsPanel>;
+  headerUtilityAction?: ReactNode;
   onBottomTabChange: (nextTab: Tab) => void;
   onNavigateBack: () => void;
   headerMode?: 'default' | 'hidden';
   showEntrySplash?: boolean;
   subNav?: ReactNode;
-  topNavigation?: ReactNode;
 }
 
 export function AppShell({
   activeTab,
   canNavigateBack,
   children,
+  chrome,
   globalStatus,
-  globalUtility,
+  headerUtilityAction,
   headerMode = 'default',
   onBottomTabChange,
   onNavigateBack,
   showEntrySplash = false,
   subNav,
-  topNavigation,
 }: AppShellProps) {
   const [showSplash, setShowSplash] = useState(showEntrySplash);
   const isMapStage = activeTab === 'map';
@@ -52,7 +51,7 @@ export function AppShell({
         data-app-shell="phone"
         data-testid="app-shell-phone"
       >
-        {topNavigation}
+        {chrome}
         {globalStatus && (
           <div className="phone-shell__status-slot app-shell__status-safe-area" data-app-shell-slot="status">
             <GlobalStatusBanner
@@ -65,7 +64,7 @@ export function AppShell({
         {!isHeaderHidden && (
           <AppHeader
             canNavigateBack={canNavigateBack}
-            globalUtility={globalUtility}
+            utilityAction={headerUtilityAction}
             onNavigateBack={onNavigateBack}
           />
         )}

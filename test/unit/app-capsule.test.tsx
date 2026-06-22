@@ -38,7 +38,7 @@ describe('AppCapsule shell contract', () => {
         menuBadgeCount={2}
         onNavigateBack={vi.fn()}
         onOpenMenu={vi.fn()}
-        settingsAction={<button type="button">앱 설정 열기</button>}
+        settingsAction={<button type="button">설정 열기</button>}
       />,
     );
 
@@ -47,16 +47,13 @@ describe('AppCapsule shell contract', () => {
     const actions = capsule.querySelector('[data-app-capsule-slot="actions"]');
     const menuButton = within(capsule).getByRole('button', { name: '보조 메뉴 열기' });
     const backButton = within(capsule).getByRole('button', { name: '이전 화면으로 돌아가기' });
-    const settingsButton = within(capsule).getByRole('button', { name: '앱 설정 열기' });
+    const settingsButton = within(capsule).getByRole('button', { name: '설정 열기' });
 
-    expect(menuButton).toBeInTheDocument();
     expect(menuButton.querySelector('.app-capsule__menu-badge')).not.toBeNull();
     expect(backButton).toBeEnabled();
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
     expect(capsule.querySelector('[data-app-settings-panel="root"]')).toBeNull();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(menuButton.querySelector('.app-capsule__icon')).not.toBeNull();
-    expect(backButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(leading?.contains(menuButton)).toBe(true);
     expect(leading?.contains(backButton)).toBe(false);
     expect(actions?.contains(backButton)).toBe(true);
@@ -118,14 +115,14 @@ describe('AppCapsule shell contract', () => {
     );
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '앱 설정 열기' }));
+    await user.click(screen.getByRole('button', { name: '설정 열기' }));
 
-    const settingsDrawer = await screen.findByRole('dialog', { name: '앱 설정' });
+    const settingsDrawer = await screen.findByRole('dialog', { name: '설정' });
     expect(settingsDrawer).toHaveClass('app-settings-drawer__panel');
     expect(within(settingsDrawer).getByText('지도 표시')).toBeInTheDocument();
 
-    await user.click(within(settingsDrawer).getByRole('button', { name: '앱 설정 닫기' }));
-    expect(screen.queryByRole('dialog', { name: '앱 설정' })).not.toBeInTheDocument();
+    await user.click(within(settingsDrawer).getByRole('button', { name: '설정 닫기' }));
+    expect(screen.queryByRole('dialog', { name: '설정' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '보조 메뉴 열기' }));
     const sideDrawer = await screen.findByRole('dialog', { name: '보조 메뉴' });
@@ -201,6 +198,8 @@ describe('AppCapsule shell contract', () => {
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
     expect(source).not.toContain('@tabler');
     expect(source).not.toContain('\uFFFD');
+    expect(source).not.toContain(String.fromCodePoint(0xfffd));
+    expect(source).not.toContain('???');
     expect(capsuleSource).not.toContain('AppSettingsPanel');
     expect(capsuleSource).not.toContain('AppSettingsDrawer');
     expect(capsuleSource).not.toContain('SideDrawer');

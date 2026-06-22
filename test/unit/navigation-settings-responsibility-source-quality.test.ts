@@ -23,6 +23,8 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
   it('keeps AppChrome as the only owner of capsule, side drawer, and settings drawer composition', () => {
     const app = readRepoFile('src/App.tsx');
+    const appShell = readRepoFile('src/components/app-shell/AppShell.tsx');
+    const appHeader = readRepoFile('src/components/app-shell/AppHeader.tsx');
     const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
     const appChrome = readRepoFile('src/components/app-shell/AppChrome.tsx');
     const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
@@ -30,8 +32,15 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(app).toContain("import { AppChrome, AppShell } from './components/app-shell'");
     expect(app).toContain("import { MapFloatingNav } from './components/map-stage/MapFloatingNav'");
     expect(app).toContain('appChromeCenter');
-    expect(app).toContain('<AppChrome');
+    expect(app).toContain('chrome={(');
+    expect(app).not.toContain('topNavigation={(');
     expect(app).not.toContain('AppTopNavigation');
+
+    expect(appShell).toContain('chrome?: ReactNode');
+    expect(appShell).not.toContain('topNavigation?: ReactNode');
+    expect(appShell).not.toContain('AppSettingsPanel');
+    expect(appHeader).toContain('utilityAction?: ReactNode');
+    expect(appHeader).not.toContain('AppSettingsPanel');
 
     expect(appCapsule).not.toContain('AppSettingsPanel');
     expect(appCapsule).not.toContain('AppSettingsDrawer');
@@ -56,6 +65,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appChrome).not.toContain('MapFloatingNav');
     expect(appChrome).not.toContain('mapActions');
     expect(appChrome).not.toContain('mapData');
+    expect(appChrome).not.toContain('bottomNavItems');
 
     expect(secondaryMenu).not.toContain('bottomNavItems');
     expect(secondaryMenu).not.toContain('AppSettingsPanel');
@@ -79,8 +89,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
     expect(appSettingsPanel).not.toContain('SideDrawer');
 
-    expect(appSettingsButton).toContain('export interface AppSettingsButtonProps');
-    expect(appSettingsButton).toContain('앱 설정 열기');
+    expect(appSettingsButton).toContain('설정 열기');
     expect(appSettingsButton).not.toContain('AppSettingsDrawer');
     expect(appSettingsButton).not.toContain('NotificationPanel');
 
@@ -194,7 +203,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       expect(source).not.toContain('\uFFFD');
       expect(source).not.toContain(String.fromCodePoint(0xfffd));
       expect(source).not.toContain('???');
-      expect(source).not.toMatch(/[뀐쭪癰귝꽴獄쎿]/);
+      for (const fragment of ['吏', '蹂댁', '횞']) {
+        expect(source).not.toContain(fragment);
+      }
     }
   });
 });

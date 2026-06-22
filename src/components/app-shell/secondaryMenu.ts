@@ -42,7 +42,7 @@ export function resolveSecondaryMenuItems({
   if (isAdmin && canOpenAdminTools) {
     items.push({
       id: 'admin-tools',
-      label: '관리 도구',
+      label: '관리자 도구',
       description: '관리자에게만 노출되는 보조 진입점입니다.',
     });
   }
