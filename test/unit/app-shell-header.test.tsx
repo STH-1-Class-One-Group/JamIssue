@@ -11,22 +11,13 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../../src/components/app-shell/AppShell';
 
-const globalUtility = {
-  sessionUserName: 'tester',
-  notifications: [],
-  unreadCount: 0,
-  onOpenNotification: vi.fn(),
-  onMarkAllNotificationsRead: vi.fn(),
-  onDeleteNotification: vi.fn(),
-};
-
 function renderShell(canNavigateBack: boolean, onNavigateBack = vi.fn()) {
   render(
     <AppShell
       activeTab="map"
       canNavigateBack={canNavigateBack}
       globalStatus={null}
-      globalUtility={globalUtility}
+      headerUtilityAction={<button type="button">설정</button>}
       onBottomTabChange={vi.fn()}
       onNavigateBack={onNavigateBack}
     >
@@ -41,7 +32,6 @@ function renderHeaderHiddenShell() {
       activeTab="map"
       canNavigateBack={false}
       globalStatus={null}
-      globalUtility={globalUtility}
       headerMode="hidden"
       onBottomTabChange={vi.fn()}
       onNavigateBack={vi.fn()}
@@ -52,14 +42,14 @@ function renderHeaderHiddenShell() {
 }
 
 describe('AppShell app header contract', () => {
-  it('renders brand and utility actions inside the app header when back navigation is not available', () => {
+  it('renders brand and injected utility action inside the app header when back navigation is not available', () => {
     renderShell(false);
 
     const header = screen.getByRole('banner', { name: 'Jam Issue app header' });
 
     expect(within(header).getByText('JAM ISSUE')).toBeInTheDocument();
     expect(within(header).getByText('DAEJEON LOCAL GUIDE')).toBeInTheDocument();
-    expect(within(header).getByRole('button')).toHaveClass('global-settings-menu__trigger');
+    expect(within(header).getByRole('button', { name: '설정' })).toBeInTheDocument();
     expect(screen.queryByTestId('app-shell-overlay')).not.toBeInTheDocument();
   });
 

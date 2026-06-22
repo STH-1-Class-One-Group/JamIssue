@@ -78,12 +78,7 @@ export default function App() {
         message: globalStatus.message,
         layout: activeTab === 'map' ? 'map' : 'page',
       } : null}
-      globalUtility={globalUtility}
-      headerMode="hidden"
-      onBottomTabChange={handleBottomNavChange}
-      onNavigateBack={handleNavigateBack}
-      showEntrySplash
-      topNavigation={(
+      chrome={(
         <AppChrome
           activeTab={activeTab}
           canNavigateBack={canNavigateBack}
@@ -94,6 +89,10 @@ export default function App() {
           sessionUser={coordinator.sessionUser}
         />
       )}
+      headerMode="hidden"
+      onBottomTabChange={handleBottomNavChange}
+      onNavigateBack={handleNavigateBack}
+      showEntrySplash
     >
       {activeTab === 'map' ? (
         <AppMapStageView {...mapStageProps} />

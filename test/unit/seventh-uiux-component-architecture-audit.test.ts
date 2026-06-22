@@ -13,19 +13,22 @@ function repoFileExists(pathFromRoot: string) {
 }
 
 describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
-  it('keeps the current AppShell composition baseline explicit before AppCapsule migration', () => {
+  it('keeps AppShell and AppHeader free of settings drawer implementation ownership', () => {
     const appShell = readRepoFile('src/components/app-shell/AppShell.tsx');
     const appHeader = readRepoFile('src/components/app-shell/AppHeader.tsx');
 
     expect(appShell).toContain("import { AppHeader } from './AppHeader'");
     expect(appShell).toContain("import { BottomNav } from '../BottomNav'");
-    expect(appShell).toContain("import { AppSettingsPanel } from '../app-settings/AppSettingsPanel'");
+    expect(appShell).not.toContain("import { AppSettingsPanel } from '../app-settings/AppSettingsPanel'");
+    expect(appShell).toContain('chrome?: ReactNode');
+    expect(appShell).not.toContain('topNavigation?: ReactNode');
     expect(appShell).toContain("headerMode?: 'default' | 'hidden'");
     expect(appShell).toContain('<BottomNav activeTab={activeTab} onChange={onBottomTabChange} />');
 
     expect(appHeader).toContain('canNavigateBack');
     expect(appHeader).toContain('onNavigateBack');
-    expect(appHeader).toContain('<AppSettingsPanel {...globalUtility} />');
+    expect(appHeader).toContain('utilityAction?: ReactNode');
+    expect(appHeader).not.toContain('AppSettingsPanel');
     expect(appHeader).not.toContain('window.history');
   });
 

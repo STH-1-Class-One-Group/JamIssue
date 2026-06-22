@@ -25,24 +25,24 @@ export function AppSettingsDrawer({
       <button
         type="button"
         className="app-settings-drawer__overlay"
-        aria-label="앱 설정 닫기"
+        aria-label="설정 닫기"
         onClick={onClose}
       />
       <aside
         className="app-settings-drawer__panel"
         role="dialog"
         aria-modal="true"
-        aria-label="앱 설정"
+        aria-label="설정"
       >
         <header className="app-settings-drawer__header">
           <div>
             <p className="section-eyebrow">Settings</p>
-            <h2>앱 설정</h2>
+            <h2>설정</h2>
           </div>
           <button
             type="button"
             className="app-settings-drawer__close"
-            aria-label="앱 설정 닫기"
+            aria-label="설정 닫기"
             onClick={onClose}
           >
             <span aria-hidden="true">×</span>

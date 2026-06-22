@@ -11,22 +11,12 @@ import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../../src/components/app-shell/AppShell';
 
-const globalUtility = {
-  sessionUserName: 'tester',
-  notifications: [],
-  unreadCount: 0,
-  onOpenNotification: vi.fn(),
-  onMarkAllNotificationsRead: vi.fn(),
-  onDeleteNotification: vi.fn(),
-};
-
 function renderShell(subNav?: ReactNode) {
   render(
     <AppShell
       activeTab="map"
       canNavigateBack={false}
       globalStatus={null}
-      globalUtility={globalUtility}
       onBottomTabChange={vi.fn()}
       onNavigateBack={vi.fn()}
       subNav={subNav}

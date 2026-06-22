@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import type { SessionUser } from '../../types/auth';
 import type { Tab } from '../../types/core';
-import { bottomNavItems } from '../BottomNav';
 import { AppSettingsButton } from '../app-settings/AppSettingsButton';
 import { AppSettingsDrawer } from '../app-settings/AppSettingsDrawer';
 import type { AppSettingsPanelProps } from '../app-settings/AppSettingsPanel';
@@ -9,6 +8,14 @@ import { NotificationDrawerContent, type NotificationDrawerContentProps } from '
 import { AppCapsule } from './AppCapsule';
 import { SideDrawer } from './SideDrawer';
 import { resolveSecondaryMenuItems } from './secondaryMenu';
+
+const TAB_LABELS: Record<Tab, string> = {
+  map: '지도',
+  event: '행사',
+  feed: '피드',
+  course: '코스',
+  my: '마이',
+};
 
 export interface AppChromeProps {
   activeTab: Tab;
@@ -33,7 +40,6 @@ export function AppChrome({
 }: AppChromeProps) {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
   const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false);
-  const activeBottomNavItem = bottomNavItems.find((item) => item.key === activeTab);
   const resolvedMenuBadgeCount = menuBadgeCount ?? notificationUtility.unreadCount;
   const secondaryMenuItems = resolveSecondaryMenuItems({
     canOpenAdminTools: Boolean(sessionUser?.isAdmin),
@@ -42,7 +48,7 @@ export function AppChrome({
   });
   const capsuleCenter = center ?? (
     <span className="app-capsule__page-title" data-app-capsule-center-tab={activeTab}>
-      {activeBottomNavItem?.label}
+      {TAB_LABELS[activeTab]}
     </span>
   );
 
