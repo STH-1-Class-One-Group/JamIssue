@@ -54,6 +54,8 @@ describe('AppCapsule shell contract', () => {
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
     expect(capsule.querySelector('[data-app-settings-panel="root"]')).toBeNull();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(menuButton.querySelector('.app-capsule__icon')).not.toBeNull();
+    expect(backButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(leading?.contains(menuButton)).toBe(true);
     expect(leading?.contains(backButton)).toBe(false);
     expect(actions?.contains(backButton)).toBe(true);
