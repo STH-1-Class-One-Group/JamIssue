@@ -24,6 +24,8 @@ export function NotificationPanel({
     handleOpenNotification,
     busyId,
   } = actions;
+  const hasNotifications = notifications.length > 0;
+  const allRead = hasNotifications && unreadCount === 0;
 
   return (
     <section className={embedded ? 'global-notification-panel global-notification-panel--embedded' : 'global-notification-panel'}>
@@ -33,10 +35,16 @@ export function NotificationPanel({
           <h3>{sessionUserName ? `${sessionUserName}님의 새 알림` : '새 알림'}</h3>
           <p className="section-copy">탭에 있던 내용을 닫지 않고 바로 확인하고 이동할 수 있어요.</p>
         </div>
-        <button type="button" className="secondary-button notification-panel__mark-all" onClick={() => void handleMarkAll()} disabled={busyAll || unreadCount === 0}>
+        <button
+          type="button"
+          className="secondary-button notification-panel__mark-all"
+          onClick={() => void handleMarkAll()}
+          disabled={busyAll || unreadCount === 0}
+        >
           {busyAll ? '처리 중' : '모두 읽음'}
         </button>
       </div>
+      {allRead ? <p className="notification-panel__status">모든 알림을 읽었어요.</p> : null}
       {error && <p className="form-error-copy">{error}</p>}
       <div className="notification-list">
         {notifications.map((notification) => (

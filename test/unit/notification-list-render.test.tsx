@@ -96,7 +96,7 @@ describe('NotificationPanel item render stability', () => {
     expect(stableHandlers.handleMarkAll).toHaveBeenCalledTimes(1);
   });
 
-  it('disables the mark-all action when there is no unread notification', () => {
+  it('disables the mark-all action and shows completion feedback when there is no unread notification', () => {
     render(
       <NotificationPanel
         sessionUserName="tester"
@@ -107,6 +107,8 @@ describe('NotificationPanel item render stability', () => {
     );
 
     expect(screen.getByRole('button', { name: '모두 읽음' })).toBeDisabled();
+    expect(screen.getByText('모든 알림을 읽었어요.')).toBeInTheDocument();
+    expect(document.querySelector('.notification-item.is-unread')).toBeNull();
   });
 
   it('shows progress feedback while the mark-all action is busy', () => {

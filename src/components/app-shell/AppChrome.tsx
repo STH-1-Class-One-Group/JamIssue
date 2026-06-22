@@ -83,6 +83,24 @@ export function AppChrome({
     />
   ) : null;
 
+  const toggleSideDrawer = () => {
+    setIsSideDrawerOpen((isOpen) => {
+      if (!isOpen) {
+        setIsSettingsDrawerOpen(false);
+      }
+      return !isOpen;
+    });
+  };
+
+  const toggleSettingsDrawer = () => {
+    setIsSettingsDrawerOpen((isOpen) => {
+      if (!isOpen) {
+        setIsSideDrawerOpen(false);
+      }
+      return !isOpen;
+    });
+  };
+
   return (
     <>
       <AppCapsule
@@ -91,11 +109,11 @@ export function AppChrome({
         menuBadgeCount={resolvedMenuBadgeCount}
         menuOpen={isSideDrawerOpen}
         onNavigateBack={onNavigateBack}
-        onOpenMenu={() => setIsSideDrawerOpen(true)}
+        onOpenMenu={toggleSideDrawer}
         settingsAction={(
           <AppSettingsButton
             isOpen={isSettingsDrawerOpen}
-            onOpen={() => setIsSettingsDrawerOpen(true)}
+            onToggle={toggleSettingsDrawer}
           />
         )}
       />
@@ -104,7 +122,9 @@ export function AppChrome({
         items={secondaryMenuItems}
         onClose={() => setIsSideDrawerOpen(false)}
         renderItemContent={(itemId) => (
-          itemId === 'notification' ? <NotificationDrawerContent {...notificationUtility} onClose={() => setIsSideDrawerOpen(false)} /> : null
+          itemId === 'notification'
+            ? <NotificationDrawerContent {...notificationUtility} onClose={() => setIsSideDrawerOpen(false)} />
+            : null
         )}
       />
       <AppSettingsDrawer

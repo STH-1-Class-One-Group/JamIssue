@@ -16,7 +16,7 @@ export function AppSettingsPanel({
 
   return (
     <div className="global-settings-menu" data-app-settings-panel="root">
-      <AppSettingsButton isOpen={isDrawerOpen} onOpen={() => setIsDrawerOpen(true)} />
+      <AppSettingsButton isOpen={isDrawerOpen} onToggle={() => setIsDrawerOpen((open) => !open)} />
       <AppSettingsDrawer
         isOpen={isDrawerOpen}
         mapDisplayPreferences={mapDisplayPreferences}
