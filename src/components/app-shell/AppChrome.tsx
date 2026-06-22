@@ -1,9 +1,9 @@
 import { useState, type ReactNode } from 'react';
-import type { SessionUser } from '../../types/auth';
+import type { AuthProvider, SessionUser } from '../../types/auth';
 import type { Tab } from '../../types/core';
+import { AppAccountSettingsSlot } from '../app-settings/AppAccountSettingsSlot';
 import { AppSettingsButton } from '../app-settings/AppSettingsButton';
 import { AppSettingsDrawer } from '../app-settings/AppSettingsDrawer';
-import type { AppSettingsPanelProps } from '../app-settings/AppSettingsPanel';
 import { NotificationDrawerContent, type NotificationDrawerContentProps } from '../notifications/NotificationDrawerContent';
 import { AppCapsule } from './AppCapsule';
 import { SideDrawer } from './SideDrawer';
@@ -18,10 +18,26 @@ const TAB_LABELS: Record<Tab, string> = {
 };
 
 export interface AppChromeProps {
+  accountSettings?: {
+    providers: AuthProvider[];
+    profileSaving: boolean;
+    profileError: string | null;
+    isLoggingOut: boolean;
+    onLinkProvider: (provider: AuthProvider) => void;
+    onSaveNickname: (nickname: string) => Promise<void>;
+    onUploadAvatar: (file: File) => Promise<void>;
+    onDeleteAvatar: () => Promise<void>;
+    onLogout: () => Promise<void>;
+  };
   activeTab: Tab;
   canNavigateBack: boolean;
   center?: ReactNode;
-  globalUtility: AppSettingsPanelProps;
+  globalUtility: {
+    mapDisplayPreferences?: {
+      showCuratedWithTourism: boolean;
+      onShowCuratedWithTourismChange: (checked: boolean) => void;
+    };
+  };
   menuBadgeCount?: number;
   notificationUtility: NotificationDrawerContentProps;
   onNavigateBack: () => void;
@@ -29,6 +45,7 @@ export interface AppChromeProps {
 }
 
 export function AppChrome({
+  accountSettings,
   activeTab,
   canNavigateBack,
   center,
@@ -51,6 +68,20 @@ export function AppChrome({
       {TAB_LABELS[activeTab]}
     </span>
   );
+  const accountSettingsContent = sessionUser && accountSettings ? (
+    <AppAccountSettingsSlot
+      sessionUser={sessionUser}
+      providers={accountSettings.providers}
+      profileSaving={accountSettings.profileSaving}
+      profileError={accountSettings.profileError}
+      isLoggingOut={accountSettings.isLoggingOut}
+      onLinkProvider={accountSettings.onLinkProvider}
+      onSaveNickname={accountSettings.onSaveNickname}
+      onUploadAvatar={accountSettings.onUploadAvatar}
+      onDeleteAvatar={accountSettings.onDeleteAvatar}
+      onLogout={accountSettings.onLogout}
+    />
+  ) : null;
 
   return (
     <>
@@ -77,6 +108,7 @@ export function AppChrome({
         )}
       />
       <AppSettingsDrawer
+        accountSettings={accountSettingsContent}
         isOpen={isSettingsDrawerOpen}
         mapDisplayPreferences={globalUtility.mapDisplayPreferences}
         onClose={() => setIsSettingsDrawerOpen(false)}
