@@ -1,0 +1,3 @@
+## 2024-05-18 - [Optimization of Naver Tourism Markers via sequential for-loops]
+**Learning:** In Naver map integrations (`useNaverTourismMarkers`), generating batch DOM updates for tourism markers over heavily populated KTO map overlays can trigger massive intermediate array memory allocations (using `Set(array.map())`, `[...a.map(), ...b.map()]`).
+**Action:** Use single-pass sequential `for...of` loops rather than chained array methods (`map().filter().join()`) or spread operators (`[...a, ...b]`) when processing large arrays into React effect dependencies or materialization batch objects, specifically to eliminate unnecessary GC pressure that affects framerates during map overlay updates.
