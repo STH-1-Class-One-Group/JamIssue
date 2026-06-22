@@ -153,9 +153,15 @@ Scope: parent-child task traceability for JamIssue governance completion.
 - [x] TSK-021-08: https://github.com/STH-1-Class-One-Group/JamIssue/issues/642
   - Title: notification-left-drawer
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/642
-  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/647
-  - Merge commit: a58906c6aaaf040f401110515699a5eacdc6c357
-  - Evidence: `docs/GOVERNANCE_INDEX.md`, `docs/TASK_ID_LEDGER.md`, `docs/traceability/task-ledger.jsonl`, `docs/ISSUE_TREE.md`
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/649
+  - Merge commit: 5fce4d1e4318714aa7188a50aaff0e6d2e3e4153
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-08.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-021-09: https://github.com/STH-1-Class-One-Group/JamIssue/issues/643
+  - Title: app-settings-right-drawer
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/643
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/649
+  - Merge commit: 5fce4d1e4318714aa7188a50aaff0e6d2e3e4153
+  - Evidence: `docs/traceability/task-ledger/by-task/TSK-021-09.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-016
 
