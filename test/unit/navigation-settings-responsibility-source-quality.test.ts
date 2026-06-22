@@ -89,7 +89,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
     expect(appSettingsPanel).not.toContain('SideDrawer');
 
-    expect(appSettingsButton).toContain('설정 열기');
+    expect(appSettingsButton).toContain('앱 설정 열기');
     expect(appSettingsButton).not.toContain('AppSettingsDrawer');
     expect(appSettingsButton).not.toContain('NotificationPanel');
 
@@ -177,13 +177,15 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(secondaryMenu).not.toContain("label: '로그아웃'");
   });
 
-  it('keeps drawer coordinates tied to safe shell insets', () => {
+  it('keeps drawer coordinates tied to central content instead of covering app chrome', () => {
     const css = readRepoFile('src/index.css');
 
     expect(css).toContain('--drawer-inline-inset');
     expect(css).toContain('--drawer-trailing-gap');
     expect(css).toContain('left: var(--drawer-inline-inset)');
     expect(css).toContain('right: var(--drawer-inline-inset)');
+    expect(css).toContain('top: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + var(--map-floating-nav-gap))');
+    expect(css).toContain('bottom: calc(var(--bottom-nav-offset) + 4px)');
     expect(css).not.toContain('right: max(var(--drawer-inline-inset)');
     expect(css).not.toContain('left: 0;\n  width: min(312px, calc(100% - 56px))');
   });
@@ -199,6 +201,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       'src/components/app-settings/AppSettingsPanel.tsx',
       'src/components/app-settings/AppSettingsDrawer.tsx',
       'src/components/notifications/NotificationDrawerContent.tsx',
+      'src/components/notifications/NotificationPanel.tsx',
+      'src/components/notifications/NotificationListItem.tsx',
+      'src/components/notifications/notificationTypes.ts',
     ];
 
     for (const file of files) {
@@ -206,7 +211,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       expect(source).not.toContain('\uFFFD');
       expect(source).not.toContain(String.fromCodePoint(0xfffd));
       expect(source).not.toContain('???');
-      for (const fragment of ['吏', '蹂댁', '횞']) {
+      for (const fragment of ['筌왖', '癰귣', '蹂댁', '吏', '횞']) {
         expect(source).not.toContain(fragment);
       }
     }

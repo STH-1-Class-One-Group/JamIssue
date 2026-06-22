@@ -28,7 +28,7 @@ function BackIcon() {
 }
 
 export function AppCapsule({
-  ariaLabel = '앱 캡슐 내비게이션',
+  ariaLabel = '앱 캡슐 네비게이션',
   canNavigateBack,
   center,
   menuBadgeCount = 0,

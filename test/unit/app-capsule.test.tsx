@@ -29,6 +29,10 @@ const notificationUtility: NotificationDrawerContentProps = {
   unreadCount: 2,
 };
 
+function readRepoFile(path: string) {
+  return readFileSync(join(process.cwd(), path), 'utf8');
+}
+
 describe('AppCapsule shell contract', () => {
   it('renders menu, center slot, back action, and injected settings action without owning overlays', () => {
     render(
@@ -42,7 +46,7 @@ describe('AppCapsule shell contract', () => {
       />,
     );
 
-    const capsule = screen.getByRole('navigation', { name: '앱 캡슐 내비게이션' });
+    const capsule = screen.getByRole('navigation', { name: '앱 캡슐 네비게이션' });
     const leading = capsule.querySelector('[data-app-capsule-slot="leading"]');
     const actions = capsule.querySelector('[data-app-capsule-slot="actions"]');
     const menuButton = within(capsule).getByRole('button', { name: '보조 메뉴 열기' });
@@ -169,30 +173,12 @@ describe('AppCapsule shell contract', () => {
   });
 
   it('does not introduce history, settings route, top notification ownership, or icon package coupling', () => {
-    const capsuleSource = readFileSync(
-      join(process.cwd(), 'src/components/app-shell/AppCapsule.tsx'),
-      'utf8',
-    );
-    const appChromeSource = readFileSync(
-      join(process.cwd(), 'src/components/app-shell/AppChrome.tsx'),
-      'utf8',
-    );
-    const sideDrawerSource = readFileSync(
-      join(process.cwd(), 'src/components/app-shell/SideDrawer.tsx'),
-      'utf8',
-    );
-    const secondaryMenuSource = readFileSync(
-      join(process.cwd(), 'src/components/app-shell/secondaryMenu.ts'),
-      'utf8',
-    );
-    const appSettingsPanelSource = readFileSync(
-      join(process.cwd(), 'src/components/app-settings/AppSettingsPanel.tsx'),
-      'utf8',
-    );
-    const appSettingsDrawerSource = readFileSync(
-      join(process.cwd(), 'src/components/app-settings/AppSettingsDrawer.tsx'),
-      'utf8',
-    );
+    const capsuleSource = readRepoFile('src/components/app-shell/AppCapsule.tsx');
+    const appChromeSource = readRepoFile('src/components/app-shell/AppChrome.tsx');
+    const sideDrawerSource = readRepoFile('src/components/app-shell/SideDrawer.tsx');
+    const secondaryMenuSource = readRepoFile('src/components/app-shell/secondaryMenu.ts');
+    const appSettingsPanelSource = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
+    const appSettingsDrawerSource = readRepoFile('src/components/app-settings/AppSettingsDrawer.tsx');
     const source = `${capsuleSource}\n${appChromeSource}\n${sideDrawerSource}\n${secondaryMenuSource}\n${appSettingsPanelSource}\n${appSettingsDrawerSource}`;
 
     expect(source).not.toContain('window.history');
