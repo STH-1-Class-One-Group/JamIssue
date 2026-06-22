@@ -4,12 +4,14 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { AppCapsule } from '../../src/components/app-shell/AppCapsule';
+import { AppChrome } from '../../src/components/app-shell/AppChrome';
 import { SideDrawer } from '../../src/components/app-shell/SideDrawer';
 import {
   isReservedPrimaryOrSettingsLabel,
   resolveSecondaryMenuItems,
 } from '../../src/components/app-shell/secondaryMenu';
 import type { AppSettingsPanelProps } from '../../src/components/app-settings/AppSettingsPanel';
+import type { NotificationDrawerContentProps } from '../../src/components/notifications/NotificationDrawerContent';
 
 const globalUtility: AppSettingsPanelProps = {
   mapDisplayPreferences: {
@@ -18,16 +20,25 @@ const globalUtility: AppSettingsPanelProps = {
   },
 };
 
+const notificationUtility: NotificationDrawerContentProps = {
+  notifications: [],
+  onDeleteNotification: vi.fn(),
+  onMarkAllNotificationsRead: vi.fn(),
+  onOpenNotification: vi.fn(),
+  sessionUserName: 'code305',
+  unreadCount: 2,
+};
+
 describe('AppCapsule shell contract', () => {
-  it('renders menu, center slot, back action, and settings action without a separate notification button', () => {
+  it('renders menu, center slot, back action, and injected settings action without owning overlays', () => {
     render(
       <AppCapsule
         canNavigateBack
         center={<button type="button">필터</button>}
-        globalUtility={globalUtility}
         menuBadgeCount={2}
         onNavigateBack={vi.fn()}
         onOpenMenu={vi.fn()}
+        settingsAction={<button type="button">앱 설정 열기</button>}
       />,
     );
 
@@ -40,11 +51,10 @@ describe('AppCapsule shell contract', () => {
 
     expect(menuButton).toBeInTheDocument();
     expect(menuButton.querySelector('.app-capsule__menu-badge')).not.toBeNull();
-    expect(screen.queryByRole('button', { name: '알림 열기' })).not.toBeInTheDocument();
     expect(backButton).toBeEnabled();
     expect(within(capsule).getByRole('button', { name: '필터' })).toBeInTheDocument();
-    expect(settingsButton).toHaveClass('global-settings-menu__trigger');
-    expect(capsule.querySelector('[data-app-settings-panel="root"]')).not.toBeNull();
+    expect(capsule.querySelector('[data-app-settings-panel="root"]')).toBeNull();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(menuButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(backButton.querySelector('.app-capsule__icon')).not.toBeNull();
     expect(leading?.contains(menuButton)).toBe(true);
@@ -61,7 +71,6 @@ describe('AppCapsule shell contract', () => {
       <AppCapsule
         canNavigateBack={false}
         center={<span>center</span>}
-        globalUtility={globalUtility}
         onNavigateBack={onNavigateBack}
       />,
     );
@@ -82,7 +91,6 @@ describe('AppCapsule shell contract', () => {
       <AppCapsule
         canNavigateBack={false}
         center={null}
-        globalUtility={globalUtility}
         onNavigateBack={vi.fn()}
         onOpenMenu={onOpenMenu}
       />,
@@ -92,6 +100,37 @@ describe('AppCapsule shell contract', () => {
 
     expect(onOpenMenu).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('lets AppChrome own SideDrawer and settings drawer overlays as capsule siblings', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <AppChrome
+        activeTab="map"
+        canNavigateBack
+        center={<button type="button">전체</button>}
+        globalUtility={globalUtility}
+        notificationUtility={notificationUtility}
+        onNavigateBack={vi.fn()}
+        sessionUser={null}
+      />,
+    );
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '앱 설정 열기' }));
+
+    const settingsDrawer = await screen.findByRole('dialog', { name: '앱 설정' });
+    expect(settingsDrawer).toHaveClass('app-settings-drawer__panel');
+    expect(within(settingsDrawer).getByText('지도 표시')).toBeInTheDocument();
+
+    await user.click(within(settingsDrawer).getByRole('button', { name: '앱 설정 닫기' }));
+    expect(screen.queryByRole('dialog', { name: '앱 설정' })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '보조 메뉴 열기' }));
+    const sideDrawer = await screen.findByRole('dialog', { name: '보조 메뉴' });
+    expect(sideDrawer).toBeInTheDocument();
+    expect(within(sideDrawer).getByRole('menuitem', { name: /알림/ })).toBeInTheDocument();
   });
 
   it('renders SideDrawer notification and support items with close paths', async () => {
@@ -135,6 +174,10 @@ describe('AppCapsule shell contract', () => {
       join(process.cwd(), 'src/components/app-shell/AppCapsule.tsx'),
       'utf8',
     );
+    const appChromeSource = readFileSync(
+      join(process.cwd(), 'src/components/app-shell/AppChrome.tsx'),
+      'utf8',
+    );
     const sideDrawerSource = readFileSync(
       join(process.cwd(), 'src/components/app-shell/SideDrawer.tsx'),
       'utf8',
@@ -151,21 +194,33 @@ describe('AppCapsule shell contract', () => {
       join(process.cwd(), 'src/components/app-settings/AppSettingsDrawer.tsx'),
       'utf8',
     );
-    const source = `${capsuleSource}\n${sideDrawerSource}\n${secondaryMenuSource}\n${appSettingsPanelSource}\n${appSettingsDrawerSource}`;
+    const source = `${capsuleSource}\n${appChromeSource}\n${sideDrawerSource}\n${secondaryMenuSource}\n${appSettingsPanelSource}\n${appSettingsDrawerSource}`;
 
     expect(source).not.toContain('window.history');
     expect(source).not.toContain('/settings');
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
     expect(source).not.toContain('@tabler');
     expect(source).not.toContain('\uFFFD');
+    expect(capsuleSource).not.toContain('AppSettingsPanel');
+    expect(capsuleSource).not.toContain('AppSettingsDrawer');
+    expect(capsuleSource).not.toContain('SideDrawer');
+    expect(capsuleSource).not.toContain('NotificationDrawerContent');
+    expect(capsuleSource).not.toContain('MapFloatingNav');
     expect(capsuleSource).not.toContain('BellIcon');
     expect(capsuleSource).not.toContain('onOpenNotifications');
     expect(capsuleSource).not.toContain('notificationUnreadCount');
-    expect(capsuleSource).toContain('menuBadgeCount');
+    expect(capsuleSource).toContain('settingsAction');
+    expect(appChromeSource).toContain('AppCapsule');
+    expect(appChromeSource).toContain('SideDrawer');
+    expect(appChromeSource).toContain('AppSettingsDrawer');
+    expect(appChromeSource).toContain('NotificationDrawerContent');
+    expect(appChromeSource).not.toContain('MapFloatingNav');
+    expect(appChromeSource).not.toContain('mapActions');
+    expect(appChromeSource).not.toContain('mapData');
     expect(appSettingsPanelSource).not.toContain('global-settings-menu__menu');
+    expect(appSettingsPanelSource).toContain('AppSettingsButton');
     expect(appSettingsPanelSource).toContain('AppSettingsDrawer');
     expect(appSettingsDrawerSource).not.toContain('NotificationPanel');
-    expect(appSettingsDrawerSource).not.toContain('useNotificationPanelActions');
     expect(sideDrawerSource).toContain('renderItemContent');
     expect(secondaryMenuSource).not.toContain('bottomNavItems');
     expect(secondaryMenuSource).not.toContain('AppSettingsPanel');

@@ -29,18 +29,20 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(appHeader).not.toContain('window.history');
   });
 
-  it('records that navigation-specific center controls are injected into the AppCapsule shell', () => {
-    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
+  it('records that navigation-specific center controls are injected through AppChrome', () => {
+    const app = readRepoFile('src/App.tsx');
+    const appChrome = readRepoFile('src/components/app-shell/AppChrome.tsx');
     const appMapStageView = readRepoFile('src/components/AppMapStageView.tsx');
     const mapFloatingNav = readRepoFile('src/components/map-stage/MapFloatingNav.tsx');
 
-    expect(appTopNavigation).toContain("import { AppCapsule } from './app-shell/AppCapsule'");
-    expect(appTopNavigation).toContain("import { MapFloatingNav } from './map-stage/MapFloatingNav'");
-    expect(appTopNavigation).toContain("import { AppTopNavigationDrawers } from './AppTopNavigationDrawers'");
-    expect(appTopNavigation).toContain('<AppCapsule');
-    expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
-    expect(appTopNavigation).toContain('center={center}');
-    expect(appTopNavigation).toContain('data-app-capsule-center-tab={activeTab}');
+    expect(app).toContain("import { AppChrome, AppShell } from './components/app-shell'");
+    expect(app).toContain("import { MapFloatingNav } from './components/map-stage/MapFloatingNav'");
+    expect(app).toContain('appChromeCenter');
+    expect(app).toContain('center={appChromeCenter}');
+    expect(appChrome).toContain("import { AppCapsule } from './AppCapsule'");
+    expect(appChrome).not.toContain('MapFloatingNav');
+    expect(appChrome).not.toContain('mapActions');
+    expect(appChrome).not.toContain('mapData');
     expect(appMapStageView).not.toContain("import { AppCapsule } from './app-shell/AppCapsule'");
     expect(appMapStageView).not.toContain('<AppCapsule');
     expect(mapFloatingNav).toContain('export interface MapFloatingNavProps');

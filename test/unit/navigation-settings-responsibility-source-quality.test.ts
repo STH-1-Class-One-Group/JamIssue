@@ -21,26 +21,42 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(bottomNav).not.toContain('SideDrawer');
   });
 
-  it('keeps the app capsule as shell composition without top-level notification ownership', () => {
+  it('keeps AppChrome as the only owner of capsule, side drawer, and settings drawer composition', () => {
+    const app = readRepoFile('src/App.tsx');
     const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
-    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
+    const appChrome = readRepoFile('src/components/app-shell/AppChrome.tsx');
     const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
 
-    expect(appCapsule).toContain("import { AppSettingsPanel");
-    expect(appCapsule).toContain('<AppSettingsPanel');
+    expect(app).toContain("import { AppChrome, AppShell } from './components/app-shell'");
+    expect(app).toContain("import { MapFloatingNav } from './components/map-stage/MapFloatingNav'");
+    expect(app).toContain('appChromeCenter');
+    expect(app).toContain('<AppChrome');
+    expect(app).not.toContain('AppTopNavigation');
+
+    expect(appCapsule).not.toContain('AppSettingsPanel');
+    expect(appCapsule).not.toContain('AppSettingsDrawer');
+    expect(appCapsule).not.toContain('SideDrawer');
+    expect(appCapsule).not.toContain('NotificationDrawerContent');
+    expect(appCapsule).not.toContain('MapFloatingNav');
     expect(appCapsule).toContain('canNavigateBack');
     expect(appCapsule).toContain('onNavigateBack');
     expect(appCapsule).toContain('menuBadgeCount');
+    expect(appCapsule).toContain('settingsAction');
     expect(appCapsule).not.toContain('/settings');
     expect(appCapsule).not.toContain('BellIcon');
     expect(appCapsule).not.toContain('onOpenNotifications');
     expect(appCapsule).not.toContain('notificationUnreadCount');
 
-    expect(appTopNavigation).toContain("import { AppTopNavigationDrawers } from './AppTopNavigationDrawers'");
-    expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
-    expect(appTopNavigation).toContain("import { bottomNavItems } from './BottomNav'");
-    expect(appTopNavigation).not.toContain('isNotificationDrawerOpen');
-    expect(appTopNavigation).not.toContain('setIsNotificationDrawerOpen');
+    expect(appChrome).toContain("import { AppCapsule } from './AppCapsule'");
+    expect(appChrome).toContain("import { SideDrawer } from './SideDrawer'");
+    expect(appChrome).toContain("import { AppSettingsButton } from '../app-settings/AppSettingsButton'");
+    expect(appChrome).toContain("import { AppSettingsDrawer } from '../app-settings/AppSettingsDrawer'");
+    expect(appChrome).toContain('NotificationDrawerContent');
+    expect(appChrome).toContain('resolveSecondaryMenuItems');
+    expect(appChrome).not.toContain('MapFloatingNav');
+    expect(appChrome).not.toContain('mapActions');
+    expect(appChrome).not.toContain('mapData');
+
     expect(secondaryMenu).not.toContain('bottomNavItems');
     expect(secondaryMenu).not.toContain('AppSettingsPanel');
     expect(secondaryMenu).not.toContain('ProfileAccountSettings');
@@ -48,9 +64,11 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
   it('keeps AppSettingsPanel scoped to right drawer app settings entry points', () => {
     const appSettingsPanel = readRepoFile('src/components/app-settings/AppSettingsPanel.tsx');
+    const appSettingsButton = readRepoFile('src/components/app-settings/AppSettingsButton.tsx');
     const appSettingsDrawer = readRepoFile('src/components/app-settings/AppSettingsDrawer.tsx');
     const globalSettingsMenu = readRepoFile('src/components/GlobalSettingsMenu.tsx');
 
+    expect(appSettingsPanel).toContain('AppSettingsButton');
     expect(appSettingsPanel).toContain('AppSettingsDrawer');
     expect(appSettingsPanel).not.toContain('global-settings-menu__menu');
     expect(appSettingsPanel).not.toContain('NotificationPanel');
@@ -60,6 +78,11 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsPanel).not.toContain('ProfileAvatarEditor');
     expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
     expect(appSettingsPanel).not.toContain('SideDrawer');
+
+    expect(appSettingsButton).toContain('export interface AppSettingsButtonProps');
+    expect(appSettingsButton).toContain('앱 설정 열기');
+    expect(appSettingsButton).not.toContain('AppSettingsDrawer');
+    expect(appSettingsButton).not.toContain('NotificationPanel');
 
     expect(appSettingsDrawer).toContain('FEEDBACK_FORM_URL');
     expect(appSettingsDrawer).toContain('showCuratedWithTourism');
@@ -77,16 +100,16 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
   it('keeps notification content inside SideDrawer instead of capsule or settings', () => {
     const appCapsule = readRepoFile('src/components/app-shell/AppCapsule.tsx');
-    const appTopNavigationDrawers = readRepoFile('src/components/AppTopNavigationDrawers.tsx');
+    const appChrome = readRepoFile('src/components/app-shell/AppChrome.tsx');
     const notificationContent = readRepoFile('src/components/notifications/NotificationDrawerContent.tsx');
     const appSettingsDrawer = readRepoFile('src/components/app-settings/AppSettingsDrawer.tsx');
     const sideDrawer = readRepoFile('src/components/app-shell/SideDrawer.tsx');
 
     expect(appCapsule).not.toContain('onOpenNotifications');
     expect(appCapsule).not.toContain('notificationUnreadCount');
-    expect(appTopNavigationDrawers).toContain('NotificationDrawerContent');
-    expect(appTopNavigationDrawers).toContain('<SideDrawer');
-    expect(appTopNavigationDrawers).toContain("itemId === 'notification'");
+    expect(appChrome).toContain('NotificationDrawerContent');
+    expect(appChrome).toContain('<SideDrawer');
+    expect(appChrome).toContain("itemId === 'notification'");
     expect(notificationContent).toContain('NotificationPanel');
     expect(notificationContent).toContain('aria-label="알림"');
     expect(notificationContent).not.toContain('showCuratedWithTourism');
@@ -133,14 +156,12 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
   });
 
   it('keeps the hamburger side drawer as secondary support, not a duplicate app/settings/account menu', () => {
-    const appTopNavigation = readRepoFile('src/components/AppTopNavigation.tsx');
-    const appTopNavigationDrawers = readRepoFile('src/components/AppTopNavigationDrawers.tsx');
+    const appChrome = readRepoFile('src/components/app-shell/AppChrome.tsx');
     const sideDrawer = readRepoFile('src/components/app-shell/SideDrawer.tsx');
     const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
 
-    expect(appTopNavigation).toContain('<AppTopNavigationDrawers');
-    expect(appTopNavigationDrawers).toContain('<SideDrawer');
-    expect(appTopNavigationDrawers).toContain('resolveSecondaryMenuItems');
+    expect(appChrome).toContain('<SideDrawer');
+    expect(appChrome).toContain('resolveSecondaryMenuItems');
     expect(sideDrawer).not.toContain('메뉴 준비 중');
     expect(secondaryMenu).not.toContain('지도 / 행사 / 피드 / 코스 / 마이');
     expect(secondaryMenu).not.toContain("label: '로그아웃'");
@@ -159,8 +180,10 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
   it('keeps touched navigation and settings shell files UTF-8 readable', () => {
     const files = [
       'src/components/app-shell/AppCapsule.tsx',
+      'src/components/app-shell/AppChrome.tsx',
       'src/components/app-shell/SideDrawer.tsx',
       'src/components/app-shell/secondaryMenu.ts',
+      'src/components/app-settings/AppSettingsButton.tsx',
       'src/components/app-settings/AppSettingsPanel.tsx',
       'src/components/app-settings/AppSettingsDrawer.tsx',
       'src/components/notifications/NotificationDrawerContent.tsx',
@@ -171,7 +194,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       expect(source).not.toContain('\uFFFD');
       expect(source).not.toContain(String.fromCodePoint(0xfffd));
       expect(source).not.toContain('???');
-      expect(source).not.toMatch(/[癲吏蹂愿諛濡]/);
+      expect(source).not.toMatch(/[뀐쭪癰귝꽴獄쎿]/);
     }
   });
 });

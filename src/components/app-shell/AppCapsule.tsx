@@ -1,15 +1,14 @@
 import type { ReactNode } from 'react';
-import { AppSettingsPanel, type AppSettingsPanelProps } from '../app-settings/AppSettingsPanel';
 
 export interface AppCapsuleProps {
   ariaLabel?: string;
   canNavigateBack: boolean;
   center?: ReactNode;
-  globalUtility: AppSettingsPanelProps;
   menuBadgeCount?: number;
   menuOpen?: boolean;
   onNavigateBack: () => void;
   onOpenMenu?: () => void;
+  settingsAction?: ReactNode;
 }
 
 function MenuIcon() {
@@ -32,11 +31,11 @@ export function AppCapsule({
   ariaLabel = '앱 캡슐 내비게이션',
   canNavigateBack,
   center,
-  globalUtility,
   menuBadgeCount = 0,
   menuOpen = false,
   onNavigateBack,
   onOpenMenu,
+  settingsAction,
 }: AppCapsuleProps) {
   return (
     <nav className="app-capsule" aria-label={ariaLabel} data-app-capsule="root">
@@ -67,7 +66,7 @@ export function AppCapsule({
         >
           <BackIcon />
         </button>
-        <AppSettingsPanel {...globalUtility} />
+        {settingsAction}
       </div>
     </nav>
   );

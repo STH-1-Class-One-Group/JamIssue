@@ -1,6 +1,6 @@
+import { createPortal } from 'react-dom';
 import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
 import { ToggleSwitch } from '../common/ToggleSwitch';
-import { createPortal } from 'react-dom';
 
 export type AppSettingsDrawerProps = {
   isOpen: boolean;
