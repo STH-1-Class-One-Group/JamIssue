@@ -146,6 +146,16 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(secondaryMenu).not.toContain("label: '로그아웃'");
   });
 
+  it('keeps drawer coordinates tied to safe shell insets', () => {
+    const css = readRepoFile('src/index.css');
+
+    expect(css).toContain('--drawer-inline-inset');
+    expect(css).toContain('--drawer-trailing-gap');
+    expect(css).toContain('left: var(--drawer-inline-inset)');
+    expect(css).toContain('right: max(var(--drawer-inline-inset)');
+    expect(css).not.toContain('left: 0;\n  width: min(312px, calc(100% - 56px))');
+  });
+
   it('keeps touched navigation and settings shell files UTF-8 readable', () => {
     const files = [
       'src/components/app-shell/AppCapsule.tsx',
@@ -159,8 +169,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     for (const file of files) {
       const source = readRepoFile(file);
       expect(source).not.toContain('\uFFFD');
-      expect(source).not.toContain('嶺');
+      expect(source).not.toContain(String.fromCodePoint(0xfffd));
       expect(source).not.toContain('???');
+      expect(source).not.toMatch(/[癲吏蹂愿諛濡]/);
     }
   });
 });
