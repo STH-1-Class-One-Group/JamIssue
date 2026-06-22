@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react';
 import type { MyPageResponse } from '../../types/my-page';
 
 export type NotificationItem = NonNullable<MyPageResponse>['notifications'][number];
@@ -6,7 +7,7 @@ export interface NotificationPanelActions {
   busyAll: boolean;
   busyId: string | null;
   error: string | null;
-  handleDelete: (event: React.MouseEvent<HTMLButtonElement>, notificationId: string) => Promise<void>;
+  handleDelete: (event: MouseEvent<HTMLButtonElement>, notificationId: string) => Promise<void>;
   handleMarkAll: () => Promise<void>;
   handleOpenNotification: (notification: NotificationItem) => Promise<void>;
 }

@@ -1,6 +1,6 @@
 export interface AppSettingsButtonProps {
   isOpen: boolean;
-  onOpen: () => void;
+  onToggle: () => void;
 }
 
 function GearIcon() {
@@ -20,13 +20,13 @@ function GearIcon() {
 
 export function AppSettingsButton({
   isOpen,
-  onOpen,
+  onToggle,
 }: AppSettingsButtonProps) {
   return (
     <button
       type="button"
       className={isOpen ? 'secondary-button icon-button global-settings-menu__trigger is-complete' : 'secondary-button icon-button global-settings-menu__trigger'}
-      onClick={onOpen}
+      onClick={onToggle}
       aria-label="앱 설정 열기"
       title="앱 설정 열기"
       aria-expanded={isOpen}

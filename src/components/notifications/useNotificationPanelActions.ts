@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { useEventCallback } from '../../hooks/useEventCallback';
 import type { NotificationItem } from './notificationTypes';
 
@@ -44,7 +44,7 @@ export function useNotificationPanelActions({
     }
   });
 
-  const handleDelete = useEventCallback(async (event: React.MouseEvent<HTMLButtonElement>, notificationId: string) => {
+  const handleDelete = useEventCallback(async (event: MouseEvent<HTMLButtonElement>, notificationId: string) => {
     event.stopPropagation();
     try {
       setBusyId(notificationId);
