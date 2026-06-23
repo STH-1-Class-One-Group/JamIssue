@@ -50,8 +50,21 @@ export function useNaverTourismMarkers({
       selectedTourismPlaceId,
       tourismPlaces,
     });
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
-    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
+    // Performance optimization: Avoid allocating a new array just to create a Set.
+    // This eliminates O(N) allocation and GC pressure.
+    const nextIds = new Set<string>();
+    for (const place of visiblePlaces) {
+      nextIds.add(place.id);
+    }
+
+    // Performance optimization: Avoid intermediate tuple arrays when joining strings.
+    // Iterating and concatenating directly removes unnecessary array allocations.
+    let visibleSignature = '';
+    for (let i = 0; i < visiblePlaces.length; i++) {
+      const place = visiblePlaces[i];
+      if (i > 0) visibleSignature += '|';
+      visibleSignature += `${place.id}:${place.latitude}:${place.longitude}`;
+    }
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
 
@@ -69,7 +82,12 @@ export function useNaverTourismMarkers({
       marker.setZIndex(zIndex);
     };
 
-    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
+    // Performance optimization: Construct Map via direct assignment loop rather than
+    // new Map(array.map(...)) to avoid large intermediate tuple arrays and reduce GC overhead.
+    const placeById = new Map<string, typeof visiblePlaces[number]>();
+    for (const place of visiblePlaces) {
+      placeById.set(place.id, place);
+    }
     if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
       const idsToRefresh = new Set([
         previousSelectedTourismPlaceIdRef.current,
