@@ -112,6 +112,39 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - Merge commit: a98008ae624f8bbe3466674b19ba5594d377c6df
   - Evidence: `docs/traceability/task-ledger/by-task/TSK-019-07.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
+## TSK-023
+
+- [x] TSK-023-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/669
+  - Title: visible-theme-hardcoding-audit
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/669
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/674
+  - Merge commit: 307ffabe2068a22d73df15489c97b03697a94abd
+  - Evidence: `docs/TSK-023-01-visible-theme-hardcoding-audit.md`, `docs/GOVERNANCE_INDEX.md`, `docs/traceability/task-ledger/by-task/TSK-023-01.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-023-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/670
+  - Title: themed-scrollbar-contract
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/670
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/674
+  - Merge commit: 307ffabe2068a22d73df15489c97b03697a94abd
+  - Evidence: `src/styles/semantic.css`, `src/index.css`, `test/unit/visible-theme-hardcoding-audit.test.ts`, `docs/traceability/task-ledger/by-task/TSK-023-02.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-023-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/671
+  - Title: drawer-form-surface-token-migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/671
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/674
+  - Merge commit: 307ffabe2068a22d73df15489c97b03697a94abd
+  - Evidence: `src/styles/semantic.css`, `src/index.css`, `src/styles/refinements.css`, `test/unit/visible-theme-hardcoding-audit.test.ts`, `test/unit/season-theme-source-quality.test.ts`, `docs/traceability/task-ledger/by-task/TSK-023-03.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [x] TSK-023-04: https://github.com/STH-1-Class-One-Group/JamIssue/issues/672
+  - Title: visible-theme-source-quality-gate
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/672
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/676
+  - Merge commit: db5545e14c6ba1cac90effbd89d03479789b548d
+  - Evidence: `src/styles/refinements.css`, `test/unit/visible-theme-hardcoding-audit.test.ts`, `docs/traceability/task-ledger/by-task/TSK-023-04.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+- [ ] TSK-023-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/673
+  - Title: theme-polish-traceability
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/673
+  - PR: pending on this branch
+  - Merge commit: pending on this branch
+  - Evidence: `docs/TSK-023-05-theme-polish-traceability.md`, `docs/traceability/task-ledger/by-task/TSK-023-05.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
+
 ## TSK-021
 
 - [x] TSK-021-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/621
