@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { DrawerListItem } from '../app-shell/drawer-kit';
 import { getNotificationLabel } from './notificationTypes';
 import type { NotificationItem } from './notificationTypes';
 
@@ -18,31 +19,27 @@ export const NotificationListItem = memo(function NotificationListItem({
   const meta = notification.actorName
     ? `${notification.actorName} · ${notification.createdAt}`
     : notification.createdAt;
+  const deleteButton = (
+    <button
+      type="button"
+      className="notification-item__delete"
+      aria-label="알림 삭제"
+      onClick={(event) => void onDelete(event, notification.id)}
+      disabled={isBusy}
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  );
 
   return (
-    <article className={notification.isRead ? 'notification-item chrome-drawer-card' : 'notification-item chrome-drawer-card is-unread'}>
-      <div className="notification-item__top">
-        <span className="soft-tag notification-item__tag">{getNotificationLabel(notification)}</span>
-        <span className="notification-item__time">{meta}</span>
-        <button
-          type="button"
-          className="notification-item__delete"
-          aria-label="알림 삭제"
-          onClick={(event) => void onDelete(event, notification.id)}
-          disabled={isBusy}
-        >
-          <span aria-hidden="true">×</span>
-        </button>
-      </div>
-      <button
-        type="button"
-        className="notification-item__content"
-        onClick={() => void onOpenNotification(notification)}
-        disabled={isBusy}
-      >
-        <strong>{notification.title}</strong>
-        <p>{notification.body}</p>
-      </button>
-    </article>
+    <DrawerListItem
+      action={deleteButton}
+      body={notification.body}
+      className={notification.isRead ? 'notification-item' : 'notification-item is-unread'}
+      meta={meta}
+      onOpen={() => void onOpenNotification(notification)}
+      tag={getNotificationLabel(notification)}
+      title={notification.title}
+    />
   );
 });

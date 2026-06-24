@@ -288,7 +288,7 @@ test('TSK-021-08 opens notifications in the left information drawer', async ({ p
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const capsuleBox = await requireBoundingBox(appCapsule);
   const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
-  const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));
+  const drawerPanelBox = await requireBoundingBox(page.locator('.chrome-drawer--left .chrome-drawer__panel'));
   const panelBox = await requireBoundingBox(notificationPanel);
   expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
   expect(drawerPanelBox.x).toBeLessThan(phoneShellBox.x + phoneShellBox.width / 2);
@@ -299,16 +299,11 @@ test('TSK-021-08 opens notifications in the left information drawer', async ({ p
   expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(drawerPanelBox.x + drawerPanelBox.width + 1);
 
   const firstNotification = notificationPanel.locator('.notification-item').first();
-  const firstMetaBox = await requireBoundingBox(firstNotification.locator('.notification-item__time'));
+  const firstMetaBox = await requireBoundingBox(firstNotification.locator('.drawer-kit-list-item__meta'));
   const firstDeleteBox = await requireBoundingBox(firstNotification.locator('.notification-item__delete'));
   expect(firstMetaBox.x + firstMetaBox.width).toBeLessThanOrEqual(firstDeleteBox.x - 4);
 
-  const isPanelTopHitTarget = await notificationPanel.evaluate((panel) => {
-    const rect = panel.getBoundingClientRect();
-    const target = document.elementFromPoint(rect.left + Math.min(24, rect.width / 2), rect.top + Math.min(24, rect.height / 2));
-    return Boolean(target?.closest('.global-notification-panel'));
-  });
-  expect(isPanelTopHitTarget).toBe(true);
+  await expectElementCenterToResolveInside(notificationPanel, '.global-notification-panel');
 });
 
 test('TSK-021-08 keeps the left notification drawer usable across target mobile widths', async ({ page }) => {
@@ -333,7 +328,7 @@ test('TSK-021-08 keeps the left notification drawer usable across target mobile 
     const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
     const capsuleBox = await requireBoundingBox(appCapsule);
     const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
-    const drawerPanelBox = await requireBoundingBox(page.locator('.side-drawer__panel'));
+    const drawerPanelBox = await requireBoundingBox(page.locator('.chrome-drawer--left .chrome-drawer__panel'));
     expect(drawerPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
     expect(drawerPanelBox.x + drawerPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
     expect(drawerPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
@@ -361,8 +356,8 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const mapDisplaySwitch = settingsDrawer.locator('[data-app-setting="show-curated-with-tourism"]');
   const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(mapDisplaySwitch).toBeVisible();
-  await expectElementCenterToResolveInside(mapDisplayTrack, '.app-settings-drawer__panel');
-  const settingsContent = settingsDrawer.locator('.app-settings-drawer__content');
+  await expectElementCenterToResolveInside(mapDisplayTrack, '.chrome-drawer__panel');
+  const settingsContent = settingsDrawer.locator('.chrome-drawer__content');
   await expect(settingsContent).toBeVisible();
   await expect.poll(async () => settingsContent.evaluate((element) => (
     element.scrollHeight > element.clientHeight
@@ -382,7 +377,7 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const capsuleBox = await requireBoundingBox(appCapsule);
   const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
-  const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
+  const settingsPanelBox = await requireBoundingBox(page.locator('.chrome-drawer--right .chrome-drawer__panel'));
   const contentBox = await requireBoundingBox(settingsContent);
   const socialLabelBox = await requireBoundingBox(socialLabel);
   const avatarBox = await requireBoundingBox(avatarRegion);
@@ -431,12 +426,12 @@ test('TSK-021-09 keeps the right settings drawer hittable inside desktop phone p
   const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
   await expect(mapDisplaySwitch).toBeVisible();
-  await expectElementCenterToResolveInside(mapDisplayTrack, '.app-settings-drawer__panel');
+  await expectElementCenterToResolveInside(mapDisplayTrack, '.chrome-drawer__panel');
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const capsuleBox = await requireBoundingBox(appCapsule);
   const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
-  const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
+  const settingsPanelBox = await requireBoundingBox(page.locator('.chrome-drawer--right .chrome-drawer__panel'));
   expect(settingsPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
   expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);

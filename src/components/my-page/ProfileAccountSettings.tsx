@@ -1,6 +1,7 @@
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AuthProvider, SessionUser } from '../../types/auth';
 import { getAuthProviderDisplayLabel } from '../../utils/authProviderDisplay';
+import { DrawerFormGroup, DrawerSection, DrawerStack } from '../app-shell/drawer-kit';
 import { ProfileAvatarEditor } from './ProfileAvatarEditor';
 
 type ProfileAccountSettingsProps = {
@@ -42,10 +43,9 @@ export function ProfileAccountSettings({
   ];
 
   return (
-    <div className="settings-card__account-content chrome-drawer-stack">
-      {socialProviderKeys.length > 0 && (
-        <section className="chrome-drawer-subsection settings-card__social" aria-label="연결된 소셜 계정">
-          <p className="chrome-drawer-section__label">소셜 계정</p>
+    <DrawerStack className="settings-card__account-content">
+      {socialProviderKeys.length > 0 ? (
+        <DrawerSection className="settings-card__social" eyebrow="소셜 계정" aria-label="연결된 소셜 계정">
           <div className="settings-card__social-list">
             {socialProviderKeys.map((providerKey) => {
               const provider = providerByKey.get(providerKey);
@@ -79,20 +79,24 @@ export function ProfileAccountSettings({
               );
             })}
           </div>
-        </section>
-      )}
+        </DrawerSection>
+      ) : null}
       <ProfileAvatarEditor
         sessionUser={sessionUser}
         profileSaving={profileSaving}
         onAvatarChange={onAvatarChange}
         onDeleteAvatar={onDeleteAvatar}
       />
-      <form className="chrome-drawer-subsection route-builder-form" onSubmit={(event) => void onSubmit(event)}>
-        <label className="route-builder-field">
-          <span className="chrome-drawer-section__label">프로필명</span>
-          <input value={nickname} onChange={(event) => onNicknameChange(event.target.value)} placeholder="닉네임을 입력하세요" maxLength={40} />
-        </label>
-        {profileError && <p className="form-error-copy">{profileError}</p>}
+      <form className="drawer-kit-section route-builder-form" onSubmit={(event) => void onSubmit(event)}>
+        <DrawerFormGroup label="프로필명">
+          <input
+            value={nickname}
+            onChange={(event) => onNicknameChange(event.target.value)}
+            placeholder="닉네임을 입력하세요"
+            maxLength={40}
+          />
+        </DrawerFormGroup>
+        {profileError ? <p className="form-error-copy">{profileError}</p> : null}
         <button type="submit" className="primary-button route-submit-button" disabled={profileSaving || nickname.trim().length < 2}>
           {profileSaving ? '저장 중' : '프로필 저장'}
         </button>
@@ -100,6 +104,6 @@ export function ProfileAccountSettings({
       <button type="button" className="secondary-button route-submit-button" onClick={onLogout} disabled={isLoggingOut}>
         {isLoggingOut ? '정리 중' : '로그아웃'}
       </button>
-    </div>
+    </DrawerStack>
   );
 }

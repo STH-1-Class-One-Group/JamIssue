@@ -113,7 +113,7 @@ describe('NotificationPanel item render stability', () => {
     );
 
     expect(getMarkAllButton(container)).toBeDisabled();
-    expect(container.querySelector('.notification-panel__status')).toHaveClass('chrome-drawer-card');
+    expect(container.querySelector('.notification-panel__status')).toHaveClass('drawer-kit-card');
     expect(container.querySelector('.notification-item.is-unread')).toBeNull();
   });
 
@@ -127,12 +127,12 @@ describe('NotificationPanel item render stability', () => {
       />,
     );
 
-    const topRow = container.querySelector('.notification-item__top');
+    const topRow = container.querySelector('.drawer-kit-list-item__top');
 
     expect(topRow).not.toBeNull();
-    expect(topRow?.querySelector('.notification-item__tag')).toHaveTextContent('review-comment');
-    expect(topRow?.querySelector('.notification-item__time')).toHaveTextContent('code305');
-    expect(topRow?.querySelector('.notification-item__time')).toHaveTextContent('2026-06-13T00:00:00Z');
+    expect(topRow?.querySelector('.drawer-kit-list-item__tag')).toHaveTextContent('review-comment');
+    expect(topRow?.querySelector('.drawer-kit-list-item__meta')).toHaveTextContent('code305');
+    expect(topRow?.querySelector('.drawer-kit-list-item__meta')).toHaveTextContent('2026-06-13T00:00:00Z');
     expect(topRow?.querySelector('.notification-item__delete')).not.toBeNull();
   });
 

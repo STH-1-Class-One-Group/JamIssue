@@ -1,6 +1,7 @@
 import type { ChangeEvent } from 'react';
 import type { SessionUser } from '../../types/auth';
 import { Avatar } from '../Avatar';
+import { DrawerActionRow, DrawerSection } from '../app-shell/drawer-kit';
 
 type ProfileAvatarEditorProps = {
   sessionUser: SessionUser;
@@ -16,15 +17,12 @@ export function ProfileAvatarEditor({
   onDeleteAvatar,
 }: ProfileAvatarEditorProps) {
   return (
-    <section className="chrome-drawer-subsection settings-card__avatar-editor" aria-label="프로필 사진 설정">
+    <DrawerSection className="settings-card__avatar-editor" eyebrow="AVATAR" aria-label="프로필 사진 설정">
       <div className="settings-card__avatar-preview">
         <Avatar src={sessionUser.profileImage} name={sessionUser.nickname} size="md" />
-        <div>
-          <p className="chrome-drawer-section__label">AVATAR</p>
-          <p className="section-copy">작은 프로필 이미지로 피드와 댓글에서 표시돼요.</p>
-        </div>
+        <p className="section-copy">작은 프로필 이미지로 피드와 댓글에서 표시돼요.</p>
       </div>
-      <div className="chrome-drawer-action-row settings-card__avatar-action-row">
+      <DrawerActionRow className="settings-card__avatar-action-row">
         <label className="secondary-button settings-card__avatar-action settings-card__avatar-upload">
           사진 변경
           <input type="file" accept="image/*" onChange={(event) => void onAvatarChange(event)} disabled={profileSaving} />
@@ -37,7 +35,7 @@ export function ProfileAvatarEditor({
         >
           사진 삭제
         </button>
-      </div>
-    </section>
+      </DrawerActionRow>
+    </DrawerSection>
   );
 }

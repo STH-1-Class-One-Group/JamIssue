@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChromeDrawerShell } from './ChromeDrawerShell';
+import { DrawerSection, DrawerSegmentControl, DrawerStack } from './drawer-kit';
 import type { SecondaryMenuItem, SecondaryMenuItemId } from './secondaryMenu';
 
 export interface SideDrawerProps {
@@ -49,42 +50,41 @@ export function SideDrawer({
       side="left"
       title={<p className="section-eyebrow">MENU</p>}
     >
-      <div className="side-drawer__content chrome-drawer-stack" data-side-drawer-slot="content" data-testid="side-drawer-content">
-        {items.length > 0 && (
-          <div className="side-drawer__menu" role="menu" aria-label="보조 기능">
+      <DrawerStack className="side-drawer__content" data-side-drawer-slot="content" data-testid="side-drawer-content">
+        {items.length > 0 ? (
+          <DrawerSegmentControl label="보조 기능">
             {items.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                className={activeItem?.id === item.id ? 'side-drawer__menu-item is-active' : 'side-drawer__menu-item'}
+                className={activeItem?.id === item.id ? 'drawer-kit-segment-control__item is-active' : 'drawer-kit-segment-control__item'}
                 role="menuitem"
                 aria-current={activeItem?.id === item.id ? 'page' : undefined}
                 onClick={() => handleSelectItem(item)}
               >
-                {item.icon && <span className="side-drawer__menu-icon" aria-hidden="true">{item.icon}</span>}
-                <span className="side-drawer__menu-copy">
-                  <span className="side-drawer__menu-label">
-                    {item.label}
-                    {item.badgeCount && item.badgeCount > 0 ? (
-                      <span className="side-drawer__menu-badge" aria-hidden="true">{item.badgeCount}</span>
-                    ) : null}
-                  </span>
-                  <span className="side-drawer__menu-description">{item.description}</span>
+                {item.icon ? <span className="drawer-kit-segment-control__icon" aria-hidden="true">{item.icon}</span> : null}
+                <span className="drawer-kit-segment-control__label">
+                  {item.label}
+                  {item.badgeCount && item.badgeCount > 0 ? (
+                    <span className="drawer-kit-segment-control__badge" aria-hidden="true">{item.badgeCount}</span>
+                  ) : null}
                 </span>
               </button>
             ))}
-          </div>
-        )}
+          </DrawerSegmentControl>
+        ) : null}
         {activeItem ? (
           itemContent ?? (
-            <section className="chrome-drawer-section side-drawer__detail" aria-label={`${activeItem.label} 상세`}>
-              <h2>{activeItem.label}</h2>
-              <p>{activeItem.description}</p>
-            </section>
+            <DrawerSection
+              className="side-drawer__detail"
+              title={activeItem.label}
+              description={activeItem.description}
+              aria-label={`${activeItem.label} 상세`}
+            />
           )
         ) : null}
         {children}
-      </div>
+      </DrawerStack>
     </ChromeDrawerShell>
   );
 }

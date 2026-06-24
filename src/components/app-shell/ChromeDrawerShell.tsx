@@ -46,21 +46,16 @@ export function ChromeDrawerShell({
     }, 800);
   };
 
-  const legacyRootClass = side === 'left' ? 'side-drawer' : 'app-settings-drawer';
-  const legacyOverlayClass = side === 'left' ? 'side-drawer__overlay' : 'app-settings-drawer__overlay';
-  const legacyPanelClass = side === 'left' ? 'side-drawer__panel' : 'app-settings-drawer__panel';
-  const legacyCloseClass = side === 'left' ? 'side-drawer__close' : 'app-settings-drawer__close';
-
   return (
-    <div className={`chrome-drawer chrome-drawer--${side} ${legacyRootClass}`} data-chrome-drawer={side}>
+    <div className={`chrome-drawer chrome-drawer--${side}`} data-chrome-drawer={side}>
       <button
         type="button"
-        className={`chrome-drawer__overlay ${legacyOverlayClass}`}
+        className="chrome-drawer__overlay"
         aria-label={`${ariaLabel} 닫기`}
         onClick={onClose}
       />
       <aside
-        className={`chrome-drawer__panel ${legacyPanelClass}`}
+        className="chrome-drawer__panel"
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}
@@ -69,7 +64,7 @@ export function ChromeDrawerShell({
           <div className="chrome-drawer__title">{title}</div>
           <button
             type="button"
-            className={`chrome-drawer__close ${legacyCloseClass}`}
+            className="chrome-drawer__close"
             aria-label={`${ariaLabel} 닫기`}
             onClick={onClose}
           >

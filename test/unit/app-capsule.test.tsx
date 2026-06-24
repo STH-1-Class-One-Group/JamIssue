@@ -122,7 +122,7 @@ describe('AppCapsule shell contract', () => {
     await user.click(screen.getByRole('button', { name: '설정 열기' }));
 
     const settingsDrawer = await screen.findByRole('dialog', { name: '설정' });
-    expect(settingsDrawer).toHaveClass('app-settings-drawer__panel');
+    expect(settingsDrawer).toHaveClass('chrome-drawer__panel');
     expect(within(settingsDrawer).getByText('지도 표시')).toBeInTheDocument();
 
     await user.click(within(settingsDrawer).getByRole('button', { name: '설정 닫기' }));
@@ -149,11 +149,13 @@ describe('AppCapsule shell contract', () => {
 
     const drawer = screen.getByRole('dialog', { name: '보조 메뉴' });
     expect(drawer).toBeInTheDocument();
-    expect(within(drawer).getAllByRole('menuitem')).toHaveLength(2);
-    expect(within(drawer).getByRole('menuitem', { name: /알림/ })).toBeInTheDocument();
+    expect(within(drawer).getAllByRole('menuitem')).toEqual(expect.arrayContaining([
+      within(drawer).getByRole('menuitem', { name: /알림/ }),
+      within(drawer).getByRole('menuitem', { name: /이용 안내/ }),
+    ]));
     expect(screen.getByLabelText('알림')).toHaveTextContent('알림 목록');
 
-    const closeButton = container.querySelector('.side-drawer__close');
+    const closeButton = container.querySelector('.chrome-drawer__close');
     expect(closeButton).not.toBeNull();
     await user.click(closeButton as HTMLElement);
     expect(onClose).toHaveBeenCalledTimes(1);

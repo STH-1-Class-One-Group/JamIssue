@@ -3804,7 +3804,8 @@ textarea {
   scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
-.chrome-drawer-stack {
+.chrome-drawer-stack,
+.drawer-kit-stack {
   display: grid;
   align-content: start;
   gap: 16px;
@@ -3812,20 +3813,25 @@ textarea {
 }
 
 .chrome-drawer-section,
-.chrome-drawer-card {
+.chrome-drawer-card,
+.drawer-kit-section,
+.drawer-kit-card {
   border: 1px solid var(--surface-card-border);
   border-radius: var(--radius-card);
   background: var(--surface-card);
   box-shadow: var(--shadow-soft);
 }
 
-.chrome-drawer-section {
+.chrome-drawer-section,
+.drawer-kit-section {
   display: grid;
   gap: 14px;
   padding: 16px;
 }
 
-.chrome-drawer-subsection {
+.chrome-drawer-subsection,
+.drawer-kit-section .drawer-kit-section,
+.drawer-kit-form-group {
   display: grid;
   gap: 12px;
   min-width: 0;
@@ -3833,25 +3839,29 @@ textarea {
   border-top: 1px solid var(--line-soft);
 }
 
-.chrome-drawer-subsection:first-child {
+.chrome-drawer-subsection:first-child,
+.drawer-kit-section .drawer-kit-section:first-child {
   padding-top: 0;
   border-top: 0;
 }
 
-.chrome-drawer-section__heading {
+.chrome-drawer-section__heading,
+.drawer-kit-section__heading {
   display: grid;
   gap: 4px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--line-soft);
 }
 
-.chrome-drawer-section__heading h3 {
+.chrome-drawer-section__heading h3,
+.drawer-kit-section__heading h3 {
   margin: 0;
   color: var(--text-primary);
   font-size: 1rem;
 }
 
-.chrome-drawer-section__label {
+.chrome-drawer-section__label,
+.drawer-kit-section__eyebrow {
   color: var(--color-accent-strong);
   font-size: 0.78rem;
   font-weight: 900;
@@ -3859,10 +3869,131 @@ textarea {
   text-transform: uppercase;
 }
 
-.chrome-drawer-action-row {
+.drawer-kit-section__description {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.chrome-drawer-action-row,
+.drawer-kit-action-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.drawer-kit-segment-control {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.drawer-kit-segment-control__item {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 800;
+}
+
+.drawer-kit-segment-control__item.is-active {
+  border-color: var(--control-active-border);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+}
+
+.drawer-kit-segment-control__badge {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--control-active-text);
+  color: var(--surface-card);
+  font-size: 11px;
+}
+
+.drawer-kit-list-item {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.drawer-kit-list-item__top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.drawer-kit-list-item__tag {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border: 1px solid var(--control-active-border);
+  border-radius: 999px;
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.drawer-kit-list-item__meta {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-kit-list-item__action {
+  display: inline-flex;
+}
+
+.drawer-kit-list-item__open {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.drawer-kit-list-item__body {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.drawer-kit-list-item__body strong,
+.drawer-kit-list-item__body p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.drawer-kit-form-group {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .chrome-drawer__footer {
@@ -4105,45 +4236,37 @@ textarea {
 
 /* Visible app scroll surfaces use the seasonal semantic scrollbar contract. */
 .chrome-drawer__content,
-.app-settings-drawer__content,
 .tab-overlay--scrollable,
 .place-drawer__content,
 .page-panel--scrollable,
-.feed-comment-sheet__content,
-.side-drawer__content {
+.feed-comment-sheet__content {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
 .chrome-drawer__content::-webkit-scrollbar,
-.app-settings-drawer__content::-webkit-scrollbar,
 .tab-overlay--scrollable::-webkit-scrollbar,
 .place-drawer__content::-webkit-scrollbar,
 .page-panel--scrollable::-webkit-scrollbar,
-.feed-comment-sheet__content::-webkit-scrollbar,
-.side-drawer__content::-webkit-scrollbar {
+.feed-comment-sheet__content::-webkit-scrollbar {
   width: var(--scrollbar-size);
 }
 
 .chrome-drawer__content::-webkit-scrollbar-track,
-.app-settings-drawer__content::-webkit-scrollbar-track,
 .tab-overlay--scrollable::-webkit-scrollbar-track,
 .place-drawer__content::-webkit-scrollbar-track,
 .page-panel--scrollable::-webkit-scrollbar-track,
-.feed-comment-sheet__content::-webkit-scrollbar-track,
-.side-drawer__content::-webkit-scrollbar-track {
+.feed-comment-sheet__content::-webkit-scrollbar-track {
   border-radius: 999px;
   background: transparent;
 }
 
 .chrome-drawer__content::-webkit-scrollbar-thumb,
-.app-settings-drawer__content::-webkit-scrollbar-thumb,
 .tab-overlay--scrollable::-webkit-scrollbar-thumb,
 .place-drawer__content::-webkit-scrollbar-thumb,
 .page-panel--scrollable::-webkit-scrollbar-thumb,
-.feed-comment-sheet__content::-webkit-scrollbar-thumb,
-.side-drawer__content::-webkit-scrollbar-thumb {
+.feed-comment-sheet__content::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
   background: transparent;
@@ -4152,8 +4275,6 @@ textarea {
 .chrome-drawer__content.is-scrolling,
 .chrome-drawer__content:hover,
 .chrome-drawer__content:focus-within,
-.app-settings-drawer__content:hover,
-.app-settings-drawer__content:focus-within,
 .tab-overlay--scrollable:hover,
 .tab-overlay--scrollable:focus-within,
 .place-drawer__content:hover,
@@ -4161,17 +4282,13 @@ textarea {
 .page-panel--scrollable:hover,
 .page-panel--scrollable:focus-within,
 .feed-comment-sheet__content:hover,
-.feed-comment-sheet__content:focus-within,
-.side-drawer__content:hover,
-.side-drawer__content:focus-within {
+.feed-comment-sheet__content:focus-within {
   scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .chrome-drawer__content.is-scrolling::-webkit-scrollbar-track,
 .chrome-drawer__content:hover::-webkit-scrollbar-track,
 .chrome-drawer__content:focus-within::-webkit-scrollbar-track,
-.app-settings-drawer__content:hover::-webkit-scrollbar-track,
-.app-settings-drawer__content:focus-within::-webkit-scrollbar-track,
 .tab-overlay--scrollable:hover::-webkit-scrollbar-track,
 .tab-overlay--scrollable:focus-within::-webkit-scrollbar-track,
 .place-drawer__content:hover::-webkit-scrollbar-track,
@@ -4179,17 +4296,13 @@ textarea {
 .page-panel--scrollable:hover::-webkit-scrollbar-track,
 .page-panel--scrollable:focus-within::-webkit-scrollbar-track,
 .feed-comment-sheet__content:hover::-webkit-scrollbar-track,
-.feed-comment-sheet__content:focus-within::-webkit-scrollbar-track,
-.side-drawer__content:hover::-webkit-scrollbar-track,
-.side-drawer__content:focus-within::-webkit-scrollbar-track {
+.feed-comment-sheet__content:focus-within::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
 }
 
 .chrome-drawer__content.is-scrolling::-webkit-scrollbar-thumb,
 .chrome-drawer__content:hover::-webkit-scrollbar-thumb,
 .chrome-drawer__content:focus-within::-webkit-scrollbar-thumb,
-.app-settings-drawer__content:hover::-webkit-scrollbar-thumb,
-.app-settings-drawer__content:focus-within::-webkit-scrollbar-thumb,
 .tab-overlay--scrollable:hover::-webkit-scrollbar-thumb,
 .tab-overlay--scrollable:focus-within::-webkit-scrollbar-thumb,
 .place-drawer__content:hover::-webkit-scrollbar-thumb,
@@ -4197,19 +4310,15 @@ textarea {
 .page-panel--scrollable:hover::-webkit-scrollbar-thumb,
 .page-panel--scrollable:focus-within::-webkit-scrollbar-thumb,
 .feed-comment-sheet__content:hover::-webkit-scrollbar-thumb,
-.feed-comment-sheet__content:focus-within::-webkit-scrollbar-thumb,
-.side-drawer__content:hover::-webkit-scrollbar-thumb,
-.side-drawer__content:focus-within::-webkit-scrollbar-thumb {
+.feed-comment-sheet__content:focus-within::-webkit-scrollbar-thumb {
   border-color: var(--scrollbar-border);
   background: var(--scrollbar-thumb);
 }
 
 .chrome-drawer__content.is-scrolling::-webkit-scrollbar-thumb:hover,
-.app-settings-drawer__content::-webkit-scrollbar-thumb:hover,
 .tab-overlay--scrollable::-webkit-scrollbar-thumb:hover,
 .place-drawer__content::-webkit-scrollbar-thumb:hover,
 .page-panel--scrollable::-webkit-scrollbar-thumb:hover,
-.feed-comment-sheet__content::-webkit-scrollbar-thumb:hover,
-.side-drawer__content::-webkit-scrollbar-thumb:hover {
+.feed-comment-sheet__content::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }

@@ -40,7 +40,7 @@ export function AppCapsule({
   return (
     <nav className="app-capsule" aria-label={ariaLabel} data-app-capsule="root">
       <div className="app-capsule__leading" data-app-capsule-slot="leading">
-        {onOpenMenu && (
+        {onOpenMenu ? (
           <button
             type="button"
             className="app-capsule__menu-button"
@@ -49,9 +49,9 @@ export function AppCapsule({
             onClick={onOpenMenu}
           >
             <MenuIcon />
-            {menuBadgeCount > 0 && <span className="app-capsule__menu-badge" aria-hidden="true" />}
+            {menuBadgeCount > 0 ? <span className="app-capsule__menu-badge" aria-hidden="true" /> : null}
           </button>
-        )}
+        ) : null}
       </div>
       <div className="app-capsule__center" data-app-capsule-slot="center">
         {center}
