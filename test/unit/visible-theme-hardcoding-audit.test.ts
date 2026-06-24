@@ -73,6 +73,7 @@ function expectSelectorBlocksAvoidRawColors(source: string, selectors: string[])
 
 describe('visible theme hardcoding audit', () => {
   const visibleScrollableSurfaces = [
+    '.chrome-drawer__content',
     '.app-settings-drawer__content',
     '.tab-overlay--scrollable',
     '.place-drawer__content',
@@ -83,11 +84,18 @@ describe('visible theme hardcoding audit', () => {
 
   it('keeps visible scrollable app surfaces explicitly classified for TSK-023 migration', () => {
     const indexCss = readRepoFile('src/index.css');
+    const chromeDrawerContentBlock = extractBlock(indexCss, '.chrome-drawer__content');
+
+    expect(chromeDrawerContentBlock, '.chrome-drawer__content should own drawer scrolling').toMatch(/overflow-y:\s*auto/);
 
     for (const selector of visibleScrollableSurfaces) {
       const block = extractBlock(indexCss, selector);
 
-      expect(block, `${selector} should be an explicitly scrollable app surface`).toMatch(/overflow-y:\s*auto/);
+      if (selector === '.app-settings-drawer__content' || selector === '.side-drawer__content') {
+        expect(block, `${selector} should delegate scrolling to .chrome-drawer__content`).toMatch(/overflow:\s*visible/);
+      } else {
+        expect(block, `${selector} should be an explicitly scrollable app surface`).toMatch(/overflow-y:\s*auto/);
+      }
     }
   });
 
@@ -135,12 +143,15 @@ describe('visible theme hardcoding audit', () => {
 
     expect(indexCss).toContain('scrollbar-gutter: stable;');
     expect(indexCss).toContain('scrollbar-width: thin;');
-    expect(indexCss).toContain('scrollbar-color: var(--color-accent) var(--control-active-bg);');
+    expect(indexCss).toContain('scrollbar-color: transparent transparent;');
+    expect(indexCss).toContain('scrollbar-color: var(--scrollbar-thumb) transparent;');
     expect(indexCss).toContain('width: var(--scrollbar-size);');
+    expect(indexCss).toContain('background: transparent;');
     expect(indexCss).toContain('background: var(--scrollbar-track);');
     expect(indexCss).toContain('background: var(--scrollbar-thumb);');
     expect(indexCss).toContain('background: var(--scrollbar-thumb-hover);');
-    expect(indexCss).toContain('border: 2px solid var(--scrollbar-border);');
+    expect(indexCss).toContain('border: 2px solid transparent;');
+    expect(indexCss).toContain('border-color: var(--scrollbar-border);');
   });
 
   it('keeps scrollbar and form semantic tokens declared at the semantic boundary', () => {

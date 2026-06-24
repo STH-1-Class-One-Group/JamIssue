@@ -374,9 +374,10 @@
 
 .notification-item {
   position: relative !important;
-  display: block !important;
+  display: grid !important;
+  gap: 10px !important;
   min-width: 0 !important;
-  padding: 14px 46px 14px 14px !important;
+  padding: 14px !important;
   border-radius: 22px !important;
   border: 1px solid var(--control-border) !important;
   background: var(--surface-glass) !important;
@@ -409,26 +410,25 @@
 
 .notification-item__top {
   display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
   align-items: center !important;
   gap: 8px !important;
-  padding-right: 36px !important;
   min-width: 0 !important;
 }
 
 .notification-item__time {
   color: var(--text-muted) !important;
   font-size: 12px !important;
-  overflow-wrap: anywhere !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
   text-align: right !important;
 }
 
 .notification-item__delete {
-  position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
-  width: 32px !important;
-  height: 32px !important;
+  width: 28px !important;
+  height: 28px !important;
   padding: 0 !important;
   border-radius: 999px !important;
   border: 1px solid var(--control-border) !important;
@@ -442,15 +442,6 @@
   .notification-panel__header {
     flex-direction: column !important;
     align-items: stretch !important;
-  }
-
-  .notification-item__top {
-    grid-template-columns: minmax(0, 1fr) !important;
-    align-items: flex-start !important;
-  }
-
-  .notification-item__time {
-    text-align: left !important;
   }
 }
 /* 2026-03-19 map drawer visual teaser */

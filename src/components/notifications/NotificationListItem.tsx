@@ -15,31 +15,33 @@ export const NotificationListItem = memo(function NotificationListItem({
   onOpenNotification,
   onDelete,
 }: NotificationListItemProps) {
+  const meta = notification.actorName
+    ? `${notification.actorName} · ${notification.createdAt}`
+    : notification.createdAt;
+
   return (
     <article className={notification.isRead ? 'notification-item chrome-drawer-card' : 'notification-item chrome-drawer-card is-unread'}>
+      <div className="notification-item__top">
+        <span className="soft-tag notification-item__tag">{getNotificationLabel(notification)}</span>
+        <span className="notification-item__time">{meta}</span>
+        <button
+          type="button"
+          className="notification-item__delete"
+          aria-label="알림 삭제"
+          onClick={(event) => void onDelete(event, notification.id)}
+          disabled={isBusy}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
       <button
         type="button"
         className="notification-item__content"
         onClick={() => void onOpenNotification(notification)}
         disabled={isBusy}
       >
-        <div className="notification-item__top">
-          <span className="soft-tag">{getNotificationLabel(notification)}</span>
-          <span className="notification-item__time">
-            {notification.actorName ? `${notification.actorName} · ${notification.createdAt}` : notification.createdAt}
-          </span>
-        </div>
         <strong>{notification.title}</strong>
         <p>{notification.body}</p>
-      </button>
-      <button
-        type="button"
-        className="notification-item__delete"
-        aria-label="알림 삭제"
-        onClick={(event) => void onDelete(event, notification.id)}
-        disabled={isBusy}
-      >
-        <span aria-hidden="true">×</span>
       </button>
     </article>
   );

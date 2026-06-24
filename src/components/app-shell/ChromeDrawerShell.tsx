@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { ReactNode, UIEvent } from 'react';
 
 export interface ChromeDrawerShellProps {
   ariaLabel: string;
@@ -19,9 +20,31 @@ export function ChromeDrawerShell({
   side,
   title,
 }: ChromeDrawerShellProps) {
+  const scrollResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (scrollResetTimerRef.current) {
+        clearTimeout(scrollResetTimerRef.current);
+      }
+    };
+  }, []);
+
   if (!isOpen) {
     return null;
   }
+
+  const handleContentScroll = (_event: UIEvent<HTMLDivElement>) => {
+    setIsScrolling(true);
+    if (scrollResetTimerRef.current) {
+      clearTimeout(scrollResetTimerRef.current);
+    }
+    scrollResetTimerRef.current = setTimeout(() => {
+      setIsScrolling(false);
+      scrollResetTimerRef.current = null;
+    }, 800);
+  };
 
   const legacyRootClass = side === 'left' ? 'side-drawer' : 'app-settings-drawer';
   const legacyOverlayClass = side === 'left' ? 'side-drawer__overlay' : 'app-settings-drawer__overlay';
@@ -53,7 +76,12 @@ export function ChromeDrawerShell({
             <span aria-hidden="true">×</span>
           </button>
         </header>
-        <div className="chrome-drawer__content">{children}</div>
+        <div
+          className={isScrolling ? 'chrome-drawer__content is-scrolling' : 'chrome-drawer__content'}
+          onScroll={handleContentScroll}
+        >
+          {children}
+        </div>
         {footer ? <footer className="chrome-drawer__footer">{footer}</footer> : null}
       </aside>
     </div>
