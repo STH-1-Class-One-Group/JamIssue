@@ -31,16 +31,17 @@ function extractBlock(source: string, selector: string) {
 }
 
 describe('visible theme hardcoding audit', () => {
+  const visibleScrollableSurfaces = [
+    '.app-settings-drawer__content',
+    '.tab-overlay--scrollable',
+    '.place-drawer__content',
+    '.page-panel--scrollable',
+    '.feed-comment-sheet__content',
+    '.side-drawer__content',
+  ];
+
   it('keeps visible scrollable app surfaces explicitly classified for TSK-023 migration', () => {
     const indexCss = readRepoFile('src/index.css');
-    const visibleScrollableSurfaces = [
-      '.app-settings-drawer__content',
-      '.tab-overlay--scrollable',
-      '.place-drawer__content',
-      '.page-panel--scrollable',
-      '.feed-comment-sheet__content',
-      '.side-drawer__content',
-    ];
 
     for (const selector of visibleScrollableSurfaces) {
       const block = extractBlock(indexCss, selector);
@@ -60,33 +61,29 @@ describe('visible theme hardcoding audit', () => {
 
     expect(hiddenScrollbarSelectors).toEqual([
       '.app-shell__sub-nav-slot .map-filter-strip .chip-row',
-      '.feed-comment-sheet__content',
       '.map-filter-strip .chip-row',
       '.my-page-tab-strip',
-      '.page-panel--scrollable',
-      '.place-drawer__content',
       '.side-drawer__menu',
-      '.tab-overlay--scrollable',
     ]);
   });
 
-  it('records visible scrollbar surfaces that currently bypass the common token contract', () => {
+  it('keeps visible scrollbar surfaces on the common token contract', () => {
     const indexCss = readRepoFile('src/index.css');
-    const surfacesNeedingThemedScrollbar = [
-      '.page-panel--scrollable',
-      '.place-drawer__content',
-      '.tab-overlay--scrollable',
-      '.feed-comment-sheet__content',
-    ];
 
-    for (const selector of surfacesNeedingThemedScrollbar) {
-      const block = extractBlock(indexCss, selector);
+    for (const selector of visibleScrollableSurfaces) {
+      const hiddenScrollbarPattern = new RegExp(
+        `${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{[^}]*scrollbar-width:\\s*none`,
+      );
 
-      expect(block, `${selector} should be migrated in TSK-023-02`).toContain('scrollbar-width: none');
+      expect(indexCss, `${selector} must not hide its visible scrollbar`).not.toMatch(hiddenScrollbarPattern);
+      expect(indexCss, `${selector} should participate in the common scrollbar selector`).toContain(selector);
     }
 
-    expect(indexCss).toContain('.app-settings-drawer__content');
-    expect(indexCss).toContain('.side-drawer__content');
+    expect(indexCss).toContain('width: var(--scrollbar-size);');
+    expect(indexCss).toContain('background: var(--scrollbar-track);');
+    expect(indexCss).toContain('background: var(--scrollbar-thumb);');
+    expect(indexCss).toContain('background: var(--scrollbar-thumb-hover);');
+    expect(indexCss).toContain('border: 2px solid var(--scrollbar-border);');
   });
 
   it('keeps app textarea native resize affordance disabled', () => {
