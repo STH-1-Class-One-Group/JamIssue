@@ -351,22 +351,31 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
   await expect(page.locator('.global-settings-menu__menu')).toHaveCount(0);
-  await expect(settingsDrawer.getByText('계정 관리')).toBeVisible();
   await expect(settingsDrawer.getByText('지도 표시')).toBeVisible();
+  await expect(settingsDrawer.getByText('계정 관리')).toBeVisible();
   const mapDisplaySwitch = settingsDrawer.locator('[data-app-setting="show-curated-with-tourism"]');
   const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(mapDisplaySwitch).toBeVisible();
   await expectElementCenterToResolveInside(mapDisplayTrack, '.app-settings-drawer__panel');
+  await expect(settingsDrawer.getByRole('region', { name: '프로필 사진 설정' })).toBeVisible();
+  await settingsDrawer.getByRole('button', { name: '로그아웃' }).scrollIntoViewIfNeeded();
+  await expect(settingsDrawer.getByRole('button', { name: '로그아웃' })).toBeVisible();
+  const feedbackSection = settingsDrawer.locator('[data-app-settings-section="feedback"]');
+  await feedbackSection.scrollIntoViewIfNeeded();
+  await expect(feedbackSection.getByRole('link', { name: '피드백' })).toBeVisible();
 
   const phoneShellBox = await requireBoundingBox(page.locator('[data-app-shell="phone"]'));
   const capsuleBox = await requireBoundingBox(appCapsule);
   const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
+  const contentBox = await requireBoundingBox(settingsDrawer.locator('.app-settings-drawer__content'));
+  const feedbackBox = await requireBoundingBox(feedbackSection);
   expect(settingsPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
   expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
   expect(settingsPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
+  expect(feedbackBox.y).toBeGreaterThanOrEqual(contentBox.y);
 
   await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
   await expect(settingsDrawer).toHaveCount(0);

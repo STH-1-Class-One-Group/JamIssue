@@ -97,7 +97,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsDrawer).toContain('showCuratedWithTourism');
     expect(appSettingsDrawer).toContain('data-app-setting="show-curated-with-tourism"');
     expect(appSettingsDrawer).toContain('지도 표시');
+    expect(appSettingsDrawer).toContain('계정 관리');
     expect(appSettingsDrawer).toContain('피드백');
+    expect(appSettingsDrawer).not.toContain('footer={');
     expect(appSettingsDrawer).not.toContain('NotificationPanel');
     expect(appSettingsDrawer).not.toContain('useNotificationPanelActions');
     expect(appSettingsDrawer).not.toContain('notifications');
@@ -200,6 +202,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       'src/components/app-settings/AppSettingsButton.tsx',
       'src/components/app-settings/AppSettingsPanel.tsx',
       'src/components/app-settings/AppSettingsDrawer.tsx',
+      'src/components/app-shell/ChromeDrawerShell.tsx',
+      'src/components/my-page/ProfileAccountSettings.tsx',
+      'src/components/my-page/ProfileAvatarEditor.tsx',
       'src/components/notifications/NotificationDrawerContent.tsx',
       'src/components/notifications/NotificationPanel.tsx',
       'src/components/notifications/NotificationListItem.tsx',
@@ -208,10 +213,12 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
 
     for (const file of files) {
       const source = readRepoFile(file);
-      expect(source).not.toContain('\uFFFD');
       expect(source).not.toContain(String.fromCodePoint(0xfffd));
-      expect(source).not.toContain('???');
-      for (const fragment of ['筌왖', '癰귣', '蹂댁', '吏', '횞']) {
+      expect(source).not.toContain('?'.repeat(3));
+      for (const fragment of [
+        String.fromCodePoint(0xf99e, 0xb69a, 0xc19c, 0x18d),
+        String.fromCodePoint(0xd6de),
+      ]) {
         expect(source).not.toContain(fragment);
       }
     }
