@@ -29,7 +29,7 @@ const allowedRawColorOwners: Record<string, ColorOwner> = {
     reason: 'remaining non-app-chrome refinement colors after TSK-019-07 visible seasonal token cleanup',
   },
   'src/styles/semantic.css': {
-    maxCount: 37,
+    maxCount: 41,
     reason: 'component-facing semantic token aliases may compose seasonal palette values with color-mix',
   },
   'src/styles/themes/autumn.css': {

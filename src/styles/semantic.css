@@ -41,9 +41,15 @@
   --text-on-accent: #fff;
   --control-muted-bg: color-mix(in srgb, var(--surface-panel) 82%, var(--surface-card));
   --control-muted-text: color-mix(in srgb, var(--text-muted) 76%, var(--text-primary));
+  --control-placeholder-text: color-mix(in srgb, var(--text-muted) 58%, var(--surface-card));
+  --control-focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --control-error-text: color-mix(in srgb, var(--color-accent-strong) 76%, var(--text-primary));
+  --control-hover-surface: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  --scrollbar-size: 10px;
   --scrollbar-track: linear-gradient(180deg, var(--surface-overlay-strong), var(--surface-overlay));
   --scrollbar-thumb: linear-gradient(180deg, var(--color-accent), var(--color-accent-strong));
   --scrollbar-thumb-hover: linear-gradient(180deg, var(--color-accent-strong), var(--color-accent));
+  --scrollbar-border: var(--surface-overlay-strong);
   --notification-unread-bg: color-mix(in srgb, var(--control-active-bg) 64%, var(--surface-card));
   --page-panel-surface: linear-gradient(180deg, var(--surface-overlay-strong), var(--surface-overlay));
   --page-stage-surface: linear-gradient(180deg, var(--surface-panel), var(--surface-app));
