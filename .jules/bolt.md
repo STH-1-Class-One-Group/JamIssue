@@ -1,0 +1,3 @@
+## 2024-06-24 - [Optimize array methods in map materialization hooks]
+**Learning:** Naver Map hooks handle arrays of tourism places with high frequency updates. Using chained array methods like `.filter().map()` or `new Map(visiblePlaces.map(...))` creates unnecessary intermediate arrays that increase garbage collection overhead during map panning and zooming. We can prevent these using standard single-pass `for` loops.
+**Action:** When working with large marker arrays or frequent effect loops in `src/components/naver-map/`, prioritize single-pass `for` loops over functional `.map()` or `.filter()` chains to prevent memory spikes.
