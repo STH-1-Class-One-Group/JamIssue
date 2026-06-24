@@ -1232,8 +1232,8 @@ body {
 }
 
 .review-composer textarea:disabled {
-  background: rgba(248, 244, 247, 0.94) !important;
-  color: rgba(93, 77, 101, 0.58) !important;
+  background: var(--control-muted-bg) !important;
+  color: var(--control-muted-text) !important;
   cursor: not-allowed !important;
 }
 

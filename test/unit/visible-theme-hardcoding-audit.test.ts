@@ -30,6 +30,47 @@ function extractBlock(source: string, selector: string) {
   return source.slice(bodyStart + 1, bodyEnd);
 }
 
+const rawColorPattern =
+  /#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)|(?:linear|radial)-gradient\([^;\n]*\)|color-mix\([^;\n]*\)/;
+
+function extractBlocksIncludingSelector(source: string, selector: string) {
+  const blocks = Array.from(source.matchAll(/([^{}]+)\{([^{}]*)\}/g))
+    .map((match) => ({
+      prelude: match[1].trim(),
+      body: match[2],
+    }))
+    .filter(({ prelude }) => prelude.split(',').some((part) => part.trim() === selector));
+
+  expect(blocks.length, `${selector} should have at least one CSS block`).toBeGreaterThan(0);
+
+  return blocks;
+}
+
+function expectSelectorBlocksUseTokens(source: string, selectors: string[]) {
+  for (const selector of selectors) {
+    const blocks = extractBlocksIncludingSelector(source, selector);
+
+    expect(
+      blocks.some(({ body }) => body.includes('var(')),
+      `${selector} should consume semantic tokens in at least one block`,
+    ).toBe(true);
+
+    for (const { body } of blocks) {
+      expect(body, `${selector} should not contain raw visible color literals`).not.toMatch(rawColorPattern);
+    }
+  }
+}
+
+function expectSelectorBlocksAvoidRawColors(source: string, selectors: string[]) {
+  for (const selector of selectors) {
+    const blocks = extractBlocksIncludingSelector(source, selector);
+
+    for (const { body } of blocks) {
+      expect(body, `${selector} should not contain raw visible color literals`).not.toMatch(rawColorPattern);
+    }
+  }
+}
+
 describe('visible theme hardcoding audit', () => {
   const visibleScrollableSurfaces = [
     '.app-settings-drawer__content',
@@ -65,6 +106,19 @@ describe('visible theme hardcoding audit', () => {
       '.my-page-tab-strip',
       '.side-drawer__menu',
     ]);
+
+    const hiddenWebkitScrollbarSelectors = Array.from(
+      combinedCss.matchAll(/(?:^|\n)([^\n{]+::-webkit-scrollbar)\s*\{\s*[^}]*display:\s*none[^}]*\}/g),
+      (match) => match[1].trim().replace(/::-webkit-scrollbar$/, ''),
+    ).sort();
+
+    expect(hiddenWebkitScrollbarSelectors).toEqual([
+      '.app-shell__sub-nav-slot .map-filter-strip .chip-row',
+      '.map-filter-strip .chip-row',
+      '.map-filter-strip .chip-row',
+      '.my-page-tab-strip',
+      '.side-drawer__menu',
+    ]);
   });
 
   it('keeps visible scrollbar surfaces on the common token contract', () => {
@@ -79,6 +133,9 @@ describe('visible theme hardcoding audit', () => {
       expect(indexCss, `${selector} should participate in the common scrollbar selector`).toContain(selector);
     }
 
+    expect(indexCss).toContain('scrollbar-gutter: stable;');
+    expect(indexCss).toContain('scrollbar-width: thin;');
+    expect(indexCss).toContain('scrollbar-color: var(--color-accent) var(--control-active-bg);');
     expect(indexCss).toContain('width: var(--scrollbar-size);');
     expect(indexCss).toContain('background: var(--scrollbar-track);');
     expect(indexCss).toContain('background: var(--scrollbar-thumb);');
@@ -86,11 +143,66 @@ describe('visible theme hardcoding audit', () => {
     expect(indexCss).toContain('border: 2px solid var(--scrollbar-border);');
   });
 
+  it('keeps scrollbar and form semantic tokens declared at the semantic boundary', () => {
+    const semanticCss = readRepoFile('src/styles/semantic.css');
+    const requiredTokens = [
+      '--scrollbar-size:',
+      '--scrollbar-track:',
+      '--scrollbar-thumb:',
+      '--scrollbar-thumb-hover:',
+      '--scrollbar-border:',
+      '--control-placeholder-text:',
+      '--control-focus-ring:',
+      '--control-error-text:',
+      '--control-hover-surface:',
+      '--surface-field:',
+      '--sheet-handle:',
+      '--image-placeholder-bg:',
+    ];
+
+    for (const token of requiredTokens) {
+      expect(semanticCss, `${token} should stay in the semantic token contract`).toContain(token);
+    }
+  });
+
   it('keeps app textarea native resize affordance disabled', () => {
     const indexCss = readRepoFile('src/index.css');
     const textareaBlock = extractBlock(indexCss, '.review-composer__textarea');
 
     expect(textareaBlock).toContain('resize: none');
+  });
+
+  it('keeps migrated form and drawer selectors off raw visible colors', () => {
+    const indexCss = readRepoFile('src/index.css');
+    const refinementsCss = readRepoFile('src/styles/refinements.css');
+
+    expectSelectorBlocksUseTokens(indexCss, [
+      '.review-composer__textarea',
+      '.review-composer__textarea::placeholder',
+      '.review-composer__textarea:focus',
+      '.file-picker',
+      '.place-drawer__handle span',
+      '.place-drawer__close:hover',
+      '.feed-comment-sheet__handle span',
+      '.feed-comment-sheet__close:hover',
+    ]);
+
+    expectSelectorBlocksUseTokens(refinementsCss, [
+      '.feed-comment-sheet__header',
+    ]);
+
+    expectSelectorBlocksAvoidRawColors(refinementsCss, [
+      '.file-picker.is-disabled',
+    ]);
+  });
+
+  it('keeps disabled app textareas on semantic tokens instead of hardcoded fallback colors', () => {
+    const refinementsCss = readRepoFile('src/styles/refinements.css');
+    const disabledBlock = extractBlock(refinementsCss, '.review-composer textarea:disabled');
+
+    expect(disabledBlock).not.toMatch(rawColorPattern);
+    expect(disabledBlock).toContain('var(--control-muted-bg)');
+    expect(disabledBlock).toContain('var(--control-muted-text)');
   });
 
   it('keeps migrated refinements visible overrides on semantic tokens', () => {
