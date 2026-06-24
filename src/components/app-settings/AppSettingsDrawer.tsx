@@ -22,16 +22,6 @@ export function AppSettingsDrawer({
   return (
     <ChromeDrawerShell
       ariaLabel="앱 설정"
-      footer={(
-        <a
-          className="secondary-button app-settings-drawer__feedback"
-          href={FEEDBACK_FORM_URL}
-          target="_blank"
-          rel="noreferrer"
-        >
-          피드백
-        </a>
-      )}
       isOpen={isOpen}
       onClose={onClose}
       side="right"
@@ -60,7 +50,11 @@ export function AppSettingsDrawer({
           </section>
         ) : null}
         {accountSettings ? (
-          <details className="app-settings-drawer__section app-settings-drawer__details" data-app-settings-section="account">
+          <details
+            className="app-settings-drawer__section app-settings-drawer__details"
+            data-app-settings-section="account"
+            open
+          >
             <summary className="app-settings-drawer__summary">
               <span className="app-settings-drawer__section-label">ACCOUNT</span>
               <span className="app-settings-drawer__summary-title">계정 관리</span>
@@ -70,6 +64,23 @@ export function AppSettingsDrawer({
             </div>
           </details>
         ) : null}
+        <section
+          className="app-settings-drawer__section app-settings-drawer__section--feedback"
+          data-app-settings-section="feedback"
+        >
+          <div className="app-settings-drawer__section-heading">
+            <span className="app-settings-drawer__section-label">FEEDBACK</span>
+            <h3>피드백</h3>
+          </div>
+          <a
+            className="secondary-button app-settings-drawer__feedback"
+            href={FEEDBACK_FORM_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            피드백
+          </a>
+        </section>
       </div>
     </ChromeDrawerShell>
   );
