@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "task-ledger-entry.v1",
+  "taskId": "TSK-021-08",
+  "status": "active",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/642",
+  "prUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/pull/678",
+  "mergeCommit": "pending-on-merge",
+  "updatedAt": "2026-06-24T07:36:00Z",
+  "documentPaths": [
+    "src/components/app-shell/SideDrawer.tsx",
+    "src/components/notifications/NotificationPanel.tsx",
+    "src/components/notifications/NotificationListItem.tsx",
+    "src/index.css",
+    "src/styles/refinements.css",
+    "test/e2e/app-shell.spec.ts",
+    "test/unit/app-capsule.test.tsx",
+    "test/unit/notification-list-render.test.tsx",
+    "test/unit/navigation-settings-responsibility-source-quality.test.ts",
+    "docs/traceability/task-ledger/by-task/TSK-021-08.json",
+    "docs/traceability/task-ledger.jsonl",
+    "docs/TASK_ID_LEDGER.md"
+  ],
+  "why": "좌측 보조 드로워가 알림을 소유하되 상단 캡슐, 하단 네비, 우측 설정 드로워와 책임이 섞이지 않도록 drawer section rhythm과 알림 상호작용을 고정해야 했다.",
+  "problem": "알림 카드의 날짜/삭제 hit target이 좁은 폭에서 겹치고, 모두 읽음 피드백과 drawer section/card 토큰 사용이 좌우 드로워 사이에서 일관되지 않았다.",
+  "how": "SideDrawer와 NotificationPanel을 ChromeDrawerShell 하위 공통 section/card rhythm에 맞추고, NotificationListItem top row가 tag/meta/delete 영역을 분리하도록 보정했다. 모두 읽음은 unread 강조와 enabled 상태를 즉시 제거하도록 unit/E2E로 고정했다.",
+  "remainingGap": "CI 통과와 merge SHA 확보 후 pending merge evidence를 최종 readback으로 교체해야 한다.",
+  "validationSeams": [
+    "npm.cmd run check:numeric-literals",
+    "npm.cmd run lint",
+    "npm.cmd run typecheck",
+    "npm.cmd run test:unit",
+    "npm.cmd run test:integration",
+    "npm.cmd run test:regression",
+    "npm.cmd run test:e2e -- app-shell.spec.ts",
+    "npm.cmd run build",
+    "git diff --check",
+    "touched files UTF-8 no BOM check",
+    "context tool-evidence prepare --tool all --apply"
+  ]
+}

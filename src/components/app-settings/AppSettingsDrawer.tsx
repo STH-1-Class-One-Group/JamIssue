@@ -21,7 +21,7 @@ export function AppSettingsDrawer({
 }: AppSettingsDrawerProps) {
   return (
     <ChromeDrawerShell
-      ariaLabel="앱 설정"
+      ariaLabel="설정"
       isOpen={isOpen}
       onClose={onClose}
       side="right"
@@ -32,11 +32,11 @@ export function AppSettingsDrawer({
         </div>
       )}
     >
-      <div className="app-settings-drawer__content">
+      <div className="app-settings-drawer__content chrome-drawer-stack">
         {mapDisplayPreferences ? (
-          <section className="app-settings-drawer__section" data-app-settings-section="map-display">
-            <div className="app-settings-drawer__section-heading">
-              <span className="app-settings-drawer__section-label">MAP DISPLAY</span>
+          <section className="chrome-drawer-section" data-app-settings-section="map-display">
+            <div className="chrome-drawer-section__heading">
+              <span className="chrome-drawer-section__label">MAP DISPLAY</span>
               <h3>지도 표시</h3>
             </div>
             <ToggleSwitch
@@ -51,25 +51,25 @@ export function AppSettingsDrawer({
         ) : null}
         {accountSettings ? (
           <details
-            className="app-settings-drawer__section app-settings-drawer__details"
+            className="chrome-drawer-section app-settings-drawer__details"
             data-app-settings-section="account"
             open
           >
             <summary className="app-settings-drawer__summary">
-              <span className="app-settings-drawer__section-label">ACCOUNT</span>
+              <span className="chrome-drawer-section__label">ACCOUNT</span>
               <span className="app-settings-drawer__summary-title">계정 관리</span>
             </summary>
-            <div className="app-settings-drawer__details-content">
+            <div className="app-settings-drawer__details-content chrome-drawer-stack">
               {accountSettings}
             </div>
           </details>
         ) : null}
         <section
-          className="app-settings-drawer__section app-settings-drawer__section--feedback"
+          className="chrome-drawer-section app-settings-drawer__section--feedback"
           data-app-settings-section="feedback"
         >
-          <div className="app-settings-drawer__section-heading">
-            <span className="app-settings-drawer__section-label">FEEDBACK</span>
+          <div className="chrome-drawer-section__heading">
+            <span className="chrome-drawer-section__label">FEEDBACK</span>
             <h3>피드백</h3>
           </div>
           <a

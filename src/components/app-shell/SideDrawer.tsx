@@ -49,7 +49,7 @@ export function SideDrawer({
       side="left"
       title={<p className="section-eyebrow">MENU</p>}
     >
-      <div className="side-drawer__content" data-side-drawer-slot="content" data-testid="side-drawer-content">
+      <div className="side-drawer__content chrome-drawer-stack" data-side-drawer-slot="content" data-testid="side-drawer-content">
         {items.length > 0 && (
           <div className="side-drawer__menu" role="menu" aria-label="보조 기능">
             {items.map((item) => (
@@ -77,7 +77,7 @@ export function SideDrawer({
         )}
         {activeItem ? (
           itemContent ?? (
-            <section className="side-drawer__detail" aria-label={`${activeItem.label} 상세`}>
+            <section className="chrome-drawer-section side-drawer__detail" aria-label={`${activeItem.label} 상세`}>
               <h2>{activeItem.label}</h2>
               <p>{activeItem.description}</p>
             </section>
