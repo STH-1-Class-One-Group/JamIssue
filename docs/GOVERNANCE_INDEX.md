@@ -48,7 +48,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | [#670](https://github.com/STH-1-Class-One-Group/JamIssue/issues/670) | `themed-scrollbar-contract` | completed | PR [#674](https://github.com/STH-1-Class-One-Group/JamIssue/pull/674), merge `307ffabe2068a22d73df15489c97b03697a94abd` |
 | [#671](https://github.com/STH-1-Class-One-Group/JamIssue/issues/671) | `drawer-form-surface-token-migration` | completed | PR [#674](https://github.com/STH-1-Class-One-Group/JamIssue/pull/674), merge `307ffabe2068a22d73df15489c97b03697a94abd` |
 | [#672](https://github.com/STH-1-Class-One-Group/JamIssue/issues/672) | `visible-theme-source-quality-gate` | completed | PR [#676](https://github.com/STH-1-Class-One-Group/JamIssue/pull/676), merge `db5545e14c6ba1cac90effbd89d03479789b548d` |
-| [#673](https://github.com/STH-1-Class-One-Group/JamIssue/issues/673) | `theme-polish-traceability` | active | TSK-023 closeout PR pending |
+| [#673](https://github.com/STH-1-Class-One-Group/JamIssue/issues/673) | `theme-polish-traceability` | completed | PR [#677](https://github.com/STH-1-Class-One-Group/JamIssue/pull/677), merge `0290f2d67d9141d081e051f1f786d256de5f6213` |
 
 ## TSK-022 Child Issues
 

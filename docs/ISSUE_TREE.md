@@ -138,11 +138,11 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/676
   - Merge commit: db5545e14c6ba1cac90effbd89d03479789b548d
   - Evidence: `src/styles/refinements.css`, `test/unit/visible-theme-hardcoding-audit.test.ts`, `docs/traceability/task-ledger/by-task/TSK-023-04.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
-- [ ] TSK-023-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/673
+- [x] TSK-023-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/673
   - Title: theme-polish-traceability
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/673
-  - PR: pending on this branch
-  - Merge commit: pending on this branch
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/677
+  - Merge commit: 0290f2d67d9141d081e051f1f786d256de5f6213
   - Evidence: `docs/TSK-023-05-theme-polish-traceability.md`, `docs/traceability/task-ledger/by-task/TSK-023-05.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
 ## TSK-021
