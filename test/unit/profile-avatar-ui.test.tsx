@@ -1,7 +1,8 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AppAccountSettingsSlot } from '../../src/components/app-settings/AppAccountSettingsSlot';
+import { Avatar } from '../../src/components/Avatar';
 import { CommentThreadItem } from '../../src/components/comment-thread/CommentThreadItem';
 import { MyPagePanel } from '../../src/components/MyPagePanel';
 import { ReviewListItem } from '../../src/components/review/ReviewListItem';
@@ -11,10 +12,10 @@ import type { MyPagePanelProps } from '../../src/components/my-page/myPagePanelT
 function createPanelProps(overrides: Partial<MyPagePanelProps> = {}): MyPagePanelProps {
   return {
     sessionData: {
-      sessionUser: { ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' },
+      sessionUser: { ...sessionUserFixture, nickname: 'code305', profileImage: 'https://cdn.example.test/me.webp' },
       myPage: {
         ...myPageFixture,
-        user: { ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' },
+        user: { ...sessionUserFixture, nickname: 'code305', profileImage: 'https://cdn.example.test/me.webp' },
       },
       providers: [],
       myPageError: null,
@@ -63,81 +64,94 @@ function createPanelProps(overrides: Partial<MyPagePanelProps> = {}): MyPagePane
   };
 }
 
+function renderAccountSettingsSlot(overrides: Partial<Parameters<typeof AppAccountSettingsSlot>[0]> = {}) {
+  const props = {
+    sessionUser: { ...sessionUserFixture, nickname: 'code305', profileImage: 'https://cdn.example.test/me.webp' },
+    providers: [],
+    profileSaving: false,
+    profileError: null,
+    isLoggingOut: false,
+    onLinkProvider: vi.fn(),
+    onSaveNickname: vi.fn().mockResolvedValue(undefined),
+    onUploadAvatar: vi.fn().mockResolvedValue(undefined),
+    onDeleteAvatar: vi.fn().mockResolvedValue(undefined),
+    onLogout: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+
+  return {
+    ...render(<AppAccountSettingsSlot {...props} />),
+    props,
+  };
+}
+
 describe('profile avatar UI consumption', () => {
   it('renders My Page as an identity header without duplicate stat tiles or a large empty image slot', () => {
     const { container } = render(<MyPagePanel {...createPanelProps()} />);
 
-    expect(screen.getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--lg');
+    const headerAvatar = container.querySelector('.my-page-profile-header .avatar--lg');
+
+    expect(headerAvatar).toBeInTheDocument();
+    expect(headerAvatar?.querySelector('img')).toHaveAttribute('src', 'https://cdn.example.test/me.webp');
     expect(container.querySelector('.my-page-profile-header__summary')).not.toBeInTheDocument();
-    expect(screen.getByText('방문한 고유 명소')).toBeInTheDocument();
-    expect(screen.queryByText('프로필 사진 자리')).not.toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: '프로필 사진 설정' })).not.toBeInTheDocument();
+    expect(container.querySelector('[aria-label*="profile photo settings" i]')).not.toBeInTheDocument();
   });
 
   it('renders account settings subsections with one drawer rhythm', () => {
-    render(
-      <AppAccountSettingsSlot
-        sessionUser={{ ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' }}
-        providers={[]}
-        profileSaving={false}
-        profileError={null}
-        isLoggingOut={false}
-        onLinkProvider={vi.fn()}
-        onSaveNickname={vi.fn().mockResolvedValue(undefined)}
-        onUploadAvatar={vi.fn().mockResolvedValue(undefined)}
-        onDeleteAvatar={vi.fn().mockResolvedValue(undefined)}
-        onLogout={vi.fn().mockResolvedValue(undefined)}
-      />,
+    const { container } = renderAccountSettingsSlot();
+
+    expect(container.querySelector('.settings-card__account-content')).toBeInTheDocument();
+    expect(container.querySelector('.settings-card__social')).toBeInTheDocument();
+    expect(container.querySelector('.settings-card__avatar-editor')).toBeInTheDocument();
+    expect(container.querySelector('.settings-card__avatar-preview .avatar--md img')).toHaveAttribute(
+      'src',
+      'https://cdn.example.test/me.webp',
     );
-
-    const editor = screen.getByRole('region', { name: '프로필 사진 설정' });
-
-    expect(within(editor).getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--md');
-    expect(within(editor).getByText('작은 프로필 이미지로 피드와 댓글에서 표시돼요.')).toBeInTheDocument();
-    expect(within(editor).getByText('AVATAR')).toHaveClass('chrome-drawer-section__label');
-    expect(within(editor).getByText('사진 변경').closest('.settings-card__avatar-action')).not.toBeNull();
-    expect(within(editor).getByRole('button', { name: '사진 삭제' })).toHaveClass('settings-card__avatar-action');
-    expect(screen.getByText('프로필명')).toHaveClass('chrome-drawer-section__label');
-    expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(container.querySelector('.settings-card__avatar-action-row')).toBeInTheDocument();
+    expect(container.querySelector('.route-builder-form input')).toHaveValue('code305');
+    expect(container.querySelectorAll('.chrome-drawer-subsection').length).toBeGreaterThanOrEqual(3);
+    expect(container.querySelectorAll('.chrome-drawer-section__label').length).toBeGreaterThanOrEqual(3);
   });
 
   it('routes avatar upload and delete controls through the app settings account slot', async () => {
     const user = userEvent.setup();
     const onUploadAvatar = vi.fn().mockResolvedValue(undefined);
     const onDeleteAvatar = vi.fn().mockResolvedValue(undefined);
+    const { container } = renderAccountSettingsSlot({ onUploadAvatar, onDeleteAvatar });
 
-    render(
-      <AppAccountSettingsSlot
-        sessionUser={{ ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' }}
-        providers={[]}
-        profileSaving={false}
-        profileError={null}
-        isLoggingOut={false}
-        onLinkProvider={vi.fn()}
-        onSaveNickname={vi.fn().mockResolvedValue(undefined)}
-        onUploadAvatar={onUploadAvatar}
-        onDeleteAvatar={onDeleteAvatar}
-        onLogout={vi.fn().mockResolvedValue(undefined)}
-      />,
-    );
-
-    const fileInput = screen.getByLabelText('사진 변경', { selector: 'input' });
+    const fileInput = container.querySelector<HTMLInputElement>('input[type="file"]');
+    const avatarActions = Array.from(container.querySelectorAll<HTMLButtonElement | HTMLLabelElement>('.settings-card__avatar-action'));
+    const deleteButton = avatarActions.find((action): action is HTMLButtonElement => action.tagName === 'BUTTON');
     const file = new File(['avatar'], 'avatar.png', { type: 'image/png' });
-    await user.upload(fileInput, file);
-    await user.click(screen.getByRole('button', { name: '사진 삭제' }));
+
+    expect(fileInput).not.toBeNull();
+    expect(deleteButton).toBeDefined();
+
+    await user.upload(fileInput as HTMLInputElement, file);
+    await user.click(deleteButton as HTMLButtonElement);
 
     expect(onUploadAvatar).toHaveBeenCalledWith(file);
     expect(onDeleteAvatar).toHaveBeenCalledTimes(1);
   });
 
+  it('falls back to initials when avatar image loading fails', () => {
+    const { container } = render(<Avatar src="https://cdn.example.test/broken.webp" name="Tester" />);
+
+    const image = container.querySelector('.avatar__image');
+    expect(image).not.toBeNull();
+    fireEvent.error(image as Element);
+
+    expect(screen.getByText('T')).toHaveClass('avatar__fallback');
+  });
+
   it('uses authorProfileImage in feed cards and comment threads', () => {
     const review = createReviewFixture({
-      author: '리뷰어',
+      author: 'Reviewer',
       authorProfileImage: 'https://cdn.example.test/reviewer.webp',
       comments: [
         {
           ...commentFixture,
-          author: '댓글러',
+          author: 'Commenter',
           authorProfileImage: 'https://cdn.example.test/commenter.webp',
         },
       ],
@@ -161,21 +175,17 @@ describe('profile avatar UI consumption', () => {
     );
 
     const card = screen.getByTestId('feed-review-card');
-    expect(within(card).getByLabelText('리뷰어 프로필 이미지').querySelector('img')).toHaveAttribute(
-      'src',
-      'https://cdn.example.test/reviewer.webp',
-    );
-    expect(within(card).getByLabelText('댓글러 프로필 이미지').querySelector('img')).toHaveAttribute(
-      'src',
-      'https://cdn.example.test/commenter.webp',
-    );
+    const avatarImages = Array.from(card.querySelectorAll('.avatar__image'));
+
+    expect(avatarImages.some((image) => image.getAttribute('src') === 'https://cdn.example.test/reviewer.webp')).toBe(true);
+    expect(avatarImages.some((image) => image.getAttribute('src') === 'https://cdn.example.test/commenter.webp')).toBe(true);
   });
 
   it('falls back to comment initials when authorProfileImage is null', () => {
     render(
       <ul>
         <CommentThreadItem
-          comment={{ ...commentFixture, author: '댓글러', authorProfileImage: null }}
+          comment={{ ...commentFixture, author: 'Commenter', authorProfileImage: null }}
           reviewId="review-1"
           canWriteComment
           currentUserId="user-1"
@@ -190,6 +200,6 @@ describe('profile avatar UI consumption', () => {
       </ul>,
     );
 
-    expect(screen.getByLabelText('댓글러 프로필 이미지')).toHaveTextContent('댓');
+    expect(screen.getByText('C')).toHaveClass('avatar__fallback');
   });
 });

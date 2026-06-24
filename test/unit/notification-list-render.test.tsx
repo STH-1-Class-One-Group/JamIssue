@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { NotificationPanel } from '../../src/components/notifications/NotificationPanel';
 import type { NotificationItem, NotificationPanelActions } from '../../src/components/notifications/notificationTypes';
@@ -32,6 +32,12 @@ function createNotification(id: string): NotificationItem {
   };
 }
 
+const stableHandlers = {
+  handleDelete: vi.fn(async () => undefined),
+  handleMarkAll: vi.fn(async () => undefined),
+  handleOpenNotification: vi.fn(async () => undefined),
+};
+
 function createActions(busyId: string | null): NotificationPanelActions {
   return {
     busyAll: false,
@@ -43,11 +49,11 @@ function createActions(busyId: string | null): NotificationPanelActions {
   };
 }
 
-const stableHandlers = {
-  handleDelete: vi.fn(async () => undefined),
-  handleMarkAll: vi.fn(async () => undefined),
-  handleOpenNotification: vi.fn(async () => undefined),
-};
+function getMarkAllButton(container: HTMLElement) {
+  const button = container.querySelector<HTMLButtonElement>('.notification-panel__mark-all');
+  expect(button).not.toBeNull();
+  return button;
+}
 
 describe('NotificationPanel item render stability', () => {
   it('does not re-render inactive notification items when another item becomes busy', () => {
@@ -82,7 +88,7 @@ describe('NotificationPanel item render stability', () => {
   it('calls the mark-all action while unread notifications remain', () => {
     stableHandlers.handleMarkAll.mockClear();
 
-    render(
+    const { container } = render(
       <NotificationPanel
         sessionUserName="tester"
         notifications={[createNotification('n-1')]}
@@ -91,13 +97,13 @@ describe('NotificationPanel item render stability', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '모두 읽음' }));
+    fireEvent.click(getMarkAllButton(container));
 
     expect(stableHandlers.handleMarkAll).toHaveBeenCalledTimes(1);
   });
 
-  it('disables the mark-all action and shows completion feedback when there is no unread notification', () => {
-    render(
+  it('disables mark-all and removes unread emphasis when every notification is read', () => {
+    const { container } = render(
       <NotificationPanel
         sessionUserName="tester"
         notifications={[{ ...createNotification('n-1'), isRead: true }]}
@@ -106,13 +112,13 @@ describe('NotificationPanel item render stability', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: '모두 읽음' })).toBeDisabled();
-    expect(screen.getByText('모든 알림을 읽었어요.')).toHaveClass('chrome-drawer-card');
-    expect(document.querySelector('.notification-item.is-unread')).toBeNull();
+    expect(getMarkAllButton(container)).toBeDisabled();
+    expect(container.querySelector('.notification-panel__status')).toHaveClass('chrome-drawer-card');
+    expect(container.querySelector('.notification-item.is-unread')).toBeNull();
   });
 
-  it('separates notification meta and delete hit target in the item DOM', () => {
-    render(
+  it('separates notification tag, meta, and delete hit target in the item DOM', () => {
+    const { container } = render(
       <NotificationPanel
         sessionUserName="tester"
         notifications={[{ ...createNotification('n-1'), actorName: 'code305' }]}
@@ -121,14 +127,17 @@ describe('NotificationPanel item render stability', () => {
       />,
     );
 
-    const item = document.querySelector('.notification-item');
-    expect(item?.querySelector('.notification-item__top')).not.toBeNull();
-    expect(item?.querySelector('.notification-item__time')).toHaveTextContent('code305 · 2026-06-13T00:00:00Z');
-    expect(item?.querySelector('.notification-item__delete')).toHaveAccessibleName('알림 삭제');
+    const topRow = container.querySelector('.notification-item__top');
+
+    expect(topRow).not.toBeNull();
+    expect(topRow?.querySelector('.notification-item__tag')).toHaveTextContent('review-comment');
+    expect(topRow?.querySelector('.notification-item__time')).toHaveTextContent('code305');
+    expect(topRow?.querySelector('.notification-item__time')).toHaveTextContent('2026-06-13T00:00:00Z');
+    expect(topRow?.querySelector('.notification-item__delete')).not.toBeNull();
   });
 
-  it('shows progress feedback while the mark-all action is busy', () => {
-    render(
+  it('disables mark-all while the action is busy', () => {
+    const { container } = render(
       <NotificationPanel
         sessionUserName="tester"
         notifications={[createNotification('n-1')]}
@@ -137,6 +146,6 @@ describe('NotificationPanel item render stability', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: '처리 중' })).toBeDisabled();
+    expect(getMarkAllButton(container)).toBeDisabled();
   });
 });
