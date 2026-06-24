@@ -21,7 +21,7 @@ export function AppSettingsDrawer({
 }: AppSettingsDrawerProps) {
   return (
     <ChromeDrawerShell
-      ariaLabel="설정"
+      ariaLabel="앱 설정"
       isOpen={isOpen}
       onClose={onClose}
       side="right"

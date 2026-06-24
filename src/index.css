@@ -1599,6 +1599,114 @@ textarea {
   gap: 12px;
 }
 
+.activity-collection-shell {
+  display: grid;
+  gap: 12px;
+}
+
+.activity-collection-shell__toolbar,
+.activity-calendar-view__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.activity-collection-shell__toolbar h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.activity-view-toggle {
+  flex-shrink: 0;
+}
+
+.activity-list-view__item,
+.activity-calendar-view__selected-item {
+  min-width: 0;
+}
+
+.activity-calendar-view {
+  display: grid;
+  gap: 12px;
+}
+
+.activity-calendar-view__nav,
+.activity-calendar-view__day {
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+}
+
+.activity-calendar-view__nav {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.activity-calendar-view__month,
+.activity-calendar-view__selected-title {
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
+.activity-calendar-view__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+}
+
+.activity-calendar-view__weekday {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.activity-calendar-view__day {
+  position: relative;
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.activity-calendar-view__day--empty {
+  border-color: transparent;
+  background: transparent;
+}
+
+.activity-calendar-view__day.is-selected {
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+}
+
+.activity-calendar-view__marker {
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-accent);
+}
+
+.activity-calendar-view__selected-list,
+.activity-calendar-view__undated {
+  display: grid;
+  gap: 10px;
+}
+
 .review-card__top,
 .community-route-card__header,
 .review-card__actions,
