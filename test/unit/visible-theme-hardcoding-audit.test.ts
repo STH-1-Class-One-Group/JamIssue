@@ -154,6 +154,28 @@ describe('visible theme hardcoding audit', () => {
     expect(indexCss).toContain('border-color: var(--scrollbar-border);');
   });
 
+  it('keeps drawer scrollbars transient instead of permanently visible', () => {
+    const indexCss = readRepoFile('src/index.css');
+    const chromeDrawerContentBlock = extractBlock(indexCss, '.chrome-drawer__content');
+    const drawerActiveStates = [
+      '.chrome-drawer__content.is-scrolling',
+      '.chrome-drawer__content:hover',
+      '.chrome-drawer__content:focus-within',
+      '.chrome-drawer__content.is-scrolling::-webkit-scrollbar-track',
+      '.chrome-drawer__content:hover::-webkit-scrollbar-track',
+      '.chrome-drawer__content:focus-within::-webkit-scrollbar-track',
+      '.chrome-drawer__content.is-scrolling::-webkit-scrollbar-thumb',
+      '.chrome-drawer__content:hover::-webkit-scrollbar-thumb',
+      '.chrome-drawer__content:focus-within::-webkit-scrollbar-thumb',
+    ];
+
+    expect(chromeDrawerContentBlock).toContain('scrollbar-color: transparent transparent');
+
+    for (const selector of drawerActiveStates) {
+      expect(indexCss, `${selector} should opt in to visible themed scrollbar styling`).toContain(selector);
+    }
+  });
+
   it('keeps scrollbar and form semantic tokens declared at the semantic boundary', () => {
     const semanticCss = readRepoFile('src/styles/semantic.css');
     const requiredTokens = [

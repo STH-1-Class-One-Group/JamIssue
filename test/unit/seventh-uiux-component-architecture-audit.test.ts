@@ -12,6 +12,13 @@ function repoFileExists(pathFromRoot: string) {
   return existsSync(join(repoRoot, pathFromRoot));
 }
 
+function expectNoBrokenEncodingArtifacts(source: string, label: string) {
+  const placeholderMarker = '?'.repeat(3);
+
+  expect(source, `${label} should not contain replacement characters`).not.toContain('\uFFFD');
+  expect(source, `${label} should not contain placeholder mojibake markers`).not.toContain(placeholderMarker);
+}
+
 describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
   it('keeps AppShell and AppHeader free of settings drawer implementation ownership', () => {
     const appShell = readRepoFile('src/components/app-shell/AppShell.tsx');
@@ -76,6 +83,7 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(sideDrawer).toContain('export interface SideDrawerProps');
     expect(sideDrawer).toContain('children?: ReactNode');
     expect(sideDrawer).toContain('onClose');
+    expectNoBrokenEncodingArtifacts(sideDrawer, 'SideDrawer');
     expect(sideDrawer).not.toContain('메뉴 준비 중');
     expect(sideDrawer).not.toContain('/settings');
   });
