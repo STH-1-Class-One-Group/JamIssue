@@ -1,3 +1,4 @@
+import { DrawerCard, DrawerSection, DrawerStack } from '../app-shell/drawer-kit';
 import { NotificationListItem } from './NotificationListItem';
 import type { NotificationItem, NotificationPanelActions } from './notificationTypes';
 
@@ -29,12 +30,11 @@ export function NotificationPanel({
 
   return (
     <section className={embedded ? 'global-notification-panel global-notification-panel--embedded' : 'global-notification-panel'}>
-      <div className="notification-panel__header">
-        <div className="notification-panel__heading">
-          <p className="chrome-drawer-section__label">ALERT</p>
-          <h3>{sessionUserName ? `${sessionUserName}님의 새 알림` : '새 알림'}</h3>
-          <p className="section-copy">탭에 있던 내용을 닫지 않고 바로 확인하고 이동할 수 있어요.</p>
-        </div>
+      <DrawerSection
+        eyebrow="ALERT"
+        title={sessionUserName ? `${sessionUserName}님의 새 알림` : '새 알림'}
+        description="탭에 있던 내용을 닫지 않고 바로 확인하고 이동할 수 있어요."
+      >
         <button
           type="button"
           className="secondary-button notification-panel__mark-all"
@@ -43,10 +43,10 @@ export function NotificationPanel({
         >
           {busyAll ? '처리 중' : '모두 읽음'}
         </button>
-      </div>
-      {allRead ? <p className="chrome-drawer-card notification-panel__status">모든 알림을 읽었어요.</p> : null}
-      {error && <p className="form-error-copy">{error}</p>}
-      <div className="notification-list">
+      </DrawerSection>
+      {allRead ? <DrawerCard as="p" className="notification-panel__status">모든 알림을 읽었어요.</DrawerCard> : null}
+      {error ? <p className="form-error-copy">{error}</p> : null}
+      <DrawerStack className="notification-list">
         {notifications.map((notification) => (
           <NotificationListItem
             key={notification.id}
@@ -56,8 +56,8 @@ export function NotificationPanel({
             onDelete={handleDelete}
           />
         ))}
-        {notifications.length === 0 && <p className="empty-copy">새로운 알림이 아직 없어요.</p>}
-      </div>
+        {notifications.length === 0 ? <p className="empty-copy">새로운 알림이 아직 없어요.</p> : null}
+      </DrawerStack>
     </section>
   );
 }

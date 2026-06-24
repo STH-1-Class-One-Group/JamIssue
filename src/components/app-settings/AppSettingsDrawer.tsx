@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { ChromeDrawerShell } from '../app-shell/ChromeDrawerShell';
-import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
+import { DrawerSection, DrawerStack } from '../app-shell/drawer-kit';
 import { ToggleSwitch } from '../common/ToggleSwitch';
+import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
 
 export type AppSettingsDrawerProps = {
   accountSettings?: ReactNode;
@@ -32,13 +33,9 @@ export function AppSettingsDrawer({
         </div>
       )}
     >
-      <div className="app-settings-drawer__content chrome-drawer-stack">
+      <DrawerStack className="app-settings-drawer__content">
         {mapDisplayPreferences ? (
-          <section className="chrome-drawer-section" data-app-settings-section="map-display">
-            <div className="chrome-drawer-section__heading">
-              <span className="chrome-drawer-section__label">MAP DISPLAY</span>
-              <h3>지도 표시</h3>
-            </div>
+          <DrawerSection eyebrow="MAP DISPLAY" title="지도 표시" data-app-settings-section="map-display">
             <ToggleSwitch
               checked={mapDisplayPreferences.showCuratedWithTourism}
               className="app-settings-drawer__switch"
@@ -47,31 +44,19 @@ export function AppSettingsDrawer({
               onChange={mapDisplayPreferences.onShowCuratedWithTourismChange}
               size="sm"
             />
-          </section>
+          </DrawerSection>
         ) : null}
         {accountSettings ? (
-          <details
-            className="chrome-drawer-section app-settings-drawer__details"
-            data-app-settings-section="account"
-            open
-          >
-            <summary className="app-settings-drawer__summary">
-              <span className="chrome-drawer-section__label">ACCOUNT</span>
-              <span className="app-settings-drawer__summary-title">계정 관리</span>
-            </summary>
-            <div className="app-settings-drawer__details-content chrome-drawer-stack">
-              {accountSettings}
-            </div>
-          </details>
+          <DrawerSection eyebrow="ACCOUNT" title="계정 관리" data-app-settings-section="account">
+            {accountSettings}
+          </DrawerSection>
         ) : null}
-        <section
-          className="chrome-drawer-section app-settings-drawer__section--feedback"
+        <DrawerSection
+          eyebrow="FEEDBACK"
+          title="피드백"
+          className="app-settings-drawer__section--feedback"
           data-app-settings-section="feedback"
         >
-          <div className="chrome-drawer-section__heading">
-            <span className="chrome-drawer-section__label">FEEDBACK</span>
-            <h3>피드백</h3>
-          </div>
           <a
             className="secondary-button app-settings-drawer__feedback"
             href={FEEDBACK_FORM_URL}
@@ -80,8 +65,8 @@ export function AppSettingsDrawer({
           >
             피드백
           </a>
-        </section>
-      </div>
+        </DrawerSection>
+      </DrawerStack>
     </ChromeDrawerShell>
   );
 }

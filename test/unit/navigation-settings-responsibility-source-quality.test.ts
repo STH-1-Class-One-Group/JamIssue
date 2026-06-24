@@ -97,7 +97,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsDrawer).toContain('지도 표시');
     expect(appSettingsDrawer).toContain('계정 관리');
     expect(appSettingsDrawer).toContain('피드백');
-    expect(appSettingsDrawer).toContain('chrome-drawer-section');
+    expect(appSettingsDrawer).toContain('DrawerSection');
     expect(appSettingsDrawer).not.toContain('footer={');
     expect(appSettingsDrawer).not.toContain('NotificationPanel');
     expect(appSettingsDrawer).not.toContain('useNotificationPanelActions');
@@ -152,7 +152,8 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsDrawer).toContain('accountSettings');
     expect(appAccountSettingsSlot).toContain('ProfileAccountSettings');
     expect(profileAccountSettings).toContain('ProfileAvatarEditor');
-    expect(profileAccountSettings).toContain('chrome-drawer-subsection');
+    expect(profileAccountSettings).toContain('DrawerSection');
+    expect(profileAccountSettings).toContain('DrawerFormGroup');
     expect(profileAccountSettings).toContain('onLinkProvider');
     expect(profileAccountSettings).toContain('onDeleteAvatar');
     expect(profileAccountSettings).toContain('onLogout');
@@ -187,7 +188,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(css).toContain('left: var(--drawer-inline-inset)');
     expect(css).toContain('right: var(--drawer-inline-inset)');
     expect(css).toContain('top: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + var(--map-floating-nav-gap))');
-    expect(css).toContain('bottom: calc(var(--bottom-nav-offset) + 4px)');
+    expect(css).toContain('bottom: calc(var(--bottom-nav-offset) + var(--chrome-drawer-bottom-gap))');
     expect(css).not.toContain('right: max(var(--drawer-inline-inset)');
     expect(css).not.toContain('left: 0;\n  width: min(312px, calc(100% - 56px))');
   });
@@ -198,9 +199,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     const combined = `${css}\n${refinements}`;
 
     for (const selector of [
-      '.chrome-drawer-section',
-      '.chrome-drawer-card',
-      '.notification-item__time',
+      '.drawer-kit-section',
+      '.drawer-kit-card',
+      '.drawer-kit-list-item__meta',
       '.settings-card__social-status',
       '.settings-card__avatar-editor',
     ]) {
@@ -227,6 +228,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
       'src/components/app-settings/AppSettingsPanel.tsx',
       'src/components/app-settings/AppSettingsDrawer.tsx',
       'src/components/app-shell/ChromeDrawerShell.tsx',
+      'src/components/app-shell/drawer-kit.tsx',
       'src/components/my-page/ProfileAccountSettings.tsx',
       'src/components/my-page/ProfileAvatarEditor.tsx',
       'src/components/notifications/NotificationDrawerContent.tsx',

@@ -109,8 +109,8 @@ describe('profile avatar UI consumption', () => {
     );
     expect(container.querySelector('.settings-card__avatar-action-row')).toBeInTheDocument();
     expect(container.querySelector('.route-builder-form input')).toHaveValue('code305');
-    expect(container.querySelectorAll('.chrome-drawer-subsection').length).toBeGreaterThanOrEqual(3);
-    expect(container.querySelectorAll('.chrome-drawer-section__label').length).toBeGreaterThanOrEqual(3);
+    expect(container.querySelectorAll('.drawer-kit-section').length).toBeGreaterThanOrEqual(3);
+    expect(container.querySelectorAll('.drawer-kit-section__eyebrow').length).toBeGreaterThanOrEqual(3);
   });
 
   it('routes avatar upload and delete controls through the app settings account slot', async () => {
