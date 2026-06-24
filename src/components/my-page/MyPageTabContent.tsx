@@ -1,4 +1,4 @@
-import { Suspense, lazy, type RefObject } from 'react';
+import { Suspense, lazy, useState, type RefObject } from 'react';
 import type { MyPageTabKey, ReviewMood } from '../../types/core';
 import type { SessionUser } from '../../types/auth';
 import type { MyPageResponse } from '../../types/my-page';
@@ -10,6 +10,16 @@ import { MyRoutesTabSection } from './MyRoutesTabSection';
 import { MyStampTabSection } from './MyStampTabSection';
 
 const AdminPanel = lazy(() => import('../AdminPanel').then((module) => ({ default: module.AdminPanel })));
+
+type ActivityTabKey = Exclude<MyPageTabKey, 'admin'>;
+type ActivityViewModes = Record<ActivityTabKey, 'list' | 'calendar'>;
+
+const defaultActivityViewModes: ActivityViewModes = {
+  stamps: 'list',
+  feeds: 'list',
+  comments: 'list',
+  routes: 'list',
+};
 
 type MyPageTabContentProps = {
   activeTab: MyPageTabKey;
@@ -60,6 +70,11 @@ export function MyPageTabContent({
   onToggleAdminPlace,
   onToggleAdminManualOverride,
 }: MyPageTabContentProps) {
+  const [activityViewModes, setActivityViewModes] = useState<ActivityViewModes>(defaultActivityViewModes);
+  const updateActivityViewMode = (tab: ActivityTabKey, mode: ActivityViewModes[ActivityTabKey]) => {
+    setActivityViewModes((current) => ({ ...current, [tab]: mode }));
+  };
+
   return (
     <section className="sheet-card stack-gap">
       <MyPagePrimaryTabs activeTab={activeTab} isAdmin={sessionUser.isAdmin} onChangeTab={onChangeTab} />
@@ -68,18 +83,22 @@ export function MyPageTabContent({
         <MyStampTabSection
           stampLogs={myPage.stampLogs}
           travelSessions={myPage.travelSessions}
+          viewMode={activityViewModes.stamps}
           onOpenPlace={onOpenPlace}
           onOpenRoutes={() => onChangeTab('routes')}
+          onViewModeChange={(mode) => updateActivityViewMode('stamps', mode)}
         />
       )}
 
       {activeTab === 'feeds' && (
         <MyFeedTabSection
           reviews={myPage.reviews}
+          viewMode={activityViewModes.feeds}
           onOpenPlace={onOpenPlace}
           onOpenReview={onOpenReview}
           onUpdateReview={onUpdateReview}
           onDeleteReview={onDeleteReview}
+          onViewModeChange={(mode) => updateActivityViewMode('feeds', mode)}
         />
       )}
 
@@ -89,8 +108,10 @@ export function MyPageTabContent({
           commentsHasMore={commentsHasMore}
           commentsLoadingMore={commentsLoadingMore}
           commentsLoadMoreRef={commentsLoadMoreRef}
+          viewMode={activityViewModes.comments}
           onOpenPlace={onOpenPlace}
           onOpenComment={onOpenComment}
+          onViewModeChange={(mode) => updateActivityViewMode('comments', mode)}
         />
       )}
 
@@ -100,9 +121,11 @@ export function MyPageTabContent({
           routes={myPage.routes}
           routeSubmitting={routeSubmitting}
           routeError={routeError}
+          viewMode={activityViewModes.routes}
           onOpenPlace={onOpenPlace}
           onOpenRoute={onOpenRoute}
           onPublishRoute={onPublishRoute}
+          onViewModeChange={(mode) => updateActivityViewMode('routes', mode)}
         />
       )}
 

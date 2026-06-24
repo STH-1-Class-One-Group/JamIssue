@@ -14,6 +14,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-017` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | 피드 탭 인스타형 레이아웃 개선 | child issue별 목적형 브랜치 | PR 링크, merge SHA, feed layout QA, CI 링크 |
 
+| `TSK-011` | [#376](https://github.com/STH-1-Class-One-Group/JamIssue/issues/376) | Open PR review and triage for existing backlog PRs | child issue purpose branch | PR comments, closed PR readback, merge SHA, validation evidence |
 | `TSK-018` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Profile avatar Web Front consumer contract, My Page summary avatar, feed/comment author avatar | child issue purpose branch | PR link, merge SHA, avatar contract tests, CI link |
 | `TSK-019` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme token hardening and raw color literal regression guard | child issue purpose branch | PR link, merge SHA, seasonal token tests, CI link |
 | `TSK-021` | [#620](https://github.com/STH-1-Class-One-Group/JamIssue/issues/620) | 앱 내비게이션, 마이페이지, 계정 설정, 앱 설정, 햄버거, 지도 표시 설정 책임 분리 | child issue별 목적형 브랜치 | PR 링크, merge SHA, responsibility matrix, CI 링크 |
@@ -33,12 +34,19 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-017-00-FEED-INSTAGRAM-LAYOUT` | [#551](https://github.com/STH-1-Class-One-Group/JamIssue/issues/551) | Feed tab Instagram-like layout polish while preserving JamIssue tone and existing feed behavior | feed; review card; instagram layout; uiux | backend provider contract, DB schema, OAuth flow, KTO map work |
 
+| `TSK-011-00-OPEN-PR-REVIEW-AND-TRIAGE` | [#376](https://github.com/STH-1-Class-One-Group/JamIssue/issues/376) | Review open backlog PRs, salvage useful changes, and close low-value or noisy PRs with rationale | pull request; triage; backlog; merge; close; review | new feature parent, unrelated UI redesign, backend provider contract |
 | `TSK-018-00-PROFILE-AVATAR-FRONT-CONSUMPTION` | [#571](https://github.com/STH-1-Class-One-Group/JamIssue/issues/571) | Web Front consumes Backend/Admin profile avatar contract for upload/delete, My Page, feed, and comment avatar rendering | profile avatar; my page; feed author; comment author; consumer API | backend provider implementation, Supabase Storage direct call, DB schema, OAuth flow |
 | `TSK-019-00-SEASON-THEME-TOKEN-HARDENING` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme tokenization, runtime season resolution, and hardcoded color regression guard | season theme; design token; color token; source quality; app chrome | tab/navigation feature changes, backend provider contract, DB schema, OAuth flow |
 | `TSK-021-00-NAVIGATION-SETTINGS-RESPONSIBILITY-SPLIT` | [#620](https://github.com/STH-1-Class-One-Group/JamIssue/issues/620) | 앱 내비게이션, 마이페이지 대시보드, 계정 설정, 앱 설정, 햄버거 메뉴, 지도 표시 설정의 책임 경계 분리 | navigation; settings; my page; account settings; app settings; hamburger; map preferences | TSK-020 activity view work, backend provider contract, DB schema, OAuth flow, unrelated UI redesign |
 | `TSK-022-00-DEPENDABOT-NPM-SECURITY-REMEDIATION` | [#662](https://github.com/STH-1-Class-One-Group/JamIssue/issues/662) | Dependabot npm security alert remediation for transitive lockfile dependencies | dependabot; security; npm; package-lock; undici; ws | UI/UX work, backend provider contract, DB schema, OAuth flow, unrelated dependency modernization |
 
 | `TSK-023-00-VISIBLE-THEME-TOKEN-HARDENING` | [#668](https://github.com/STH-1-Class-One-Group/JamIssue/issues/668) | Visible theme token hardening for scrollbars, form controls, drawer surfaces, and raw color source-quality gates | visible theme; scrollbar; form surface; drawer surface; semantic token; source quality | TSK-021 drawer behavior bugs, backend provider contract, DB schema, OAuth flow, KTO provider contract |
+
+## TSK-011 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#377](https://github.com/STH-1-Class-One-Group/JamIssue/issues/377) | `open-pr-backlog-triage-20260624` | active | Open PR backlog triage evidence pending |
 
 ## TSK-023 Child Issues
 
