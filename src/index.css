@@ -565,9 +565,11 @@ textarea {
   display: grid;
   align-content: start;
   gap: 16px;
+  height: 100%;
   min-height: 0;
   padding: 0 16px 16px;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .app-settings-drawer__section {
@@ -3651,6 +3653,7 @@ textarea {
 }
 
 .chrome-drawer__content {
+  display: grid;
   min-height: 0;
   overflow: hidden;
 }
