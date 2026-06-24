@@ -93,18 +93,24 @@ describe('visible theme hardcoding audit', () => {
     expect(textareaBlock).toContain('resize: none');
   });
 
-  it('keeps refinements visible hardcoded override backlog classified for follow-up token migration', () => {
+  it('keeps migrated refinements visible overrides on semantic tokens', () => {
     const refinementsCss = readRepoFile('src/styles/refinements.css');
-    const visibleBacklogSnippets = [
+    const migratedRawSnippets = [
       'color: #ff6f9f !important;',
       'background: #ff557d !important;',
       'background: rgba(250, 247, 255, 0.82) !important;',
-      'background: rgba(255, 246, 249, 0.98) !important;',
-      'border: 1px solid rgba(255, 196, 215, 0.36) !important;',
+      'background: rgba(186, 150, 168, 0.4) !important;',
+      'box-shadow: 0 -14px 28px rgba(60, 32, 48, 0.08) !important;',
     ];
 
-    for (const snippet of visibleBacklogSnippets) {
-      expect(refinementsCss, `${snippet} should be migrated in TSK-023-03/04`).toContain(snippet);
+    for (const snippet of migratedRawSnippets) {
+      expect(refinementsCss, `${snippet} should stay migrated to semantic tokens`).not.toContain(snippet);
     }
+
+    expect(refinementsCss).toContain('color: var(--color-accent) !important;');
+    expect(refinementsCss).toContain('background: var(--color-accent) !important;');
+    expect(refinementsCss).toContain('background: var(--surface-muted) !important;');
+    expect(refinementsCss).toContain('background: var(--sheet-handle) !important;');
+    expect(refinementsCss).toContain('box-shadow: var(--shadow-soft) !important;');
   });
 });

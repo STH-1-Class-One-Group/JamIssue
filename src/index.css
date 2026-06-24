@@ -1080,7 +1080,7 @@ textarea {
   height: 5px;
   margin: 10px auto 2px;
   border-radius: 999px;
-  background: rgba(95, 70, 96, 0.22);
+  background: var(--sheet-handle);
 }
 
 .tab-overlay--scrollable {
@@ -1457,7 +1457,7 @@ textarea {
   width: 46px;
   height: 5px;
   border-radius: 999px;
-  background: rgba(95, 70, 96, 0.22);
+  background: var(--sheet-handle);
 }
 
 .place-drawer__content {
@@ -1497,7 +1497,7 @@ textarea {
 
 .place-drawer__close:hover {
   color: var(--ink);
-  background: rgba(66, 40, 60, 0.07);
+  background: var(--control-hover-surface);
 }
 
 .place-drawer__summary {
@@ -1549,11 +1549,29 @@ textarea {
   border: 1px solid var(--control-border);
   background: var(--surface-field);
   color: var(--ink);
+  caret-color: var(--color-accent);
 }
 
 .review-composer__textarea {
   resize: none;
   line-height: 1.6;
+}
+
+.review-composer__textarea::placeholder,
+.route-builder-field input::placeholder,
+.route-builder-field textarea::placeholder,
+.comment-thread__form input::placeholder,
+.comment-thread__reply-form input::placeholder {
+  color: var(--control-placeholder-text);
+}
+
+.review-composer__textarea:focus,
+.route-builder-field input:focus,
+.route-builder-field textarea:focus,
+.comment-thread__form input:focus,
+.comment-thread__reply-form input:focus {
+  border-color: var(--control-hover-border);
+  box-shadow: var(--control-focus-ring);
 }
 
 .file-picker {
@@ -1562,6 +1580,10 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   padding: 13px 15px;
+  border: 1px solid var(--control-border);
+  border-radius: 18px;
+  background: var(--surface-field);
+  color: var(--text-muted);
 }
 
 .file-picker input {
@@ -1571,7 +1593,7 @@ textarea {
 .inline-error,
 .form-error-copy {
   margin: 0;
-  color: #b83465;
+  color: var(--control-error-text);
   font-size: 13px;
   font-weight: 600;
 }
@@ -2886,7 +2908,7 @@ textarea {
   width: 46px;
   height: 5px;
   border-radius: 999px;
-  background: rgba(95, 70, 96, 0.22);
+  background: var(--sheet-handle);
 }
 
 .feed-comment-sheet__content {
@@ -2939,7 +2961,7 @@ textarea {
 
 .feed-comment-sheet__close:hover {
   color: var(--ink);
-  background: rgba(66, 40, 60, 0.07);
+  background: var(--control-hover-surface);
 }
 
 .feed-comment-sheet__body {
