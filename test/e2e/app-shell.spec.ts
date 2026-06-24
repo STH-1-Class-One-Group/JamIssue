@@ -357,9 +357,15 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(mapDisplaySwitch).toBeVisible();
   await expectElementCenterToResolveInside(mapDisplayTrack, '.app-settings-drawer__panel');
+  const settingsContent = settingsDrawer.locator('.app-settings-drawer__content');
+  await expect(settingsContent).toBeVisible();
+  await expect.poll(async () => settingsContent.evaluate((element) => (
+    element.scrollHeight > element.clientHeight
+  ))).toBe(true);
   await expect(settingsDrawer.getByRole('region', { name: '프로필 사진 설정' })).toBeVisible();
-  await settingsDrawer.getByRole('button', { name: '로그아웃' }).scrollIntoViewIfNeeded();
-  await expect(settingsDrawer.getByRole('button', { name: '로그아웃' })).toBeVisible();
+  const logoutButton = settingsDrawer.getByRole('button', { name: '로그아웃' });
+  await logoutButton.scrollIntoViewIfNeeded();
+  await expect(logoutButton).toBeVisible();
   const feedbackSection = settingsDrawer.locator('[data-app-settings-section="feedback"]');
   await feedbackSection.scrollIntoViewIfNeeded();
   await expect(feedbackSection.getByRole('link', { name: '피드백' })).toBeVisible();
@@ -368,7 +374,8 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const capsuleBox = await requireBoundingBox(appCapsule);
   const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
-  const contentBox = await requireBoundingBox(settingsDrawer.locator('.app-settings-drawer__content'));
+  const contentBox = await requireBoundingBox(settingsContent);
+  const logoutBox = await requireBoundingBox(logoutButton);
   const feedbackBox = await requireBoundingBox(feedbackSection);
   expect(settingsPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
   expect(settingsPanelBox.y + settingsPanelBox.height).toBeLessThanOrEqual(bottomNavBox.y + 1);
@@ -376,6 +383,8 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
   expect(feedbackBox.y).toBeGreaterThanOrEqual(contentBox.y);
+  expect(logoutBox.y + logoutBox.height).toBeLessThanOrEqual(bottomNavBox.y - 8);
+  expect(feedbackBox.y + feedbackBox.height).toBeLessThanOrEqual(bottomNavBox.y - 8);
 
   await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
   await expect(settingsDrawer).toHaveCount(0);
