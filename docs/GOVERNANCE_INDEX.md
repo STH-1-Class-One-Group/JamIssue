@@ -19,6 +19,8 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-021` | [#620](https://github.com/STH-1-Class-One-Group/JamIssue/issues/620) | 앱 내비게이션, 마이페이지, 계정 설정, 앱 설정, 햄버거, 지도 표시 설정 책임 분리 | child issue별 목적형 브랜치 | PR 링크, merge SHA, responsibility matrix, CI 링크 |
 | `TSK-022` | [#662](https://github.com/STH-1-Class-One-Group/JamIssue/issues/662) | Dependabot npm security alert remediation for Web Front lockfile dependencies | child issue purpose branch | PR link, merge SHA, Dependabot alert readback, CI link |
 
+| `TSK-023` | [#668](https://github.com/STH-1-Class-One-Group/JamIssue/issues/668) | Visible theme token hardening for scrollbars, forms, drawers, and app surfaces | child issue purpose branch | PR link, merge SHA, visible theme source-quality gate, CI link |
+
 ## Core Rows
 
 | Core | Parent Issue | Responsibility | Keywords | Misroute examples |
@@ -35,6 +37,18 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | `TSK-019-00-SEASON-THEME-TOKEN-HARDENING` | [#582](https://github.com/STH-1-Class-One-Group/JamIssue/issues/582) | Seasonal theme tokenization, runtime season resolution, and hardcoded color regression guard | season theme; design token; color token; source quality; app chrome | tab/navigation feature changes, backend provider contract, DB schema, OAuth flow |
 | `TSK-021-00-NAVIGATION-SETTINGS-RESPONSIBILITY-SPLIT` | [#620](https://github.com/STH-1-Class-One-Group/JamIssue/issues/620) | 앱 내비게이션, 마이페이지 대시보드, 계정 설정, 앱 설정, 햄버거 메뉴, 지도 표시 설정의 책임 경계 분리 | navigation; settings; my page; account settings; app settings; hamburger; map preferences | TSK-020 activity view work, backend provider contract, DB schema, OAuth flow, unrelated UI redesign |
 | `TSK-022-00-DEPENDABOT-NPM-SECURITY-REMEDIATION` | [#662](https://github.com/STH-1-Class-One-Group/JamIssue/issues/662) | Dependabot npm security alert remediation for transitive lockfile dependencies | dependabot; security; npm; package-lock; undici; ws | UI/UX work, backend provider contract, DB schema, OAuth flow, unrelated dependency modernization |
+
+| `TSK-023-00-VISIBLE-THEME-TOKEN-HARDENING` | [#668](https://github.com/STH-1-Class-One-Group/JamIssue/issues/668) | Visible theme token hardening for scrollbars, form controls, drawer surfaces, and raw color source-quality gates | visible theme; scrollbar; form surface; drawer surface; semantic token; source quality | TSK-021 drawer behavior bugs, backend provider contract, DB schema, OAuth flow, KTO provider contract |
+
+## TSK-023 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#669](https://github.com/STH-1-Class-One-Group/JamIssue/issues/669) | `visible-theme-hardcoding-audit` | active | visible theme hardcoding audit evidence pending |
+| [#670](https://github.com/STH-1-Class-One-Group/JamIssue/issues/670) | `themed-scrollbar-contract` | planned | themed scrollbar contract evidence pending |
+| [#671](https://github.com/STH-1-Class-One-Group/JamIssue/issues/671) | `drawer-form-surface-token-migration` | planned | drawer/form surface token migration evidence pending |
+| [#672](https://github.com/STH-1-Class-One-Group/JamIssue/issues/672) | `visible-theme-source-quality-gate` | planned | visible theme source-quality gate evidence pending |
+| [#673](https://github.com/STH-1-Class-One-Group/JamIssue/issues/673) | `theme-polish-traceability` | planned | theme polish traceability evidence pending |
 
 ## TSK-022 Child Issues
 
