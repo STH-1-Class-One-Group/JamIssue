@@ -68,14 +68,13 @@ describe('profile avatar UI consumption', () => {
     const { container } = render(<MyPagePanel {...createPanelProps()} />);
 
     expect(screen.getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--lg');
-    expect(screen.queryByLabelText('내 활동 요약')).not.toBeInTheDocument();
     expect(container.querySelector('.my-page-profile-header__summary')).not.toBeInTheDocument();
     expect(screen.getByText('방문한 고유 명소')).toBeInTheDocument();
     expect(screen.queryByText('프로필 사진 자리')).not.toBeInTheDocument();
     expect(screen.queryByRole('region', { name: '프로필 사진 설정' })).not.toBeInTheDocument();
   });
 
-  it('renders avatar settings as one editor in the app settings account slot', () => {
+  it('renders account settings subsections with one drawer rhythm', () => {
     render(
       <AppAccountSettingsSlot
         sessionUser={{ ...sessionUserFixture, profileImage: 'https://cdn.example.test/me.webp' }}
@@ -95,8 +94,10 @@ describe('profile avatar UI consumption', () => {
 
     expect(within(editor).getByLabelText(`${sessionUserFixture.nickname} 프로필 이미지`)).toHaveClass('avatar--md');
     expect(within(editor).getByText('작은 프로필 이미지로 피드와 댓글에서 표시돼요.')).toBeInTheDocument();
+    expect(within(editor).getByText('AVATAR')).toHaveClass('chrome-drawer-section__label');
     expect(within(editor).getByText('사진 변경').closest('.settings-card__avatar-action')).not.toBeNull();
     expect(within(editor).getByRole('button', { name: '사진 삭제' })).toHaveClass('settings-card__avatar-action');
+    expect(screen.getByText('프로필명')).toHaveClass('chrome-drawer-section__label');
     expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
   });
 

@@ -42,10 +42,10 @@ export function ProfileAccountSettings({
   ];
 
   return (
-    <div className="settings-card__account-content">
+    <div className="settings-card__account-content chrome-drawer-stack">
       {socialProviderKeys.length > 0 && (
-        <div className="settings-card__social" aria-label="연결된 소셜 계정">
-          <p className="eyebrow">소셜 계정</p>
+        <section className="chrome-drawer-subsection settings-card__social" aria-label="연결된 소셜 계정">
+          <p className="chrome-drawer-section__label">소셜 계정</p>
           <div className="settings-card__social-list">
             {socialProviderKeys.map((providerKey) => {
               const provider = providerByKey.get(providerKey);
@@ -79,7 +79,7 @@ export function ProfileAccountSettings({
               );
             })}
           </div>
-        </div>
+        </section>
       )}
       <ProfileAvatarEditor
         sessionUser={sessionUser}
@@ -87,9 +87,9 @@ export function ProfileAccountSettings({
         onAvatarChange={onAvatarChange}
         onDeleteAvatar={onDeleteAvatar}
       />
-      <form className="route-builder-form" onSubmit={(event) => void onSubmit(event)}>
+      <form className="chrome-drawer-subsection route-builder-form" onSubmit={(event) => void onSubmit(event)}>
         <label className="route-builder-field">
-          <span>프로필명</span>
+          <span className="chrome-drawer-section__label">프로필명</span>
           <input value={nickname} onChange={(event) => onNicknameChange(event.target.value)} placeholder="닉네임을 입력하세요" maxLength={40} />
         </label>
         {profileError && <p className="form-error-copy">{profileError}</p>}

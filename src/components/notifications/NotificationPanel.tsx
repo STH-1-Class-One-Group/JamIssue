@@ -31,7 +31,7 @@ export function NotificationPanel({
     <section className={embedded ? 'global-notification-panel global-notification-panel--embedded' : 'global-notification-panel'}>
       <div className="notification-panel__header">
         <div className="notification-panel__heading">
-          <p className="eyebrow">ALERT</p>
+          <p className="chrome-drawer-section__label">ALERT</p>
           <h3>{sessionUserName ? `${sessionUserName}님의 새 알림` : '새 알림'}</h3>
           <p className="section-copy">탭에 있던 내용을 닫지 않고 바로 확인하고 이동할 수 있어요.</p>
         </div>
@@ -44,7 +44,7 @@ export function NotificationPanel({
           {busyAll ? '처리 중' : '모두 읽음'}
         </button>
       </div>
-      {allRead ? <p className="notification-panel__status">모든 알림을 읽었어요.</p> : null}
+      {allRead ? <p className="chrome-drawer-card notification-panel__status">모든 알림을 읽었어요.</p> : null}
       {error && <p className="form-error-copy">{error}</p>}
       <div className="notification-list">
         {notifications.map((notification) => (

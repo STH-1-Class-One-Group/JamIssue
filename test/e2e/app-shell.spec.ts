@@ -298,6 +298,11 @@ test('TSK-021-08 opens notifications in the left information drawer', async ({ p
   expect(panelBox.x).toBeGreaterThanOrEqual(drawerPanelBox.x);
   expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(drawerPanelBox.x + drawerPanelBox.width + 1);
 
+  const firstNotification = notificationPanel.locator('.notification-item').first();
+  const firstMetaBox = await requireBoundingBox(firstNotification.locator('.notification-item__time'));
+  const firstDeleteBox = await requireBoundingBox(firstNotification.locator('.notification-item__delete'));
+  expect(firstMetaBox.x + firstMetaBox.width).toBeLessThanOrEqual(firstDeleteBox.x - 4);
+
   const isPanelTopHitTarget = await notificationPanel.evaluate((panel) => {
     const rect = panel.getBoundingClientRect();
     const target = document.elementFromPoint(rect.left + Math.min(24, rect.width / 2), rect.top + Math.min(24, rect.height / 2));
@@ -346,9 +351,9 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   await expect(appCapsule).toBeVisible();
   await expect(page.locator('.global-settings-menu__menu')).toHaveCount(0);
 
-  await appCapsule.getByRole('button', { name: '앱 설정 열기' }).click();
+  await appCapsule.getByRole('button', { name: '설정 열기' }).click();
 
-  const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
+  const settingsDrawer = page.getByRole('dialog', { name: '설정' });
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
   await expect(page.locator('.global-settings-menu__menu')).toHaveCount(0);
   await expect(settingsDrawer.getByText('지도 표시')).toBeVisible();
@@ -362,7 +367,11 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   await expect.poll(async () => settingsContent.evaluate((element) => (
     element.scrollHeight > element.clientHeight
   ))).toBe(true);
-  await expect(settingsDrawer.getByRole('region', { name: '프로필 사진 설정' })).toBeVisible();
+  const socialLabel = settingsDrawer.getByText('소셜 계정');
+  const avatarRegion = settingsDrawer.getByRole('region', { name: '프로필 사진 설정' });
+  const profileNameLabel = settingsDrawer.getByText('프로필명');
+  await expect(avatarRegion).toBeVisible();
+  await expect(profileNameLabel).toBeVisible();
   const logoutButton = settingsDrawer.getByRole('button', { name: '로그아웃' });
   await logoutButton.scrollIntoViewIfNeeded();
   await expect(logoutButton).toBeVisible();
@@ -375,6 +384,9 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   const bottomNavBox = await requireBoundingBox(page.locator('.bottom-nav'));
   const settingsPanelBox = await requireBoundingBox(page.locator('.app-settings-drawer__panel'));
   const contentBox = await requireBoundingBox(settingsContent);
+  const socialLabelBox = await requireBoundingBox(socialLabel);
+  const avatarBox = await requireBoundingBox(avatarRegion);
+  const profileNameBox = await requireBoundingBox(profileNameLabel);
   const logoutBox = await requireBoundingBox(logoutButton);
   const feedbackBox = await requireBoundingBox(feedbackSection);
   expect(settingsPanelBox.y).toBeGreaterThanOrEqual(capsuleBox.y + capsuleBox.height);
@@ -382,11 +394,13 @@ test('TSK-021-09 opens the right settings drawer without freezing shell hit targ
   expect(settingsPanelBox.x).toBeGreaterThanOrEqual(phoneShellBox.x + 6);
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
+  expect(avatarBox.y).toBeGreaterThan(socialLabelBox.y + socialLabelBox.height + 12);
+  expect(profileNameBox.y).toBeGreaterThan(avatarBox.y + avatarBox.height + 10);
   expect(feedbackBox.y).toBeGreaterThanOrEqual(contentBox.y);
   expect(logoutBox.y + logoutBox.height).toBeLessThanOrEqual(bottomNavBox.y - 8);
   expect(feedbackBox.y + feedbackBox.height).toBeLessThanOrEqual(bottomNavBox.y - 8);
 
-  await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
+  await settingsDrawer.getByRole('button', { name: '설정 닫기' }).click();
   await expect(settingsDrawer).toHaveCount(0);
 
   const feedTab = page.locator('[data-tab-key="feed"]');
@@ -410,9 +424,9 @@ test('TSK-021-09 keeps the right settings drawer hittable inside desktop phone p
 
   const appCapsule = page.locator('[data-app-capsule="root"]');
   await expect(appCapsule).toBeVisible();
-  await appCapsule.getByRole('button', { name: '앱 설정 열기' }).click();
+  await appCapsule.getByRole('button', { name: '설정 열기' }).click();
 
-  const settingsDrawer = page.getByRole('dialog', { name: '앱 설정' });
+  const settingsDrawer = page.getByRole('dialog', { name: '설정' });
   const mapDisplaySwitch = settingsDrawer.locator('[data-app-setting="show-curated-with-tourism"]');
   const mapDisplayTrack = mapDisplaySwitch.locator('.toggle-switch__track');
   await expect(settingsDrawer).toBeVisible({ timeout: 300 });
@@ -428,7 +442,7 @@ test('TSK-021-09 keeps the right settings drawer hittable inside desktop phone p
   expect(settingsPanelBox.x + settingsPanelBox.width / 2).toBeGreaterThan(phoneShellBox.x + phoneShellBox.width / 2);
   expect(settingsPanelBox.x + settingsPanelBox.width).toBeLessThanOrEqual(phoneShellBox.x + phoneShellBox.width - 6);
 
-  await settingsDrawer.getByRole('button', { name: '앱 설정 닫기' }).click();
+  await settingsDrawer.getByRole('button', { name: '설정 닫기' }).click();
   await expect(settingsDrawer).toHaveCount(0);
   await context.close();
 });

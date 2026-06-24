@@ -107,8 +107,24 @@ describe('NotificationPanel item render stability', () => {
     );
 
     expect(screen.getByRole('button', { name: '모두 읽음' })).toBeDisabled();
-    expect(screen.getByText('모든 알림을 읽었어요.')).toBeInTheDocument();
+    expect(screen.getByText('모든 알림을 읽었어요.')).toHaveClass('chrome-drawer-card');
     expect(document.querySelector('.notification-item.is-unread')).toBeNull();
+  });
+
+  it('separates notification meta and delete hit target in the item DOM', () => {
+    render(
+      <NotificationPanel
+        sessionUserName="tester"
+        notifications={[{ ...createNotification('n-1'), actorName: 'code305' }]}
+        unreadCount={1}
+        actions={createActions(null)}
+      />,
+    );
+
+    const item = document.querySelector('.notification-item');
+    expect(item?.querySelector('.notification-item__top')).not.toBeNull();
+    expect(item?.querySelector('.notification-item__time')).toHaveTextContent('code305 · 2026-06-13T00:00:00Z');
+    expect(item?.querySelector('.notification-item__delete')).toHaveAccessibleName('알림 삭제');
   });
 
   it('shows progress feedback while the mark-all action is busy', () => {

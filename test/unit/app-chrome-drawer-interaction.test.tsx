@@ -63,17 +63,17 @@ describe('AppChrome drawer interaction contract', () => {
     renderChrome();
 
     const menuButton = screen.getByRole('button', { name: '보조 메뉴 열기' });
-    const settingsButton = screen.getByRole('button', { name: '앱 설정 열기' });
+    const settingsButton = screen.getByRole('button', { name: '설정 열기' });
 
     await user.click(menuButton);
     expect(screen.getByRole('dialog', { name: '보조 메뉴' })).toBeInTheDocument();
 
     await user.click(settingsButton);
     expect(screen.queryByRole('dialog', { name: '보조 메뉴' })).not.toBeInTheDocument();
-    const settingsDrawer = screen.getByRole('dialog', { name: '앱 설정' });
+    const settingsDrawer = screen.getByRole('dialog', { name: '설정' });
     expect(within(settingsDrawer).getByText('지도 표시')).toBeInTheDocument();
 
     await user.click(settingsButton);
-    expect(screen.queryByRole('dialog', { name: '앱 설정' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: '설정' })).not.toBeInTheDocument();
   });
 });

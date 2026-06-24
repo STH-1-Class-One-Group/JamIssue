@@ -27,8 +27,8 @@ export function AppSettingsButton({
       type="button"
       className={isOpen ? 'secondary-button icon-button global-settings-menu__trigger is-complete' : 'secondary-button icon-button global-settings-menu__trigger'}
       onClick={onToggle}
-      aria-label="앱 설정 열기"
-      title="앱 설정 열기"
+      aria-label="설정 열기"
+      title="설정 열기"
       aria-expanded={isOpen}
     >
       <GearIcon />

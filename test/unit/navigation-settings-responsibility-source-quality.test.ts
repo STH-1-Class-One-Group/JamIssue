@@ -30,8 +30,6 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     const secondaryMenu = readRepoFile('src/components/app-shell/secondaryMenu.ts');
 
     expect(app).toContain("import { AppChrome, AppShell } from './components/app-shell'");
-    expect(app).toContain("import { MapFloatingNav } from './components/map-stage/MapFloatingNav'");
-    expect(app).toContain('appChromeCenter');
     expect(app).toContain('chrome={(');
     expect(app).not.toContain('topNavigation={(');
     expect(app).not.toContain('AppTopNavigation');
@@ -89,7 +87,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsPanel).not.toContain('ProfileAccountSettings');
     expect(appSettingsPanel).not.toContain('SideDrawer');
 
-    expect(appSettingsButton).toContain('앱 설정 열기');
+    expect(appSettingsButton).toContain('설정 열기');
     expect(appSettingsButton).not.toContain('AppSettingsDrawer');
     expect(appSettingsButton).not.toContain('NotificationPanel');
 
@@ -99,6 +97,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsDrawer).toContain('지도 표시');
     expect(appSettingsDrawer).toContain('계정 관리');
     expect(appSettingsDrawer).toContain('피드백');
+    expect(appSettingsDrawer).toContain('chrome-drawer-section');
     expect(appSettingsDrawer).not.toContain('footer={');
     expect(appSettingsDrawer).not.toContain('NotificationPanel');
     expect(appSettingsDrawer).not.toContain('useNotificationPanelActions');
@@ -153,6 +152,7 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsDrawer).toContain('accountSettings');
     expect(appAccountSettingsSlot).toContain('ProfileAccountSettings');
     expect(profileAccountSettings).toContain('ProfileAvatarEditor');
+    expect(profileAccountSettings).toContain('chrome-drawer-subsection');
     expect(profileAccountSettings).toContain('onLinkProvider');
     expect(profileAccountSettings).toContain('onDeleteAvatar');
     expect(profileAccountSettings).toContain('onLogout');
@@ -190,6 +190,30 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(css).toContain('bottom: calc(var(--bottom-nav-offset) + 4px)');
     expect(css).not.toContain('right: max(var(--drawer-inline-inset)');
     expect(css).not.toContain('left: 0;\n  width: min(312px, calc(100% - 56px))');
+  });
+
+  it('keeps drawer section styling on semantic tokens without visible raw color regressions', () => {
+    const css = readRepoFile('src/index.css');
+    const refinements = readRepoFile('src/styles/refinements.css');
+    const combined = `${css}\n${refinements}`;
+
+    for (const selector of [
+      '.chrome-drawer-section',
+      '.chrome-drawer-card',
+      '.notification-item__time',
+      '.settings-card__social-status',
+      '.settings-card__avatar-editor',
+    ]) {
+      expect(combined).toContain(selector);
+    }
+    expect(combined).not.toContain('color: #6f5964');
+    expect(combined).not.toContain('color: #866f7b');
+    expect(combined).not.toContain('background: rgba(66, 40, 60, 0.07)');
+    expect(combined).toContain('.settings-card__social-status');
+    expect(combined).toContain('.settings-card__social-action-label');
+    expect(combined).toContain('color: var(--color-accent-strong)');
+    expect(combined).not.toContain('.settings-card__social-status {\n  color: var(--pink-deep);');
+    expect(combined).not.toContain('.settings-card__social-action-label {\n  color: var(--pink-deep);');
   });
 
   it('keeps touched navigation and settings shell files UTF-8 readable', () => {

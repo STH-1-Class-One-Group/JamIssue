@@ -16,7 +16,7 @@ export const NotificationListItem = memo(function NotificationListItem({
   onDelete,
 }: NotificationListItemProps) {
   return (
-    <article className={notification.isRead ? 'notification-item' : 'notification-item is-unread'}>
+    <article className={notification.isRead ? 'notification-item chrome-drawer-card' : 'notification-item chrome-drawer-card is-unread'}>
       <button
         type="button"
         className="notification-item__content"
@@ -39,7 +39,7 @@ export const NotificationListItem = memo(function NotificationListItem({
         onClick={(event) => void onDelete(event, notification.id)}
         disabled={isBusy}
       >
-        ×
+        <span aria-hidden="true">×</span>
       </button>
     </article>
   );
