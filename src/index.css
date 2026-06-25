@@ -3,6 +3,7 @@
 @import './styles/themes/summer.css';
 @import './styles/themes/autumn.css';
 @import './styles/themes/winter.css';
+@import './styles/ui-kit.css';
 
 :root {
   --app-height: 100dvh;
