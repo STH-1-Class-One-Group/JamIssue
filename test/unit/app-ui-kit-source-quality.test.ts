@@ -66,7 +66,9 @@ describe('app UI kit source quality', () => {
       .map((file) => relative(workspaceRoot, file).replace(/\\/g, '/'));
 
     expect(migratedFeatures.sort()).toEqual([
+      'src/components/EventTab.tsx',
       'src/components/FeedCommentSheet.tsx',
+      'src/components/course/CommunityRouteCard.tsx',
       'src/components/review/ReviewListItem.tsx',
     ]);
   });
