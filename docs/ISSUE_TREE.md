@@ -145,6 +145,57 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - Merge commit: pending on this branch
   - Evidence: `docs/TSK-023-05-theme-polish-traceability.md`, `docs/traceability/task-ledger/by-task/TSK-023-05.json`, `docs/traceability/task-ledger.jsonl`, `docs/TASK_ID_LEDGER.md`, `docs/ISSUE_TREE.md`
 
+## TSK-025
+
+- [x] TSK-025-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/691
+  - Title: visual-system-audit-baseline
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/691
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/699
+  - Merge commit: 033c938176656489f3c6c56f2b5493e8c05a2e6b
+  - Evidence: `docs/TSK-025-01-visual-system-audit-baseline.md`, `reports/tsk-025-01/README.md`, `docs/traceability/task-ledger.jsonl`
+- [x] TSK-025-02: https://github.com/STH-1-Class-One-Group/JamIssue/issues/692
+  - Title: app-ui-kit-foundation
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/692
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/700
+  - Merge commit: a3a9b80b10039498cf8315bc26cddc8df0b3ece6
+  - Evidence: `src/components/ui-kit`, `src/styles/ui-kit.css`, `test/unit/app-ui-kit.test.tsx`, `docs/traceability/task-ledger.jsonl`
+- [x] TSK-025-03: https://github.com/STH-1-Class-One-Group/JamIssue/issues/693
+  - Title: my-page-settings-drawer-migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/693
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/701
+  - Merge commit: 5335e53967715db1f69e0f2e6cb6298f10bab57b
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-025-04: https://github.com/STH-1-Class-One-Group/JamIssue/issues/694
+  - Title: feed-modern-rhythm-migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/694
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/702
+  - Merge commit: 2c6263a0533aee2cb341237b582e6c699c6b0c10
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-025-05: https://github.com/STH-1-Class-One-Group/JamIssue/issues/695
+  - Title: event-course-list-migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/695
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/703
+  - Merge commit: 50c19d402a3344e917347fb642a72f77a793bc5b
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-025-06: https://github.com/STH-1-Class-One-Group/JamIssue/issues/696
+  - Title: map-sheet-tourism-migration
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/696
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/704
+  - Merge commit: 2221422254875bc7ace0dc3c7a91c3c9b667b7ab
+  - Evidence: GitHub Validation Evidence readback and `docs/traceability/task-ledger.jsonl`
+- [x] TSK-025-07: https://github.com/STH-1-Class-One-Group/JamIssue/issues/697
+  - Title: visual-system-quality-gate
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/697
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/705
+  - Merge commit: 88a1fa8aaf6cd11d4b22f2bb4108fe77d2aa5579
+  - Evidence: `test/unit/app-ui-kit-source-quality.test.ts`, `docs/traceability/task-ledger.jsonl`
+- [ ] TSK-025-08: https://github.com/STH-1-Class-One-Group/JamIssue/issues/698
+  - Title: docs-traceability
+  - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/698
+  - PR: pending on this branch
+  - Merge commit: pending on this branch
+  - Evidence: `docs/TSK-025-08-app-wide-ui-kit-traceability.md`, `docs/release-candidate-1.3.8.md`, `docs/ui-ux-qa-matrix.md`, `docs/GOVERNANCE_INDEX.md`, `docs/traceability/task-ledger/by-task/TSK-025-08.json`, `docs/traceability/task-ledger.jsonl`
+
 ## TSK-021
 
 - [x] TSK-021-01: https://github.com/STH-1-Class-One-Group/JamIssue/issues/621

@@ -189,3 +189,16 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 - [JamIssue 1.3.7 후보](release-candidate-1.3.7.md)
 - [TSK-016-01 7차 UI/UX 컴포넌트 아키텍처 Audit](TSK-016-01-seventh-uiux-component-architecture-audit.md)
 - [TSK-016-07 7차 UI/UX Docs Traceability](TSK-016-07-seventh-uiux-docs-traceability.md)
+
+## TSK-025 Child Issues
+
+| Child | Branch | Status | Evidence |
+| --- | --- | --- | --- |
+| [#691](https://github.com/STH-1-Class-One-Group/JamIssue/issues/691) | `visual-system-audit-baseline` | completed | PR [#699](https://github.com/STH-1-Class-One-Group/JamIssue/pull/699), merge `033c938176656489f3c6c56f2b5493e8c05a2e6b` |
+| [#692](https://github.com/STH-1-Class-One-Group/JamIssue/issues/692) | `app-ui-kit-foundation` | completed | PR [#700](https://github.com/STH-1-Class-One-Group/JamIssue/pull/700), merge `a3a9b80b10039498cf8315bc26cddc8df0b3ece6` |
+| [#693](https://github.com/STH-1-Class-One-Group/JamIssue/issues/693) | `my-page-settings-drawer-migration` | completed | PR [#701](https://github.com/STH-1-Class-One-Group/JamIssue/pull/701), merge `5335e53967715db1f69e0f2e6cb6298f10bab57b` |
+| [#694](https://github.com/STH-1-Class-One-Group/JamIssue/issues/694) | `feed-modern-rhythm-migration` | completed | PR [#702](https://github.com/STH-1-Class-One-Group/JamIssue/pull/702), merge `2c6263a0533aee2cb341237b582e6c699c6b0c10` |
+| [#695](https://github.com/STH-1-Class-One-Group/JamIssue/issues/695) | `event-course-list-migration` | completed | PR [#703](https://github.com/STH-1-Class-One-Group/JamIssue/pull/703), merge `50c19d402a3344e917347fb642a72f77a793bc5b` |
+| [#696](https://github.com/STH-1-Class-One-Group/JamIssue/issues/696) | `map-sheet-tourism-migration` | completed | PR [#704](https://github.com/STH-1-Class-One-Group/JamIssue/pull/704), merge `2221422254875bc7ace0dc3c7a91c3c9b667b7ab` |
+| [#697](https://github.com/STH-1-Class-One-Group/JamIssue/issues/697) | `visual-system-quality-gate` | completed | PR [#705](https://github.com/STH-1-Class-One-Group/JamIssue/pull/705), merge `88a1fa8aaf6cd11d4b22f2bb4108fe77d2aa5579` |
+| [#698](https://github.com/STH-1-Class-One-Group/JamIssue/issues/698) | `docs-traceability` | active | Docs/QA/release traceability PR pending |
