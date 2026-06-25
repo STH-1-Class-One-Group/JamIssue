@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { ActionButton } from '../ui-kit';
 import { CommentComposer } from './CommentComposer';
 import { CommentThreadItemActions } from './CommentThreadItemActions';
 import { Avatar } from '../Avatar';
@@ -85,9 +86,9 @@ export const CommentThreadItem = memo(function CommentThreadItem({
                 onChange={(event) => setEditingBody(event.target.value)}
                 placeholder="댓글 내용을 수정해 보세요."
               />
-              <button type="submit" className="comment-thread__submit" disabled={isMutating || editingBody.trim().length < 2}>
+              <ActionButton type="submit" size="sm" variant="primary" className="comment-thread__submit" disabled={isMutating || editingBody.trim().length < 2}>
                 {isMutating ? '수정 중' : '수정'}
-              </button>
+              </ActionButton>
             </form>
           ) : (
             <p>{comment.isDeleted ? '삭제된 댓글입니다.' : comment.body}</p>

@@ -1,13 +1,10 @@
+import { EmptyState } from '../ui-kit';
+
 interface ReviewListEmptyStateProps {
   emptyTitle: string;
   emptyBody: string;
 }
 
 export function ReviewListEmptyState({ emptyTitle, emptyBody }: ReviewListEmptyStateProps) {
-  return (
-    <section className="sheet-card stack-gap">
-      <strong>{emptyTitle}</strong>
-      <p className="section-copy">{emptyBody}</p>
-    </section>
-  );
+  return <EmptyState className="review-list-empty-state" title={emptyTitle} description={emptyBody} />;
 }

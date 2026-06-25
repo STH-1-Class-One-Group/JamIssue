@@ -1,3 +1,5 @@
+import { ActionButton } from '../ui-kit';
+
 interface CommentThreadItemActionsProps {
   canWriteComment: boolean;
   isMine: boolean;
@@ -22,24 +24,24 @@ export function CommentThreadItemActions({
   return (
     <div className="comment-thread__actions">
       {canWriteComment && (
-        <button type="button" className="comment-thread__reply-toggle" onClick={onReplyToggle}>
-          답글 달기
-        </button>
+        <ActionButton type="button" size="sm" variant="ghost" className="comment-thread__reply-toggle" onClick={onReplyToggle}>
+          답글 쓰기
+        </ActionButton>
       )}
       {isMine && !editing && (
         <>
-          <button type="button" className="comment-thread__reply-toggle" onClick={onStartEditing}>
+          <ActionButton type="button" size="sm" variant="ghost" className="comment-thread__reply-toggle" onClick={onStartEditing}>
             수정
-          </button>
-          <button type="button" className="comment-thread__reply-toggle" onClick={onDelete} disabled={isMutating}>
+          </ActionButton>
+          <ActionButton type="button" size="sm" variant="ghost" className="comment-thread__reply-toggle" onClick={onDelete} disabled={isMutating}>
             삭제
-          </button>
+          </ActionButton>
         </>
       )}
       {isMine && editing && (
-        <button type="button" className="comment-thread__reply-toggle" onClick={onCancelEditing}>
+        <ActionButton type="button" size="sm" variant="ghost" className="comment-thread__reply-toggle" onClick={onCancelEditing}>
           취소
-        </button>
+        </ActionButton>
       )}
     </div>
   );
