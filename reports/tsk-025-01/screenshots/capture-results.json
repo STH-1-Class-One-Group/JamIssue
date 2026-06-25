@@ -1,0 +1,183 @@
+[
+  {
+    "viewport": "360",
+    "target": "map",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "event",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "feed",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "course",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "my",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "map",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "event",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "feed",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "course",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "my",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "map",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "event",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "feed",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "course",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "my",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "map",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "event",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "feed",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "course",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "my",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "side-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "settings-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "place-sheet-full",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "side-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "360",
+    "target": "settings-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "place-sheet-full",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "side-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "settings-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "place-sheet-full",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "side-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "430",
+    "target": "settings-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "place-sheet-full",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "side-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "desktop-phone-preview",
+    "target": "settings-drawer",
+    "status": "captured"
+  },
+  {
+    "viewport": "390",
+    "target": "kto-sheet",
+    "status": "failed",
+    "error": "locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-marker-hit-target=\"tourism\"]').first()\u001b[22m\n\u001b[2m    - locator resolved to <div data-marker-hit-target=\"tourism\">i</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div>…</div> from <div title=\"\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div>…</div> from <div title=\"\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    9 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div>…</div> from <div title=\"\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n"
+  },
+  {
+    "viewport": "390",
+    "target": "kto-sheet-mouse-click",
+    "status": "captured"
+  }
+]

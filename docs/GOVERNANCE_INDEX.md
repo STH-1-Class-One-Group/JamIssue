@@ -22,6 +22,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-023` | [#668](https://github.com/STH-1-Class-One-Group/JamIssue/issues/668) | Visible theme token hardening for scrollbars, forms, drawers, and app surfaces | child issue purpose branch | PR link, merge SHA, visible theme source-quality gate, CI link |
 | `TSK-024` | [#682](https://github.com/STH-1-Class-One-Group/JamIssue/issues/682) | App chrome drawer UI kit boundary, drawer primitive composition, and hardcoding regression guard | child issue purpose branch | PR link, merge SHA, drawer kit source-quality gate, CI link |
+| `TSK-025` | [#690](https://github.com/STH-1-Class-One-Group/JamIssue/issues/690) | App-wide UI kit foundation, screen rhythm modernization, screen migration, and visual-system quality gates | child issue purpose branch | PR link, merge SHA, UI kit source-quality gate, screen migration evidence, CI link |
 
 ## Core Rows
 
@@ -43,6 +44,7 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 
 | `TSK-023-00-VISIBLE-THEME-TOKEN-HARDENING` | [#668](https://github.com/STH-1-Class-One-Group/JamIssue/issues/668) | Visible theme token hardening for scrollbars, form controls, drawer surfaces, and raw color source-quality gates | visible theme; scrollbar; form surface; drawer surface; semantic token; source quality | TSK-021 drawer behavior bugs, backend provider contract, DB schema, OAuth flow, KTO provider contract |
 | `TSK-024-00-APP-CHROME-DRAWER-UI-KIT` | [#682](https://github.com/STH-1-Class-One-Group/JamIssue/issues/682) | App chrome drawer UI kit boundary for shared drawer shell, section, card, list, form, action, and scrollbar primitives | drawer ui kit; app chrome; side drawer; settings drawer; notification drawer; hardcoding guard | TSK-021 responsibility split, backend provider contract, DB schema, OAuth flow, KTO provider contract |
+| `TSK-025-00-APP-WIDE-UI-KIT-SCREEN-RHYTHM` | [#690](https://github.com/STH-1-Class-One-Group/JamIssue/issues/690) | App-wide UI kit foundation, shared screen rhythm, feature screen migration, and visual-system hardcoding gates | app-wide ui kit; screen rhythm; visual system; app surface; content card; section header; feed rhythm; my page rhythm; event course list; map sheet tourism | TSK-024 drawer-only kit, TSK-021 navigation/settings responsibility split, backend provider contract, DB schema, OAuth flow, KTO provider contract |
 
 ## TSK-011 Child Issues
 
