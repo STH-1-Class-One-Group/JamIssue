@@ -352,11 +352,11 @@ Visual evidence captured so far:
 - stable tab screenshots for map, event, feed, course, and my page at 360px, 390px, 430px, and desktop phone preview.
 - place sheet full-state screenshots at 360px, 390px, 430px, and desktop phone preview.
 - side drawer and settings drawer screenshots at 360px, 390px, 430px, and desktop phone preview.
-- KTO sheet capture attempt recorded a real pointer-interception failure from the Naver overlay layer.
+- KTO sheet screenshot at 390px.
+- KTO sheet capture also recorded a pointer-interception failure from the Naver overlay layer before the successful mouse-coordinate click capture.
 
 Remaining work for later children:
 
-- Complete KTO sheet screenshot capture through a stable user path or route-state fixture.
 - Implement the foundation primitives.
 - Migrate screens incrementally.
 - Enforce source-quality gates after migrations reduce legacy exceptions.

@@ -16,22 +16,17 @@ Viewport coverage:
 - `1280x900`: desktop phone preview for map, event, feed, course, my
 - place sheet full state at 360px, 390px, 430px, and desktop phone preview
 - side drawer and settings drawer at 360px, 390px, 430px, and desktop phone preview
+- KTO sheet at 390px
 
 Capture result file:
 
 - `reports/tsk-025-01/screenshots/capture-results.json`
 
-## Remaining Visual Evidence
+## KTO Sheet Note
 
-The full screenshot checklist is not complete yet.
+The first KTO locator click attempt failed because another Naver overlay subtree intercepted pointer events. A follow-up capture used a real mouse click at the visible marker bounding box and successfully opened the KTO sheet.
 
-Remaining stable captures:
-
-- KTO sheet
-
-Reason:
-
-The KTO marker existed during capture, but Playwright could not perform a real user click because another Naver overlay subtree intercepted pointer events. This is recorded in `capture-results.json` and should remain evidence for later map/KTO sheet migration rather than being hidden by a forced click.
+Both results are preserved in `capture-results.json` because they are useful baseline evidence for later map/KTO sheet migration.
 
 ## Interpretation
 
