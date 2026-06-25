@@ -4,6 +4,7 @@ import { CommunityRouteCard } from './course/CommunityRouteCard';
 import { CourseTabHeader } from './course/CourseTabHeader';
 import type { CourseTabProps } from './course/courseTabTypes';
 import { useHighlightedCourseRoute } from './course/useHighlightedCourseRoute';
+import { AppSurface, EmptyState, FilterChip, SectionHeader } from './ui-kit';
 
 export const CourseTab = memo(function CourseTab({
   courses,
@@ -28,20 +29,19 @@ export const CourseTab = memo(function CourseTab({
     <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="course">
       <CourseTabHeader />
 
-      <section className="sheet-card stack-gap">
-        <div className="section-title-row section-title-row--tight">
-          <div>
-            <p className="eyebrow">USER GENERATED</p>
-            <h3>좋아요순과 최신순으로 보는 공개 경로</h3>
-          </div>
-        </div>
-        <div className="chip-row compact-gap">
-          <button type="button" className={sort === 'popular' ? 'chip is-active' : 'chip'} onClick={() => onChangeSort('popular')}>
+      <AppSurface variant="section" className="course-list-surface sheet-card stack-gap">
+        <SectionHeader
+          className="section-title-row section-title-row--tight"
+          eyebrow="USER GENERATED"
+          title="좋아요순과 최신순으로 보는 공개 경로"
+        />
+        <div className="chip-row compact-gap course-sort-row" role="group" aria-label="공개 경로 정렬">
+          <FilterChip className={sort === 'popular' ? 'is-active' : undefined} selected={sort === 'popular'} onClick={() => onChangeSort('popular')}>
             좋아요순
-          </button>
-          <button type="button" className={sort === 'latest' ? 'chip is-active' : 'chip'} onClick={() => onChangeSort('latest')}>
+          </FilterChip>
+          <FilterChip className={sort === 'latest' ? 'is-active' : undefined} selected={sort === 'latest'} onClick={() => onChangeSort('latest')}>
             최신순
-          </button>
+          </FilterChip>
         </div>
         <div className="community-route-list">
           {communityRoutes.map((route) => (
@@ -59,9 +59,9 @@ export const CourseTab = memo(function CourseTab({
               onRequestLogin={onRequestLogin}
             />
           ))}
-          {communityRoutes.length === 0 && <p className="empty-copy">아직 공개된 사용자 경로가 없어요.</p>}
+          {communityRoutes.length === 0 ? <EmptyState className="course-empty-state" title="아직 공개된 사용자 경로가 없어요." /> : null}
         </div>
-      </section>
+      </AppSurface>
     </section>
   );
 });

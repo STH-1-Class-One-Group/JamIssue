@@ -1,4 +1,4 @@
-import type { ElementType, HTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type ElementType, type HTMLAttributes, type ReactNode } from 'react';
 import { classNames } from './classNames';
 
 export type ContentCardVariant = 'default' | 'soft' | 'outlined';
@@ -10,14 +10,14 @@ export interface ContentCardProps extends HTMLAttributes<HTMLElement> {
   variant?: ContentCardVariant;
 }
 
-export function ContentCard({
+export const ContentCard = forwardRef<HTMLElement, ContentCardProps>(function ContentCard({
   as: Component = 'article',
   children,
   className,
   interactive = false,
   variant = 'default',
   ...props
-}: ContentCardProps) {
+}, ref) {
   return (
     <Component
       className={classNames(
@@ -27,9 +27,10 @@ export function ContentCard({
         className,
       )}
       data-ui-content-card=""
+      ref={ref}
       {...props}
     >
       {children}
     </Component>
   );
-}
+});

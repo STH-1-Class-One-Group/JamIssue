@@ -1,5 +1,6 @@
 import { useScrollRestoration } from '../hooks/useScrollRestoration';
 import type { FestivalItem } from '../types/core';
+import { AppSurface, ContentCard, EmptyState, FilterChip, SectionHeader } from './ui-kit';
 
 interface EventTabProps {
   festivals: FestivalItem[];
@@ -46,37 +47,47 @@ export function EventTab({ festivals }: EventTabProps) {
 
   return (
     <section ref={scrollRef} className="page-panel page-panel--scrollable" data-page-surface="event">
-      <header className="panel-header">
-        <p className="eyebrow">EVENT</p>
-        <h2>행사</h2>
-        <p>
-          대전에서 진행 중이거나 곧 열릴 행사를
-          <br />
-          한 번에 보고 빠르게 훑어볼 수 있어요.
-        </p>
-      </header>
+      <SectionHeader
+        className="panel-header"
+        eyebrow="EVENT"
+        title="행사"
+        description={
+          <>
+            대전에서 진행 중이거나 곧 열릴 행사를
+            <br />
+            한 번에 보고 빠르게 훑어볼 수 있어요.
+          </>
+        }
+      />
 
-      <section className="sheet-card stack-gap">
-        <div className="section-title-row section-title-row--tight">
-          <div>
-            <p className="eyebrow">DAEJEON FESTIVALS</p>
-            <h3>지금 확인할 행사</h3>
-          </div>
-          <span className="counter-pill">{festivals.length}개</span>
-        </div>
+      <AppSurface variant="section" className="event-list-surface sheet-card stack-gap">
+        <SectionHeader
+          className="section-title-row section-title-row--tight"
+          eyebrow="DAEJEON FESTIVALS"
+          title="지금 확인할 행사"
+          actions={
+            <FilterChip selected count={`${festivals.length}개`}>
+              행사
+            </FilterChip>
+          }
+        />
 
         {festivals.length === 0 ? (
-          <p className="empty-copy">현재 진행 중이거나 30일 이내 예정된 대전 행사가 없어요.</p>
+          <EmptyState className="event-empty-state" title="현재 진행 중이거나 30일 이내 예정된 대전 행사가 없어요." />
         ) : (
           <div className="community-route-list festival-card-list">
             {festivals.map((festival) => {
               const locationLines = getFestivalLocationLines(festival);
               return (
-                <article key={festival.id} className="community-route-card community-route-card--curated festival-card">
+                <ContentCard key={festival.id} className="festival-card" interactive>
                   <div className="festival-card__content">
                     <div className="festival-card__meta-row">
                       <span className="festival-card__date">{formatFestivalPeriod(festival)}</span>
-                      {festival.isOngoing ? <span className="soft-tag festival-card__status-chip">진행 중</span> : null}
+                      {festival.isOngoing ? (
+                        <FilterChip selected className="festival-card__status-chip">
+                          진행 중
+                        </FilterChip>
+                      ) : null}
                     </div>
 
                     <h4 className="festival-card__title">{formatFestivalTitle(festival.title)}</h4>
@@ -92,17 +103,17 @@ export function EventTab({ festivals }: EventTabProps) {
 
                   {festival.homepageUrl ? (
                     <div className="festival-card__footer">
-                      <a className="festival-card__link" href={festival.homepageUrl} target="_blank" rel="noreferrer">
+                      <a className="festival-card__link ui-action-button ui-action-button--secondary ui-action-button--sm" href={festival.homepageUrl} target="_blank" rel="noreferrer">
                         홈페이지 열기
                       </a>
                     </div>
                   ) : null}
-                </article>
+                </ContentCard>
               );
             })}
           </div>
         )}
-      </section>
+      </AppSurface>
     </section>
   );
 }
