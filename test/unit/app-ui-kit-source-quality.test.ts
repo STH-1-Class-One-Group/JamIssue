@@ -56,15 +56,18 @@ describe('app UI kit source quality', () => {
     expect(uiKitIndex).toBeGreaterThan(winterIndex);
   });
 
-  it('does not migrate feature screens to ContentCard during the foundation child', () => {
+  it('limits feature ContentCard migration to approved TSK-025 execution slices', () => {
     const featureFiles = listFiles(join(workspaceRoot, 'src/components'))
       .filter((file) => file.endsWith('.tsx'))
       .filter((file) => !file.includes(`${join('src', 'components', 'ui-kit')}`));
 
     const migratedFeatures = featureFiles
       .filter((file) => readFileSync(file, 'utf8').includes('ContentCard'))
-      .map((file) => relative(workspaceRoot, file));
+      .map((file) => relative(workspaceRoot, file).replace(/\\/g, '/'));
 
-    expect(migratedFeatures).toEqual([]);
+    expect(migratedFeatures.sort()).toEqual([
+      'src/components/FeedCommentSheet.tsx',
+      'src/components/review/ReviewListItem.tsx',
+    ]);
   });
 });

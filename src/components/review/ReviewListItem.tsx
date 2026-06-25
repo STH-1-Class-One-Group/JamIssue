@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { CommentThread } from '../CommentThread';
 import { Avatar } from '../Avatar';
+import { ActionButton, ContentCard } from '../ui-kit';
 import type { Review } from '../../types/review';
 import { CommentIcon, HeartIcon } from './ReviewActionIcons';
 import { ReviewFeedCardHeader } from './ReviewFeedCardHeader';
@@ -24,7 +25,6 @@ interface ReviewListItemProps {
   onOpenComments?: (reviewId: string) => void;
 }
 
-// Optimizes performance by preventing unnecessary re-renders of list items in feeds
 export const ReviewListItem = memo(function ReviewListItem({
   review,
   currentUserId,
@@ -44,7 +44,8 @@ export const ReviewListItem = memo(function ReviewListItem({
   const hasImage = Boolean(review.imageUrl);
 
   return (
-    <article
+    <ContentCard
+      as="article"
       data-testid="feed-review-card"
       data-feed-card="review"
       data-review-id={review.id}
@@ -114,9 +115,9 @@ export const ReviewListItem = memo(function ReviewListItem({
           )}
         </div>
         {onOpenPlace && (
-          <button type="button" className="review-link-button" onClick={() => onOpenPlace(review.placeId)}>
+          <ActionButton size="sm" variant="secondary" className="review-link-button" onClick={() => onOpenPlace(review.placeId)}>
             장소 보기
-          </button>
+          </ActionButton>
         )}
       </div>
 
@@ -145,6 +146,6 @@ export const ReviewListItem = memo(function ReviewListItem({
           onRequestLogin={onRequestLogin}
         />
       )}
-    </article>
+    </ContentCard>
   );
 });

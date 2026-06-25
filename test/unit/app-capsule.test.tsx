@@ -121,12 +121,12 @@ describe('AppCapsule shell contract', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '설정 열기' }));
 
-    const settingsDrawer = await screen.findByRole('dialog', { name: '설정' });
+    const settingsDrawer = await screen.findByRole('dialog', { name: '앱 설정' });
     expect(settingsDrawer).toHaveClass('chrome-drawer__panel');
     expect(within(settingsDrawer).getByText('지도 표시')).toBeInTheDocument();
 
-    await user.click(within(settingsDrawer).getByRole('button', { name: '설정 닫기' }));
-    expect(screen.queryByRole('dialog', { name: '설정' })).not.toBeInTheDocument();
+    await user.click(within(settingsDrawer).getByRole('button', { name: '앱 설정 닫기' }));
+    expect(screen.queryByRole('dialog', { name: '앱 설정' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '보조 메뉴 열기' }));
     const sideDrawer = await screen.findByRole('dialog', { name: '보조 메뉴' });
@@ -186,7 +186,7 @@ describe('AppCapsule shell contract', () => {
     expect(source).not.toMatch(/className=["'`][^"'`]*\bti-/);
     expect(source).not.toContain('@tabler');
     expect(source).not.toContain(String.fromCodePoint(0xfffd));
-    expect(source).not.toContain('???');
+    expect(source).not.toContain(String.fromCodePoint(0x3f, 0x3f, 0x3f));
     expect(capsuleSource).not.toContain('AppSettingsPanel');
     expect(capsuleSource).not.toContain('AppSettingsDrawer');
     expect(capsuleSource).not.toContain('SideDrawer');

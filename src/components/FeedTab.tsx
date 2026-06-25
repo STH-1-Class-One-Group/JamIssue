@@ -120,8 +120,8 @@ export const FeedTab = memo(function FeedTab({
           onRequestLogin={onRequestLogin}
           onOpenPlace={onOpenPlace}
           onOpenComments={onOpenComments}
-          emptyTitle={placeFilterId ? `${placeFilterName} 피드가 아직 없어요` : '아직 공개된 피드가 없어요'}
-          emptyBody={placeFilterId ? '이 장소를 찍은 뒤 첫 피드를 남겨 보세요.' : '먼저 스탬프를 찍고 오늘의 분위기를 짧게 남겨 보세요.'}
+          emptyTitle={placeFilterId ? `${placeFilterName} 피드가 아직 없어요.` : '아직 공개된 피드가 없어요.'}
+          emptyBody={placeFilterId ? '이 장소를 방문한 뒤 첫 피드를 남겨 보세요.' : '먼저 스탬프를 찍고 오늘의 분위기를 남겨 보세요.'}
         />
         <FeedLoadMoreRow hasMore={hasMore} loadingMore={loadingMore} loadMoreRef={loadMoreRef} onLoadMore={onLoadMore} />
       </section>

@@ -1,5 +1,6 @@
-﻿import { useRef } from 'react';
+import { useRef } from 'react';
 import { CommentThread } from './CommentThread';
+import { ActionButton, ContentCard, SectionHeader } from './ui-kit';
 import type { ApiStatus } from '../types/core';
 import type { Comment, Review } from '../types/review';
 
@@ -57,7 +58,6 @@ export function FeedCommentSheet({
     }
   }
 
-
   const sheetClassName = `feed-comment-sheet${isOpen ? ' feed-comment-sheet--open' : ' feed-comment-sheet--closed'}`;
   const isMine = review ? review.userId === currentUserId : false;
 
@@ -76,24 +76,29 @@ export function FeedCommentSheet({
 
       <div className="feed-comment-sheet__content">
         {review && (
-          <>
+          <ContentCard as="div" variant="outlined" className="feed-comment-sheet__inner">
             <div className="feed-comment-sheet__header">
-              <div className="feed-comment-sheet__title-group">
-                <strong className="feed-comment-sheet__place">{review.placeName}</strong>
-                <p className="feed-comment-sheet__meta">
-                  {review.author} · {review.visitLabel} · {review.visitedAt}
-                </p>
-              </div>
+              <SectionHeader
+                className="feed-comment-sheet__title-group"
+                title={<strong className="feed-comment-sheet__place">{review.placeName}</strong>}
+                description={
+                  <span className="feed-comment-sheet__meta">
+                    {review.author} · {review.visitLabel} · {review.visitedAt}
+                  </span>
+                }
+              />
               <div className="feed-comment-sheet__header-actions">
                 {isMine && (
-                  <button
+                  <ActionButton
                     type="button"
-                    className="secondary-button feed-comment-sheet__delete"
+                    size="sm"
+                    variant="danger"
+                    className="feed-comment-sheet__delete"
                     onClick={() => void onDeleteReview(review.id)}
                     disabled={deletingReviewId === review.id}
                   >
                     {deletingReviewId === review.id ? '삭제 중' : '피드 삭제'}
-                  </button>
+                  </ActionButton>
                 )}
                 <button type="button" className="feed-comment-sheet__close" onClick={onClose} aria-label="닫기">
                   ×
@@ -122,7 +127,7 @@ export function FeedCommentSheet({
                 onRequestLogin={onRequestLogin}
               />
             )}
-          </>
+          </ContentCard>
         )}
       </div>
     </section>
