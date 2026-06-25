@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { SectionHeader } from '../ui-kit';
 import { ActivityCalendarView } from './ActivityCalendarView';
 import { ActivityListView } from './ActivityListView';
 import { ActivityViewToggle } from './ActivityViewToggle';
@@ -22,10 +23,7 @@ export function ActivityCollectionShell({
   return (
     <section className="activity-collection-shell" data-activity-view-mode={mode}>
       <div className="activity-collection-shell__toolbar">
-        <div>
-          <p className="eyebrow">ACTIVITY VIEW</p>
-          <h3>활동 보기</h3>
-        </div>
+        <SectionHeader eyebrow="ACTIVITY VIEW" title="활동 보기" />
         <ActivityViewToggle mode={mode} onChange={onModeChange} />
       </div>
 

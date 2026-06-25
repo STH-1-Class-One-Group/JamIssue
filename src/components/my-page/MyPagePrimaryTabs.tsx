@@ -1,4 +1,5 @@
 import type { MyPageTabKey } from '../../types/core';
+import { FilterChip } from '../ui-kit';
 
 type MyPagePrimaryTabsProps = {
   activeTab: MyPageTabKey;
@@ -12,25 +13,24 @@ export function MyPagePrimaryTabs({
   onChangeTab,
 }: MyPagePrimaryTabsProps) {
   return (
-    <div className={isAdmin ? 'chip-row compact-gap my-page-primary-tabs my-page-primary-tabs--admin' : 'chip-row compact-gap my-page-primary-tabs'}>
-      <button type="button" className={activeTab === 'stamps' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('stamps')}>
+    <div className={isAdmin ? 'my-page-primary-tabs my-page-primary-tabs--admin' : 'my-page-primary-tabs'}>
+      <FilterChip selected={activeTab === 'stamps'} onClick={() => onChangeTab('stamps')}>
         {'\uC2A4\uD0EC\uD504'}
-      </button>
-      <button type="button" className={activeTab === 'feeds' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('feeds')}>
+      </FilterChip>
+      <FilterChip selected={activeTab === 'feeds'} onClick={() => onChangeTab('feeds')}>
         {'\uD53C\uB4DC'}
-      </button>
-      <button type="button" className={activeTab === 'comments' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('comments')}>
+      </FilterChip>
+      <FilterChip selected={activeTab === 'comments'} onClick={() => onChangeTab('comments')}>
         {'\uB313\uAE00'}
-      </button>
-      <button type="button" className={activeTab === 'routes' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('routes')}>
+      </FilterChip>
+      <FilterChip selected={activeTab === 'routes'} onClick={() => onChangeTab('routes')}>
         {'\uCF54\uC2A4'}
-      </button>
+      </FilterChip>
       {isAdmin && (
-        <button type="button" className={activeTab === 'admin' ? 'chip is-active' : 'chip'} onClick={() => onChangeTab('admin')}>
+        <FilterChip selected={activeTab === 'admin'} onClick={() => onChangeTab('admin')}>
           {'\uAD00\uB9AC'}
-        </button>
+        </FilterChip>
       )}
     </div>
   );
 }
-

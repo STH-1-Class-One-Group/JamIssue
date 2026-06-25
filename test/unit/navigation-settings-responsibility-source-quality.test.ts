@@ -152,8 +152,9 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(appSettingsDrawer).toContain('accountSettings');
     expect(appAccountSettingsSlot).toContain('ProfileAccountSettings');
     expect(profileAccountSettings).toContain('ProfileAvatarEditor');
-    expect(profileAccountSettings).toContain('DrawerSection');
-    expect(profileAccountSettings).toContain('DrawerFormGroup');
+    expect(profileAccountSettings).toContain('AppSurface');
+    expect(profileAccountSettings).toContain('FormField');
+    expect(profileAccountSettings).toContain('SectionHeader');
     expect(profileAccountSettings).toContain('onLinkProvider');
     expect(profileAccountSettings).toContain('onDeleteAvatar');
     expect(profileAccountSettings).toContain('onLogout');

@@ -108,9 +108,9 @@ describe('profile avatar UI consumption', () => {
       'https://cdn.example.test/me.webp',
     );
     expect(container.querySelector('.settings-card__avatar-action-row')).toBeInTheDocument();
-    expect(container.querySelector('.route-builder-form input')).toHaveValue('code305');
-    expect(container.querySelectorAll('.drawer-kit-section').length).toBeGreaterThanOrEqual(3);
-    expect(container.querySelectorAll('.drawer-kit-section__eyebrow').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByLabelText('프로필명')).toHaveValue('code305');
+    expect(container.querySelectorAll('.ui-app-surface--panel').length).toBeGreaterThanOrEqual(3);
+    expect(container.querySelectorAll('.ui-section-header__eyebrow').length).toBeGreaterThanOrEqual(2);
   });
 
   it('routes avatar upload and delete controls through the app settings account slot', async () => {

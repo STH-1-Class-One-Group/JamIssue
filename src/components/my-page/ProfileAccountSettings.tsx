@@ -1,7 +1,7 @@
 import type { ChangeEvent, FormEvent } from 'react';
 import type { AuthProvider, SessionUser } from '../../types/auth';
 import { getAuthProviderDisplayLabel } from '../../utils/authProviderDisplay';
-import { DrawerFormGroup, DrawerSection, DrawerStack } from '../app-shell/drawer-kit';
+import { ActionButton, AppSurface, FormField, ListItem, SectionHeader } from '../ui-kit';
 import { ProfileAvatarEditor } from './ProfileAvatarEditor';
 
 type ProfileAccountSettingsProps = {
@@ -43,9 +43,10 @@ export function ProfileAccountSettings({
   ];
 
   return (
-    <DrawerStack className="settings-card__account-content">
+    <div className="settings-card__account-content ui-drawer-stack">
       {socialProviderKeys.length > 0 ? (
-        <DrawerSection className="settings-card__social" eyebrow="소셜 계정" aria-label="연결된 소셜 계정">
+        <AppSurface className="settings-card__social" variant="panel" aria-label="연결된 소셜 계정">
+          <SectionHeader eyebrow="SOCIAL" title="소셜 계정" />
           <div className="settings-card__social-list">
             {socialProviderKeys.map((providerKey) => {
               const provider = providerByKey.get(providerKey);
@@ -54,10 +55,13 @@ export function ProfileAccountSettings({
 
               if (isLinked) {
                 return (
-                  <div key={providerKey} className="settings-card__social-row" aria-label={`${providerLabel} 연결됨`}>
-                    <span className="settings-card__social-provider">{providerLabel}</span>
-                    <span className="settings-card__social-status">연결됨</span>
-                  </div>
+                  <ListItem
+                    key={providerKey}
+                    className="settings-card__social-row"
+                    title={providerLabel}
+                    actions={<span className="settings-card__social-status">연결됨</span>}
+                    aria-label={`${providerLabel} 연결됨`}
+                  />
                 );
               }
 
@@ -66,20 +70,20 @@ export function ProfileAccountSettings({
               }
 
               return (
-                <button
+                <ActionButton
                   key={providerKey}
-                  type="button"
                   className="settings-card__social-action"
                   onClick={() => onLinkProvider(provider)}
                   aria-label={`${providerLabel} 계정 연동`}
+                  variant="secondary"
                 >
                   <span className="settings-card__social-provider">{providerLabel}</span>
                   <span className="settings-card__social-action-label">계정 연동</span>
-                </button>
+                </ActionButton>
               );
             })}
           </div>
-        </DrawerSection>
+        </AppSurface>
       ) : null}
       <ProfileAvatarEditor
         sessionUser={sessionUser}
@@ -87,23 +91,26 @@ export function ProfileAccountSettings({
         onAvatarChange={onAvatarChange}
         onDeleteAvatar={onDeleteAvatar}
       />
-      <form className="drawer-kit-section route-builder-form" onSubmit={(event) => void onSubmit(event)}>
-        <DrawerFormGroup label="프로필명">
-          <input
-            value={nickname}
-            onChange={(event) => onNicknameChange(event.target.value)}
-            placeholder="닉네임을 입력하세요"
-            maxLength={40}
-          />
-        </DrawerFormGroup>
-        {profileError ? <p className="form-error-copy">{profileError}</p> : null}
-        <button type="submit" className="primary-button route-submit-button" disabled={profileSaving || nickname.trim().length < 2}>
-          {profileSaving ? '저장 중' : '프로필 저장'}
-        </button>
+      <form className="settings-card__profile-form" onSubmit={(event) => void onSubmit(event)}>
+        <AppSurface variant="panel">
+          <FormField label="프로필명" htmlFor="profile-nickname">
+            <input
+              id="profile-nickname"
+              value={nickname}
+              onChange={(event) => onNicknameChange(event.target.value)}
+              placeholder="닉네임을 입력하세요"
+              maxLength={40}
+            />
+          </FormField>
+          {profileError ? <p className="form-error-copy">{profileError}</p> : null}
+          <ActionButton type="submit" variant="primary" disabled={profileSaving || nickname.trim().length < 2}>
+            {profileSaving ? '저장 중' : '프로필 저장'}
+          </ActionButton>
+        </AppSurface>
       </form>
-      <button type="button" className="secondary-button route-submit-button" onClick={onLogout} disabled={isLoggingOut}>
-        {isLoggingOut ? '정리 중' : '로그아웃'}
-      </button>
-    </DrawerStack>
+      <ActionButton variant="secondary" onClick={onLogout} disabled={isLoggingOut}>
+        {isLoggingOut ? '처리 중' : '로그아웃'}
+      </ActionButton>
+    </div>
   );
 }
