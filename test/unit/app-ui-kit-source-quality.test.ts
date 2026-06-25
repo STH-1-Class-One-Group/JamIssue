@@ -9,6 +9,10 @@ function readRepoFile(path: string) {
   return readFileSync(join(workspaceRoot, path), 'utf8');
 }
 
+function toRepoPath(path: string) {
+  return relative(workspaceRoot, path).replace(/\\/g, '/');
+}
+
 function listFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {
     const fullPath = join(dir, entry);
@@ -17,6 +21,23 @@ function listFiles(dir: string): string[] {
     }
     return [fullPath];
   });
+}
+
+const approvedContentCardFeatureFiles = [
+  'src/components/EventTab.tsx',
+  'src/components/FeedCommentSheet.tsx',
+  'src/components/PlaceDetailSheet.tsx',
+  'src/components/TourismInfoSheet.tsx',
+  'src/components/course/CommunityRouteCard.tsx',
+  'src/components/place/PlaceProofCard.tsx',
+  'src/components/review/PlaceReviewPreviewList.tsx',
+  'src/components/review/ReviewListItem.tsx',
+];
+
+function listComponentSourceFiles() {
+  return listFiles(join(workspaceRoot, 'src/components'))
+    .filter((file) => file.endsWith('.ts') || file.endsWith('.tsx'))
+    .filter((file) => !file.includes(`${join('src', 'components', 'ui-kit')}`));
 }
 
 describe('app UI kit source quality', () => {
@@ -57,23 +78,65 @@ describe('app UI kit source quality', () => {
   });
 
   it('limits feature ContentCard migration to approved TSK-025 execution slices', () => {
-    const featureFiles = listFiles(join(workspaceRoot, 'src/components'))
-      .filter((file) => file.endsWith('.tsx'))
-      .filter((file) => !file.includes(`${join('src', 'components', 'ui-kit')}`));
-
-    const migratedFeatures = featureFiles
+    const migratedFeatures = listComponentSourceFiles()
       .filter((file) => readFileSync(file, 'utf8').includes('ContentCard'))
-      .map((file) => relative(workspaceRoot, file).replace(/\\/g, '/'));
+      .map(toRepoPath);
 
-    expect(migratedFeatures.sort()).toEqual([
-      'src/components/EventTab.tsx',
-      'src/components/FeedCommentSheet.tsx',
-      'src/components/PlaceDetailSheet.tsx',
-      'src/components/TourismInfoSheet.tsx',
-      'src/components/course/CommunityRouteCard.tsx',
-      'src/components/place/PlaceProofCard.tsx',
-      'src/components/review/PlaceReviewPreviewList.tsx',
-      'src/components/review/ReviewListItem.tsx',
-    ]);
+    expect(migratedFeatures.sort()).toEqual([...approvedContentCardFeatureFiles].sort());
+  });
+
+  it('keeps ContentCard feature migrations free of raw visual ownership', () => {
+    const rawVisibleStylePattern =
+      /#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(|\bpink\b|boxShadow\s*:|box-shadow\s*:|style=\{\{/;
+
+    const offenders = approvedContentCardFeatureFiles.flatMap((repoPath) => {
+      const source = readRepoFile(repoPath);
+      return rawVisibleStylePattern.test(source) ? [repoPath] : [];
+    });
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('prevents nested ContentCard composition in migrated feature files', () => {
+    const offenders = approvedContentCardFeatureFiles.flatMap((repoPath) => {
+      const source = readRepoFile(repoPath);
+      const matches = Array.from(source.matchAll(/<\/?ContentCard\b/g));
+      const stack: number[] = [];
+
+      for (const match of matches) {
+        const token = match[0];
+
+        if (token.startsWith('</')) {
+          stack.pop();
+          continue;
+        }
+
+        if (stack.length > 0) {
+          return [repoPath];
+        }
+
+        stack.push(match.index ?? 0);
+      }
+
+      return [];
+    });
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('keeps production source free of developer-only visual switchers', () => {
+    const sourceFiles = [
+      ...listFiles(join(workspaceRoot, 'src'))
+        .filter((file) => /\.(ts|tsx|css)$/.test(file))
+        .map(toRepoPath),
+    ];
+    const forbiddenSwitcherPattern =
+      /SeasonSwitcher|season-switcher|data-season-switcher|ui-kit-debug|visual-system-debug|dev-theme-switcher/;
+    const offenders = sourceFiles.flatMap((repoPath) => {
+      const source = readRepoFile(repoPath);
+      return forbiddenSwitcherPattern.test(source) ? [repoPath] : [];
+    });
+
+    expect(offenders).toEqual([]);
   });
 });
