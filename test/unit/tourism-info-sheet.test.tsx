@@ -206,12 +206,33 @@ describe('TourismInfoSheet', () => {
     const content = sheet.querySelector('.map-bottom-sheet__content');
     const image = sheet.querySelector('img');
     const mediaFrame = image?.closest('.map-bottom-sheet__media-frame');
+    const cards = sheet.querySelectorAll('[data-ui-content-card]');
 
     expect(sheet).toHaveClass('place-drawer', 'place-drawer--full', 'place-drawer--route-full');
     expect(content).not.toBeNull();
     expect(image).not.toBeNull();
     expect(mediaFrame).not.toBeNull();
+    expect(cards.length).toBeGreaterThanOrEqual(2);
     expect(content?.contains(image)).toBe(false);
+  });
+
+  it('keeps raw KTO tourism places informational without curated-only actions', () => {
+    render(
+      <TourismInfoSheet
+        place={tourismPlace}
+        detail={tourismDetail}
+        detailLoading={false}
+        detailError={null}
+        isOpen
+        sheetState="peek"
+        onClose={vi.fn()}
+        onExpand={vi.fn()}
+        onCollapse={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: /스탬프|로그인하고 시작|피드에서 보기/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
   });
 
   it('keeps KTO user-facing modules free from mojibake regressions', () => {

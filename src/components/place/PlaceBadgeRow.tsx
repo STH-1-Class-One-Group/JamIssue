@@ -17,7 +17,7 @@ export function PlaceBadgeRow({
 }: PlaceBadgeRowProps) {
   return (
     <div className="place-drawer__badges">
-      <span className="counter-pill" style={{ background: categoryColor, color: '#4a3140' }}>
+      <span className="counter-pill" style={{ background: categoryColor, color: 'var(--text-primary)' }}>
         {categoryIcon} {categoryLabel}
       </span>
       <span className="counter-pill">{district}</span>

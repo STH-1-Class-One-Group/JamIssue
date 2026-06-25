@@ -1,5 +1,6 @@
 import { PlaceReviewPreviewList } from '../review/PlaceReviewPreviewList';
 import { ReviewComposer } from '../ReviewComposer';
+import { ActionButton, SectionHeader } from '../ui-kit';
 import type { PlaceDetailSheetProps } from './placeDetailSheetTypes';
 
 interface PlaceDetailReviewSectionProps {
@@ -64,15 +65,17 @@ export function PlaceDetailReviewSection({
         }}
       />
 
-      <div className="section-title-row section-title-row--tight">
-        <div>
-          <p className="eyebrow">PLACE FEED</p>
-          <h3>이 장소 피드</h3>
-        </div>
-        <button type="button" className="secondary-button place-drawer__feed-button" onClick={onOpenFeedReview}>
-          피드에서 보기
-        </button>
-      </div>
+      <SectionHeader
+        className="section-title-row section-title-row--tight"
+        eyebrow="PLACE FEED"
+        headingLevel={3}
+        title="이 장소 피드"
+        actions={
+          <ActionButton type="button" size="sm" className="secondary-button place-drawer__feed-button" onClick={onOpenFeedReview}>
+            피드에서 보기
+          </ActionButton>
+        }
+      />
 
       <PlaceReviewPreviewList reviews={reviewPreview} />
     </>
