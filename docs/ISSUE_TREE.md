@@ -189,11 +189,11 @@ Scope: parent-child task traceability for JamIssue governance completion.
   - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/705
   - Merge commit: 88a1fa8aaf6cd11d4b22f2bb4108fe77d2aa5579
   - Evidence: `test/unit/app-ui-kit-source-quality.test.ts`, `docs/traceability/task-ledger.jsonl`
-- [ ] TSK-025-08: https://github.com/STH-1-Class-One-Group/JamIssue/issues/698
+- [x] TSK-025-08: https://github.com/STH-1-Class-One-Group/JamIssue/issues/698
   - Title: docs-traceability
   - Issue: https://github.com/STH-1-Class-One-Group/JamIssue/issues/698
-  - PR: pending on this branch
-  - Merge commit: pending on this branch
+  - PR: https://github.com/STH-1-Class-One-Group/JamIssue/pull/706
+  - Merge commit: d57b12dd507e24ef4b0751948ea4c946057aed6a
   - Evidence: `docs/TSK-025-08-app-wide-ui-kit-traceability.md`, `docs/release-candidate-1.3.8.md`, `docs/ui-ux-qa-matrix.md`, `docs/GOVERNANCE_INDEX.md`, `docs/traceability/task-ledger/by-task/TSK-025-08.json`, `docs/traceability/task-ledger.jsonl`
 
 ## TSK-021

@@ -201,4 +201,4 @@ JamIssue Web Front 작업축과 책임 범위를 빠르게 찾기 위한 repo-lo
 | [#695](https://github.com/STH-1-Class-One-Group/JamIssue/issues/695) | `event-course-list-migration` | completed | PR [#703](https://github.com/STH-1-Class-One-Group/JamIssue/pull/703), merge `50c19d402a3344e917347fb642a72f77a793bc5b` |
 | [#696](https://github.com/STH-1-Class-One-Group/JamIssue/issues/696) | `map-sheet-tourism-migration` | completed | PR [#704](https://github.com/STH-1-Class-One-Group/JamIssue/pull/704), merge `2221422254875bc7ace0dc3c7a91c3c9b667b7ab` |
 | [#697](https://github.com/STH-1-Class-One-Group/JamIssue/issues/697) | `visual-system-quality-gate` | completed | PR [#705](https://github.com/STH-1-Class-One-Group/JamIssue/pull/705), merge `88a1fa8aaf6cd11d4b22f2bb4108fe77d2aa5579` |
-| [#698](https://github.com/STH-1-Class-One-Group/JamIssue/issues/698) | `docs-traceability` | active | Docs/QA/release traceability PR pending |
+| [#698](https://github.com/STH-1-Class-One-Group/JamIssue/issues/698) | `docs-traceability` | completed | PR [#706](https://github.com/STH-1-Class-One-Group/JamIssue/pull/706), merge `d57b12dd507e24ef4b0751948ea4c946057aed6a` |
