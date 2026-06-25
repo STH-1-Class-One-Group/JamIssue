@@ -1,5 +1,6 @@
 import type { Place } from '../../types/core';
 import type { TravelSession } from '../../types/review';
+import { ActionButton, AppSurface, FilterChip, MetricTile, SectionHeader } from '../ui-kit';
 
 type MyPageOverviewSectionProps = {
   uniquePlaceCount: number;
@@ -27,20 +28,11 @@ export function MyPageOverviewSection({
   travelSessions,
 }: MyPageOverviewSectionProps) {
   return (
-    <section className="sheet-card stack-gap">
+    <AppSurface className="my-page-overview" variant="section">
       <div className="my-stats-grid">
-        <article>
-          <strong>{uniquePlaceCount}/{totalPlaceCount}</strong>
-          <span>방문한 고유 명소</span>
-        </article>
-        <article>
-          <strong>{stampCount}</strong>
-          <span>누적 스탬프 수</span>
-        </article>
-        <article>
-          <strong>{travelSessions.length}</strong>
-          <span>여행 세션 수</span>
-        </article>
+        <MetricTile value={`${uniquePlaceCount}/${totalPlaceCount}`} label="방문한 고유 명소" />
+        <MetricTile value={stampCount} label="누적 스탬프 수" />
+        <MetricTile value={travelSessions.length} label="여행 세션 수" />
       </div>
       {totalPlaceCount > 0 && (
         <div className="my-visit-progress">
@@ -50,41 +42,46 @@ export function MyPageOverviewSection({
           <span className="my-visit-progress__label">{visitPct}% 달성</span>
         </div>
       )}
-      <button type="button" className="secondary-button" onClick={onToggleVisitedDetail}>
+      <ActionButton variant="secondary" onClick={onToggleVisitedDetail}>
         {showVisitedDetail ? '방문 상세 닫기' : '방문 상세 보기'}
-      </button>
+      </ActionButton>
       {showVisitedDetail && (
         <div className="my-visited-grid">
           <div>
-            <div className="my-visited-section-header">
-              <strong>가본 곳</strong>
-              <span className="counter-pill">{visitedPlaces.length}곳</span>
-            </div>
+            <SectionHeader
+              eyebrow="VISITED"
+              title="가본 곳"
+              actions={
+                <FilterChip selected count={`${visitedPlaces.length}곳`}>
+                  방문
+                </FilterChip>
+              }
+            />
             <div className="chip-row compact-gap">
               {visitedPlaces.map((place) => (
-                <button key={place.id} type="button" className="soft-tag soft-tag--button" onClick={() => onOpenPlace(place.id)}>
+                <FilterChip key={place.id} onClick={() => onOpenPlace(place.id)}>
                   {place.name}
-                </button>
+                </FilterChip>
               ))}
               {visitedPlaces.length === 0 && <p className="empty-copy">아직 방문한 곳이 없어요.</p>}
             </div>
           </div>
           <div>
-            <div className="my-visited-section-header">
-              <strong>아직 못 가본 곳</strong>
-              <span className="counter-pill counter-pill--muted">{unvisitedPlaces.length}곳</span>
-            </div>
+            <SectionHeader
+              eyebrow="UNVISITED"
+              title="아직 못 가본 곳"
+              actions={<FilterChip count={`${unvisitedPlaces.length}곳`}>남음</FilterChip>}
+            />
             <div className="chip-row compact-gap">
               {unvisitedPlaces.map((place) => (
-                <button key={place.id} type="button" className="soft-tag soft-tag--button is-muted" onClick={() => onOpenPlace(place.id)}>
+                <FilterChip key={place.id} onClick={() => onOpenPlace(place.id)}>
                   {place.name}
-                </button>
+                </FilterChip>
               ))}
             </div>
           </div>
         </div>
       )}
-    </section>
+    </AppSurface>
   );
 }
-

@@ -3,6 +3,7 @@ import { ChromeDrawerShell } from '../app-shell/ChromeDrawerShell';
 import { DrawerSection, DrawerStack } from '../app-shell/drawer-kit';
 import { ToggleSwitch } from '../common/ToggleSwitch';
 import { FEEDBACK_FORM_URL } from '../GlobalFeedbackButton';
+import { AppSurface, SectionHeader } from '../ui-kit';
 
 export type AppSettingsDrawerProps = {
   accountSettings?: ReactNode;
@@ -22,20 +23,16 @@ export function AppSettingsDrawer({
 }: AppSettingsDrawerProps) {
   return (
     <ChromeDrawerShell
-      ariaLabel="설정"
+      ariaLabel="앱 설정"
       isOpen={isOpen}
       onClose={onClose}
       side="right"
-      title={(
-        <div>
-          <p className="section-eyebrow">SETTINGS</p>
-          <h2>설정</h2>
-        </div>
-      )}
+      title={<SectionHeader eyebrow="SETTINGS" title="설정" />}
     >
       <DrawerStack className="app-settings-drawer__content">
         {mapDisplayPreferences ? (
-          <DrawerSection eyebrow="MAP DISPLAY" title="지도 표시" data-app-settings-section="map-display">
+          <AppSurface variant="subtle" data-app-settings-section="map-display">
+            <SectionHeader eyebrow="MAP DISPLAY" title="지도 표시" />
             <ToggleSwitch
               checked={mapDisplayPreferences.showCuratedWithTourism}
               className="app-settings-drawer__switch"
@@ -44,12 +41,13 @@ export function AppSettingsDrawer({
               onChange={mapDisplayPreferences.onShowCuratedWithTourismChange}
               size="sm"
             />
-          </DrawerSection>
+          </AppSurface>
         ) : null}
         {accountSettings ? (
-          <DrawerSection eyebrow="ACCOUNT" title="계정 관리" data-app-settings-section="account">
+          <AppSurface variant="subtle" data-app-settings-section="account">
+            <SectionHeader eyebrow="ACCOUNT" title="계정 관리" />
             {accountSettings}
-          </DrawerSection>
+          </AppSurface>
         ) : null}
         <DrawerSection
           eyebrow="FEEDBACK"
@@ -58,7 +56,7 @@ export function AppSettingsDrawer({
           data-app-settings-section="feedback"
         >
           <a
-            className="secondary-button app-settings-drawer__feedback"
+            className="ui-action-button ui-action-button--secondary ui-action-button--md app-settings-drawer__feedback"
             href={FEEDBACK_FORM_URL}
             target="_blank"
             rel="noreferrer"

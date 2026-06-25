@@ -54,20 +54,10 @@ export function ChromeDrawerShell({
         aria-label={`${ariaLabel} 닫기`}
         onClick={onClose}
       />
-      <aside
-        className="chrome-drawer__panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label={ariaLabel}
-      >
+      <aside className="chrome-drawer__panel" role="dialog" aria-modal="true" aria-label={ariaLabel}>
         <header className="chrome-drawer__header">
           <div className="chrome-drawer__title">{title}</div>
-          <button
-            type="button"
-            className="chrome-drawer__close"
-            aria-label={`${ariaLabel} 닫기`}
-            onClick={onClose}
-          >
+          <button type="button" className="chrome-drawer__close" aria-label={`${ariaLabel} 닫기`} onClick={onClose}>
             <span aria-hidden="true">×</span>
           </button>
         </header>

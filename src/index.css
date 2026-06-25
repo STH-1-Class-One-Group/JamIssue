@@ -854,6 +854,7 @@ textarea {
 }
 
 .settings-card__account-content {
+  display: grid;
   gap: 18px;
 }
 
@@ -1141,6 +1142,9 @@ textarea {
 }
 
 .my-page-profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   justify-content: flex-start;
 }
 
@@ -2125,6 +2129,12 @@ textarea {
   gap: 10px;
 }
 
+.my-page-overview,
+.my-page-activity-panel {
+  display: grid;
+  gap: 14px;
+}
+
 .my-stats-grid article {
   display: grid;
   gap: 6px;
@@ -2157,14 +2167,14 @@ textarea {
   flex: 1 1 0;
   height: 8px;
   border-radius: 999px;
-  background: rgba(244, 240, 248, 0.96);
+  background: var(--surface-muted);
   overflow: hidden;
 }
 
 .my-visit-progress__fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--pink), var(--pink-deep));
+  background: var(--progress-fill);
   transition: width 400ms ease;
 }
 
@@ -2172,7 +2182,7 @@ textarea {
   flex-shrink: 0;
   font-size: 12px;
   font-weight: 700;
-  color: var(--pink-deep);
+  color: var(--color-accent-strong);
 }
 
 .my-visited-section-header {

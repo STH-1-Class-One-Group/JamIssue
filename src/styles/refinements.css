@@ -616,7 +616,8 @@
   align-items: stretch !important;
 }
 
-.my-page-primary-tabs .chip {
+.my-page-primary-tabs .chip,
+.my-page-primary-tabs .ui-filter-chip {
   min-width: 0 !important;
   width: 100% !important;
   justify-content: center !important;
@@ -1340,7 +1341,8 @@ body {
   gap: 10px !important;
 }
 
-.my-page-primary-tabs .chip {
+.my-page-primary-tabs .chip,
+.my-page-primary-tabs .ui-filter-chip {
   width: 100% !important;
   justify-content: center !important;
 }
