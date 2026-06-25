@@ -60,10 +60,6 @@ const allowedRawColorOwners: Record<string, ColorOwner> = {
     maxCount: 2,
     reason: 'category chip inline style bridge to category-owned palette',
   },
-  'src/components/place/PlaceBadgeRow.tsx': {
-    maxCount: 1,
-    reason: 'badge inline style bridge to category-owned palette',
-  },
   'src/components/naver-map/markerContent.ts': {
     maxCount: 21,
     reason: 'Naver SDK HTML marker content boundary and map marker semantics',

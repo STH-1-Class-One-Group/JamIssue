@@ -11,6 +11,7 @@
  */
 import type { PointerEvent, ReactNode } from 'react';
 import type { DrawerState } from '../../types/core';
+import { AppSurface } from '../ui-kit';
 import { buildMapSheetClassName, type MapSheetState } from './mapSheetState';
 
 interface MapBottomSheetProps {
@@ -85,10 +86,10 @@ export function MapBottomSheet({
         </div>
       </div>
 
-      <div className="place-drawer__surface">
+      <AppSurface as="div" variant="panel" className="place-drawer__surface">
         {media ? <div className="map-bottom-sheet__media-frame">{media}</div> : null}
         <div className="place-drawer__content map-bottom-sheet__content">{children}</div>
-      </div>
+      </AppSurface>
     </section>
   );
 }

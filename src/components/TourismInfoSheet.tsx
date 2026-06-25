@@ -11,6 +11,7 @@ import type { TourismDetailSection, TourismPlaceDetailItem, TourismPlaceItem } f
 import type { DrawerState } from '../types/core';
 import { MapBottomSheet } from './map-stage/MapBottomSheet';
 import type { MapSheetState } from './map-stage/mapSheetState';
+import { ContentCard, SectionHeader } from './ui-kit';
 
 export type TourismInfoSheetState = Exclude<DrawerState, 'closed'>;
 
@@ -158,13 +159,12 @@ export function TourismInfoSheet({
       ) : null}
     >
 
-      <div className="place-drawer__header tourism-info-sheet__intro">
-        <div>
-          <p className="eyebrow">KTO INFO</p>
-          <h2>{title}</h2>
-          {overview ? <p className="place-drawer__summary">{overview}</p> : null}
-        </div>
-      </div>
+      <SectionHeader
+        className="place-drawer__header tourism-info-sheet__intro"
+        eyebrow="KTO INFO"
+        title={title}
+        description={overview ? <span className="place-drawer__summary">{overview}</span> : null}
+      />
 
       <div className="place-drawer__badges">
         {categoryLabel ? <span className="counter-pill">{categoryLabel}</span> : null}
@@ -172,7 +172,7 @@ export function TourismInfoSheet({
         {detail?.hasDetail || place.hasDetail ? <span className="counter-pill">상세정보</span> : null}
       </div>
 
-      <section className="sheet-card tourism-info-sheet__section" aria-label="관광지 기본 정보">
+      <ContentCard as="section" className="sheet-card tourism-info-sheet__section" aria-label="관광지 기본 정보">
         <dl className="tourism-info-sheet__detail-list">
           <div className="tourism-info-sheet__detail-row">
             <dt>위치</dt>
@@ -187,10 +187,10 @@ export function TourismInfoSheet({
         </dl>
         {detailLoading ? <p className="section-copy">상세 정보를 불러오는 중입니다.</p> : null}
         {detailError ? <p className="section-copy">{detailError}</p> : null}
-      </section>
+      </ContentCard>
 
       {sections.map((section) => (
-        <section key={section.title} className="sheet-card tourism-info-sheet__section" aria-label={section.title}>
+        <ContentCard key={section.title} as="section" className="sheet-card tourism-info-sheet__section" aria-label={section.title}>
           <h3>{section.title}</h3>
           <dl className="tourism-info-sheet__detail-list">
             {section.items.map((item) => (
@@ -200,10 +200,10 @@ export function TourismInfoSheet({
               </div>
             ))}
           </dl>
-        </section>
+        </ContentCard>
       ))}
 
-      <section className="sheet-card tourism-info-sheet__section" aria-label="관광정보 출처">
+      <ContentCard as="section" className="sheet-card tourism-info-sheet__section" aria-label="관광정보 출처">
         <dl className="tourism-info-sheet__detail-list">
           <div className="tourism-info-sheet__detail-row">
             <dt>출처</dt>
@@ -213,7 +213,7 @@ export function TourismInfoSheet({
         {officialLabel ? (
           <p className="section-copy">공식 분류: {officialLabel}</p>
         ) : null}
-      </section>
+      </ContentCard>
     </MapBottomSheet>
   );
 }

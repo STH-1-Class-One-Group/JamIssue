@@ -68,7 +68,11 @@ describe('app UI kit source quality', () => {
     expect(migratedFeatures.sort()).toEqual([
       'src/components/EventTab.tsx',
       'src/components/FeedCommentSheet.tsx',
+      'src/components/PlaceDetailSheet.tsx',
+      'src/components/TourismInfoSheet.tsx',
       'src/components/course/CommunityRouteCard.tsx',
+      'src/components/place/PlaceProofCard.tsx',
+      'src/components/review/PlaceReviewPreviewList.tsx',
       'src/components/review/ReviewListItem.tsx',
     ]);
   });

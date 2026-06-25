@@ -89,6 +89,12 @@ describe('app UI kit primitives', () => {
     expect(screen.getByText('No image')).toBeInTheDocument();
   });
 
+  it('allows section headers to preserve nested heading hierarchy', () => {
+    render(<SectionHeader headingLevel={3} title="Nested section" />);
+
+    expect(screen.getByRole('heading', { level: 3, name: 'Nested section' })).toBeInTheDocument();
+  });
+
   it('supports semantic card variants and custom element rendering', () => {
     render(
       <ContentCard aria-label="card" as="section" interactive variant="outlined">

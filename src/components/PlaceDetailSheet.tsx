@@ -6,6 +6,7 @@ import { PlaceDetailReviewSection } from './place/PlaceDetailReviewSection';
 import { PlaceProofCard } from './place/PlaceProofCard';
 import type { PlaceDetailSheetProps } from './place/placeDetailSheetTypes';
 import { usePlaceDrawerHandle } from './place/usePlaceDrawerHandle';
+import { ContentCard } from './ui-kit';
 
 export function PlaceDetailSheet({
   place,
@@ -87,10 +88,10 @@ export function PlaceDetailSheet({
         }}
       />
 
-      <div className="sheet-card route-hint-box">
+      <ContentCard as="section" className="sheet-card route-hint-box">
         <strong>이동 힌트</strong>
         <p>{place.routeHint}</p>
-      </div>
+      </ContentCard>
 
       <PlaceDetailReviewSection
         place={place}

@@ -45,6 +45,7 @@ describe('PlaceDetailSheet integration', () => {
 
     expect(screen.getByText(placeFixture.name)).toBeInTheDocument();
     expect(screen.getByText(placeFixture.summary)).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-ui-content-card]').length).toBeGreaterThanOrEqual(2);
 
     const closeButton = container.querySelector<HTMLButtonElement>('.place-drawer__shell-close');
     expect(closeButton).not.toBeNull();

@@ -116,12 +116,14 @@ describe('MapBottomSheet', () => {
 
     const chrome = document.querySelector('.place-drawer__chrome');
     const rail = document.querySelector('.place-drawer__control-rail');
+    const surface = document.querySelector('.place-drawer__surface');
     const mediaFrame = document.querySelector('.map-bottom-sheet__media-frame');
     const closeButton = screen.getByRole('button', { name: '시트 닫기' });
     const minimizeButton = screen.getByRole('button', { name: '시트 최소화' });
 
     expect(chrome).not.toBeNull();
     expect(rail).not.toBeNull();
+    expect(surface).toHaveClass('ui-app-surface--panel');
     expect(mediaFrame).not.toBeNull();
     expect(chrome?.contains(rail!)).toBe(true);
     expect(chrome?.contains(closeButton)).toBe(true);

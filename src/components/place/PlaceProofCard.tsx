@@ -1,4 +1,5 @@
 import type { ApiStatus } from '../../types/core';
+import { ActionButton, ContentCard } from '../ui-kit';
 
 interface PlaceProofCardProps {
   loggedIn: boolean;
@@ -29,7 +30,7 @@ export function PlaceProofCard({
       : '오늘 스탬프 찍기';
 
   return (
-    <div className="sheet-card place-drawer__proof-card">
+    <ContentCard as="section" className="sheet-card place-drawer__proof-card">
       <div className="place-drawer__proof-copy">
         <strong>오늘 스탬프</strong>
         <p>{stampActionMessage}</p>
@@ -38,21 +39,27 @@ export function PlaceProofCard({
         {!loggedIn ? (
           <>
             <span className="place-drawer__proof-kicker">피드와 코스 시작</span>
-            <button type="button" className="primary-button place-drawer__proof-button" onClick={onRequestLogin}>
+            <ActionButton
+              type="button"
+              variant="primary"
+              className="primary-button place-drawer__proof-button"
+              onClick={onRequestLogin}
+            >
               로그인하고 시작
-            </button>
+            </ActionButton>
           </>
         ) : (
-          <button
+          <ActionButton
             type="button"
+            variant={todayStampExists ? 'secondary' : 'primary'}
             className={buttonClassName}
             onClick={onClaimStamp}
             disabled={!canClaimStamp || stampActionStatus === 'loading'}
           >
             {buttonLabel}
-          </button>
+          </ActionButton>
         )}
       </div>
-    </div>
+    </ContentCard>
   );
 }
