@@ -67,3 +67,26 @@ JamIssue Web Front의 기대 동작을 `UIUX-###` ID로 추적한다. UI/UX 변�
 - [Release Candidate 1.3.7](release-candidate-1.3.7.md)
 - [계절 테마 QA와 운영 기준](season-theme-qa-and-operations.md)
 - [Governance Index](GOVERNANCE_INDEX.md)
+
+## TSK-025 App-wide UI Kit QA Additions
+
+| ID | Area | Expected behavior | Automated test | Manual QA |
+| --- | --- | --- | --- | --- |
+| `UIUX-038` | App-wide UI kit | Shared primitives render accessible app surfaces, content cards, action buttons, chips, list items, metric tiles, form fields, media frames, and inline metadata without owning domain behavior. | `test/unit/app-ui-kit.test.tsx` | Optional |
+| `UIUX-039` | Visual-system ownership | Migrated feature screens consume UI kit primitives and do not reintroduce nested `ContentCard` composition or feature-owned raw visual style systems. | `test/unit/app-ui-kit-source-quality.test.ts` | Optional |
+| `UIUX-040` | My Page and settings | My Page and settings drawer use common UI kit rhythm while preserving account, activity, summary, and settings behavior. | `test/regression/my-page-panel.test.tsx`, `test/unit/navigation-settings-responsibility-source-quality.test.ts` | Required at 360/390/430px |
+| `UIUX-041` | Feed rhythm | Feed cards and comment surfaces keep like/comment/place actions while using the common app rhythm. | `test/unit/feed-instagram-layout.test.tsx`, `test/regression/review-list.test.ts` | Required |
+| `UIUX-042` | Event and Course rhythm | Event and Course screens use shared section/list/filter/empty-state rhythm while preserving festival and route behavior. | `test/unit/event-course-ui-kit-migration.test.tsx`, `test/e2e/event-tab.spec.ts` | Optional |
+| `UIUX-043` | Map sheets and KTO | Place, festival, KTO, and feed comment sheets share sheet/content rhythm while preserving KTO informational-only behavior and existing map/KTO contracts. | `test/unit/map-bottom-sheet.test.tsx`, `test/unit/tourism-info-sheet.test.tsx`, `test/integration/place-detail-sheet.test.tsx`, `test/e2e/critical-ui-flow.spec.ts` | Required |
+
+## TSK-025 Implementation Evidence
+
+| Child issue | PR | Merge SHA | Fixed behavior |
+| --- | --- | --- | --- |
+| [#691](https://github.com/STH-1-Class-One-Group/JamIssue/issues/691) | [#699](https://github.com/STH-1-Class-One-Group/JamIssue/pull/699) | `033c938176656489f3c6c56f2b5493e8c05a2e6b` | Visual-system audit baseline |
+| [#692](https://github.com/STH-1-Class-One-Group/JamIssue/issues/692) | [#700](https://github.com/STH-1-Class-One-Group/JamIssue/pull/700) | `a3a9b80b10039498cf8315bc26cddc8df0b3ece6` | UI kit primitive foundation |
+| [#693](https://github.com/STH-1-Class-One-Group/JamIssue/issues/693) | [#701](https://github.com/STH-1-Class-One-Group/JamIssue/pull/701) | `5335e53967715db1f69e0f2e6cb6298f10bab57b` | My Page and settings rhythm migration |
+| [#694](https://github.com/STH-1-Class-One-Group/JamIssue/issues/694) | [#702](https://github.com/STH-1-Class-One-Group/JamIssue/pull/702) | `2c6263a0533aee2cb341237b582e6c699c6b0c10` | Feed rhythm migration |
+| [#695](https://github.com/STH-1-Class-One-Group/JamIssue/issues/695) | [#703](https://github.com/STH-1-Class-One-Group/JamIssue/pull/703) | `50c19d402a3344e917347fb642a72f77a793bc5b` | Event and Course rhythm migration |
+| [#696](https://github.com/STH-1-Class-One-Group/JamIssue/issues/696) | [#704](https://github.com/STH-1-Class-One-Group/JamIssue/pull/704) | `2221422254875bc7ace0dc3c7a91c3c9b667b7ab` | Map sheet and KTO sheet rhythm migration |
+| [#697](https://github.com/STH-1-Class-One-Group/JamIssue/issues/697) | [#705](https://github.com/STH-1-Class-One-Group/JamIssue/pull/705) | `88a1fa8aaf6cd11d4b22f2bb4108fe77d2aa5579` | Visual-system source-quality gate |

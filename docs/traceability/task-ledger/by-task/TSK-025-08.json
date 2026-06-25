@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "task-ledger-entry.v1",
+  "storageSchemaVersion": "task-ledger-shard.v1",
+  "status": "active",
+  "taskId": "TSK-025-08",
+  "updatedAt": "2026-06-25T06:38:41Z",
+  "issueUrl": "https://github.com/STH-1-Class-One-Group/JamIssue/issues/698",
+  "prUrl": "pending-on-pr",
+  "mergeCommit": "pending-on-merge",
+  "documentPaths": [
+    "docs/TSK-025-08-app-wide-ui-kit-traceability.md",
+    "docs/release-candidate-1.3.8.md",
+    "docs/ui-ux-qa-matrix.md",
+    "docs/GOVERNANCE_INDEX.md",
+    "docs/ISSUE_TREE.md",
+    "docs/traceability/task-ledger/by-task/TSK-025-08.json",
+    "docs/traceability/task-ledger.jsonl"
+  ],
+  "why": "TSK-025 needed a durable closeout record that explains how the design handoff was translated into implementation decisions, not just a list of child issues.",
+  "problem": "The implementation children were merged, but docs and issue evidence did not yet fully connect handoff sources, UI kit decisions, migration order, QA matrix, and release candidate evidence.",
+  "how": "Added an app-wide UI kit traceability document, release candidate note, UI/UX QA matrix additions, governance index rows, issue tree rows, and structured ledger readback for TSK-025-08.",
+  "remainingGap": "Replace pending PR and merge evidence with GitHub PR/merge readback after this closeout PR is created and merged; record final evidence on issue #698 and parent #690."
+}
