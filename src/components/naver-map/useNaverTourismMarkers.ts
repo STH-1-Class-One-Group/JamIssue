@@ -50,8 +50,22 @@ export function useNaverTourismMarkers({
       selectedTourismPlaceId,
       tourismPlaces,
     });
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
-    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
+    // Performance optimization: Use a single loop to avoid unnecessary intermediate array allocations
+    // from mapping over the array just to create Sets, Maps, and joined strings.
+    // This reduces O(N) memory allocations and GC pressure.
+    const nextIds = new Set<string>();
+    const placeById = new Map<string, typeof visiblePlaces[number]>();
+    let visibleSignature = '';
+
+    for (let i = 0; i < visiblePlaces.length; i++) {
+      const place = visiblePlaces[i];
+      if (!place) continue;
+      nextIds.add(place.id);
+      placeById.set(place.id, place);
+      if (i > 0) visibleSignature += '|';
+      visibleSignature += `${place.id}:${place.latitude}:${place.longitude}`;
+    }
+
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
 
@@ -69,7 +83,7 @@ export function useNaverTourismMarkers({
       marker.setZIndex(zIndex);
     };
 
-    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
+
     if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
       const idsToRefresh = new Set([
         previousSelectedTourismPlaceIdRef.current,
