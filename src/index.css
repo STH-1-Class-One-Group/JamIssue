@@ -3352,6 +3352,125 @@ textarea {
   padding: 0;
 }
 
+.app-chrome__secondary {
+  position: absolute;
+  top: calc(var(--map-floating-nav-top) + var(--shell-capsule-height) + 8px);
+  left: 18px;
+  right: 18px;
+  z-index: calc(var(--z-map-sheet) - 1);
+  pointer-events: none;
+}
+
+.map-place-search {
+  position: relative;
+  width: min(100%, 360px);
+  margin: 0 auto;
+  pointer-events: auto;
+}
+
+.map-place-search__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.map-place-search__control {
+  display: grid;
+  min-height: 42px;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-card) 92%, transparent);
+  box-shadow: var(--shadow-button);
+  color: var(--text-strong);
+  backdrop-filter: blur(14px);
+}
+
+.map-place-search__icon {
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.map-place-search__input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-strong);
+  font: inherit;
+}
+
+.map-place-search__input::placeholder {
+  color: var(--text-muted);
+}
+
+.map-place-search__popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: 0;
+  max-height: min(320px, calc(var(--app-height) - 220px));
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--control-border);
+  border-radius: 22px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow);
+}
+
+.map-place-search__list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-place-search__result {
+  display: grid;
+  width: 100%;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--text-strong);
+  font: inherit;
+  text-align: left;
+}
+
+.map-place-search__result:hover,
+.map-place-search__result.is-active {
+  background: var(--control-active-bg);
+}
+
+.map-place-search__result-main {
+  font-weight: 800;
+}
+
+.map-place-search__result-sub,
+.map-place-search__status {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.map-place-search__status {
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.map-place-search__status.is-error {
+  color: var(--color-accent);
+}
+
 .map-floating-nav {
   position: static;
   z-index: auto;

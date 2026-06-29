@@ -27,3 +27,5 @@ export {
 } from './myClient';
 export { getAdminSummary, importPublicData, updatePlaceVisibility } from './adminClient';
 export { claimStamp } from './stampClient';
+export { buildPlacesSearchPath, searchPlaces } from './placesSearchClient';
+export type { PlaceSearchResult, PlacesSearchResponse } from './placesSearchClient';

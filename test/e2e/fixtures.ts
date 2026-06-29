@@ -265,6 +265,25 @@ async function handleApiRoute(route: Route, state: E2EAppState, options: E2EFixt
     return;
   }
 
+  if (method === 'GET' && path === '/api/places/search') {
+    const query = (url.searchParams.get('q') ?? '').trim();
+    if (query.length < 2) {
+      await fulfillJson(route, { items: [] });
+      return;
+    }
+    await fulfillJson(route, {
+      items: [
+        {
+          placeId: state.places[0]?.id ?? e2ePlace.id,
+          label: '여기 소제',
+          subLabel: '동구 · 카페',
+          matchType: 'name',
+        },
+      ],
+    });
+    return;
+  }
+
   if (method === 'GET' && path === '/api/courses/curated') {
     await fulfillJson(route, { courses: state.courses });
     return;

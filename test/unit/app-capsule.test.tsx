@@ -134,6 +134,24 @@ describe('AppCapsule shell contract', () => {
     expect(within(sideDrawer).getByRole('menuitem', { name: /알림/ })).toBeInTheDocument();
   });
 
+  it('renders secondary chrome content without making AppCapsule own the implementation', () => {
+    render(
+      <AppChrome
+        activeTab="map"
+        canNavigateBack={false}
+        center={<span>지도 필터</span>}
+        secondary={<form aria-label="장소 검색">검색</form>}
+        globalUtility={globalUtility}
+        notificationUtility={notificationUtility}
+        onNavigateBack={vi.fn()}
+        sessionUser={null}
+      />,
+    );
+
+    expect(screen.getByLabelText('장소 검색')).toBeInTheDocument();
+    expect(screen.getByLabelText('장소 검색').closest('[data-app-chrome-secondary="true"]')).not.toBeNull();
+  });
+
   it('renders SideDrawer notification and support items with close paths', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
@@ -192,6 +210,7 @@ describe('AppCapsule shell contract', () => {
     expect(capsuleSource).not.toContain('SideDrawer');
     expect(capsuleSource).not.toContain('NotificationDrawerContent');
     expect(capsuleSource).not.toContain('MapFloatingNav');
+    expect(capsuleSource).not.toContain('MapPlaceSearch');
     expect(capsuleSource).not.toContain('BellIcon');
     expect(capsuleSource).not.toContain('onOpenNotifications');
     expect(capsuleSource).not.toContain('notificationUnreadCount');
@@ -201,6 +220,7 @@ describe('AppCapsule shell contract', () => {
     expect(appChromeSource).toContain('AppSettingsDrawer');
     expect(appChromeSource).toContain('NotificationDrawerContent');
     expect(appChromeSource).not.toContain('MapFloatingNav');
+    expect(appChromeSource).not.toContain('MapPlaceSearch');
     expect(appChromeSource).not.toContain('mapActions');
     expect(appChromeSource).not.toContain('mapData');
     expect(appSettingsPanelSource).not.toContain('global-settings-menu__menu');

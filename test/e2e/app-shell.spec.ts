@@ -62,6 +62,26 @@ test('mobile app shell exposes primary tabs from the built bundle', async ({ pag
   }
 });
 
+test('TSK-026 opens the place drawer from app capsule search without a detail endpoint', async ({ page }) => {
+  await installApiFixtures(page, createE2EAppState({ authenticated: false }));
+  const requestedPaths: string[] = [];
+  page.on('request', (request) => {
+    requestedPaths.push(new URL(request.url()).pathname);
+  });
+
+  await page.goto('/?tab=map');
+  const searchInput = page.getByRole('combobox', { name: '장소 검색' });
+  await expect(searchInput).toBeVisible();
+
+  await searchInput.fill('여기');
+  await page.getByRole('option', { name: /여기 소제/ }).click();
+
+  await expect(page.locator('.place-drawer')).toBeVisible();
+  await expect(page).toHaveURL(/place=place-1/);
+  expect(requestedPaths).toContain('/api/places/search');
+  expect(requestedPaths.some((path) => path !== '/api/places/search' && /^\/api\/places\/[^/]+$/.test(path))).toBe(false);
+});
+
 test('UIUX-024 shows the splash once on initial entry and does not replay on tab changes', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
@@ -556,6 +576,7 @@ test('UIUX-023 keeps the floating capsule single-line across target mobile width
   for (const width of [360, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/');
+    await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
 
     const appCapsule = page.locator('[data-app-capsule="root"]');
     const floatingNav = appCapsule.locator('[data-map-floating-nav="root"]');

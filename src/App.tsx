@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AppMapStageView } from './components/AppMapStageView';
 import { AppPageStage } from './components/AppPageStage';
 import { MapFloatingNav } from './components/map-stage/MapFloatingNav';
+import { MapPlaceSearch } from './components/map-stage/MapPlaceSearch';
 import { AppChrome, AppShell } from './components/app-shell';
 import {
   useAppRouteState,
@@ -68,6 +69,12 @@ export default function App() {
       onToggleTourismInfo={mapStageProps.mapActions.onToggleTourismInfo}
     />
   ) : undefined;
+  const appChromeSecondary = activeTab === 'map' ? (
+    <MapPlaceSearch
+      places={dataState.places}
+      onOpenPlace={mapStageProps.mapActions.onOpenPlace}
+    />
+  ) : undefined;
   const sessionUser = coordinator.sessionUser;
 
   return (
@@ -95,6 +102,7 @@ export default function App() {
           activeTab={activeTab}
           canNavigateBack={canNavigateBack}
           center={appChromeCenter}
+          secondary={appChromeSecondary}
           globalUtility={globalUtility}
           notificationUtility={notificationUtility}
           onNavigateBack={handleNavigateBack}
