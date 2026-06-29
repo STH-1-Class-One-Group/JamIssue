@@ -46,7 +46,13 @@ export function useMapStageProps(state: AppShellCoordinatorState) {
   } = state;
   const visibleTourismPlaces = filterTourismPlacesByDisplayGroup(tourismPlaces, activeTourismDisplayGroup);
   const showCuratedMapItems = shouldShowCuratedMapItems({ showTourismInfo, showCuratedWithTourism });
-  const visibleCuratedPlaces = showCuratedMapItems ? viewModels.filteredPlaces : [];
+  const visibleCuratedPlaces = (() => {
+    const basePlaces = showCuratedMapItems ? viewModels.filteredPlaces : [];
+    if (!viewModels.selectedPlace || basePlaces.some((place) => place.id === viewModels.selectedPlace?.id)) {
+      return basePlaces;
+    }
+    return [...basePlaces, viewModels.selectedPlace];
+  })();
   const visibleRoutePreviewPlaces = showCuratedMapItems ? viewModels.routePreviewPlaces : [];
   const selectedTourismPlace = tourismPlaces.find((place) => place.id === selectedTourismPlaceId) ?? null;
   const selectedTourismDetail = selectedTourismPlaceId ? tourismDetailsById[selectedTourismPlaceId]?.item ?? null : null;

@@ -32,6 +32,7 @@ export interface AppChromeProps {
   activeTab: Tab;
   canNavigateBack: boolean;
   center?: ReactNode;
+  secondary?: ReactNode;
   globalUtility: {
     mapDisplayPreferences?: {
       showCuratedWithTourism: boolean;
@@ -49,6 +50,7 @@ export function AppChrome({
   activeTab,
   canNavigateBack,
   center,
+  secondary,
   globalUtility,
   menuBadgeCount,
   notificationUtility,
@@ -117,6 +119,11 @@ export function AppChrome({
           />
         )}
       />
+      {secondary ? (
+        <div className="app-chrome__secondary" data-app-chrome-secondary="true">
+          {secondary}
+        </div>
+      ) : null}
       <SideDrawer
         isOpen={isSideDrawerOpen}
         items={secondaryMenuItems}
