@@ -61,6 +61,24 @@ describe('MapPlaceSearch', () => {
     expect(onOpenPlace).toHaveBeenCalledWith('place-1');
   });
 
+  it('renders the map location action inside the search utility layer', () => {
+    const onLocate = vi.fn();
+
+    render(
+      <MapPlaceSearch
+        places={places}
+        onOpenPlace={vi.fn()}
+        locationAction={<button type="button" onClick={onLocate}>내 위치 찾기</button>}
+        locationStatus="현재 위치를 확인했어요."
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '내 위치 찾기' }));
+
+    expect(onLocate).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('현재 위치를 확인했어요.')).toBeInTheDocument();
+  });
+
   it('does not fallback to a detail endpoint when the result is missing from map-bootstrap places', async () => {
     render(<MapPlaceSearch places={[]} onOpenPlace={vi.fn()} />);
 

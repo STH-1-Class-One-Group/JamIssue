@@ -1,31 +1,13 @@
-/*
- * File: NaverMapStatus.tsx
- * Purpose: Render map loading, SDK error, and current-location action feedback.
- * Primary Responsibility: Own user-visible map status controls around the Naver map surface.
- * Design Intent: Keep location feedback visible at the map UI boundary instead of hiding it in app-level banners only.
- * Non-Goals: This component does not request geolocation or mutate map viewport state directly.
- * Dependencies: ApiStatus and callbacks supplied by the map stage.
- */
-import type { ApiStatus } from '../../types/core';
-
 type NaverMapStatusProps = {
   clientId: string;
   status: 'loading' | 'ready' | 'error';
   errorMessage: string | null;
-  currentLocationStatus: ApiStatus;
-  currentLocationMessage: string | null;
-  currentPosition: { latitude: number; longitude: number } | null;
-  onLocateCurrentPosition: () => void;
 };
 
 export function NaverMapStatus({
   clientId,
   status,
   errorMessage,
-  currentLocationStatus,
-  currentLocationMessage,
-  currentPosition,
-  onLocateCurrentPosition,
 }: NaverMapStatusProps) {
   if (!clientId || status === 'error') {
     return (
@@ -36,20 +18,14 @@ export function NaverMapStatus({
     );
   }
 
+  if (status !== 'loading') {
+    return null;
+  }
+
   return (
-    <>
-      {status === 'loading' && (
-        <div className="map-status-card map-status-card--overlay">
-          <strong>대전 지도를 준비하고 있어요.</strong>
-          <p>잠시만 기다리면 지도와 마커를 바로 보여드릴게요.</p>
-        </div>
-      )}
-      <div className="map-floating-controls">
-        <button type="button" className="map-locate-button" onClick={onLocateCurrentPosition} disabled={currentLocationStatus === 'loading'}>
-          {currentLocationStatus === 'loading' ? '확인 중' : currentPosition ? '내 위치 보기' : '내 위치 찾기'}
-        </button>
-      </div>
-      {currentLocationMessage && <div className="map-location-pill">{currentLocationMessage}</div>}
-    </>
+    <div className="map-status-card map-status-card--overlay">
+      <strong>대전 지도를 준비하고 있어요.</strong>
+      <p>잠시만 기다리면 지도와 마커를 바로 보여드릴게요.</p>
+    </div>
   );
 }

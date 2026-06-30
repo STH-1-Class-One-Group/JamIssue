@@ -1,42 +1,44 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { NaverMapStatus } from '../../src/components/naver-map/NaverMapStatus';
 
 describe('NaverMapStatus', () => {
-  it('shows readable current-location feedback and calls the locate action', () => {
-    const onLocateCurrentPosition = vi.fn();
-
+  it('renders the SDK fallback status without owning current-location controls', () => {
     render(
       <NaverMapStatus
         clientId="client-id"
-        status="ready"
-        errorMessage={null}
-        currentLocationStatus="ready"
-        currentLocationMessage="현재 위치를 확인했어요."
-        currentPosition={null}
-        onLocateCurrentPosition={onLocateCurrentPosition}
+        status="error"
+        errorMessage="네이버 지도 SDK를 불러오지 못했어요."
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '내 위치 찾기' }));
-
-    expect(onLocateCurrentPosition).toHaveBeenCalledTimes(1);
-    expect(screen.getByText('현재 위치를 확인했어요.')).toBeInTheDocument();
+    expect(screen.getByText('네이버 지도 연결 대기')).toBeInTheDocument();
+    expect(screen.getByText('네이버 지도 SDK를 불러오지 못했어요.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '내 위치 찾기' })).not.toBeInTheDocument();
   });
 
-  it('keeps the locate button disabled while a position request is pending', () => {
+  it('renders the loading overlay while the SDK is preparing', () => {
     render(
+      <NaverMapStatus
+        clientId="client-id"
+        status="loading"
+        errorMessage={null}
+      />,
+    );
+
+    expect(screen.getByText('대전 지도를 준비하고 있어요.')).toBeInTheDocument();
+    expect(screen.getByText('잠시만 기다리면 지도와 마커를 바로 보여드릴게요.')).toBeInTheDocument();
+  });
+
+  it('does not render a status layer once the SDK is ready', () => {
+    const { container } = render(
       <NaverMapStatus
         clientId="client-id"
         status="ready"
         errorMessage={null}
-        currentLocationStatus="loading"
-        currentLocationMessage="현재 위치를 확인하고 있어요."
-        currentPosition={null}
-        onLocateCurrentPosition={vi.fn()}
       />,
     );
 
-    expect(screen.getByRole('button', { name: '확인 중' })).toBeDisabled();
+    expect(container).toBeEmptyDOMElement();
   });
 });

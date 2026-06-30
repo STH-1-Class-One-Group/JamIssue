@@ -1,16 +1,8 @@
-/*
- * File: AppMapStageView.tsx
- * Purpose: Compose the map tab stage from coordinator-provided map data and actions.
- * Primary Responsibility: Adapt app-level map props into the MapTabStage contract.
- * Design Intent: Keep the app shell coordinator separate from map-stage presentation wiring.
- * Non-Goals: This component does not fetch map data, own Naver SDK state, or implement sheet internals.
- */
 import { memo } from 'react';
 import type { TourismDisplayGroupFilter, TourismFacets, TourismPlaceDetailItem, TourismPlaceItem } from '../tourismTypes';
 import type { SessionUser } from '../types/auth';
 import type { ApiStatus, Category, DrawerState, FestivalItem, Place, ReviewMood, RoutePreview } from '../types/core';
 import type { BootstrapResponse } from '../types/review';
-import { SpeedDialFAB } from './app-shell/SpeedDialFAB';
 import { MapTabStage } from './MapTabStage';
 
 export interface AppMapStageViewProps {
@@ -86,19 +78,7 @@ export const AppMapStageView = memo(function AppMapStageView({
   return (
     <MapTabStage
       floatingNav={null}
-      quickActions={(
-        <SpeedDialFAB
-          actions={[
-            {
-              id: 'locate-current-position',
-              label: '내 위치 찾기',
-              icon: '⌖',
-              onClick: mapActions.onLocateCurrentPosition,
-            },
-          ]}
-          hidden={mapData.drawerState !== 'closed' || Boolean(mapData.selectedTourismPlace)}
-        />
-      )}
+      quickActions={null}
       mapData={{
         filteredPlaces: mapData.filteredPlaces,
         festivals: mapData.festivals,

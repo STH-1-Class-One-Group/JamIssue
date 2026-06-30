@@ -73,6 +73,18 @@ export default function App() {
     <MapPlaceSearch
       places={dataState.places}
       onOpenPlace={mapStageProps.mapActions.onOpenPlace}
+      locationAction={(
+        <button
+          type="button"
+          className="map-place-search__location-button"
+          onClick={mapStageProps.mapActions.onLocateCurrentPosition}
+          disabled={mapStageProps.mapData.mapLocationStatus === 'loading'}
+          aria-label="내 위치 찾기"
+        >
+          {mapStageProps.mapData.mapLocationStatus === 'loading' ? '…' : '⌖'}
+        </button>
+      )}
+      locationStatus={mapStageProps.mapData.mapLocationMessage}
     />
   ) : undefined;
   const sessionUser = coordinator.sessionUser;

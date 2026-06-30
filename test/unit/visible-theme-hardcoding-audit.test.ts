@@ -77,7 +77,6 @@ describe('visible theme hardcoding audit', () => {
     '.app-settings-drawer__content',
     '.tab-overlay--scrollable',
     '.place-drawer__content',
-    '.page-panel--scrollable',
     '.feed-comment-sheet__content',
     '.side-drawer__content',
   ];
@@ -97,6 +96,11 @@ describe('visible theme hardcoding audit', () => {
         expect(block, `${selector} should be an explicitly scrollable app surface`).toMatch(/overflow-y:\s*auto/);
       }
     }
+
+    const pagePanelBlock = extractBlock(indexCss, '.page-panel--scrollable');
+    expect(pagePanelBlock, '.page-panel--scrollable should remain a primary page scroll container').toMatch(
+      /overflow-y:\s*auto/,
+    );
   });
 
   it('keeps hidden scrollbar exceptions scoped to horizontal navigation rows', () => {
@@ -140,6 +144,12 @@ describe('visible theme hardcoding audit', () => {
       expect(indexCss, `${selector} must not hide its visible scrollbar`).not.toMatch(hiddenScrollbarPattern);
       expect(indexCss, `${selector} should participate in the common scrollbar selector`).toContain(selector);
     }
+
+    const commonScrollbarPrelude = indexCss.slice(
+      indexCss.indexOf('.chrome-drawer__content,'),
+      indexCss.indexOf('.chrome-drawer__content.is-scrolling'),
+    );
+    expect(commonScrollbarPrelude).not.toContain('.page-panel--scrollable');
 
     expect(indexCss).toContain('scrollbar-gutter: stable;');
     expect(indexCss).toContain('scrollbar-width: thin;');

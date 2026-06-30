@@ -37,10 +37,7 @@ export function MapStageMapSurface({
         onSelectFestival={festivalSheet.onOpenFestival}
         onSelectTourismPlace={tourismActions.onOpenTourismPlace}
         currentPosition={mapData.currentPosition}
-        currentLocationStatus={mapData.mapLocationStatus}
-        currentLocationMessage={mapData.mapLocationMessage}
         focusCurrentLocationKey={mapData.mapLocationFocusKey}
-        onLocateCurrentPosition={viewportData.onLocateCurrentPosition}
         initialCenter={viewportData.initialMapCenter}
         initialZoom={viewportData.initialMapZoom}
         onViewportChange={viewportData.onMapViewportChange}

@@ -163,10 +163,12 @@ describe('TSK-021 navigation and settings responsibility audit', () => {
     expect(profileAccountSettings).not.toMatch(/tourism|curated|kto/i);
     expect(myPageOverviewSection).toContain('uniquePlaceCount');
     expect(myPageOverviewSection).toContain('stampCount');
+    expect(myPageOverviewSection).not.toContain('AppSurface');
     expect(myPageTabContent).toContain('MyStampTabSection');
     expect(myPageTabContent).toContain('MyFeedTabSection');
     expect(myPageTabContent).toContain('MyCommentsTabSection');
     expect(myPageTabContent).toContain('MyRoutesTabSection');
+    expect(myPageTabContent).not.toContain('ui-app-surface--section');
   });
 
   it('keeps the hamburger side drawer as secondary support, not a duplicate app/settings/account menu', () => {
