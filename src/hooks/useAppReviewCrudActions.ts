@@ -152,22 +152,35 @@ export function useAppReviewCrudActions({
     try {
       await deleteReview(reviewId);
       clearReviewComments(reviewId);
-      setReviews((current) => current.filter((review) => review.id !== reviewId));
-      setSelectedPlaceReviews((current) => current.filter((review) => review.id !== reviewId));
+
+      // Avoid unnecessary O(N) array allocations by only filtering if the item exists
+      setReviews((current) => (current.some((review) => review.id === reviewId) ? current.filter((review) => review.id !== reviewId) : current));
+      setSelectedPlaceReviews((current) => (current.some((review) => review.id === reviewId) ? current.filter((review) => review.id !== reviewId) : current));
       for (const placeId of Object.keys(placeReviewsCacheRef.current)) {
-        placeReviewsCacheRef.current[placeId] = placeReviewsCacheRef.current[placeId].filter((review) => review.id !== reviewId);
+        const placeReviews = placeReviewsCacheRef.current[placeId];
+        if (placeReviews.some((review) => review.id === reviewId)) {
+          placeReviewsCacheRef.current[placeId] = placeReviews.filter((review) => review.id !== reviewId);
+        }
       }
       setMyPage((current) => {
         if (!current) {
           return current;
         }
+
+        const hasReview = current.reviews.some((review) => review.id === reviewId);
+        const hasComment = current.comments.some((comment) => comment.reviewId === reviewId);
+
+        if (!hasReview && !hasComment) {
+          return current;
+        }
+
         return {
           ...current,
-          reviews: current.reviews.filter((review) => review.id !== reviewId),
-          comments: current.comments.filter((comment) => comment.reviewId !== reviewId),
+          reviews: hasReview ? current.reviews.filter((review) => review.id !== reviewId) : current.reviews,
+          comments: hasComment ? current.comments.filter((comment) => comment.reviewId !== reviewId) : current.comments,
           stats: {
             ...current.stats,
-            reviewCount: Math.max(0, current.stats.reviewCount - 1),
+            reviewCount: hasReview ? Math.max(0, current.stats.reviewCount - 1) : current.stats.reviewCount,
           },
         };
       });
