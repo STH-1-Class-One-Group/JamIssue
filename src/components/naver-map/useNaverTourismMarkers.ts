@@ -50,8 +50,19 @@ export function useNaverTourismMarkers({
       selectedTourismPlaceId,
       tourismPlaces,
     });
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
-    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
+
+    // Performance optimization: Combine multiple iterations over `visiblePlaces` into a single loop.
+    // This prevents creating three intermediate arrays, reducing memory allocation and GC pressure.
+    const nextIds = new Set<string>();
+    let visibleSignature = '';
+    const placeById = new Map<string, typeof visiblePlaces[number]>();
+
+    for (const place of visiblePlaces) {
+      nextIds.add(place.id);
+      visibleSignature += `${place.id}:${place.latitude}:${place.longitude}|`;
+      placeById.set(place.id, place);
+    }
+
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
 
@@ -68,8 +79,6 @@ export function useNaverTourismMarkers({
       });
       marker.setZIndex(zIndex);
     };
-
-    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
     if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
       const idsToRefresh = new Set([
         previousSelectedTourismPlaceIdRef.current,
