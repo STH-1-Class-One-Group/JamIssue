@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { getClientConfig } from '../config';
 import type { TourismPlaceItem } from '../tourismTypes';
-import type { ApiStatus, FestivalItem, Place } from '../types/core';
+import type { FestivalItem, Place } from '../types/core';
 import { NaverMapStatus } from './naver-map/NaverMapStatus';
 import { useNaverMapInstance } from './naver-map/useNaverMapInstance';
 import { useNaverMapInteractions } from './naver-map/useNaverMapInteractions';
@@ -21,10 +21,7 @@ interface NaverMapProps {
   onSelectFestival: (festivalId: string) => void;
   onSelectTourismPlace: (tourismPlaceId: string) => void;
   currentPosition: { latitude: number; longitude: number } | null;
-  currentLocationStatus: ApiStatus;
-  currentLocationMessage: string | null;
   focusCurrentLocationKey: number;
-  onLocateCurrentPosition: () => void;
   initialCenter?: { lat: number; lng: number };
   initialZoom?: number;
   onViewportChange?: (lat: number, lng: number, zoom: number) => void;
@@ -45,10 +42,7 @@ export function NaverMap({
   onSelectFestival,
   onSelectTourismPlace,
   currentPosition,
-  currentLocationStatus,
-  currentLocationMessage,
   focusCurrentLocationKey,
-  onLocateCurrentPosition,
   initialCenter,
   initialZoom,
   onViewportChange,
@@ -105,10 +99,6 @@ export function NaverMap({
         clientId={clientId}
         status={status}
         errorMessage={errorMessage}
-        currentLocationStatus={currentLocationStatus}
-        currentLocationMessage={currentLocationMessage}
-        currentPosition={currentPosition}
-        onLocateCurrentPosition={onLocateCurrentPosition}
       />
       <div ref={mapElementRef} style={{ width: '100%', height }} />
     </div>

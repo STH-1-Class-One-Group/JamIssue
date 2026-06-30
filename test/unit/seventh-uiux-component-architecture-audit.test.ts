@@ -91,6 +91,7 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
   it('keeps SpeedDialFAB as an action-array contract without route or icon-library coupling', () => {
     const speedDialFab = readRepoFile('src/components/app-shell/SpeedDialFAB.tsx');
     const appMapStageView = readRepoFile('src/components/AppMapStageView.tsx');
+    const app = readRepoFile('src/App.tsx');
 
     expect(speedDialFab).toContain('export interface FABAction');
     expect(speedDialFab).toContain('export interface SpeedDialFABProps');
@@ -99,8 +100,11 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(speedDialFab).not.toContain('/settings');
     expect(speedDialFab).not.toContain('window.history');
     expect(speedDialFab).not.toMatch(/\bti-/);
-    expect(appMapStageView).toContain("import { SpeedDialFAB } from './app-shell/SpeedDialFAB'");
-    expect(appMapStageView).toContain("id: 'locate-current-position'");
+    expect(appMapStageView).not.toContain("import { SpeedDialFAB } from './app-shell/SpeedDialFAB'");
+    expect(appMapStageView).not.toContain("id: 'locate-current-position'");
+    expect(appMapStageView).not.toContain('내 위치 찾기');
+    expect(app).toContain('locationAction={');
+    expect(app).toContain('onLocateCurrentPosition');
   });
 
   it('keeps the icon dependency baseline free of Tabler ti-* class assumptions', () => {
@@ -129,6 +133,6 @@ describe('TSK-016 seventh UI/UX component architecture audit baseline', () => {
     expect(mapBottomSheet).toContain('onCollapse');
     expect(mapBottomSheet).toContain('onExpand');
 
-    expect(appMapStageView).toContain("hidden={mapData.drawerState !== 'closed' || Boolean(mapData.selectedTourismPlace)}");
+    expect(appMapStageView).toContain('quickActions={null}');
   });
 });

@@ -1,6 +1,6 @@
 import type { Place } from '../../types/core';
 import type { TravelSession } from '../../types/review';
-import { ActionButton, AppSurface, FilterChip, MetricTile, SectionHeader } from '../ui-kit';
+import { ActionButton, FilterChip, MetricTile, SectionHeader } from '../ui-kit';
 
 type MyPageOverviewSectionProps = {
   uniquePlaceCount: number;
@@ -28,7 +28,7 @@ export function MyPageOverviewSection({
   travelSessions,
 }: MyPageOverviewSectionProps) {
   return (
-    <AppSurface className="my-page-overview" variant="section">
+    <section className="my-page-overview">
       <div className="my-stats-grid">
         <MetricTile value={`${uniquePlaceCount}/${totalPlaceCount}`} label="방문한 고유 명소" />
         <MetricTile value={stampCount} label="누적 스탬프 수" />
@@ -82,6 +82,6 @@ export function MyPageOverviewSection({
           </div>
         </div>
       )}
-    </AppSurface>
+    </section>
   );
 }

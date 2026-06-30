@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { searchPlaces, type PlaceSearchResult } from '../../api/placesSearchClient';
 import type { Place } from '../../types/core';
 
@@ -7,13 +7,20 @@ type SearchStatus = 'idle' | 'loading' | 'ready' | 'error';
 export interface MapPlaceSearchProps {
   places: Place[];
   onOpenPlace: (placeId: string) => void;
+  locationAction?: ReactNode;
+  locationStatus?: ReactNode;
 }
 
 const MIN_QUERY_LENGTH = 2;
 const SEARCH_DEBOUNCE_MS = 250;
 const SEARCH_LIMIT = 10;
 
-export function MapPlaceSearch({ places, onOpenPlace }: MapPlaceSearchProps) {
+export function MapPlaceSearch({
+  places,
+  onOpenPlace,
+  locationAction,
+  locationStatus,
+}: MapPlaceSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<PlaceSearchResult[]>([]);
   const [status, setStatus] = useState<SearchStatus>('idle');
@@ -126,7 +133,9 @@ export function MapPlaceSearch({ places, onOpenPlace }: MapPlaceSearchProps) {
         장소 검색
       </label>
       <div className="map-place-search__control">
-        <span className="map-place-search__icon" aria-hidden="true">⌕</span>
+        <span className="map-place-search__icon" aria-hidden="true">
+          ⌕
+        </span>
         <input
           id="map-place-search-input"
           className="map-place-search__input"
@@ -145,7 +154,9 @@ export function MapPlaceSearch({ places, onOpenPlace }: MapPlaceSearchProps) {
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
         />
+        {locationAction ? <div className="map-place-search__location-action">{locationAction}</div> : null}
       </div>
+      {locationStatus ? <div className="map-place-search__location-status">{locationStatus}</div> : null}
 
       {shouldShowPanel ? (
         <div className="map-place-search__popover" id="map-place-search-results" role="listbox">

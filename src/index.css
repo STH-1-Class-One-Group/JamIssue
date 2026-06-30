@@ -1282,15 +1282,13 @@ textarea {
 .counter-pill,
 .mood-pill,
 .soft-tag,
-.file-picker,
-.map-locate-button {
+.file-picker {
   border-radius: 999px;
 }
 
 .chip,
 .secondary-button,
-.file-picker,
-.map-locate-button {
+.file-picker {
   border: 1px solid var(--control-border);
   background: var(--control-bg);
   color: var(--ink);
@@ -1298,7 +1296,6 @@ textarea {
 
 .chip,
 .secondary-button,
-.map-locate-button,
 .text-button,
 .primary-button {
   padding: 11px 15px;
@@ -1321,7 +1318,6 @@ textarea {
 
 .secondary-button,
 .chip,
-.map-locate-button,
 .file-picker {
   font-weight: 600;
 }
@@ -1404,13 +1400,6 @@ textarea {
 
 .map-status-card--overlay {
   inset: 50% auto auto 50%;
-}
-
-.map-floating-controls {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  z-index: 12;
 }
 
 .map-location-pill {
@@ -2129,10 +2118,15 @@ textarea {
   gap: 10px;
 }
 
+.my-stats-grid > :nth-child(3) {
+  grid-column: 1 / -1;
+}
+
 .my-page-overview,
 .my-page-activity-panel {
   display: grid;
   gap: 14px;
+  padding: 0;
 }
 
 .my-stats-grid article {
@@ -2353,18 +2347,6 @@ textarea {
   border-radius: 28px;
 }
 
-.map-floating-controls {
-  top: 16px;
-  right: 16px;
-}
-
-.map-locate-button {
-  border-radius: 999px;
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  box-shadow: var(--shadow-soft);
-}
-
 .place-drawer--partial {
   bottom: calc(var(--bottom-nav-offset) + var(--map-sheet-tab-gap));
   height: 34%;
@@ -2569,17 +2551,6 @@ textarea {
   box-shadow: var(--shadow-panel);
 }
 
-.map-floating-controls {
-  top: 12px;
-  right: 12px;
-}
-
-.map-locate-button {
-  padding: 10px 13px;
-  font-size: 13px;
-  box-shadow: var(--shadow-soft);
-}
-
 .map-location-pill {
   left: 12px;
   right: 12px;
@@ -2722,16 +2693,6 @@ textarea {
   box-shadow: var(--shadow-soft);
 }
 
-.map-floating-controls {
-  top: 8px;
-  right: 8px;
-}
-
-.map-locate-button {
-  padding: 8px 11px;
-  font-size: 11px;
-}
-
 .place-drawer {
   margin: 0 10px;
   bottom: var(--bottom-nav-offset);
@@ -2855,16 +2816,6 @@ textarea {
   inset: 178px 12px calc(350px + env(safe-area-inset-bottom)) 12px;
 }
 
-.map-floating-controls {
-  top: 12px;
-  right: 12px;
-}
-
-.map-locate-button {
-  padding: 7px 10px;
-  font-size: 11px;
-}
-
 @media (max-width: 430px) {
   .map-stage__brand {
     max-width: 146px;
@@ -2969,16 +2920,6 @@ textarea {
 .map-surface-frame {
   inset: 152px 12px calc(340px + env(safe-area-inset-bottom)) 12px;
   border-radius: 26px;
-}
-
-.map-floating-controls {
-  top: 10px;
-  right: 10px;
-}
-
-.map-locate-button {
-  padding: 7px 10px;
-  font-size: 11px;
 }
 
 .place-drawer--partial {
@@ -3382,7 +3323,7 @@ textarea {
 .map-place-search__control {
   display: grid;
   min-height: 42px;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
   padding: 0 14px;
@@ -3410,6 +3351,43 @@ textarea {
 
 .map-place-search__input::placeholder {
   color: var(--text-muted);
+}
+
+.map-place-search__location-action {
+  display: grid;
+  place-items: center;
+}
+
+.map-place-search__location-button {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--color-accent);
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: var(--shadow-button);
+}
+
+.map-place-search__location-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.map-place-search__location-status {
+  width: fit-content;
+  max-width: 100%;
+  margin: 6px auto 0;
+  padding: 6px 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--surface-card);
+  color: var(--text-muted);
+  font-size: 12px;
+  box-shadow: var(--shadow-soft);
 }
 
 .map-place-search__popover {
@@ -4196,9 +4174,6 @@ textarea {
   white-space: nowrap;
 }
 
-.phone-shell--map.app-shell--header-hidden .map-surface-frame .map-floating-controls {
-  top: calc(var(--shell-capsule-height) + 20px);
-}
 @font-face {
   font-family: 'Pretendard';
   src: url('./assets/fonts/Pretendard-Regular.woff2') format('woff2');
@@ -4368,7 +4343,6 @@ textarea {
 .chrome-drawer__content,
 .tab-overlay--scrollable,
 .place-drawer__content,
-.page-panel--scrollable,
 .feed-comment-sheet__content {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
@@ -4378,7 +4352,6 @@ textarea {
 .chrome-drawer__content::-webkit-scrollbar,
 .tab-overlay--scrollable::-webkit-scrollbar,
 .place-drawer__content::-webkit-scrollbar,
-.page-panel--scrollable::-webkit-scrollbar,
 .feed-comment-sheet__content::-webkit-scrollbar {
   width: var(--scrollbar-size);
 }
@@ -4386,7 +4359,6 @@ textarea {
 .chrome-drawer__content::-webkit-scrollbar-track,
 .tab-overlay--scrollable::-webkit-scrollbar-track,
 .place-drawer__content::-webkit-scrollbar-track,
-.page-panel--scrollable::-webkit-scrollbar-track,
 .feed-comment-sheet__content::-webkit-scrollbar-track {
   border-radius: 999px;
   background: transparent;
@@ -4395,7 +4367,6 @@ textarea {
 .chrome-drawer__content::-webkit-scrollbar-thumb,
 .tab-overlay--scrollable::-webkit-scrollbar-thumb,
 .place-drawer__content::-webkit-scrollbar-thumb,
-.page-panel--scrollable::-webkit-scrollbar-thumb,
 .feed-comment-sheet__content::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
@@ -4409,8 +4380,6 @@ textarea {
 .tab-overlay--scrollable:focus-within,
 .place-drawer__content:hover,
 .place-drawer__content:focus-within,
-.page-panel--scrollable:hover,
-.page-panel--scrollable:focus-within,
 .feed-comment-sheet__content:hover,
 .feed-comment-sheet__content:focus-within {
   scrollbar-color: var(--scrollbar-thumb) transparent;
@@ -4423,8 +4392,6 @@ textarea {
 .tab-overlay--scrollable:focus-within::-webkit-scrollbar-track,
 .place-drawer__content:hover::-webkit-scrollbar-track,
 .place-drawer__content:focus-within::-webkit-scrollbar-track,
-.page-panel--scrollable:hover::-webkit-scrollbar-track,
-.page-panel--scrollable:focus-within::-webkit-scrollbar-track,
 .feed-comment-sheet__content:hover::-webkit-scrollbar-track,
 .feed-comment-sheet__content:focus-within::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
@@ -4437,8 +4404,6 @@ textarea {
 .tab-overlay--scrollable:focus-within::-webkit-scrollbar-thumb,
 .place-drawer__content:hover::-webkit-scrollbar-thumb,
 .place-drawer__content:focus-within::-webkit-scrollbar-thumb,
-.page-panel--scrollable:hover::-webkit-scrollbar-thumb,
-.page-panel--scrollable:focus-within::-webkit-scrollbar-thumb,
 .feed-comment-sheet__content:hover::-webkit-scrollbar-thumb,
 .feed-comment-sheet__content:focus-within::-webkit-scrollbar-thumb {
   border-color: var(--scrollbar-border);
@@ -4448,7 +4413,6 @@ textarea {
 .chrome-drawer__content.is-scrolling::-webkit-scrollbar-thumb:hover,
 .tab-overlay--scrollable::-webkit-scrollbar-thumb:hover,
 .place-drawer__content::-webkit-scrollbar-thumb:hover,
-.page-panel--scrollable::-webkit-scrollbar-thumb:hover,
 .feed-comment-sheet__content::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
 }

@@ -494,28 +494,22 @@ test('TSK-021-06 opens general secondary SideDrawer items without duplicating pr
   await expect(sideDrawer).toHaveCount(0);
 });
 
-test('TSK-016-05 opens SpeedDialFAB and runs a map action without blocking shell controls', async ({ page }) => {
+test('TSK-027-02 runs the map location action from the search utility layer without blocking shell controls', async ({ page }) => {
   await installApiFixtures(page, createE2EAppState({ authenticated: false }));
 
   await page.goto('/');
   await expect(page.getByTestId('app-splash')).toHaveCount(0, { timeout: 2200 });
 
-  const speedDial = page.locator('[data-speed-dial-fab="root"]');
-  await expect(speedDial).toBeVisible();
-
-  await speedDial.getByRole('button', { name: '지도 빠른 작업 열기' }).click();
-  await expect(speedDial.getByRole('menuitem', { name: '내 위치 찾기' })).toBeVisible();
-
-  await speedDial.getByRole('menuitem', { name: '내 위치 찾기' }).click();
-  await expect(speedDial.getByRole('menuitem', { name: '내 위치 찾기' })).toHaveCount(0);
+  const locationButton = page.getByRole('button', { name: '내 위치 찾기' });
+  await expect(locationButton).toBeVisible();
+  await locationButton.click();
 
   await page.locator('[data-tab-key="feed"]').click();
   await expect(page.locator('[data-tab-key="feed"]')).toHaveAttribute('aria-current', 'page');
 
   await page.locator('[data-tab-key="map"]').click();
-  await expect(page.locator('[data-speed-dial-fab="root"]')).toBeVisible();
+  await expect(page.getByRole('button', { name: '내 위치 찾기' })).toBeVisible();
 });
-
 test('TSK-016-06 keeps FAB hidden and bottom navigation hittable while map drawers are open', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await installApiFixtures(page, createE2EAppState());

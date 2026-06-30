@@ -76,7 +76,7 @@ export function MyPageTabContent({
   };
 
   return (
-    <section className="ui-app-surface ui-app-surface--section my-page-activity-panel">
+    <section className="my-page-activity-panel">
       <MyPagePrimaryTabs activeTab={activeTab} isAdmin={sessionUser.isAdmin} onChangeTab={onChangeTab} />
 
       {activeTab === 'stamps' && (
