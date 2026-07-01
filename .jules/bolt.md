@@ -1,0 +1,3 @@
+## 2025-07-01 - [Tourism Markers Memoization Optimization]
+**Learning:** Refactoring array combinations (`.map`, `.filter`, `...spread`) in map marker derivations (e.g. `useNaverTourismMarkers`) into sequential `for...of` loops removes significant garbage collection pressure and intermediate array allocations (O(N)), which is particularly beneficial when handling dynamic map layers that re-calculate frequently during user interactions like viewport panning.
+**Action:** When working on Naver map marker state reconciliation loops (`nextIds`, `visibleSignature`, `operations` batching), always favor `for...of` loops and explicit arrays/Sets directly over nested array method chains.
