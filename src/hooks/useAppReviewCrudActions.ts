@@ -11,6 +11,22 @@ import { useReviewUIStore } from '../store/review-ui-store';
 import type { ReviewMood } from '../types/core';
 import type { UseAppReviewActionsParams } from './useAppReviewActions.types';
 
+function removeById<T extends { id: string }>(items: T[], id: string) {
+  const index = items.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return items;
+  }
+  return [...items.slice(0, index), ...items.slice(index + 1)];
+}
+
+function removeByReviewId<T extends { reviewId: string }>(items: T[], reviewId: string) {
+  const index = items.findIndex((item) => item.reviewId === reviewId);
+  if (index === -1) {
+    return items;
+  }
+  return items.filter((item) => item.reviewId !== reviewId);
+}
+
 export function useAppReviewCrudActions({
   activeTab,
   sessionUser,
@@ -152,22 +168,27 @@ export function useAppReviewCrudActions({
     try {
       await deleteReview(reviewId);
       clearReviewComments(reviewId);
-      setReviews((current) => current.filter((review) => review.id !== reviewId));
-      setSelectedPlaceReviews((current) => current.filter((review) => review.id !== reviewId));
+      setReviews((current) => removeById(current, reviewId));
+      setSelectedPlaceReviews((current) => removeById(current, reviewId));
       for (const placeId of Object.keys(placeReviewsCacheRef.current)) {
-        placeReviewsCacheRef.current[placeId] = placeReviewsCacheRef.current[placeId].filter((review) => review.id !== reviewId);
+        placeReviewsCacheRef.current[placeId] = removeById(placeReviewsCacheRef.current[placeId], reviewId);
       }
       setMyPage((current) => {
         if (!current) {
           return current;
         }
+        const nextReviews = removeById(current.reviews, reviewId);
+        const nextComments = removeByReviewId(current.comments, reviewId);
+        if (nextReviews === current.reviews && nextComments === current.comments) {
+          return current;
+        }
         return {
           ...current,
-          reviews: current.reviews.filter((review) => review.id !== reviewId),
-          comments: current.comments.filter((comment) => comment.reviewId !== reviewId),
+          reviews: nextReviews,
+          comments: nextComments,
           stats: {
             ...current.stats,
-            reviewCount: Math.max(0, current.stats.reviewCount - 1),
+            reviewCount: nextReviews === current.reviews ? current.stats.reviewCount : Math.max(0, current.stats.reviewCount - 1),
           },
         };
       });
