@@ -19,12 +19,14 @@ vi.mock('../../src/api/reviewsClient', () => ({
   uploadReviewImage: vi.fn(),
 }));
 
-import { getReviewComments, updateReview } from '../../src/api/reviewsClient';
+import { deleteReview, getReviewComments, updateReview } from '../../src/api/reviewsClient';
 
 describe('useAppReviewActions', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(getReviewComments).mockResolvedValue([]);
+    vi.mocked(deleteReview).mockResolvedValue(undefined);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
     useAppPageRuntimeStore.setState({
       reviewSubmitting: false,
       reviewError: null,
@@ -185,5 +187,127 @@ describe('useAppReviewActions', () => {
       expect(result.current.activeReviewCommentsStatus).toBe('error');
     });
     expect(setNotice).toHaveBeenCalledWith('boom');
+  });
+
+  it('decrements my-page review count only when the deleted review exists there', async () => {
+    const existingReview = createReviewFixture({ id: 'review-delete' });
+    let reviews = [existingReview];
+    let selectedPlaceReviews = [existingReview];
+    const placeReviewsCacheRef = { current: { [placeFixture.id]: [existingReview] } };
+    let myPageState: MyPageResponse | null = {
+      ...myPageFixture,
+      stats: {
+        ...myPageFixture.stats,
+        reviewCount: 3,
+      },
+      reviews: [existingReview],
+      comments: [
+        {
+          ...myPageFixture.comments[0],
+          reviewId: existingReview.id,
+        },
+      ],
+    };
+
+    const { result } = renderHook(() => useAppReviewActions({
+      activeTab: 'feed',
+      sessionUser: sessionUserFixture,
+      selectedPlace: placeFixture,
+      reviews,
+      selectedPlaceReviews,
+      myPage: myPageState,
+      activeCommentReviewId: null,
+      highlightedReviewId: null,
+      setSelectedPlaceReviews: (nextValue) => {
+        selectedPlaceReviews = typeof nextValue === 'function' ? nextValue(selectedPlaceReviews) : nextValue;
+      },
+      setReviews: (nextValue) => {
+        reviews = typeof nextValue === 'function' ? nextValue(reviews) : nextValue;
+      },
+      setMyPage: (nextValue) => {
+        myPageState = typeof nextValue === 'function' ? nextValue(myPageState) : nextValue;
+      },
+      setNotice: vi.fn(),
+      goToTab: vi.fn(),
+      commitRouteState: vi.fn(),
+      refreshMyPageForUser: vi.fn(),
+      patchReviewCollections: vi.fn(),
+      upsertReviewCollections: vi.fn(),
+      placeReviewsCacheRef,
+      handleCloseReviewComments: vi.fn(),
+      syncReviewComments: vi.fn(),
+      clearReviewComments: vi.fn(),
+      formatErrorMessage: (error) => String(error),
+    }));
+
+    await act(async () => {
+      await result.current.handleDeleteReview(existingReview.id);
+    });
+
+    expect(deleteReview).toHaveBeenCalledWith(existingReview.id);
+    expect(reviews).toEqual([]);
+    expect(selectedPlaceReviews).toEqual([]);
+    expect(placeReviewsCacheRef.current[placeFixture.id]).toEqual([]);
+    expect(myPageState?.reviews).toEqual([]);
+    expect(myPageState?.comments).toEqual([]);
+    expect(myPageState?.stats.reviewCount).toBe(2);
+  });
+
+  it('keeps my-page review count when deleting a review absent from my-page state', async () => {
+    const deletedReview = createReviewFixture({ id: 'review-outside-my-page' });
+    let reviews = [deletedReview];
+    let selectedPlaceReviews = [deletedReview];
+    const placeReviewsCacheRef = { current: { [placeFixture.id]: [deletedReview] } };
+    const originalMyPageState: MyPageResponse = {
+      ...myPageFixture,
+      stats: {
+        ...myPageFixture.stats,
+        reviewCount: 3,
+      },
+      reviews: [],
+      comments: [],
+    };
+    let myPageState: MyPageResponse | null = originalMyPageState;
+
+    const { result } = renderHook(() => useAppReviewActions({
+      activeTab: 'feed',
+      sessionUser: sessionUserFixture,
+      selectedPlace: placeFixture,
+      reviews,
+      selectedPlaceReviews,
+      myPage: myPageState,
+      activeCommentReviewId: null,
+      highlightedReviewId: null,
+      setSelectedPlaceReviews: (nextValue) => {
+        selectedPlaceReviews = typeof nextValue === 'function' ? nextValue(selectedPlaceReviews) : nextValue;
+      },
+      setReviews: (nextValue) => {
+        reviews = typeof nextValue === 'function' ? nextValue(reviews) : nextValue;
+      },
+      setMyPage: (nextValue) => {
+        myPageState = typeof nextValue === 'function' ? nextValue(myPageState) : nextValue;
+      },
+      setNotice: vi.fn(),
+      goToTab: vi.fn(),
+      commitRouteState: vi.fn(),
+      refreshMyPageForUser: vi.fn(),
+      patchReviewCollections: vi.fn(),
+      upsertReviewCollections: vi.fn(),
+      placeReviewsCacheRef,
+      handleCloseReviewComments: vi.fn(),
+      syncReviewComments: vi.fn(),
+      clearReviewComments: vi.fn(),
+      formatErrorMessage: (error) => String(error),
+    }));
+
+    await act(async () => {
+      await result.current.handleDeleteReview(deletedReview.id);
+    });
+
+    expect(reviews).toEqual([]);
+    expect(selectedPlaceReviews).toEqual([]);
+    expect(placeReviewsCacheRef.current[placeFixture.id]).toEqual([]);
+    expect(myPageState).toBe(originalMyPageState);
+    expect(myPageState?.stats.reviewCount).toBe(3);
   });
 });
