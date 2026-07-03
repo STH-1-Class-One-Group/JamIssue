@@ -125,23 +125,16 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
       await markNotificationReadRequest(notificationId);
       set((state) => {
         const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
-        if (idx === -1) {
+        if (idx === -1 || state.notifications[idx].isRead) {
           return state;
         }
         const nextNotifications = [...state.notifications];
         nextNotifications[idx] = { ...nextNotifications[idx], isRead: true };
 
-        // Count unread notifications without creating an intermediate array to reduce memory pressure
-        let nextUnreadCount = 0;
-        for (const notification of state.notifications) {
-          if (!notification.isRead && notification.id !== notificationId) {
-            nextUnreadCount++;
-          }
-        }
-
         return {
           notifications: nextNotifications,
-          unreadCount: Math.max(0, nextUnreadCount),
+          // Calculate new aggregate incrementally in O(1) time
+          unreadCount: Math.max(0, state.unreadCount - 1),
         };
       });
     },
@@ -168,10 +161,16 @@ export function createNotificationStoreActions(set: SetState, get: GetState): No
     async deleteNotification(notificationId) {
       await deleteNotificationRequest(notificationId);
       set((state) => {
+        const idx = state.notifications.findIndex((notification) => notification.id === notificationId);
+        if (idx === -1) {
+          return state;
+        }
+        const isRead = state.notifications[idx].isRead;
         const notifications = state.notifications.filter((notification) => notification.id !== notificationId);
         return {
           notifications,
-          unreadCount: countUnread(notifications),
+          // Calculate new aggregate incrementally in O(1) time
+          unreadCount: Math.max(0, state.unreadCount - (isRead ? 0 : 1)),
         };
       });
     },
