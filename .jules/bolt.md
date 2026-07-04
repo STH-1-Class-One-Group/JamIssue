@@ -1,0 +1,3 @@
+## 2024-05-24 - [Naver Map Marker Allocation Optimization]
+**Learning:** [When dealing with large arrays of geographic items (like tourism places) in Naver Map hooks, using spread operators, multiple `.map()`, `.filter()`, and `Array.from` calls to build derived state (`nextIds`, `visibleSignature`, `operations`) causes enormous intermediate array allocations. This triggers massive Garbage Collection overhead, especially during frequent map panning when these hooks run constantly.]
+**Action:** [Combine multiple iteration passes into a single, straightforward `for` or `for...of` loop. Build strings, Sets, Maps, and batch operation arrays (`.push`) directly within these loops to prevent any unnecessary intermediate array creation.]
