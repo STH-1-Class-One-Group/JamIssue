@@ -1,0 +1,3 @@
+## 2024-07-05 - Avoid O(N) array mapping during map marker sync
+**Learning:** Naver map marker reconciliation functions (like `useNaverTourismMarkers`) are prone to heavy intermediate array allocations during sync logic using `.map`, `.filter`, and array spreads `[...a, ...b]`, which trigger GC pressure during map panning and zooming.
+**Action:** When working on dynamic map layers, replace all declarative array chains for marker visibility and string building with explicit `for...of` loops, string concatenation `+=`, and direct `.push()` into `operations` arrays to optimize rendering performance.
