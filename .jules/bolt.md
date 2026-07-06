@@ -1,0 +1,3 @@
+## 2024-05-15 - [Reduce GC pressure in Naver map marker materialization loop]
+**Learning:** Naver Maps `useEffect` hooks heavily rely on generating intermediate states (e.g. `nextIds` sets, joined string `visibleSignature`, maps of `placeById`) and generating dynamic batch DOM materializations over large data sets during panning. Using `.map().join()` and array spread syntax `[...arr1.map(fn1), ...arr2.map(fn2)]` causes immense memory allocations during hot rendering paths leading to observable UI jank due to GC.
+**Action:** Always favor basic `for...of` loops, explicit `Set.add()`, and sequential `operations.push()` for heavy data derivations inside hot hook dependencies. Avoid functional `.map()` chaining when multiple data structures are derived from a single array.
