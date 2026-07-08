@@ -1,7 +1,11 @@
 param(
     [string]$ProjectName = $(if($env:CLOUDFLARE_PAGES_PROJECT_NAME){$env:CLOUDFLARE_PAGES_PROJECT_NAME}else{'daejeon-jamissue-pages'}),
-    [string]$Branch = 'main'
+    [string]$Branch = 'preview-local'
 )
+
+if (-not $Branch.StartsWith('preview-')) {
+    throw 'This public repository deploy script only allows preview-* Cloudflare Pages branches.'
+}
 
 Push-Location (Resolve-Path "$PSScriptRoot\..")
 try {
