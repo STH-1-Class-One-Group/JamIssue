@@ -1,0 +1,3 @@
+## 2023-10-27 - Map marker batching performance iteration
+**Learning:** Frequent array iteration and spreading in high-frequency React effect hooks (such as Map component sync loops triggering during panning) causes rapid intermediate array allocations leading to GC stuttering.
+**Action:** When working on dynamic map layers and Naver map marker state reconciliation loops (e.g., `nextIds`, `visibleSignature`, `operations` batching), always favor `for...of` loops directly building strings/Sets/Maps over nested array method chains (`.map`, `.filter`, `...spread`) to prevent O(N) memory allocations per map viewport tick.
