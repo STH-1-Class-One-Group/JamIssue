@@ -1,0 +1,3 @@
+## 2026-07-09 - [Optimize map marker state reconciliation]
+**Learning:** Naver map marker state reconciliation loops (like `useNaverTourismMarkers`) are hot paths that are frequently triggered during map interactions like viewport panning. The original code used chained array methods (`.map`, `.filter`, `...spread`) that allocated many intermediate arrays, causing significant garbage collection pressure.
+**Action:** When working on dynamic map layers and Naver map marker state loops, always favor single `for...of` loops and explicit arrays/Sets (with direct `.push()` or `.add()`) to prevent O(N) intermediate array allocations and reduce GC pressure.
