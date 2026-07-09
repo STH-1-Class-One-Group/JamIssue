@@ -1,30 +1,28 @@
 # Docs Guide
 
-JamIssue Web Front service 문서는 아래 기준으로 관리한다.
+JamIssue Web Front 공개 저장소의 문서는 아래 기준으로 관리합니다.
 
 ## 1. 현재 정본 문서
 
 - [api-contract-ownership.md](api-contract-ownership.md)
-  - MSA 분리 이후 Web Front service가 소유하는 consumer-side API contract
-  - `ClarusIubar/JamIssue_admin`이 소유하는 provider-side API contract
-  - 현재 레포에 남아 있는 API 관련 파일 위치
+  - Web Front service가 소유하는 consumer-side API contract
+  - provider-side API contract와 DB/OAuth/Worker 구현은 이 저장소가 소유하지 않음
+- [growgardens-deploy-runbook.md](growgardens-deploy-runbook.md)
+  - 공개 저장소의 preview-only 배포 경계
+  - production deploy/smoke는 private repo/CI 책임
 - [prd-compliance.md](prd-compliance.md)
   - PRD 대비 현재 구현 상태
-  - 구현됨 / 부분 구현 / 미구현 구분
 - [testing-coverage.md](testing-coverage.md)
-  - 테스트 커버리지 기준
-  - Web Front service 검증 명령
+  - 테스트 커버리지와 Web Front 검증 명령
 
-## 2. 운영 문서
+## 2. 배포 문서 기준
 
-- [growgardens-deploy-runbook.md](growgardens-deploy-runbook.md)
-  - 현재 문서는 historical/reference 성격이 강하다.
-  - backend/API/Worker 운영 정본으로 사용하지 않는다.
-- [data-operations-runbook.md](data-operations-runbook.md)
-  - 현재 문서는 historical/reference 성격이 강하다.
-  - DB 적재와 운영 데이터 절차의 최신 정본은 `ClarusIubar/JamIssue_admin`에서 확인한다.
+이 공개 저장소는 production 웹 배포 저장소가 아닙니다.
 
-주의: Backend/API/Worker/DB/admin 운영 절차의 정본은 `ClarusIubar/JamIssue_admin`이다. 이 레포의 runbook은 Web Front service 관점의 참조로만 사용한다.
+- README, Wiki, runbook은 이 저장소가 preview/build validation만 제공한다고 설명해야 합니다.
+- production deploy와 production smoke는 private repo/CI가 소유합니다.
+- private repo 이름, URL, secret은 공개 문서에 기록하지 않습니다.
+- production 웹 화면 확인은 이 저장소의 preview 배포로 대체하지 않습니다.
 
 ## 3. 화면/기능 설계 문서
 
@@ -45,7 +43,7 @@ JamIssue Web Front service 문서는 아래 기준으로 관리한다.
 
 ## 5. Legacy/Reference 문서
 
-아래 문서는 Web Front와 backend가 같은 레포에 있던 시기의 설계/분석 기록을 포함한다. 최신 backend/API 정본으로 사용하지 않는다.
+아래 문서는 Web Front와 backend가 같은 저장소에 있던 시기의 설계/분석 기록을 포함합니다. 최신 backend/API 운영 정본으로 사용하지 않습니다.
 
 - [code-flow-diagrams.md](code-flow-diagrams.md)
 - [notification-sse-architecture.md](notification-sse-architecture.md)
@@ -60,4 +58,4 @@ JamIssue Web Front service 문서는 아래 기준으로 관리한다.
 - [interface-locality-baseline.md](interface-locality-baseline.md)
 - [interface-locality-traceability.md](interface-locality-traceability.md)
 
-이 문서들에 `backend/`, Worker, DB schema, migration 경로가 남아 있어도 현재 Web Front service 레포의 소유권을 의미하지 않는다. 최신 구현과 운영 정본은 담당 레포에서 확인한다.
+이 문서들에 남은 backend, Worker, DB schema, migration 경로는 현재 Web Front 공개 저장소의 소유권을 의미하지 않습니다.
