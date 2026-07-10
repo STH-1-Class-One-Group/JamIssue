@@ -1,0 +1,3 @@
+## 2026-07-10 - Performance improvements in useNaverTourismMarkers
+**Learning:** React hooks that interact with external mapping libraries can trigger significant Garbage Collection pressure if they allocate multiple intermediate arrays during high-frequency events (like viewport panning). The Naver Maps integration had O(N) allocation patterns during its reconciliation loop.
+**Action:** When tracking active selection states across large marker collections or building reconciliation batches, favor `for...of` loops and explicit arrays/Sets over chained array methods (`.map`, `.filter`, `...spread`) to prevent O(N) intermediate array allocations.
