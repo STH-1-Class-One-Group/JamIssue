@@ -50,8 +50,26 @@ export function useNaverTourismMarkers({
       selectedTourismPlaceId,
       tourismPlaces,
     });
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
-    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
+
+    // Bolt: Performance optimization
+    // Consolidate three full array iterations (nextIds, visibleSignature, placeById)
+    // into a single `for...of` loop to prevent O(N) intermediate array allocations
+    // and reduce GC pressure during frequent marker syncing (e.g. on pan).
+    const nextIds = new Set<string>();
+    const placeById = new Map<string, typeof visiblePlaces[number]>();
+    let visibleSignature = '';
+    let isFirst = true;
+
+    for (const place of visiblePlaces) {
+      nextIds.add(place.id);
+      placeById.set(place.id, place);
+      if (!isFirst) {
+        visibleSignature += '|';
+      }
+      visibleSignature += `${place.id}:${place.latitude}:${place.longitude}`;
+      isFirst = false;
+    }
+
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
 
@@ -69,7 +87,6 @@ export function useNaverTourismMarkers({
       marker.setZIndex(zIndex);
     };
 
-    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
     if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
       const idsToRefresh = new Set([
         previousSelectedTourismPlaceIdRef.current,
@@ -121,21 +138,35 @@ export function useNaverTourismMarkers({
       previousSelectedTourismPlaceIdRef.current,
       selectedTourismPlaceId,
     ].filter((placeId): placeId is string => Boolean(placeId)));
-    const operations = [
-      ...stalePlaceIds.map((placeId) => () => {
+
+    // Bolt: Performance optimization
+    // Avoid spreading multiple mapped arrays to build the operations batch.
+    // Instead, use sequential for...of loops and Array.prototype.push() to
+    // prevent the allocation of unnecessary intermediate arrays.
+    const operations: Array<() => void> = [];
+
+    for (const placeId of stalePlaceIds) {
+      operations.push(() => {
         const marker = tourismMarkersRef.current.get(placeId);
         marker?.setMap(null);
         tourismMarkersRef.current.delete(placeId);
-      }),
-      ...placesToCreate.map((place) => () => createMarker(place)),
-      ...Array.from(idsToRefresh).map((placeId) => () => {
+      });
+    }
+
+    for (const place of placesToCreate) {
+      operations.push(() => createMarker(place));
+    }
+
+    for (const placeId of idsToRefresh) {
+      operations.push(() => {
         const place = placeById.get(placeId);
         const marker = tourismMarkersRef.current.get(placeId);
         if (place && marker) {
           updateMarkerVisual(place, marker);
         }
-      }),
-    ];
+      });
+    }
+
     let nextOperationIndex = 0;
     markerBatchPendingRef.current = operations.length > 0;
 
