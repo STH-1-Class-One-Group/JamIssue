@@ -50,8 +50,16 @@ export function useNaverTourismMarkers({
       selectedTourismPlaceId,
       tourismPlaces,
     });
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
-    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
+    const nextIds = new Set<string>();
+    let visibleSignature = '';
+    const placeById = new Map<string, typeof visiblePlaces[number]>();
+
+    for (const place of visiblePlaces) {
+      nextIds.add(place.id);
+      visibleSignature += (visibleSignature ? '|' : '') + `${place.id}:${place.latitude}:${place.longitude}`;
+      placeById.set(place.id, place);
+    }
+
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
 
@@ -69,13 +77,15 @@ export function useNaverTourismMarkers({
       marker.setZIndex(zIndex);
     };
 
-    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
-    if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
-      const idsToRefresh = new Set([
-        previousSelectedTourismPlaceIdRef.current,
-        selectedTourismPlaceId,
-      ].filter((placeId): placeId is string => Boolean(placeId)));
+    const idsToRefresh = new Set<string>();
+    if (previousSelectedTourismPlaceIdRef.current) {
+      idsToRefresh.add(previousSelectedTourismPlaceIdRef.current);
+    }
+    if (selectedTourismPlaceId) {
+      idsToRefresh.add(selectedTourismPlaceId);
+    }
 
+    if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
       for (const placeId of idsToRefresh) {
         const place = placeById.get(placeId);
         const marker = tourismMarkersRef.current.get(placeId);
@@ -115,27 +125,33 @@ export function useNaverTourismMarkers({
       tourismMarkersRef.current.set(place.id, marker);
     };
 
-    const stalePlaceIds = Array.from(tourismMarkersRef.current.keys()).filter((placeId) => !nextIds.has(placeId));
-    const placesToCreate = visiblePlaces.filter((place) => !tourismMarkersRef.current.has(place.id));
-    const idsToRefresh = new Set([
-      previousSelectedTourismPlaceIdRef.current,
-      selectedTourismPlaceId,
-    ].filter((placeId): placeId is string => Boolean(placeId)));
-    const operations = [
-      ...stalePlaceIds.map((placeId) => () => {
-        const marker = tourismMarkersRef.current.get(placeId);
-        marker?.setMap(null);
-        tourismMarkersRef.current.delete(placeId);
-      }),
-      ...placesToCreate.map((place) => () => createMarker(place)),
-      ...Array.from(idsToRefresh).map((placeId) => () => {
+    const operations: Array<() => void> = [];
+
+    for (const placeId of tourismMarkersRef.current.keys()) {
+      if (!nextIds.has(placeId)) {
+        operations.push(() => {
+          const marker = tourismMarkersRef.current.get(placeId);
+          marker?.setMap(null);
+          tourismMarkersRef.current.delete(placeId);
+        });
+      }
+    }
+
+    for (const place of visiblePlaces) {
+      if (!tourismMarkersRef.current.has(place.id)) {
+        operations.push(() => createMarker(place));
+      }
+    }
+
+    for (const placeId of idsToRefresh) {
+      operations.push(() => {
         const place = placeById.get(placeId);
         const marker = tourismMarkersRef.current.get(placeId);
         if (place && marker) {
           updateMarkerVisual(place, marker);
         }
-      }),
-    ];
+      });
+    }
     let nextOperationIndex = 0;
     markerBatchPendingRef.current = operations.length > 0;
 

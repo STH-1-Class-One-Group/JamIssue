@@ -1,0 +1,3 @@
+## 2024-07-12 - Refactoring Naver Maps Marker Reconciliation
+**Learning:** Chaining array methods (`.map`, `.filter`, `...spread`) in high-frequency React hooks like those managing map markers creates multiple intermediate arrays, leading to O(N) memory allocations and high garbage collection pressure during viewport interactions like panning.
+**Action:** When tracking large marker collections and computing visual updates, combine separate passes into sequential `for...of` loops using manual Sets and explicit `push()` directly into the `operations` array to completely eliminate unnecessary allocations.
