@@ -50,8 +50,23 @@ export function useNaverTourismMarkers({
       selectedTourismPlaceId,
       tourismPlaces,
     });
-    const nextIds = new Set(visiblePlaces.map((place) => place.id));
-    const visibleSignature = visiblePlaces.map((place) => `${place.id}:${place.latitude}:${place.longitude}`).join('|');
+
+    const nextIds = new Set<string>();
+    let visibleSignature = '';
+    const placeById = new Map<string, typeof visiblePlaces[number]>();
+    const placesToCreate: typeof visiblePlaces[number][] = [];
+
+    // Optimize: Single pass to build sets, strings, maps, and identify creations
+    for (const place of visiblePlaces) {
+      nextIds.add(place.id);
+      visibleSignature += (visibleSignature ? '|' : '') + `${place.id}:${place.latitude}:${place.longitude}`;
+      placeById.set(place.id, place);
+
+      if (!tourismMarkersRef.current.has(place.id)) {
+        placesToCreate.push(place);
+      }
+    }
+
     const markerAnchor = new mapsApi.Point(NaverMarkerConfig.anchor.default.x, NaverMarkerConfig.anchor.default.y);
     let cancelled = false;
 
@@ -69,7 +84,6 @@ export function useNaverTourismMarkers({
       marker.setZIndex(zIndex);
     };
 
-    const placeById = new Map(visiblePlaces.map((place) => [place.id, place]));
     if (previousVisibleSignatureRef.current === visibleSignature && !markerBatchPendingRef.current) {
       const idsToRefresh = new Set([
         previousSelectedTourismPlaceIdRef.current,
@@ -115,27 +129,42 @@ export function useNaverTourismMarkers({
       tourismMarkersRef.current.set(place.id, marker);
     };
 
-    const stalePlaceIds = Array.from(tourismMarkersRef.current.keys()).filter((placeId) => !nextIds.has(placeId));
-    const placesToCreate = visiblePlaces.filter((place) => !tourismMarkersRef.current.has(place.id));
+    const stalePlaceIds: string[] = [];
+    for (const placeId of tourismMarkersRef.current.keys()) {
+      if (!nextIds.has(placeId)) {
+        stalePlaceIds.push(placeId);
+      }
+    }
+
     const idsToRefresh = new Set([
       previousSelectedTourismPlaceIdRef.current,
       selectedTourismPlaceId,
     ].filter((placeId): placeId is string => Boolean(placeId)));
-    const operations = [
-      ...stalePlaceIds.map((placeId) => () => {
+
+    // Optimize: Avoid allocating intermediate arrays by using push inside for loops
+    const operations: (() => void)[] = [];
+
+    for (const placeId of stalePlaceIds) {
+      operations.push(() => {
         const marker = tourismMarkersRef.current.get(placeId);
         marker?.setMap(null);
         tourismMarkersRef.current.delete(placeId);
-      }),
-      ...placesToCreate.map((place) => () => createMarker(place)),
-      ...Array.from(idsToRefresh).map((placeId) => () => {
+      });
+    }
+
+    for (const place of placesToCreate) {
+      operations.push(() => createMarker(place));
+    }
+
+    for (const placeId of idsToRefresh) {
+      operations.push(() => {
         const place = placeById.get(placeId);
         const marker = tourismMarkersRef.current.get(placeId);
         if (place && marker) {
           updateMarkerVisual(place, marker);
         }
-      }),
-    ];
+      });
+    }
     let nextOperationIndex = 0;
     markerBatchPendingRef.current = operations.length > 0;
 

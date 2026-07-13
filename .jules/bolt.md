@@ -1,0 +1,3 @@
+## 2024-07-13 - Naver Map Markers Memory Allocations
+**Learning:** In Naver Maps integrations, chaining array methods (`.map().filter()`, `.map().join()`) or combining multiple arrays using the spread operator (`[...arr1.map(), ...arr2.map()]`) inside frequent reconciliation loops (like viewport panning) creates significant intermediate array allocations leading to GC pressure.
+**Action:** When tracking active selection states across large marker collections or building operation batches, favor single `for...of` loops, explicit arrays with `.push()`, and `Set.add()`/`Map.set()` directly to eliminate O(N) intermediate array allocations and reduce garbage collection overhead.
