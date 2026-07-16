@@ -1,0 +1,3 @@
+## 2026-07-16 - [Optimize useNaverTourismMarkers performance]
+**Learning:** Found an array method chain allocation problem inside useNaverTourismMarkers.ts where .filter() + .map() and new Set(array.map()) were resulting in massive GC pressure because they created lots of intermediate arrays on a hot code path (viewport change triggers marker batched materialization).
+**Action:** Replaced chained [...arr].map() inside useNaverTourismMarkers.ts with a standard pre-allocated array and simple for loop pushes, and combined array iterations into a single loop to build both Sets/Maps and signatures, drastically reducing object allocations while matching logic.
