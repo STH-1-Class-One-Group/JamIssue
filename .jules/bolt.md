@@ -1,0 +1,3 @@
+## 2024-05-18 - [Optimize Map Marker Hooks]
+**Learning:** Naver Maps hook marker generation cycles frequently allocate multiple intermediate arrays through sequential chained loops (like `.map().join()`, multiple `.map().filter()`, or spreads `[...arr.map()]`), which drives up memory churn and GC pauses specifically when scrolling/panning the viewport updates large blocks of markers.
+**Action:** When working on dynamic map layers and Naver map marker state reconciliation loops (`nextIds`, `visibleSignature`, `operations` batching), always favor `for...of` loops and explicit arrays/Sets directly over nested array method chains (`.map`, `.filter`, `...spread`) to prevent O(N) intermediate array allocations.
