@@ -99,17 +99,32 @@ function translateItemLabel(label: string) {
 }
 
 function getVisibleSections(sections: TourismDetailSection[]) {
-  return sections
-    .map((section) => ({
-      title: translateSectionTitle(section.title),
-      items: section.items
-        .map((item) => ({
+  // ⚡ Bolt Optimization:
+  // 💡 What: Replaced chained .map() and .filter() calls with a single nested for...of loop.
+  // 🎯 Why: Deriving visible sections required multiple full passes over the arrays and
+  //         allocating intermediate arrays for every map/filter step.
+  // 📊 Impact: Reduces O(N) memory allocations and GC pressure, particularly useful
+  //         when users pan around map points containing large descriptions.
+  const result = [];
+  for (const section of sections) {
+    const items = [];
+    for (const item of section.items) {
+      const value = normalizeDetailValue(item.value);
+      if (value.length > 0) {
+        items.push({
           label: translateItemLabel(item.label),
-          value: normalizeDetailValue(item.value),
-        }))
-        .filter((item) => item.value.length > 0),
-    }))
-    .filter((section) => section.items.length > 0);
+          value,
+        });
+      }
+    }
+    if (items.length > 0) {
+      result.push({
+        title: translateSectionTitle(section.title),
+        items,
+      });
+    }
+  }
+  return result;
 }
 
 function renderMultilineValue(value: string) {
